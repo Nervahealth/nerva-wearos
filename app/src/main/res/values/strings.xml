@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HUGR WearOS</string>
+    <string name="status_label">Status</string>
+    <string name="log_label">Log</string>
+</resources>

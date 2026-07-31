@@ -1,0 +1,2 @@
+rootProject.name = 'hugr-wearos-app'
+include ':app'
