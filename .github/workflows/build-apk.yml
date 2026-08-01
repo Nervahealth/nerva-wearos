@@ -24,12 +24,9 @@ jobs:
         java-version: "21"
         distribution: "temurin"
     
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v4
-      with:
-        cmdline-tools-version: "latest"
-        packages: "platforms;android-34 build-tools;34.0.0 ndk;26.1.10909125"
-        accept-licenses: true
+    - name: Install Android SDK packages
+      run: |
+        yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0" "ndk;26.1.10909125"
     
     - name: Make gradlew executable
       run: chmod +x gradlew
