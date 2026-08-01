@@ -5,10 +5,10 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'app/**'
-      - 'build.gradle'
-      - 'settings.gradle'
-      - '.github/workflows/build-apk.yml'
+      - "app/**"
+      - "build.gradle"
+      - "settings.gradle"
+      - ".github/workflows/build-apk.yml"
 
 jobs:
   build:
@@ -21,14 +21,18 @@ jobs:
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
-        java-version: '21'
-        distribution: 'temurin'
+        java-version: "21"
+        distribution: "temurin"
     
     - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@v4
       with:
-        api-level: 34
-        ndk-version: '26.1.10909125'
+        cmdline-tools-version: "latest"
+        packages: |
+          platforms;android-34
+          build-tools;34.0.0
+          ndk;26.1.10909125
+        accept-licenses: true
     
     - name: Make gradlew executable
       run: chmod +x gradlew
