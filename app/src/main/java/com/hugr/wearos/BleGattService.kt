@@ -12,6 +12,7 @@ import android.bluetooth.le.BluetoothLeAdvertiser
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
+import android.os.ParcelUuid
 import android.util.Log
 import java.util.UUID
 
@@ -22,11 +23,13 @@ class BleGattService : Service() {
     private var gattServer: BluetoothGattServer? = null
     private var advertiser: BluetoothLeAdvertiser? = null
 
-    // UUIDs for HUGR Tier 1 data
-    private val HUGR_SERVICE_UUID = UUID.fromString("12345678-1234-5678-1234-567812345678")
-    private val EDA_CHARACTERISTIC_UUID = UUID.fromString("11111111-1111-1111-1111-111111111111")
-    private val IBI_CHARACTERISTIC_UUID = UUID.fromString("22222222-2222-2222-2222-222222222222")
-    private val ACCEL_CHARACTERISTIC_UUID = UUID.fromString("33333333-3333-3333-3333-333333333333")
+    companion object {
+        val HUGR_SERVICE_UUID: UUID = UUID.fromString("12345678-1234-5678-1234-567812345678")
+        val EDA_CHARACTERISTIC_UUID: UUID = UUID.fromString("11111111-1111-1111-1111-111111111111")
+        val IBI_CHARACTERISTIC_UUID: UUID = UUID.fromString("22222222-2222-2222-2222-222222222222")
+        val ACCEL_CHARACTERISTIC_UUID: UUID = UUID.fromString("33333333-3333-3333-3333-333333333333")
+        const val ACTION_HAPTIC_COMMAND = "com.hugr.wearos.HAPTIC_COMMAND"
+    }
 
     inner class LocalBinder : Binder() {
         fun getService(): BleGattService = this@BleGattService
@@ -42,7 +45,7 @@ class BleGattService : Service() {
         try {
             val bluetoothManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
             bluetoothAdapter = bluetoothManager.adapter
-            
+
             if (bluetoothAdapter == null) {
                 Log.e(TAG, "Bluetooth adapter not available")
                 return
@@ -98,7 +101,7 @@ class BleGattService : Service() {
             val data = AdvertiseData.Builder()
                 .setIncludeDeviceName(true)
                 .setIncludeTxPowerLevel(true)
-                .addServiceUuid(android.bluetooth.le.ParcelUuid(HUGR_SERVICE_UUID))
+                .addServiceUuid(ParcelUuid(HUGR_SERVICE_UUID))
                 .build()
 
             advertiser?.startAdvertising(settings, data, object : AdvertiseCallback() {

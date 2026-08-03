@@ -18,9 +18,10 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://developer.samsung.com/repo/maven/' }
     }
 }
 
-task clean(type: Delete) {
+task clean(type: Delete  ) {
     delete rootProject.buildDir
 }

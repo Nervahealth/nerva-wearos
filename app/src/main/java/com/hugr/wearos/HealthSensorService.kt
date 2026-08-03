@@ -2,210 +2,230 @@ package com.hugr.wearos
 
 import android.app.Service
 import android.content.Intent
-import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import com.samsung.android.sdk.healthdata.HealthConstants
-import com.samsung.android.sdk.healthdata.HealthDataService
-import com.samsung.android.sdk.healthdata.HealthDataStore
-import com.samsung.android.sdk.healthdata.HealthDataStore.ConnectionListener
-import com.samsung.android.sdk.healthdata.HealthResultHolder
-import com.samsung.android.sdk.healthdata.HealthTrackerEventListener
-import java.util.concurrent.CopyOnWriteArrayList
+import com.samsung.android.service.health.tracking.ConnectionListener
+import com.samsung.android.service.health.tracking.HealthTracker
+import com.samsung.android.service.health.tracking.HealthTrackerException
+import com.samsung.android.service.health.tracking.HealthTrackingService
+import com.samsung.android.service.health.tracking.data.DataPoint
+import com.samsung.android.service.health.tracking.data.HealthTrackerType
+import com.samsung.android.service.health.tracking.data.ValueKey
 
 class HealthSensorService : Service() {
-    private val TAG = "HUGR-HealthSensor"
-    private val binder = LocalBinder()
-    private lateinit var mHealthDataStore: HealthDataStore
-    private val listeners = CopyOnWriteArrayList<SensorDataListener>()
-    
-    // Trackers
-    private var edaTracker: HealthTrackerEventListener? = null
-    private var ibiTracker: HealthTrackerEventListener? = null
-    private var accelTracker: HealthTrackerEventListener? = null
 
-    interface SensorDataListener {
-        fun onEdaData(value: Float, timestamp: Long)
-        fun onIbiData(rr: Int, timestamp: Long)
-        fun onAccelData(x: Float, y: Float, z: Float, timestamp: Long)
+    companion object {
+        private const val TAG = "HUGR-HealthSensor"
+        const val ACTION_START_TRACKING = "com.hugr.wearos.START_TRACKING"
+        const val ACTION_STOP_TRACKING = "com.hugr.wearos.STOP_TRACKING"
     }
 
-    inner class LocalBinder : Binder() {
-        fun getService(): HealthSensorService = this@HealthSensorService
-    }
+    private var healthTrackingService: HealthTrackingService? = null
+    private var edaTracker: HealthTracker? = null
+    private var heartRateTracker: HealthTracker? = null
+    private var accelerometerTracker: HealthTracker? = null
+    private var isConnected = false
 
-    override fun onCreate() {
-        super.onCreate()
-        Log.d(TAG, "HealthSensorService created")
-        initializeHealthDataStore()
-    }
+    override fun onBind(intent: Intent?): IBinder? = null
 
-    private fun initializeHealthDataStore() {
-        try {
-            mHealthDataStore = HealthDataStore(this, object : ConnectionListener {
-                override fun onConnected() {
-                    Log.d(TAG, "HealthDataStore connected")
-                    startListeningToSensors()
-                }
-
-                override fun onConnectionFailed(error: HealthDataStore.ConnectionError?) {
-                    Log.e(TAG, "HealthDataStore connection failed: $error")
-                }
-
-                override fun onDisconnected() {
-                    Log.d(TAG, "HealthDataStore disconnected")
-                }
-            })
-            mHealthDataStore.connectService()
-        } catch (e: Exception) {
-            Log.e(TAG, "Error initializing HealthDataStore: ${e.message}", e)
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
+            ACTION_START_TRACKING -> connectAndStartTracking()
+            ACTION_STOP_TRACKING -> stopTrackingAndDisconnect()
         }
-    }
-
-    private fun startListeningToSensors() {
-        Log.d(TAG, "Starting sensor listeners")
-        
-        // EDA_CONTINUOUS (1Hz)
-        startEdaListener()
-        
-        // IBI (beat-to-beat intervals)
-        startIbiListener()
-        
-        // Accelerometer (25Hz)
-        startAccelListener()
-    }
-
-    private fun startEdaListener() {
-        try {
-            Log.d(TAG, "Starting EDA listener")
-            edaTracker = HealthTrackerEventListener { trackerId, result ->
-                if (result.hasData()) {
-                    val edaList = result.getList(HealthConstants.ElectrodermalActivity.ELECTRODERMAL_ACTIVITY)
-                    for (eda in edaList) {
-                        val value = eda.getFloat(HealthConstants.ElectrodermalActivity.ELECTRODERMAL_ACTIVITY)
-                        val timestamp = eda.getLong(HealthConstants.ElectrodermalActivity.START_TIME)
-                        Log.d(TAG, "EDA: $value at $timestamp")
-                        notifyEdaData(value, timestamp)
-                    }
-                }
-            }
-            
-            val trackerResult = mHealthDataStore.getConnectedTrackers(HealthConstants.ElectrodermalActivity.TRACKER_NAME)
-            if (trackerResult.hasData()) {
-                val trackerList = trackerResult.getList(HealthConstants.ElectrodermalActivity.TRACKER_NAME)
-                if (trackerList.isNotEmpty()) {
-                    val trackerId = trackerList[0].getString(HealthConstants.TRACKER_ID)
-                    mHealthDataStore.addTrackerEventListener(trackerId, edaTracker)
-                    Log.d(TAG, "EDA listener attached to tracker: $trackerId")
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error starting EDA listener: ${e.message}", e)
-        }
-    }
-
-    private fun startIbiListener() {
-        try {
-            Log.d(TAG, "Starting IBI listener")
-            ibiTracker = HealthTrackerEventListener { trackerId, result ->
-                if (result.hasData()) {
-                    val ibiList = result.getList(HealthConstants.HeartRate.HEART_RATE)
-                    for (ibi in ibiList) {
-                        val rr = ibi.getInt(HealthConstants.HeartRate.HEART_RATE)
-                        val timestamp = ibi.getLong(HealthConstants.HeartRate.START_TIME)
-                        Log.d(TAG, "IBI: $rr ms at $timestamp")
-                        notifyIbiData(rr, timestamp)
-                    }
-                }
-            }
-            
-            val trackerResult = mHealthDataStore.getConnectedTrackers(HealthConstants.HeartRate.TRACKER_NAME)
-            if (trackerResult.hasData()) {
-                val trackerList = trackerResult.getList(HealthConstants.HeartRate.TRACKER_NAME)
-                if (trackerList.isNotEmpty()) {
-                    val trackerId = trackerList[0].getString(HealthConstants.TRACKER_ID)
-                    mHealthDataStore.addTrackerEventListener(trackerId, ibiTracker)
-                    Log.d(TAG, "IBI listener attached to tracker: $trackerId")
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error starting IBI listener: ${e.message}", e)
-        }
-    }
-
-    private fun startAccelListener() {
-        try {
-            Log.d(TAG, "Starting accelerometer listener")
-            accelTracker = HealthTrackerEventListener { trackerId, result ->
-                if (result.hasData()) {
-                    val accelList = result.getList(HealthConstants.Accelerometer.ACCELEROMETER)
-                    for (accel in accelList) {
-                        val x = accel.getFloat(HealthConstants.Accelerometer.X)
-                        val y = accel.getFloat(HealthConstants.Accelerometer.Y)
-                        val z = accel.getFloat(HealthConstants.Accelerometer.Z)
-                        val timestamp = accel.getLong(HealthConstants.Accelerometer.START_TIME)
-                        Log.d(TAG, "Accel: [$x, $y, $z] at $timestamp")
-                        notifyAccelData(x, y, z, timestamp)
-                    }
-                }
-            }
-            
-            val trackerResult = mHealthDataStore.getConnectedTrackers(HealthConstants.Accelerometer.TRACKER_NAME)
-            if (trackerResult.hasData()) {
-                val trackerList = trackerResult.getList(HealthConstants.Accelerometer.TRACKER_NAME)
-                if (trackerList.isNotEmpty()) {
-                    val trackerId = trackerList[0].getString(HealthConstants.TRACKER_ID)
-                    mHealthDataStore.addTrackerEventListener(trackerId, accelTracker)
-                    Log.d(TAG, "Accelerometer listener attached to tracker: $trackerId")
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error starting accelerometer listener: ${e.message}", e)
-        }
-    }
-
-    private fun notifyEdaData(value: Float, timestamp: Long) {
-        for (listener in listeners) {
-            listener.onEdaData(value, timestamp)
-        }
-    }
-
-    private fun notifyIbiData(rr: Int, timestamp: Long) {
-        for (listener in listeners) {
-            listener.onIbiData(rr, timestamp)
-        }
-    }
-
-    private fun notifyAccelData(x: Float, y: Float, z: Float, timestamp: Long) {
-        for (listener in listeners) {
-            listener.onAccelData(x, y, z, timestamp)
-        }
-    }
-
-    fun addSensorDataListener(listener: SensorDataListener) {
-        listeners.add(listener)
-        Log.d(TAG, "Sensor listener added")
-    }
-
-    fun removeSensorDataListener(listener: SensorDataListener) {
-        listeners.remove(listener)
-        Log.d(TAG, "Sensor listener removed")
-    }
-
-    override fun onBind(intent: Intent?): IBinder {
-        return binder
+        return START_STICKY
     }
 
     override fun onDestroy() {
+        stopTrackingAndDisconnect()
         super.onDestroy()
-        Log.d(TAG, "HealthSensorService destroyed")
-        try {
-            edaTracker?.let { mHealthDataStore.removeTrackerEventListener(it) }
-            ibiTracker?.let { mHealthDataStore.removeTrackerEventListener(it) }
-            accelTracker?.let { mHealthDataStore.removeTrackerEventListener(it) }
-            mHealthDataStore.disconnectService()
-        } catch (e: Exception) {
-            Log.e(TAG, "Error cleaning up: ${e.message}", e)
+    }
+
+    private fun connectAndStartTracking() {
+        if (isConnected) {
+            startAllTrackers()
+            return
         }
+        try {
+            healthTrackingService = HealthTrackingService(connectionListener, applicationContext)
+            healthTrackingService?.connectService()
+            Log.i(TAG, "Connecting to Health Tracking Service...")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to connect: ${e.message}", e)
+        }
+    }
+
+    private val connectionListener = object : ConnectionListener {
+        override fun onConnectionSuccess() {
+            Log.i(TAG, "Health Tracking Service connected")
+            isConnected = true
+            startAllTrackers()
+        }
+
+        override fun onConnectionEnded() {
+            Log.i(TAG, "Health Tracking Service connection ended")
+            isConnected = false
+            healthTrackingService = null
+        }
+
+        override fun onConnectionFailed(error: HealthTrackerException?) {
+            Log.e(TAG, "Connection failed: ${error?.message}")
+            isConnected = false
+            healthTrackingService = null
+        }
+    }
+
+    private fun startAllTrackers() {
+        val service = healthTrackingService ?: return
+
+        val supportedTypes = try {
+            service.trackingCapability.supportHealthTrackerTypes
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get capabilities: ${e.message}")
+            emptyList()
+        }
+
+        if (supportedTypes.contains(HealthTrackerType.EDA_CONTINUOUS)) {
+            try {
+                edaTracker = service.getHealthTracker(HealthTrackerType.EDA_CONTINUOUS)
+                edaTracker?.setEventListener(edaListener)
+                Log.i(TAG, "EDA tracker started (1Hz)")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to start EDA tracker: ${e.message}")
+            }
+        } else {
+            Log.w(TAG, "EDA_CONTINUOUS not supported on this device")
+        }
+
+        if (supportedTypes.contains(HealthTrackerType.HEART_RATE_CONTINUOUS)) {
+            try {
+                heartRateTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
+                heartRateTracker?.setEventListener(heartRateListener)
+                Log.i(TAG, "Heart Rate + IBI tracker started (1Hz)")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to start HR tracker: ${e.message}")
+            }
+        } else {
+            Log.w(TAG, "HEART_RATE_CONTINUOUS not supported on this device")
+        }
+
+        if (supportedTypes.contains(HealthTrackerType.ACCELEROMETER_CONTINUOUS)) {
+            try {
+                accelerometerTracker = service.getHealthTracker(HealthTrackerType.ACCELEROMETER_CONTINUOUS)
+                accelerometerTracker?.setEventListener(accelerometerListener)
+                Log.i(TAG, "Accelerometer tracker started (25Hz)")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to start accelerometer tracker: ${e.message}")
+            }
+        } else {
+            Log.w(TAG, "ACCELEROMETER_CONTINUOUS not supported on this device")
+        }
+    }
+
+    private val edaListener = object : HealthTracker.TrackerEventListener {
+        override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            for (dataPoint in dataPoints) {
+                val conductance = dataPoint.getValue(ValueKey.EdaSet.SKIN_CONDUCTANCE) as? Float
+                val timestamp = dataPoint.timestamp
+                Log.d(TAG, "EDA: conductance=$conductance, ts=$timestamp")
+                val intent = Intent("com.hugr.wearos.EDA_DATA").apply {
+                    putExtra("conductance", conductance ?: 0f)
+                    putExtra("timestamp", timestamp)
+                }
+                sendBroadcast(intent)
+            }
+        }
+
+        override fun onError(error: HealthTracker.TrackerError) {
+            Log.e(TAG, "EDA tracker error: ${error.name}")
+        }
+
+        override fun onFlushCompleted() {
+            Log.d(TAG, "EDA flush completed")
+        }
+    }
+
+    private val heartRateListener = object : HealthTracker.TrackerEventListener {
+        override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            for (dataPoint in dataPoints) {
+                val heartRate = dataPoint.getValue(ValueKey.HeartRateSet.HEART_RATE) as? Int
+                val ibiList = dataPoint.getValue(ValueKey.HeartRateSet.IBI_LIST) as? IntArray
+                val ibiStatusList = dataPoint.getValue(ValueKey.HeartRateSet.IBI_STATUS_LIST) as? IntArray
+                val timestamp = dataPoint.timestamp
+
+                val validIbiValues = mutableListOf<Int>()
+                if (ibiList != null && ibiStatusList != null) {
+                    for (i in ibiList.indices) {
+                        if (i < ibiStatusList.size && ibiStatusList[i] == 0 && ibiList[i] != 0) {
+                            validIbiValues.add(ibiList[i])
+                        }
+                    }
+                }
+
+                Log.d(TAG, "HR: bpm=$heartRate, ibi=$validIbiValues, ts=$timestamp")
+                val intent = Intent("com.hugr.wearos.IBI_DATA").apply {
+                    putExtra("heartRate", heartRate ?: 0)
+                    putExtra("ibiValues", validIbiValues.toIntArray())
+                    putExtra("timestamp", timestamp)
+                }
+                sendBroadcast(intent)
+            }
+        }
+
+        override fun onError(error: HealthTracker.TrackerError) {
+            Log.e(TAG, "Heart rate tracker error: ${error.name}")
+        }
+
+        override fun onFlushCompleted() {
+            Log.d(TAG, "Heart rate flush completed")
+        }
+    }
+
+    private val accelerometerListener = object : HealthTracker.TrackerEventListener {
+        override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            for (dataPoint in dataPoints) {
+                val x = dataPoint.getValue(ValueKey.AccelerometerSet.ACCELEROMETER_X) as? Int
+                val y = dataPoint.getValue(ValueKey.AccelerometerSet.ACCELEROMETER_Y) as? Int
+                val z = dataPoint.getValue(ValueKey.AccelerometerSet.ACCELEROMETER_Z) as? Int
+                val timestamp = dataPoint.timestamp
+
+                val intent = Intent("com.hugr.wearos.ACCEL_DATA").apply {
+                    putExtra("x", x ?: 0)
+                    putExtra("y", y ?: 0)
+                    putExtra("z", z ?: 0)
+                    putExtra("timestamp", timestamp)
+                }
+                sendBroadcast(intent)
+            }
+        }
+
+        override fun onError(error: HealthTracker.TrackerError) {
+            Log.e(TAG, "Accelerometer tracker error: ${error.name}")
+        }
+
+        override fun onFlushCompleted() {
+            Log.d(TAG, "Accelerometer flush completed")
+        }
+    }
+
+    private fun stopTrackingAndDisconnect() {
+        try {
+            edaTracker?.unsetEventListener()
+            heartRateTracker?.unsetEventListener()
+            accelerometerTracker?.unsetEventListener()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error unsetting listeners: ${e.message}")
+        }
+        edaTracker = null
+        heartRateTracker = null
+        accelerometerTracker = null
+        try {
+            healthTrackingService?.disconnectService()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error disconnecting: ${e.message}")
+        }
+        healthTrackingService = null
+        isConnected = false
+        Log.i(TAG, "All trackers stopped, service disconnected")
     }
 }

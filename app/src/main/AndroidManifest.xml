@@ -4,6 +4,7 @@
 
     <!-- Samsung Health Sensor permissions -->
     <uses-permission android:name="android.permission.BODY_SENSORS" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="com.samsung.android.providers.health.permission.HEALTH_DATA_READ" />
     <uses-permission android:name="com.samsung.android.providers.health.permission.HEALTH_DATA_WRITE" />
     
@@ -20,6 +21,12 @@
     <!-- Location (for BLE scanning) -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Foreground service for continuous monitoring -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     
     <!-- Wear OS specific -->
     <uses-feature android:name="android.hardware.type.watch" />
@@ -45,11 +52,18 @@
         <service
             android:name=".HealthSensorService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="health" />
 
         <!-- BLE GATT server service -->
         <service
             android:name=".BleGattService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Haptic feedback service -->
+        <service
+            android:name=".HapticService"
             android:enabled="true"
             android:exported="false" />
 
