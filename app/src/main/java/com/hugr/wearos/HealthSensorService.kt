@@ -18,6 +18,7 @@ class HealthSensorService : Service() {
         private const val TAG = "HUGR-HealthSensor"
         const val ACTION_START_TRACKING = "com.hugr.wearos.START_TRACKING"
         const val ACTION_STOP_TRACKING = "com.hugr.wearos.STOP_TRACKING"
+        const val ACTION_STATUS_UPDATE = "com.hugr.wearos.STATUS_UPDATE"
     }
 
     private var healthTrackingService: HealthTrackingService? = null
@@ -32,6 +33,10 @@ class HealthSensorService : Service() {
         when (intent?.action) {
             ACTION_START_TRACKING -> connectAndStartTracking()
             ACTION_STOP_TRACKING -> stopTrackingAndDisconnect()
+            else -> {
+                sendStatus("WARNING: No action in intent!")
+                connectAndStartTracking()
+            }
         }
         return START_STICKY
     }
@@ -43,14 +48,17 @@ class HealthSensorService : Service() {
 
     private fun connectAndStartTracking() {
         if (isConnected) {
+            sendStatus("Already connected, starting trackers...")
             startAllTrackers()
             return
         }
         try {
+            sendStatus("Connecting to Samsung Health SDK...")
             healthTrackingService = HealthTrackingService(connectionListener, applicationContext)
             healthTrackingService?.connectService()
             Log.i(TAG, "Connecting to Health Tracking Service...")
         } catch (e: Exception) {
+            sendStatus("ERROR connecting: ${e.message}")
             Log.e(TAG, "Failed to connect: ${e.message}", e)
         }
     }
@@ -58,18 +66,21 @@ class HealthSensorService : Service() {
     private val connectionListener = object : ConnectionListener {
         override fun onConnectionSuccess() {
             Log.i(TAG, "Health Tracking Service connected")
+            sendStatus("Samsung SDK CONNECTED!")
             isConnected = true
             startAllTrackers()
         }
 
         override fun onConnectionEnded() {
             Log.i(TAG, "Health Tracking Service connection ended")
+            sendStatus("SDK connection ENDED")
             isConnected = false
             healthTrackingService = null
         }
 
         override fun onConnectionFailed(error: HealthTrackerException?) {
             Log.e(TAG, "Connection failed: ${error?.message}")
+            sendStatus("SDK FAILED: ${error?.message}")
             isConnected = false
             healthTrackingService = null
         }
@@ -79,8 +90,11 @@ class HealthSensorService : Service() {
         val service = healthTrackingService ?: return
 
         val supportedTypes = try {
-            service.trackingCapability.supportHealthTrackerTypes
+            val types = service.trackingCapability.supportHealthTrackerTypes
+            sendStatus("Supported: ${types.map { it.name }}")
+            types
         } catch (e: Exception) {
+            sendStatus("ERROR getting capabilities: ${e.message}")
             Log.e(TAG, "Failed to get capabilities: ${e.message}")
             emptyList()
         }
@@ -89,11 +103,14 @@ class HealthSensorService : Service() {
             try {
                 edaTracker = service.getHealthTracker(HealthTrackerType.EDA_CONTINUOUS)
                 edaTracker?.setEventListener(edaListener)
+                sendStatus("EDA tracker STARTED")
                 Log.i(TAG, "EDA tracker started (1Hz)")
             } catch (e: Exception) {
+                sendStatus("EDA ERROR: ${e.message}")
                 Log.e(TAG, "Failed to start EDA tracker: ${e.message}")
             }
         } else {
+            sendStatus("EDA NOT SUPPORTED on this device!")
             Log.w(TAG, "EDA_CONTINUOUS not supported on this device")
         }
 
@@ -101,11 +118,14 @@ class HealthSensorService : Service() {
             try {
                 heartRateTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
                 heartRateTracker?.setEventListener(heartRateListener)
+                sendStatus("HR tracker STARTED")
                 Log.i(TAG, "Heart Rate + IBI tracker started (1Hz)")
             } catch (e: Exception) {
+                sendStatus("HR ERROR: ${e.message}")
                 Log.e(TAG, "Failed to start HR tracker: ${e.message}")
             }
         } else {
+            sendStatus("HR NOT SUPPORTED!")
             Log.w(TAG, "HEART_RATE_CONTINUOUS not supported on this device")
         }
 
@@ -113,13 +133,18 @@ class HealthSensorService : Service() {
             try {
                 accelerometerTracker = service.getHealthTracker(HealthTrackerType.ACCELEROMETER_CONTINUOUS)
                 accelerometerTracker?.setEventListener(accelerometerListener)
+                sendStatus("Accel tracker STARTED")
                 Log.i(TAG, "Accelerometer tracker started (25Hz)")
             } catch (e: Exception) {
+                sendStatus("Accel ERROR: ${e.message}")
                 Log.e(TAG, "Failed to start accelerometer tracker: ${e.message}")
             }
         } else {
+            sendStatus("Accel NOT SUPPORTED!")
             Log.w(TAG, "ACCELEROMETER_CONTINUOUS not supported on this device")
         }
+
+        sendStatus("All trackers setup complete. Waiting for data...")
     }
 
     private val edaListener = object : HealthTracker.TrackerEventListener {
@@ -127,6 +152,7 @@ class HealthSensorService : Service() {
             for (dataPoint in dataPoints) {
                 val conductance = dataPoint.getValue(ValueKey.EdaSet.SKIN_CONDUCTANCE) as? Float
                 val timestamp = dataPoint.timestamp
+                sendStatus("EDA: ${conductance}µS")
                 Log.d(TAG, "EDA: conductance=$conductance, ts=$timestamp")
                 val intent = Intent("com.hugr.wearos.EDA_DATA").apply {
                     putExtra("conductance", conductance ?: 0f)
@@ -137,6 +163,7 @@ class HealthSensorService : Service() {
         }
 
         override fun onError(error: HealthTracker.TrackerError) {
+            sendStatus("EDA ERROR: ${error.name}")
             Log.e(TAG, "EDA tracker error: ${error.name}")
         }
 
@@ -162,6 +189,7 @@ class HealthSensorService : Service() {
                     }
                 }
 
+                sendStatus("HR: ${heartRate}bpm IBI:${validIbiValues.size}")
                 Log.d(TAG, "HR: bpm=$heartRate, ibi=$validIbiValues, ts=$timestamp")
                 val intent = Intent("com.hugr.wearos.IBI_DATA").apply {
                     putExtra("heartRate", heartRate ?: 0)
@@ -173,6 +201,7 @@ class HealthSensorService : Service() {
         }
 
         override fun onError(error: HealthTracker.TrackerError) {
+            sendStatus("HR ERROR: ${error.name}")
             Log.e(TAG, "Heart rate tracker error: ${error.name}")
         }
 
@@ -227,5 +256,13 @@ class HealthSensorService : Service() {
         healthTrackingService = null
         isConnected = false
         Log.i(TAG, "All trackers stopped, service disconnected")
+    }
+
+    private fun sendStatus(message: String) {
+        val intent = Intent(ACTION_STATUS_UPDATE).apply {
+            putExtra("status", message)
+        }
+        sendBroadcast(intent)
+        Log.i(TAG, "STATUS: $message")
     }
 }

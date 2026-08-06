@@ -10,6 +10,13 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.samsung.android.service.health.tracking.ConnectionListener
+import com.samsung.android.service.health.tracking.HealthTracker
+import com.samsung.android.service.health.tracking.HealthTrackerException
+import com.samsung.android.service.health.tracking.HealthTrackingService
+import com.samsung.android.service.health.tracking.data.DataPoint
+import com.samsung.android.service.health.tracking.data.HealthTrackerType
+import com.samsung.android.service.health.tracking.data.ValueKey
 
 class MainActivity : ComponentActivity() {
 
@@ -20,9 +27,11 @@ class MainActivity : ComponentActivity() {
     private lateinit var statusText: TextView
     private lateinit var logText: TextView
     private lateinit var scrollView: ScrollView
+    private var healthTrackingService: HealthTrackingService? = null
 
     private val requiredPermissions = mutableListOf(
         Manifest.permission.BODY_SENSORS,
+        "com.samsung.android.hardware.sensormanager.permission.READ_ADDITIONAL_HEALTH_DATA",
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.BLUETOOTH_SCAN,
@@ -38,7 +47,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Simple layout created programmatically
         val layout = android.widget.LinearLayout(this).apply {
             orientation = android.widget.LinearLayout.VERTICAL
             setPadding(16, 16, 16, 16)
@@ -46,17 +54,17 @@ class MainActivity : ComponentActivity() {
         }
 
         statusText = TextView(this).apply {
-            text = "HUGR WearOS App\nChecking permissions..."
-            textSize = 14f
+            text = "HUGR DIAGNOSTIC BUILD\nChecking permissions..."
+            textSize = 12f
             setTextColor(android.graphics.Color.WHITE)
         }
         layout.addView(statusText)
 
         logText = TextView(this).apply {
             text = ""
-            textSize = 10f
+            textSize = 9f
             setTextColor(android.graphics.Color.GREEN)
-            setPadding(0, 16, 0, 0)
+            setPadding(0, 8, 0, 0)
         }
 
         scrollView = ScrollView(this)
@@ -69,6 +77,8 @@ class MainActivity : ComponentActivity() {
         setContentView(layout)
 
         appendLog("App started.")
+        appendLog("Model: ${Build.MODEL}")
+        appendLog("SDK: ${Build.VERSION.SDK_INT}")
         checkAndRequestPermissions()
     }
 
@@ -79,7 +89,7 @@ class MainActivity : ComponentActivity() {
 
         if (missingPermissions.isEmpty()) {
             appendLog("All permissions granted!")
-            startServices()
+            startSamsungSDK()
         } else {
             appendLog("Requesting ${missingPermissions.size} permissions...")
             ActivityCompat.requestPermissions(
@@ -102,48 +112,99 @@ class MainActivity : ComponentActivity() {
 
             if (denied.isEmpty()) {
                 appendLog("All permissions granted!")
-                statusText.text = "HUGR WearOS App\nPermissions OK. Starting..."
-                startServices()
             } else {
                 val deniedNames = denied.map { it.first.substringAfterLast('.') }
-                appendLog("Denied: $deniedNames")
-                statusText.text = "HUGR WearOS App\nSome permissions denied.\nPlease grant in Settings."
-                // Try starting anyway - some sensors might still work
-                startServices()
+                appendLog("DENIED: $deniedNames")
+            }
+            startSamsungSDK()
+        }
+    }
+
+    private fun startSamsungSDK() {
+        appendLog("Connecting to Samsung SDK...")
+        statusText.text = "HUGR DIAGNOSTIC\nConnecting to Samsung SDK..."
+
+        try {
+            healthTrackingService = HealthTrackingService(connectionListener, applicationContext)
+            healthTrackingService?.connectService()
+            appendLog("connectService() called OK")
+        } catch (e: Exception) {
+            appendLog("EXCEPTION: ${e.javaClass.simpleName}")
+            appendLog("MSG: ${e.message}")
+        }
+    }
+
+    private val connectionListener = object : ConnectionListener {
+        override fun onConnectionSuccess() {
+            runOnUiThread {
+                appendLog("=== SDK CONNECTED ===")
+                statusText.text = "HUGR DIAGNOSTIC\nSDK Connected!"
+                startTrackers()
+            }
+        }
+
+        override fun onConnectionEnded() {
+            runOnUiThread {
+                appendLog("SDK connection ENDED")
+            }
+        }
+
+        override fun onConnectionFailed(error: HealthTrackerException?) {
+            runOnUiThread {
+                appendLog("=== SDK FAILED ===")
+                appendLog("Error: ${error?.message}")
+                appendLog("HasResolution: ${error?.hasResolution()}")
+                statusText.text = "HUGR DIAGNOSTIC\nSDK FAILED!"
             }
         }
     }
 
-    private fun startServices() {
-        statusText.text = "HUGR WearOS App\nStarting sensors..."
-        appendLog("Starting HealthSensorService...")
+    private fun startTrackers() {
+        val service = healthTrackingService ?: return
 
         try {
-            val sensorIntent = Intent(this, HealthSensorService::class.java)
-            startService(sensorIntent)
-            appendLog("HealthSensorService started.")
-        } catch (e: Exception) {
-            appendLog("ERROR starting sensors: ${e.message}")
-        }
+            val types = service.trackingCapability.supportHealthTrackerTypes
+            appendLog("Supported types (${types.size}):")
+            for (t in types) {
+                appendLog("  - ${t.name}")
+            }
 
-        try {
-            val bleIntent = Intent(this, BleGattService::class.java)
-            startService(bleIntent)
-            appendLog("BleGattService started.")
-        } catch (e: Exception) {
-            appendLog("ERROR starting BLE: ${e.message}")
-        }
+            if (types.contains(HealthTrackerType.HEART_RATE_CONTINUOUS)) {
+                val hrTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
+                hrTracker.setEventListener(object : HealthTracker.TrackerEventListener {
+                    override fun onDataReceived(data: MutableList<DataPoint>) {
+                        val hr = data.firstOrNull()?.getValue(ValueKey.HeartRateSet.HEART_RATE) as? Int
+                        runOnUiThread { appendLog("HR: ${hr} bpm") }
+                    }
+                    override fun onError(error: HealthTracker.TrackerError) {
+                        runOnUiThread { appendLog("HR ERROR: ${error.name}") }
+                    }
+                    override fun onFlushCompleted() {}
+                })
+                appendLog("HR tracker SET")
+            }
 
-        try {
-            val hapticIntent = Intent(this, HapticService::class.java)
-            startService(hapticIntent)
-            appendLog("HapticService started.")
-        } catch (e: Exception) {
-            appendLog("ERROR starting haptics: ${e.message}")
-        }
+            if (types.contains(HealthTrackerType.EDA_CONTINUOUS)) {
+                val edaTracker = service.getHealthTracker(HealthTrackerType.EDA_CONTINUOUS)
+                edaTracker.setEventListener(object : HealthTracker.TrackerEventListener {
+                    override fun onDataReceived(data: MutableList<DataPoint>) {
+                        val eda = data.firstOrNull()?.getValue(ValueKey.EdaSet.SKIN_CONDUCTANCE) as? Float
+                        runOnUiThread { appendLog("EDA: ${eda} uS") }
+                    }
+                    override fun onError(error: HealthTracker.TrackerError) {
+                        runOnUiThread { appendLog("EDA ERROR: ${error.name}") }
+                    }
+                    override fun onFlushCompleted() {}
+                })
+                appendLog("EDA tracker SET")
+            } else {
+                appendLog("!! EDA NOT in supported list !!")
+            }
 
-        statusText.text = "HUGR WearOS App\nServices running."
-        appendLog("All services initialized.")
+        } catch (e: Exception) {
+            appendLog("TRACKER ERROR: ${e.javaClass.simpleName}")
+            appendLog("MSG: ${e.message}")
+        }
     }
 
     private fun appendLog(message: String) {
