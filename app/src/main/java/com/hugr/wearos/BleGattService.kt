@@ -379,9 +379,9 @@ class BleGattService : Service() {
     }
 
     private fun registerSensorReceivers() {
-        registerReceiver(edaReceiver, IntentFilter("com.hugr.wearos.EDA_DATA"), RECEIVER_NOT_EXPORTED)
-        registerReceiver(ibiReceiver, IntentFilter("com.hugr.wearos.IBI_DATA"), RECEIVER_NOT_EXPORTED)
-        registerReceiver(accelReceiver, IntentFilter("com.hugr.wearos.ACCEL_DATA"), RECEIVER_NOT_EXPORTED)
+        registerReceiver(edaReceiver, IntentFilter("com.hugr.wearos.EDA_DATA"), RECEIVER_EXPORTED)
+        registerReceiver(ibiReceiver, IntentFilter("com.hugr.wearos.IBI_DATA"), RECEIVER_EXPORTED)
+        registerReceiver(accelReceiver, IntentFilter("com.hugr.wearos.ACCEL_DATA"), RECEIVER_EXPORTED)
         Log.d(TAG, "Sensor broadcast receivers registered")
     }
 
