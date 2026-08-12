@@ -47,7 +47,7 @@ class BleGattService : Service() {
         val EDA_CHARACTERISTIC_UUID: UUID = UUID.fromString("11111111-1111-1111-1111-111111111111")
         val IBI_CHARACTERISTIC_UUID: UUID = UUID.fromString("22222222-2222-2222-2222-222222222222")
         val ACCEL_CHARACTERISTIC_UUID: UUID = UUID.fromString("33333333-3333-3333-3333-333333333333")
-        val HAPTIC_CHARACTERISTIC_UUID: UUID = UUID.fromString("55555555-5555-5555-5555-555555555555")
+        val HAPTIC_CHARACTERISTIC_UUID: UUID = UUID.fromString("0000fff5-0000-1000-8000-00805f9b34fb")
         val STATUS_CHARACTERISTIC_UUID: UUID = UUID.fromString("66666666-6666-6666-6666-666666666666")
 
         // Client Characteristic Configuration Descriptor (required for NOTIFY)
@@ -401,10 +401,10 @@ class BleGattService : Service() {
         val device = connectedDevice ?: return
         val char = edaCharacteristic ?: return
 
-        // Pack: [conductance (4 bytes float)] [timestamp (8 bytes long)]
-        val buffer = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN)
+        // Pack: [conductance (4 bytes float32, little-endian)]
+        // Phone's parseEDA() expects exactly 4 bytes: DataView.getFloat32(0, true)
+        val buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN)
         buffer.putFloat(conductance)
-        buffer.putLong(timestamp)
         char.value = buffer.array()
 
         try {
@@ -418,16 +418,23 @@ class BleGattService : Service() {
         val device = connectedDevice ?: return
         val char = ibiCharacteristic ?: return
 
-        // Pack: [heartRate (2 bytes)] [ibiCount (1 byte)] [ibi values (2 bytes each)] [timestamp (8 bytes)]
-        val ibiCount = minOf(ibiValues.size, 10) // Max 10 IBI values per packet
-        val bufferSize = 2 + 1 + (ibiCount * 2) + 8
-        val buffer = ByteBuffer.allocate(bufferSize).order(ByteOrder.LITTLE_ENDIAN)
-        buffer.putShort(heartRate.toShort())
-        buffer.put(ibiCount.toByte())
-        for (i in 0 until ibiCount) {
-            buffer.putShort(ibiValues[i].toShort())
-        }
-        buffer.putLong(timestamp)
+        // Pack: [ibi (4 bytes float32)] [rmssd (4 bytes float32)]
+        // Phone's parseIBI() expects exactly 8 bytes: getFloat32(0) + getFloat32(4)
+        // Send the most recent IBI value and a running RMSSD estimate
+        val latestIbi = if (ibiValues.isNotEmpty()) ibiValues.last().toFloat() else 0f
+        // Calculate simple RMSSD from available IBI values
+        val rmssd = if (ibiValues.size >= 2) {
+            val diffs = mutableListOf<Double>()
+            for (i in 1 until ibiValues.size) {
+                val diff = (ibiValues[i] - ibiValues[i - 1]).toDouble()
+                diffs.add(diff * diff)
+            }
+            Math.sqrt(diffs.average()).toFloat()
+        } else 0f
+
+        val buffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN)
+        buffer.putFloat(latestIbi)
+        buffer.putFloat(rmssd)
         char.value = buffer.array()
 
         try {
@@ -441,12 +448,13 @@ class BleGattService : Service() {
         val device = connectedDevice ?: return
         val char = accelCharacteristic ?: return
 
-        // Pack: [x (4 bytes)] [y (4 bytes)] [z (4 bytes)] [timestamp (8 bytes)]
-        val buffer = ByteBuffer.allocate(20).order(ByteOrder.LITTLE_ENDIAN)
-        buffer.putInt(x)
-        buffer.putInt(y)
-        buffer.putInt(z)
-        buffer.putLong(timestamp)
+        // Pack: [x (4 bytes float32)] [y (4 bytes float32)] [z (4 bytes float32)]
+        // Phone's parseAccel() expects exactly 12 bytes: 3x getFloat32()
+        // Convert from Samsung SDK raw int (milli-g) to m/s²
+        val buffer = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN)
+        buffer.putFloat(x.toFloat() / 1000f * 9.81f)  // milli-g to m/s²
+        buffer.putFloat(y.toFloat() / 1000f * 9.81f)
+        buffer.putFloat(z.toFloat() / 1000f * 9.81f)
         char.value = buffer.array()
 
         try {
