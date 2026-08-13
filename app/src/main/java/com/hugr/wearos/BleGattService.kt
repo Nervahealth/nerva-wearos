@@ -35,6 +35,8 @@ class BleGattService : Service() {
     private var gattServer: BluetoothGattServer? = null
     private var advertiser: BluetoothLeAdvertiser? = null
     private var connectedDevice: BluetoothDevice? = null
+    private val subscribedDevices = mutableSetOf<BluetoothDevice>()
+    private var notifyCount = 0
 
     // GATT Characteristics (held as references for notification updates)
     private var edaCharacteristic: BluetoothGattCharacteristic? = null
@@ -190,13 +192,17 @@ class BleGattService : Service() {
             when (newState) {
                 BluetoothProfile.STATE_CONNECTED -> {
                     connectedDevice = device
+                    if (device != null) subscribedDevices.add(device)
                     Log.i(TAG, "Phone connected: ${device?.address}")
+                    broadcastStatus("BLE: Phone CONNECTED (${device?.address})")
                     // Start advertising after connection? No — stop advertising to save power
                     stopAdvertising()
                 }
                 BluetoothProfile.STATE_DISCONNECTED -> {
                     connectedDevice = null
+                    if (device != null) subscribedDevices.remove(device)
                     Log.i(TAG, "Phone disconnected: ${device?.address}")
+                    broadcastStatus("BLE: Phone DISCONNECTED")
                     // Resume advertising so phone can reconnect
                     startAdvertising()
                 }
@@ -280,6 +286,12 @@ class BleGattService : Service() {
                 val charUuid = descriptor.characteristic?.uuid
                 val enabled = value?.contentEquals(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE) == true
                 Log.i(TAG, "Notifications ${if (enabled) "ENABLED" else "DISABLED"} for $charUuid")
+                broadcastStatus("BLE: Notifications ${if (enabled) "ON" else "OFF"} for ${charUuid.toString().substring(0, 8)}")
+                // If client subscribes, make sure we know about them
+                if (enabled && device != null) {
+                    connectedDevice = device
+                    subscribedDevices.add(device)
+                }
             }
 
             if (responseNeeded) {
@@ -398,8 +410,12 @@ class BleGattService : Service() {
     // ─── Notification Methods (push data to connected phone) ────────────────────
 
     private fun notifyEda(conductance: Float, timestamp: Long) {
-        val device = connectedDevice ?: return
         val char = edaCharacteristic ?: return
+        val device = connectedDevice
+        if (device == null) {
+            if (notifyCount++ % 100 == 0) Log.w(TAG, "notifyEda: NO connected device (dropped)")
+            return
+        }
 
         // Pack: [conductance (4 bytes float32, little-endian)]
         // Phone's parseEDA() expects exactly 4 bytes: DataView.getFloat32(0, true)
@@ -409,14 +425,20 @@ class BleGattService : Service() {
 
         try {
             gattServer?.notifyCharacteristicChanged(device, char, false)
+            if (notifyCount++ % 50 == 0) {
+                broadcastStatus("BLE TX: EDA=${String.format("%.3f", conductance)} → ${device.address?.takeLast(5)}")
+            }
         } catch (e: SecurityException) {
             Log.w(TAG, "SecurityException notifying EDA: ${e.message}")
         }
     }
 
     private fun notifyIbi(heartRate: Int, ibiValues: IntArray, timestamp: Long) {
-        val device = connectedDevice ?: return
         val char = ibiCharacteristic ?: return
+        val device = connectedDevice
+        if (device == null) {
+            return
+        }
 
         // Pack: [ibi (4 bytes float32)] [rmssd (4 bytes float32)]
         // Phone's parseIBI() expects exactly 8 bytes: getFloat32(0) + getFloat32(4)
@@ -445,8 +467,11 @@ class BleGattService : Service() {
     }
 
     private fun notifyAccel(x: Int, y: Int, z: Int, timestamp: Long) {
-        val device = connectedDevice ?: return
         val char = accelCharacteristic ?: return
+        val device = connectedDevice
+        if (device == null) {
+            return
+        }
 
         // Pack: [x (4 bytes float32)] [y (4 bytes float32)] [z (4 bytes float32)]
         // Phone's parseAccel() expects exactly 12 bytes: 3x getFloat32()
@@ -474,5 +499,13 @@ class BleGattService : Service() {
             Log.w(TAG, "Error closing GATT server: ${e.message}")
         }
         gattServer = null
+    }
+
+    private fun broadcastStatus(msg: String) {
+        val intent = Intent(HealthSensorService.ACTION_STATUS_UPDATE).apply {
+            putExtra("status", msg)
+            setPackage(packageName)
+        }
+        sendBroadcast(intent)
     }
 }
