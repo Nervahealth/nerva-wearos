@@ -40,14 +40,14 @@ class BleGattService : Service() {
 
     // GATT Characteristics (held as references for notification updates)
     private var edaCharacteristic: BluetoothGattCharacteristic? = null
-    private var ibiCharacteristic: BluetoothGattCharacteristic? = null
+    private var ppgCharacteristic: BluetoothGattCharacteristic? = null
     private var accelCharacteristic: BluetoothGattCharacteristic? = null
     private var statusCharacteristic: BluetoothGattCharacteristic? = null
 
     companion object {
         val HUGR_SERVICE_UUID: UUID = UUID.fromString("12345678-1234-5678-1234-567812345678")
         val EDA_CHARACTERISTIC_UUID: UUID = UUID.fromString("11111111-1111-1111-1111-111111111111")
-        val IBI_CHARACTERISTIC_UUID: UUID = UUID.fromString("22222222-2222-2222-2222-222222222222")
+        val PPG_CHARACTERISTIC_UUID: UUID = UUID.fromString("44444444-4444-4444-4444-444444444444")
         val ACCEL_CHARACTERISTIC_UUID: UUID = UUID.fromString("33333333-3333-3333-3333-333333333333")
         val HAPTIC_CHARACTERISTIC_UUID: UUID = UUID.fromString("0000fff5-0000-1000-8000-00805f9b34fb")
         val STATUS_CHARACTERISTIC_UUID: UUID = UUID.fromString("66666666-6666-6666-6666-666666666666")
@@ -128,15 +128,15 @@ class BleGattService : Service() {
         }
         service.addCharacteristic(edaCharacteristic!!)
 
-        // IBI Characteristic (NOTIFY + READ)
-        ibiCharacteristic = BluetoothGattCharacteristic(
-            IBI_CHARACTERISTIC_UUID,
+        // PPG Characteristic (NOTIFY + READ) — carries Green, IR, Red raw PPG at 25 Hz
+        ppgCharacteristic = BluetoothGattCharacteristic(
+            PPG_CHARACTERISTIC_UUID,
             BluetoothGattCharacteristic.PROPERTY_NOTIFY or BluetoothGattCharacteristic.PROPERTY_READ,
             BluetoothGattCharacteristic.PERMISSION_READ
         ).apply {
             addDescriptor(createCccdDescriptor())
         }
-        service.addCharacteristic(ibiCharacteristic!!)
+        service.addCharacteristic(ppgCharacteristic!!)
 
         // Accelerometer Characteristic (NOTIFY + READ)
         accelCharacteristic = BluetoothGattCharacteristic(
@@ -196,7 +196,7 @@ class BleGattService : Service() {
                     Log.i(TAG, "Phone connected: ${device?.address}")
                     broadcastStatus("BLE: Phone CONNECTED (${device?.address})")
                     // Start advertising after connection? No — stop advertising to save power
-                    stopAdvertising()
+                    // KEEP ADVERTISING for reconnection
                 }
                 BluetoothProfile.STATE_DISCONNECTED -> {
                     connectedDevice = null
@@ -371,12 +371,13 @@ class BleGattService : Service() {
         }
     }
 
-    private val ibiReceiver = object : BroadcastReceiver() {
+    private val ppgReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            val heartRate = intent?.getIntExtra("heartRate", 0) ?: return
-            val ibiValues = intent.getIntArrayExtra("ibiValues") ?: intArrayOf()
+            val ppgGreen = intent?.getIntExtra("ppgGreen", 0) ?: return
+            val ppgIR = intent.getIntExtra("ppgIR", 0)
+            val ppgRed = intent.getIntExtra("ppgRed", 0)
             val timestamp = intent.getLongExtra("timestamp", System.currentTimeMillis())
-            notifyIbi(heartRate, ibiValues, timestamp)
+            notifyPpg(ppgGreen, ppgIR, ppgRed, timestamp)
         }
     }
 
@@ -392,7 +393,7 @@ class BleGattService : Service() {
 
     private fun registerSensorReceivers() {
         registerReceiver(edaReceiver, IntentFilter("com.hugr.wearos.EDA_DATA"), RECEIVER_EXPORTED)
-        registerReceiver(ibiReceiver, IntentFilter("com.hugr.wearos.IBI_DATA"), RECEIVER_EXPORTED)
+        registerReceiver(ppgReceiver, IntentFilter("com.hugr.wearos.PPG_DATA"), RECEIVER_EXPORTED)
         registerReceiver(accelReceiver, IntentFilter("com.hugr.wearos.ACCEL_DATA"), RECEIVER_EXPORTED)
         Log.d(TAG, "Sensor broadcast receivers registered")
     }
@@ -400,7 +401,7 @@ class BleGattService : Service() {
     private fun unregisterSensorReceivers() {
         try {
             unregisterReceiver(edaReceiver)
-            unregisterReceiver(ibiReceiver)
+            unregisterReceiver(ppgReceiver)
             unregisterReceiver(accelReceiver)
         } catch (e: Exception) {
             Log.w(TAG, "Error unregistering receivers: ${e.message}")
@@ -433,36 +434,23 @@ class BleGattService : Service() {
         }
     }
 
-    private fun notifyIbi(heartRate: Int, ibiValues: IntArray, timestamp: Long) {
-        val char = ibiCharacteristic ?: return
+    private fun notifyPpg(ppgGreen: Int, ppgIR: Int, ppgRed: Int, timestamp: Long) {
+        val char = ppgCharacteristic ?: return
         val device = connectedDevice
         if (device == null) {
             return
         }
-
-        // Pack: [ibi (4 bytes float32)] [rmssd (4 bytes float32)]
-        // Phone's parseIBI() expects exactly 8 bytes: getFloat32(0) + getFloat32(4)
-        // Send the most recent IBI value and a running RMSSD estimate
-        val latestIbi = if (ibiValues.isNotEmpty()) ibiValues.last().toFloat() else 0f
-        // Calculate simple RMSSD from available IBI values
-        val rmssd = if (ibiValues.size >= 2) {
-            val diffs = mutableListOf<Double>()
-            for (i in 1 until ibiValues.size) {
-                val diff = (ibiValues[i] - ibiValues[i - 1]).toDouble()
-                diffs.add(diff * diff)
-            }
-            Math.sqrt(diffs.average()).toFloat()
-        } else 0f
-
-        val buffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN)
-        buffer.putFloat(latestIbi)
-        buffer.putFloat(rmssd)
+        // Pack: [green (4 bytes int32)] [ir (4 bytes int32)] [red (4 bytes int32)] = 12 bytes
+        // Phone will parse: DataView.getInt32(0, true), getInt32(4, true), getInt32(8, true)
+        val buffer = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN)
+        buffer.putInt(ppgGreen)
+        buffer.putInt(ppgIR)
+        buffer.putInt(ppgRed)
         char.value = buffer.array()
-
         try {
             gattServer?.notifyCharacteristicChanged(device, char, false)
         } catch (e: SecurityException) {
-            Log.w(TAG, "SecurityException notifying IBI: ${e.message}")
+            Log.w(TAG, "SecurityException notifying PPG: ${e.message}")
         }
     }
 

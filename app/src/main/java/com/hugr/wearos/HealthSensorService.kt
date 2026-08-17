@@ -17,13 +17,19 @@ import com.samsung.android.service.health.tracking.HealthTrackingService
 import com.samsung.android.service.health.tracking.data.DataPoint
 import com.samsung.android.service.health.tracking.data.HealthTrackerType
 import com.samsung.android.service.health.tracking.data.ValueKey
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.IntentFilter
+import java.util.Timer
+import java.util.TimerTask
 
 /**
- * HUGR Labs — HealthSensorService (Build 28d)
+ * HUGR Labs — HealthSensorService (Build 30w — PPG_CONTINUOUS)
  *
  * Foreground service with WAKE_LOCK + BODY_SENSORS_BACKGROUND + foregroundServiceType="health"
- * Based on Samsung's official tutorial (April 2026):
- * https://developer.samsung.com/galaxy-watch/blog/en/2026/04/23/continuous-heart-rate-tracking-on-galaxy-watch-even-with-the-screen-off
+ * Sensors: EDA_CONTINUOUS (1 Hz) + PPG_CONTINUOUS (25 Hz, Green+IR+Red) + ACCELEROMETER_CONTINUOUS (25 Hz)
+ * PPG replaces HEART_RATE_CONTINUOUS — provides raw waveform for IBI, HRV, SpO2, respiratory rate
+ * Flush timer every 30s ensures data delivery when screen is off (Samsung SDK batching behaviour)
  */
 class HealthSensorService : Service() {
 
@@ -39,10 +45,28 @@ class HealthSensorService : Service() {
 
     private var healthTrackingService: HealthTrackingService? = null
     private var edaTracker: HealthTracker? = null
-    private var heartRateTracker: HealthTracker? = null
+    private var ppgTracker: HealthTracker? = null
     private var accelerometerTracker: HealthTracker? = null
     private var isConnected = false
     private var wakeLock: PowerManager.WakeLock? = null
+    private var flushTimer: Timer? = null
+    private var isScreenOn = true
+
+    // Screen state receiver — tracks when screen goes on/off for metadata tagging
+    private val screenReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                Intent.ACTION_SCREEN_ON -> {
+                    isScreenOn = true
+                    Log.d(TAG, "Screen ON — switching to real-time delivery")
+                }
+                Intent.ACTION_SCREEN_OFF -> {
+                    isScreenOn = false
+                    Log.d(TAG, "Screen OFF — flush timer active for batched delivery")
+                }
+            }
+        }
+    }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -51,10 +75,14 @@ class HealthSensorService : Service() {
             ACTION_START_TRACKING -> {
                 startForegroundWithNotification()
                 acquireWakeLock()
+                registerScreenReceiver()
+                startFlushTimer()
                 connectAndStartTracking()
             }
             ACTION_STOP_TRACKING -> {
                 stopTrackingAndDisconnect()
+                stopFlushTimer()
+                unregisterScreenReceiver()
                 releaseWakeLock()
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
@@ -62,6 +90,8 @@ class HealthSensorService : Service() {
             else -> {
                 startForegroundWithNotification()
                 acquireWakeLock()
+                registerScreenReceiver()
+                startFlushTimer()
                 connectAndStartTracking()
             }
         }
@@ -70,6 +100,8 @@ class HealthSensorService : Service() {
 
     override fun onDestroy() {
         stopTrackingAndDisconnect()
+        stopFlushTimer()
+        unregisterScreenReceiver()
         releaseWakeLock()
         super.onDestroy()
     }
@@ -91,7 +123,7 @@ class HealthSensorService : Service() {
 
         val notification = Notification.Builder(this, CHANNEL_ID)
             .setContentTitle("HUGR Active")
-            .setContentText("Monitoring EDA, HR, movement")
+            .setContentText("Monitoring EDA, PPG, movement")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setOngoing(true)
             .build()
@@ -187,12 +219,18 @@ class HealthSensorService : Service() {
                 sendStatus("EDA NOT SUPPORTED!")
             }
 
-            if (supportedTypes.contains(HealthTrackerType.HEART_RATE_CONTINUOUS)) {
-                heartRateTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
-                heartRateTracker?.setEventListener(heartRateListener)
-                sendStatus("HR+IBI tracker STARTED")
+            if (supportedTypes.contains(HealthTrackerType.PPG_CONTINUOUS)) {
+                ppgTracker = service.getHealthTracker(HealthTrackerType.PPG_CONTINUOUS)
+                ppgTracker?.setEventListener(ppgListener)
+                sendStatus("PPG tracker STARTED (25 Hz, Green+IR+Red)")
             } else {
-                sendStatus("HR NOT SUPPORTED!")
+                sendStatus("PPG NOT SUPPORTED! Falling back to HR...")
+                // Fallback: try HEART_RATE_CONTINUOUS if PPG not available
+                if (supportedTypes.contains(HealthTrackerType.HEART_RATE_CONTINUOUS)) {
+                    ppgTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
+                    ppgTracker?.setEventListener(heartRateFallbackListener)
+                    sendStatus("HR fallback tracker STARTED")
+                }
             }
 
             if (supportedTypes.contains(HealthTrackerType.ACCELEROMETER_CONTINUOUS)) {
@@ -232,42 +270,63 @@ class HealthSensorService : Service() {
         override fun onFlushCompleted() {}
     }
 
-    private val heartRateListener = object : HealthTracker.TrackerEventListener {
+    private val ppgListener = object : HealthTracker.TrackerEventListener {
+        override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            val batchSize = dataPoints.size
+            val deliveryMode = if (isScreenOn) "REALTIME" else "FLUSH"
+            for (dp in dataPoints) {
+                val ppgGreen = dp.getValue(ValueKey.PpgSet.PPG_GREEN) as? Int ?: 0
+                val ppgIR = dp.getValue(ValueKey.PpgSet.PPG_IR) as? Int ?: 0
+                val ppgRed = dp.getValue(ValueKey.PpgSet.PPG_RED) as? Int ?: 0
+                val ts = dp.timestamp
+
+                // Broadcast PPG data to BleGattService
+                val intent = Intent("com.hugr.wearos.PPG_DATA").apply {
+                    setPackage(packageName)
+                    putExtra("ppgGreen", ppgGreen)
+                    putExtra("ppgIR", ppgIR)
+                    putExtra("ppgRed", ppgRed)
+                    putExtra("timestamp", ts)
+                    putExtra("deliveryMode", deliveryMode)
+                    putExtra("batchSize", batchSize)
+                    putExtra("screenOn", isScreenOn)
+                }
+                sendBroadcast(intent)
+            }
+            // Log summary (not every point — 25 Hz would flood the log)
+            if (dataPoints.isNotEmpty()) {
+                val firstGreen = dataPoints[0].getValue(ValueKey.PpgSet.PPG_GREEN) as? Int ?: 0
+                sendStatus("PPG: G=$firstGreen [$deliveryMode|b=$batchSize]")
+            }
+        }
+        override fun onError(error: HealthTracker.TrackerError) {
+            sendStatus("PPG ERROR: ${error.name}")
+        }
+        override fun onFlushCompleted() {}
+    }
+
+    // Fallback listener if PPG_CONTINUOUS is not available (uses HEART_RATE_CONTINUOUS)
+    private val heartRateFallbackListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
             for (dp in dataPoints) {
                 val hr = dp.getValue(ValueKey.HeartRateSet.HEART_RATE) as? Int ?: 0
-                val hrStatus = dp.getValue(ValueKey.HeartRateSet.HEART_RATE_STATUS) as? Int ?: -1
-                val ibiList = dp.getValue(ValueKey.HeartRateSet.IBI_LIST) as? IntArray ?: intArrayOf()
-                val ibiStatusList = dp.getValue(ValueKey.HeartRateSet.IBI_STATUS_LIST) as? IntArray ?: intArrayOf()
                 val ts = dp.timestamp
-
-                // DEBUG: Log RAW IBI data before filtering (to diagnose IBI=0 issue)
-                Log.d(TAG, "HR RAW: hr=$hr status=$hrStatus ibiList=${ibiList.contentToString()} ibiStatusList=${ibiStatusList.contentToString()}")
-
-                val validIbi = mutableListOf<Int>()
-                for (i in ibiList.indices) {
-                    if (i < ibiStatusList.size && ibiStatusList[i] == 0 && ibiList[i] > 0) {
-                        validIbi.add(ibiList[i])
-                    }
-                }
-
-                // Also show RAW ibi on screen for debugging
-                val rawIbiStr = if (ibiList.isEmpty()) "EMPTY" else ibiList.contentToString()
-                val rawStatusStr = if (ibiStatusList.isEmpty()) "EMPTY" else ibiStatusList.contentToString()
-                val statusStr = if (hrStatus == 1) "OK" else "s=$hrStatus"
-                sendStatus("HR: $hr [$statusStr] IBI:${validIbi.joinToString(",")} RAW:$rawIbiStr ST:$rawStatusStr")
-
-                val intent = Intent("com.hugr.wearos.IBI_DATA").apply {
+                sendStatus("HR(fallback): $hr bpm")
+                val intent = Intent("com.hugr.wearos.PPG_DATA").apply {
                     setPackage(packageName)
-                    putExtra("heartRate", hr)
-                    putExtra("ibiValues", validIbi.toIntArray())
+                    putExtra("ppgGreen", hr) // Use HR as proxy in fallback mode
+                    putExtra("ppgIR", 0)
+                    putExtra("ppgRed", 0)
                     putExtra("timestamp", ts)
+                    putExtra("deliveryMode", "FALLBACK")
+                    putExtra("batchSize", 1)
+                    putExtra("screenOn", isScreenOn)
                 }
                 sendBroadcast(intent)
             }
         }
         override fun onError(error: HealthTracker.TrackerError) {
-            sendStatus("HR ERROR: ${error.name}")
+            sendStatus("HR FALLBACK ERROR: ${error.name}")
         }
         override fun onFlushCompleted() {}
     }
@@ -301,13 +360,13 @@ class HealthSensorService : Service() {
     private fun stopTrackingAndDisconnect() {
         try {
             edaTracker?.unsetEventListener()
-            heartRateTracker?.unsetEventListener()
+            ppgTracker?.unsetEventListener()
             accelerometerTracker?.unsetEventListener()
         } catch (e: Exception) {
             Log.e(TAG, "Error unsetting listeners: ${e.message}")
         }
         edaTracker = null
-        heartRateTracker = null
+        ppgTracker = null
         accelerometerTracker = null
         try {
             healthTrackingService?.disconnectService()
@@ -325,5 +384,51 @@ class HealthSensorService : Service() {
         }
         sendBroadcast(intent)
         Log.i(TAG, "STATUS: $message")
+    }
+
+    // ─── Flush Timer (forces Samsung SDK to deliver batched data every 30s) ───
+
+    private fun startFlushTimer() {
+        flushTimer = Timer("HUGR-Flush", true)
+        flushTimer?.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                if (!isScreenOn) {
+                    // Only flush when screen is off (when SDK batches data)
+                    try {
+                        edaTracker?.flush()
+                        ppgTracker?.flush()
+                        accelerometerTracker?.flush()
+                        Log.d(TAG, "Flush triggered (screen off)")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Flush error: ${e.message}")
+                    }
+                }
+            }
+        }, FLUSH_INTERVAL_MS, FLUSH_INTERVAL_MS)
+        Log.i(TAG, "Flush timer started (${FLUSH_INTERVAL_MS}ms interval)")
+    }
+
+    private fun stopFlushTimer() {
+        flushTimer?.cancel()
+        flushTimer = null
+    }
+
+    // ─── Screen State Receiver ────────────────────────────────────────────────
+
+    private fun registerScreenReceiver() {
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_SCREEN_ON)
+            addAction(Intent.ACTION_SCREEN_OFF)
+        }
+        registerReceiver(screenReceiver, filter)
+        Log.i(TAG, "Screen state receiver registered")
+    }
+
+    private fun unregisterScreenReceiver() {
+        try {
+            unregisterReceiver(screenReceiver)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error unregistering screen receiver: ${e.message}")
+        }
     }
 }
