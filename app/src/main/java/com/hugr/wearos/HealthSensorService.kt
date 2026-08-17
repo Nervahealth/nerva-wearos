@@ -34,6 +34,7 @@ class HealthSensorService : Service() {
         const val ACTION_STATUS_UPDATE = "com.hugr.wearos.STATUS_UPDATE"
         private const val CHANNEL_ID = "hugr_sensor_channel"
         private const val NOTIFICATION_ID = 1
+        private const val FLUSH_INTERVAL_MS = 30000L
     }
 
     private var healthTrackingService: HealthTrackingService? = null
@@ -240,6 +241,9 @@ class HealthSensorService : Service() {
                 val ibiStatusList = dp.getValue(ValueKey.HeartRateSet.IBI_STATUS_LIST) as? IntArray ?: intArrayOf()
                 val ts = dp.timestamp
 
+                // DEBUG: Log RAW IBI data before filtering (to diagnose IBI=0 issue)
+                Log.d(TAG, "HR RAW: hr=$hr status=$hrStatus ibiList=${ibiList.contentToString()} ibiStatusList=${ibiStatusList.contentToString()}")
+
                 val validIbi = mutableListOf<Int>()
                 for (i in ibiList.indices) {
                     if (i < ibiStatusList.size && ibiStatusList[i] == 0 && ibiList[i] > 0) {
@@ -247,8 +251,11 @@ class HealthSensorService : Service() {
                     }
                 }
 
+                // Also show RAW ibi on screen for debugging
+                val rawIbiStr = if (ibiList.isEmpty()) "EMPTY" else ibiList.contentToString()
+                val rawStatusStr = if (ibiStatusList.isEmpty()) "EMPTY" else ibiStatusList.contentToString()
                 val statusStr = if (hrStatus == 1) "OK" else "s=$hrStatus"
-                sendStatus("HR: $hr [$statusStr] IBI:${validIbi.joinToString(",")}")
+                sendStatus("HR: $hr [$statusStr] IBI:${validIbi.joinToString(",")} RAW:$rawIbiStr ST:$rawStatusStr")
 
                 val intent = Intent("com.hugr.wearos.IBI_DATA").apply {
                     setPackage(packageName)
