@@ -207,10 +207,11 @@ class HealthSensorService : Service() {
     private fun startAllTrackers() {
         val service = healthTrackingService ?: return
 
-        try {
-            val supportedTypes = service.trackingCapability.supportHealthTrackerTypes
-            sendStatus("Supported: ${supportedTypes.size} types: ${supportedTypes.joinToString(", ") { it.name }}")
+        val supportedTypes = service.trackingCapability.supportHealthTrackerTypes
+        sendStatus("Supported: ${supportedTypes.size} types: ${supportedTypes.joinToString(", ") { it.name }}")
 
+        // EDA tracker — independent try/catch
+        try {
             if (supportedTypes.contains(HealthTrackerType.EDA_CONTINUOUS)) {
                 edaTracker = service.getHealthTracker(HealthTrackerType.EDA_CONTINUOUS)
                 edaTracker?.setEventListener(edaListener)
@@ -218,21 +219,43 @@ class HealthSensorService : Service() {
             } else {
                 sendStatus("EDA NOT SUPPORTED!")
             }
+        } catch (e: Exception) {
+            sendStatus("EDA ERROR: ${e.message}")
+            Log.e(TAG, "EDA tracker failed: ${e.message}", e)
+        }
 
+        // PPG tracker — independent try/catch (falls back to HR)
+        try {
             if (supportedTypes.contains(HealthTrackerType.PPG_CONTINUOUS)) {
                 ppgTracker = service.getHealthTracker(HealthTrackerType.PPG_CONTINUOUS)
                 ppgTracker?.setEventListener(ppgListener)
                 sendStatus("PPG tracker STARTED (25 Hz, Green+IR+Red)")
             } else {
                 sendStatus("PPG NOT SUPPORTED! Falling back to HR...")
-                // Fallback: try HEART_RATE_CONTINUOUS if PPG not available
                 if (supportedTypes.contains(HealthTrackerType.HEART_RATE_CONTINUOUS)) {
                     ppgTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
                     ppgTracker?.setEventListener(heartRateFallbackListener)
                     sendStatus("HR fallback tracker STARTED")
                 }
             }
+        } catch (e: Exception) {
+            sendStatus("PPG/HR ERROR: ${e.message} — trying HR fallback...")
+            Log.e(TAG, "PPG tracker failed: ${e.message}", e)
+            // If PPG threw an exception (policy issue), try HR fallback
+            try {
+                if (supportedTypes.contains(HealthTrackerType.HEART_RATE_CONTINUOUS)) {
+                    ppgTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
+                    ppgTracker?.setEventListener(heartRateFallbackListener)
+                    sendStatus("HR fallback tracker STARTED (after PPG error)")
+                }
+            } catch (e2: Exception) {
+                sendStatus("HR FALLBACK ALSO FAILED: ${e2.message}")
+                Log.e(TAG, "HR fallback also failed: ${e2.message}", e2)
+            }
+        }
 
+        // Accelerometer tracker — independent try/catch
+        try {
             if (supportedTypes.contains(HealthTrackerType.ACCELEROMETER_CONTINUOUS)) {
                 accelerometerTracker = service.getHealthTracker(HealthTrackerType.ACCELEROMETER_CONTINUOUS)
                 accelerometerTracker?.setEventListener(accelerometerListener)
@@ -240,12 +263,12 @@ class HealthSensorService : Service() {
             } else {
                 sendStatus("Accel NOT SUPPORTED!")
             }
-
-            sendStatus("=== ALL TRACKERS ACTIVE ===")
         } catch (e: Exception) {
-            sendStatus("TRACKER ERROR: ${e.message}")
-            Log.e(TAG, "Error starting trackers: ${e.message}", e)
+            sendStatus("ACCEL ERROR: ${e.message}")
+            Log.e(TAG, "Accel tracker failed: ${e.message}", e)
         }
+
+        sendStatus("=== TRACKER INIT COMPLETE ===")
     }
 
     // ─── Sensor Listeners ──────────────────────────────────────────────────────
