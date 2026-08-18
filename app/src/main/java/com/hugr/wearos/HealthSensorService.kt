@@ -209,7 +209,7 @@ class HealthSensorService : Service() {
 
         try {
             val supportedTypes = service.trackingCapability.supportHealthTrackerTypes
-            sendStatus("Supported: ${supportedTypes.size} types")
+            sendStatus("Supported: ${supportedTypes.size} types: ${supportedTypes.joinToString(", ") { it.name }}")
 
             if (supportedTypes.contains(HealthTrackerType.EDA_CONTINUOUS)) {
                 edaTracker = service.getHealthTracker(HealthTrackerType.EDA_CONTINUOUS)
@@ -308,22 +308,50 @@ class HealthSensorService : Service() {
     // Fallback listener if PPG_CONTINUOUS is not available (uses HEART_RATE_CONTINUOUS)
     private val heartRateFallbackListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
-            for (dp in dataPoints) {
-                val hr = dp.getValue(ValueKey.HeartRateSet.HEART_RATE) as? Int ?: 0
-                val ts = dp.timestamp
-                sendStatus("HR(fallback): $hr bpm")
-                val intent = Intent("com.hugr.wearos.PPG_DATA").apply {
-                    setPackage(packageName)
-                    putExtra("ppgGreen", hr) // Use HR as proxy in fallback mode
-                    putExtra("ppgIR", 0)
-                    putExtra("ppgRed", 0)
-                    putExtra("timestamp", ts)
-                    putExtra("deliveryMode", "FALLBACK")
-                    putExtra("batchSize", 1)
-                    putExtra("screenOn", isScreenOn)
+            if (dataPoints.isEmpty()) return
+            
+            // Samsung docs: "IBI values stored in the FIRST data point. Others contain NULL."
+            val firstDp = dataPoints[0]
+            val hr = firstDp.getValue(ValueKey.HeartRateSet.HEART_RATE) as? Int ?: 0
+            val hrStatus = firstDp.getValue(ValueKey.HeartRateSet.HEART_RATE_STATUS) as? Int ?: -1
+            val ts = firstDp.timestamp
+            
+            // Extract IBI from FIRST data point only
+            var ibiMs = 0
+            try {
+                val ibiList = firstDp.getValue(ValueKey.HeartRateSet.IBI_LIST) as? List<*>
+                val ibiStatusList = firstDp.getValue(ValueKey.HeartRateSet.IBI_STATUS_LIST) as? List<*>
+                val rawIbiCount = ibiList?.size ?: 0
+                sendStatus("HR: $hr [st=$hrStatus] IBI_RAW: $rawIbiCount items")
+                
+                if (ibiList != null && ibiList.isNotEmpty()) {
+                    for (i in ibiList.indices) {
+                        val ibiVal = (ibiList[i] as? Number)?.toInt() ?: 0
+                        val ibiSt = if (i < (ibiStatusList?.size ?: 0)) (ibiStatusList!![i] as? Number)?.toInt() ?: -1 else -1
+                        if (ibiVal > 0) {
+                            ibiMs = ibiVal
+                            sendStatus("  IBI[$i]: ${ibiVal}ms (status=$ibiSt)")
+                            break // Take first valid IBI
+                        }
+                    }
                 }
-                sendBroadcast(intent)
+            } catch (e: Exception) {
+                sendStatus("IBI extract error: ${e.message}")
             }
+            
+            // Send HR + IBI via PPG_DATA broadcast (phone will parse)
+            // ppgGreen = HR, ppgIR = IBI, ppgRed = hrStatus
+            val intent = Intent("com.hugr.wearos.PPG_DATA").apply {
+                setPackage(packageName)
+                putExtra("ppgGreen", hr)
+                putExtra("ppgIR", ibiMs)
+                putExtra("ppgRed", hrStatus)
+                putExtra("timestamp", ts)
+                putExtra("deliveryMode", "FALLBACK")
+                putExtra("batchSize", dataPoints.size)
+                putExtra("screenOn", isScreenOn)
+            }
+            sendBroadcast(intent)
         }
         override fun onError(error: HealthTracker.TrackerError) {
             sendStatus("HR FALLBACK ERROR: ${error.name}")
