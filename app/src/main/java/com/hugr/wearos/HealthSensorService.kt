@@ -17,6 +17,7 @@ import com.samsung.android.service.health.tracking.HealthTrackingService
 import com.samsung.android.service.health.tracking.data.DataPoint
 import com.samsung.android.service.health.tracking.data.HealthTrackerType
 import com.samsung.android.service.health.tracking.data.ValueKey
+import com.samsung.android.service.health.tracking.data.PpgType
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.IntentFilter
@@ -24,12 +25,13 @@ import java.util.Timer
 import java.util.TimerTask
 
 /**
- * HUGR Labs — HealthSensorService (Build 30w — PPG_CONTINUOUS)
+ * HUGR Labs — HealthSensorService (Build 34w — PPG_CONTINUOUS + Skin Temp)
  *
  * Foreground service with WAKE_LOCK + BODY_SENSORS_BACKGROUND + foregroundServiceType="health"
- * Sensors: EDA_CONTINUOUS (1 Hz) + PPG_CONTINUOUS (25 Hz, Green+IR+Red) + ACCELEROMETER_CONTINUOUS (25 Hz)
- * PPG replaces HEART_RATE_CONTINUOUS — provides raw waveform for IBI, HRV, SpO2, respiratory rate
+ * Sensors: EDA_CONTINUOUS (1 Hz) + PPG_CONTINUOUS (25 Hz, Green+IR+Red) + ACCELEROMETER_CONTINUOUS (25 Hz) + SKIN_TEMPERATURE_CONTINUOUS
+ * PPG replaces HEART_RATE_CONTINUOUS — provides raw waveform for IBI, HRV, SpO2, respiratory rate, PTT
  * Flush timer every 30s ensures data delivery when screen is off (Samsung SDK batching behaviour)
+ * Skin temperature enables circadian phase estimation, stress/exercise disambiguation (Clusters 33, 43, 48)
  */
 class HealthSensorService : Service() {
 
@@ -47,6 +49,7 @@ class HealthSensorService : Service() {
     private var edaTracker: HealthTracker? = null
     private var ppgTracker: HealthTracker? = null
     private var accelerometerTracker: HealthTracker? = null
+    private var skinTempTracker: HealthTracker? = null
     private var isConnected = false
     private var wakeLock: PowerManager.WakeLock? = null
     private var flushTimer: Timer? = null
@@ -123,7 +126,7 @@ class HealthSensorService : Service() {
 
         val notification = Notification.Builder(this, CHANNEL_ID)
             .setContentTitle("HUGR Active")
-            .setContentText("Monitoring EDA, PPG, movement")
+            .setContentText("Monitoring EDA, PPG, Temp, movement")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setOngoing(true)
             .build()
@@ -227,7 +230,11 @@ class HealthSensorService : Service() {
         // PPG tracker — independent try/catch (falls back to HR)
         try {
             if (supportedTypes.contains(HealthTrackerType.PPG_CONTINUOUS)) {
-                ppgTracker = service.getHealthTracker(HealthTrackerType.PPG_CONTINUOUS)
+                // SDK v1.4.1 REQUIRES PpgType set for PPG_CONTINUOUS
+                ppgTracker = service.getHealthTracker(
+                    HealthTrackerType.PPG_CONTINUOUS,
+                    setOf(PpgType.GREEN, PpgType.IR, PpgType.RED)
+                )
                 ppgTracker?.setEventListener(ppgListener)
                 sendStatus("PPG tracker STARTED (25 Hz, Green+IR+Red)")
             } else {
@@ -266,6 +273,20 @@ class HealthSensorService : Service() {
         } catch (e: Exception) {
             sendStatus("ACCEL ERROR: ${e.message}")
             Log.e(TAG, "Accel tracker failed: ${e.message}", e)
+        }
+
+        // Skin Temperature tracker — independent try/catch (Cluster 33, 43, 48)
+        try {
+            if (supportedTypes.contains(HealthTrackerType.SKIN_TEMPERATURE_CONTINUOUS)) {
+                skinTempTracker = service.getHealthTracker(HealthTrackerType.SKIN_TEMPERATURE_CONTINUOUS)
+                skinTempTracker?.setEventListener(skinTempListener)
+                sendStatus("Skin Temp tracker STARTED (continuous)")
+            } else {
+                sendStatus("Skin Temp CONTINUOUS not supported on this device")
+            }
+        } catch (e: Exception) {
+            sendStatus("SKIN_TEMP ERROR: ${e.message}")
+            Log.e(TAG, "Skin temp tracker failed: ${e.message}", e)
         }
 
         sendStatus("=== TRACKER INIT COMPLETE ===")
@@ -382,6 +403,34 @@ class HealthSensorService : Service() {
         override fun onFlushCompleted() {}
     }
 
+    // Skin Temperature listener (Clusters 33, 43, 48 — circadian, disambiguation, sports)
+    private val skinTempListener = object : HealthTracker.TrackerEventListener {
+        override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            for (dp in dataPoints) {
+                val objectTemp = dp.getValue(ValueKey.SkinTemperatureSet.OBJECT_TEMPERATURE) as? Float ?: 0f
+                val ambientTemp = dp.getValue(ValueKey.SkinTemperatureSet.AMBIENT_TEMPERATURE) as? Float ?: 0f
+                val status = dp.getValue(ValueKey.SkinTemperatureSet.STATUS) as? Int ?: -1
+                val ts = dp.timestamp
+
+                sendStatus("Temp: skin=${String.format("%.2f", objectTemp)}°C amb=${String.format("%.1f", ambientTemp)}°C [st=$status]")
+
+                val intent = Intent("com.hugr.wearos.TEMP_DATA").apply {
+                    setPackage(packageName)
+                    putExtra("skinTemp", objectTemp)
+                    putExtra("ambientTemp", ambientTemp)
+                    putExtra("status", status)
+                    putExtra("timestamp", ts)
+                }
+                sendBroadcast(intent)
+            }
+        }
+        override fun onError(error: HealthTracker.TrackerError) {
+            sendStatus("SKIN_TEMP ERROR: ${error.name}")
+            Log.e(TAG, "Skin temp error: ${error.name}")
+        }
+        override fun onFlushCompleted() {}
+    }
+
     private val accelerometerListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
             for (dp in dataPoints) {
@@ -413,12 +462,14 @@ class HealthSensorService : Service() {
             edaTracker?.unsetEventListener()
             ppgTracker?.unsetEventListener()
             accelerometerTracker?.unsetEventListener()
+            skinTempTracker?.unsetEventListener()
         } catch (e: Exception) {
             Log.e(TAG, "Error unsetting listeners: ${e.message}")
         }
         edaTracker = null
         ppgTracker = null
         accelerometerTracker = null
+        skinTempTracker = null
         try {
             healthTrackingService?.disconnectService()
         } catch (e: Exception) {
@@ -449,6 +500,7 @@ class HealthSensorService : Service() {
                         edaTracker?.flush()
                         ppgTracker?.flush()
                         accelerometerTracker?.flush()
+                        skinTempTracker?.flush()
                         Log.d(TAG, "Flush triggered (screen off)")
                     } catch (e: Exception) {
                         Log.e(TAG, "Flush error: ${e.message}")
