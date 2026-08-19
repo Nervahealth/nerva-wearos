@@ -16,15 +16,24 @@ import java.nio.ByteOrder
 import java.util.UUID
 
 /**
- * BleGattService — BLE GATT Peripheral Server for HUGR Watch
+ * BleGattService — BLE GATT Peripheral Server for HUGR Watch (Build 35w)
  *
  * This service:
  * 1. Opens a BluetoothGattServer with a custom HUGR service
- * 2. Registers characteristics for EDA, IBI, Accel (NOTIFY) and Haptic (WRITE)
+ * 2. Registers characteristics for EDA, PPG/Cardiac, Accel, SkinTemp (NOTIFY) and Haptic (WRITE)
  * 3. Advertises the HUGR service UUID so the phone can discover it
  * 4. Listens for sensor data broadcasts from HealthSensorService
  * 5. Pushes sensor data to connected phone via GATT notifications
  * 6. Forwards haptic write commands to HapticService via broadcast
+ *
+ * BLE DATA CONTRACT (Build 35w):
+ * - EDA (UUID 11111111): [conductance:float32] = 4 bytes
+ * - PPG/Cardiac (UUID 44444444): [format:uint8][d0:int32][d1:int32][d2:int32] = 13 bytes
+ *     format=0x01: raw PPG → d0=Green, d1=IR, d2=Red
+ *     format=0x02: HR+IBI fallback → d0=HR, d1=IBI_ms, d2=hrStatus
+ * - Accel (UUID 33333333): [x:float32][y:float32][z:float32] = 12 bytes
+ * - SkinTemp (UUID 55555555): [skinTemp:float32][ambientTemp:float32][status:int32] = 12 bytes
+ * - Haptic (UUID 0000fff5): write-only, variable length
  */
 class BleGattService : Service() {
 
@@ -42,6 +51,7 @@ class BleGattService : Service() {
     private var edaCharacteristic: BluetoothGattCharacteristic? = null
     private var ppgCharacteristic: BluetoothGattCharacteristic? = null
     private var accelCharacteristic: BluetoothGattCharacteristic? = null
+    private var skinTempCharacteristic: BluetoothGattCharacteristic? = null
     private var statusCharacteristic: BluetoothGattCharacteristic? = null
 
     companion object {
@@ -49,6 +59,7 @@ class BleGattService : Service() {
         val EDA_CHARACTERISTIC_UUID: UUID = UUID.fromString("11111111-1111-1111-1111-111111111111")
         val PPG_CHARACTERISTIC_UUID: UUID = UUID.fromString("44444444-4444-4444-4444-444444444444")
         val ACCEL_CHARACTERISTIC_UUID: UUID = UUID.fromString("33333333-3333-3333-3333-333333333333")
+        val SKIN_TEMP_CHARACTERISTIC_UUID: UUID = UUID.fromString("55555555-5555-5555-5555-555555555555")
         val HAPTIC_CHARACTERISTIC_UUID: UUID = UUID.fromString("0000fff5-0000-1000-8000-00805f9b34fb")
         val STATUS_CHARACTERISTIC_UUID: UUID = UUID.fromString("66666666-6666-6666-6666-666666666666")
 
@@ -147,6 +158,16 @@ class BleGattService : Service() {
             addDescriptor(createCccdDescriptor())
         }
         service.addCharacteristic(accelCharacteristic!!)
+
+        // Skin Temperature Characteristic (NOTIFY + READ) — continuous skin + ambient temp
+        skinTempCharacteristic = BluetoothGattCharacteristic(
+            SKIN_TEMP_CHARACTERISTIC_UUID,
+            BluetoothGattCharacteristic.PROPERTY_NOTIFY or BluetoothGattCharacteristic.PROPERTY_READ,
+            BluetoothGattCharacteristic.PERMISSION_READ
+        ).apply {
+            addDescriptor(createCccdDescriptor())
+        }
+        service.addCharacteristic(skinTempCharacteristic!!)
 
         // Status Characteristic (READ + NOTIFY)
         statusCharacteristic = BluetoothGattCharacteristic(
@@ -377,7 +398,24 @@ class BleGattService : Service() {
             val ppgIR = intent.getIntExtra("ppgIR", 0)
             val ppgRed = intent.getIntExtra("ppgRed", 0)
             val timestamp = intent.getLongExtra("timestamp", System.currentTimeMillis())
-            notifyPpg(ppgGreen, ppgIR, ppgRed, timestamp)
+            val deliveryMode = intent.getStringExtra("deliveryMode") ?: "REALTIME"
+            if (deliveryMode == "FALLBACK") {
+                // HR+IBI fallback — format byte 0x02
+                notifyHeartRateFallback(ppgGreen, ppgIR, ppgRed, timestamp)
+            } else {
+                // Raw PPG — format byte 0x01
+                notifyPpg(ppgGreen, ppgIR, ppgRed, timestamp)
+            }
+        }
+    }
+
+    private val skinTempReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val skinTemp = intent?.getFloatExtra("skinTemp", 0f) ?: return
+            val ambientTemp = intent.getFloatExtra("ambientTemp", 0f)
+            val status = intent.getIntExtra("status", -1)
+            val timestamp = intent.getLongExtra("timestamp", System.currentTimeMillis())
+            notifySkinTemp(skinTemp, ambientTemp, status, timestamp)
         }
     }
 
@@ -395,6 +433,7 @@ class BleGattService : Service() {
         registerReceiver(edaReceiver, IntentFilter("com.hugr.wearos.EDA_DATA"), RECEIVER_EXPORTED)
         registerReceiver(ppgReceiver, IntentFilter("com.hugr.wearos.PPG_DATA"), RECEIVER_EXPORTED)
         registerReceiver(accelReceiver, IntentFilter("com.hugr.wearos.ACCEL_DATA"), RECEIVER_EXPORTED)
+        registerReceiver(skinTempReceiver, IntentFilter("com.hugr.wearos.TEMP_DATA"), RECEIVER_EXPORTED)
         Log.d(TAG, "Sensor broadcast receivers registered")
     }
 
@@ -403,6 +442,7 @@ class BleGattService : Service() {
             unregisterReceiver(edaReceiver)
             unregisterReceiver(ppgReceiver)
             unregisterReceiver(accelReceiver)
+            unregisterReceiver(skinTempReceiver)
         } catch (e: Exception) {
             Log.w(TAG, "Error unregistering receivers: ${e.message}")
         }
@@ -440,9 +480,14 @@ class BleGattService : Service() {
         if (device == null) {
             return
         }
-        // Pack: [green (4 bytes int32)] [ir (4 bytes int32)] [red (4 bytes int32)] = 12 bytes
-        // Phone will parse: DataView.getInt32(0, true), getInt32(4, true), getInt32(8, true)
-        val buffer = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN)
+        // Pack: [format (1 byte)] [d0 (4 bytes int32)] [d1 (4 bytes int32)] [d2 (4 bytes int32)] = 13 bytes
+        // format=0x01: raw PPG (d0=Green, d1=IR, d2=Red)
+        // format=0x02: HR+IBI fallback (d0=HR, d1=IBI_ms, d2=hrStatus)
+        // Determine format from delivery mode
+        val deliveryMode = "RAW_PPG" // HealthSensorService sets deliveryMode in intent
+        val formatByte: Byte = 0x01 // Raw PPG
+        val buffer = ByteBuffer.allocate(13).order(ByteOrder.LITTLE_ENDIAN)
+        buffer.put(formatByte)
         buffer.putInt(ppgGreen)
         buffer.putInt(ppgIR)
         buffer.putInt(ppgRed)
@@ -451,6 +496,46 @@ class BleGattService : Service() {
             gattServer?.notifyCharacteristicChanged(device, char, false)
         } catch (e: SecurityException) {
             Log.w(TAG, "SecurityException notifying PPG: ${e.message}")
+        }
+    }
+
+    private fun notifyHeartRateFallback(hr: Int, ibiMs: Int, hrStatus: Int, timestamp: Long) {
+        val char = ppgCharacteristic ?: return
+        val device = connectedDevice
+        if (device == null) {
+            return
+        }
+        // Same characteristic, different format byte
+        val formatByte: Byte = 0x02 // HR+IBI fallback
+        val buffer = ByteBuffer.allocate(13).order(ByteOrder.LITTLE_ENDIAN)
+        buffer.put(formatByte)
+        buffer.putInt(hr)
+        buffer.putInt(ibiMs)
+        buffer.putInt(hrStatus)
+        char.value = buffer.array()
+        try {
+            gattServer?.notifyCharacteristicChanged(device, char, false)
+        } catch (e: SecurityException) {
+            Log.w(TAG, "SecurityException notifying HR fallback: ${e.message}")
+        }
+    }
+
+    private fun notifySkinTemp(skinTemp: Float, ambientTemp: Float, status: Int, timestamp: Long) {
+        val char = skinTempCharacteristic ?: return
+        val device = connectedDevice
+        if (device == null) {
+            return
+        }
+        // Pack: [skinTemp:float32][ambientTemp:float32][status:int32] = 12 bytes
+        val buffer = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN)
+        buffer.putFloat(skinTemp)
+        buffer.putFloat(ambientTemp)
+        buffer.putInt(status)
+        char.value = buffer.array()
+        try {
+            gattServer?.notifyCharacteristicChanged(device, char, false)
+        } catch (e: SecurityException) {
+            Log.w(TAG, "SecurityException notifying SkinTemp: ${e.message}")
         }
     }
 
