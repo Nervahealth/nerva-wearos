@@ -25,7 +25,7 @@ import java.util.Timer
 import java.util.TimerTask
 
 /**
- * HUGR Labs — HealthSensorService (Build 35w — PPG_CONTINUOUS + Skin Temp + Format Byte)
+ * HUGR Labs — HealthSensorService (Build 36w — PPG_CONTINUOUS + Skin Temp + Format Byte)
  *
  * Foreground service with WAKE_LOCK + BODY_SENSORS_BACKGROUND + foregroundServiceType="health"
  * Sensors: EDA_CONTINUOUS (1 Hz) + PPG_CONTINUOUS (25 Hz, Green+IR+Red) + ACCELEROMETER_CONTINUOUS (25 Hz) + SKIN_TEMPERATURE_CONTINUOUS
@@ -50,6 +50,7 @@ class HealthSensorService : Service() {
     private var ppgTracker: HealthTracker? = null
     private var accelerometerTracker: HealthTracker? = null
     private var skinTempTracker: HealthTracker? = null
+    private var hrTracker: HealthTracker? = null  // Dual-stream: hardware IBI alongside PPG
     private var isConnected = false
     private var wakeLock: PowerManager.WakeLock? = null
     private var flushTimer: Timer? = null
@@ -289,7 +290,21 @@ class HealthSensorService : Service() {
             Log.e(TAG, "Skin temp tracker failed: ${e.message}", e)
         }
 
-        sendStatus("=== TRACKER INIT COMPLETE ===")
+        sendStatus("=== TRACKER INIT (PPG+HR dual) ===")
+
+        // HR dual-stream: runs ALONGSIDE PPG for hardware-derived IBI (Option C)
+        try {
+            if (supportedTypes.contains(HealthTrackerType.HEART_RATE_CONTINUOUS)) {
+                hrTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
+                hrTracker?.setEventListener(hrDualStreamListener)
+                sendStatus("HR dual-stream STARTED (hardware IBI alongside PPG)")
+            }
+        } catch (e: Exception) {
+            sendStatus("HR dual-stream ERROR: ${e.message}")
+            Log.e(TAG, "HR dual-stream failed: ${e.message}", e)
+        }
+
+        sendStatus("=== BUILD 36w INIT COMPLETE ===")
     }
 
     // ─── Sensor Listeners ──────────────────────────────────────────────────────
@@ -400,6 +415,39 @@ class HealthSensorService : Service() {
         override fun onError(error: HealthTracker.TrackerError) {
             sendStatus("HR FALLBACK ERROR: ${error.name}")
         }
+        override fun onFlushCompleted() {}
+    }
+
+    // HR dual-stream listener — hardware-derived HR + IBI with accurate timestamps
+    // Phone uses THIS for HRV calculation. PPG is stored for offline analysis.
+    private val hrDualStreamListener = object : HealthTracker.TrackerEventListener {
+        override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            if (dataPoints.isEmpty()) return
+            val firstDp = dataPoints[0]
+            val hr = firstDp.getValue(ValueKey.HeartRateSet.HEART_RATE) as? Int ?: 0
+            val hrStatus = firstDp.getValue(ValueKey.HeartRateSet.HEART_RATE_STATUS) as? Int ?: -1
+            val ts = firstDp.timestamp
+            var ibiMs = 0
+            try {
+                val ibiList = firstDp.getValue(ValueKey.HeartRateSet.IBI_LIST) as? List<*>
+                if (ibiList != null && ibiList.isNotEmpty()) {
+                    for (i in ibiList.indices) {
+                        val ibiVal = (ibiList[i] as? Number)?.toInt() ?: 0
+                        if (ibiVal > 0) { ibiMs = ibiVal; break }
+                    }
+                }
+            } catch (e: Exception) { Log.w(TAG, "IBI extract: ${e.message}") }
+            if (hr > 0) sendStatus("HR(hw): $hr bpm IBI: ${ibiMs}ms")
+            val intent = Intent("com.hugr.wearos.HR_DATA").apply {
+                setPackage(packageName)
+                putExtra("heartRate", hr)
+                putExtra("ibiMs", ibiMs)
+                putExtra("hrStatus", hrStatus)
+                putExtra("timestamp", ts)
+            }
+            sendBroadcast(intent)
+        }
+        override fun onError(error: HealthTracker.TrackerError) { sendStatus("HR dual ERROR: ${error.name}") }
         override fun onFlushCompleted() {}
     }
 

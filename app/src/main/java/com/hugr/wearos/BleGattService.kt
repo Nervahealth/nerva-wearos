@@ -16,7 +16,7 @@ import java.nio.ByteOrder
 import java.util.UUID
 
 /**
- * BleGattService — BLE GATT Peripheral Server for HUGR Watch (Build 35w)
+ * BleGattService — BLE GATT Peripheral Server for HUGR Watch (Build 36w)
  *
  * This service:
  * 1. Opens a BluetoothGattServer with a custom HUGR service
@@ -26,7 +26,7 @@ import java.util.UUID
  * 5. Pushes sensor data to connected phone via GATT notifications
  * 6. Forwards haptic write commands to HapticService via broadcast
  *
- * BLE DATA CONTRACT (Build 35w):
+ * BLE DATA CONTRACT (Build 36w):
  * - EDA (UUID 11111111): [conductance:float32] = 4 bytes
  * - PPG/Cardiac (UUID 44444444): [format:uint8][d0:int32][d1:int32][d2:int32] = 13 bytes
  *     format=0x01: raw PPG → d0=Green, d1=IR, d2=Red
@@ -409,6 +409,17 @@ class BleGattService : Service() {
         }
     }
 
+    // HR dual-stream receiver — sends hardware-derived HR+IBI via BLE (format 0x02)
+    private val hrReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val hr = intent?.getIntExtra("heartRate", 0) ?: return
+            val ibiMs = intent.getIntExtra("ibiMs", 0)
+            val hrStatus = intent.getIntExtra("hrStatus", -1)
+            val timestamp = intent.getLongExtra("timestamp", System.currentTimeMillis())
+            notifyHeartRateFallback(hr, ibiMs, hrStatus, timestamp)
+        }
+    }
+
     private val skinTempReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val skinTemp = intent?.getFloatExtra("skinTemp", 0f) ?: return
@@ -434,6 +445,7 @@ class BleGattService : Service() {
         registerReceiver(ppgReceiver, IntentFilter("com.hugr.wearos.PPG_DATA"), RECEIVER_EXPORTED)
         registerReceiver(accelReceiver, IntentFilter("com.hugr.wearos.ACCEL_DATA"), RECEIVER_EXPORTED)
         registerReceiver(skinTempReceiver, IntentFilter("com.hugr.wearos.TEMP_DATA"), RECEIVER_EXPORTED)
+        registerReceiver(hrReceiver, IntentFilter("com.hugr.wearos.HR_DATA"), Context.RECEIVER_NOT_EXPORTED)
         Log.d(TAG, "Sensor broadcast receivers registered")
     }
 
@@ -443,6 +455,8 @@ class BleGattService : Service() {
             unregisterReceiver(ppgReceiver)
             unregisterReceiver(accelReceiver)
             unregisterReceiver(skinTempReceiver)
+            unregisterReceiver(hrReceiver)
+        registerReceiver(hrReceiver, IntentFilter("com.hugr.wearos.HR_DATA"), Context.RECEIVER_NOT_EXPORTED)
         } catch (e: Exception) {
             Log.w(TAG, "Error unregistering receivers: ${e.message}")
         }
