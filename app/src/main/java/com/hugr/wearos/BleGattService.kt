@@ -20,7 +20,7 @@ import java.nio.ByteOrder
 import java.util.UUID
 
 /**
- * BleGattService — BLE GATT Peripheral Server for HUGR Watch (Build 37w)
+ * BleGattService — BLE GATT Peripheral Server for HUGR Watch (Build 38w)
  *
  * This service:
  * 1. Opens a BluetoothGattServer with a custom HUGR service
@@ -30,7 +30,7 @@ import java.util.UUID
  * 5. Pushes sensor data to connected phone via GATT notifications
  * 6. Executes haptic commands DIRECTLY via Vibrator (no broadcast middleman)
  *
- * BLE DATA CONTRACT (Build 37w):
+ * BLE DATA CONTRACT (Build 38w):
  * - EDA (UUID 11111111): [conductance:float32] = 4 bytes
  * - PPG/Cardiac (UUID 44444444): [format:uint8][d0:int32][d1:int32][d2:int32] = 13 bytes
  *     format=0x01: raw PPG → d0=Green, d1=IR, d2=Red
@@ -84,7 +84,7 @@ class BleGattService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "BleGattService created (Build 37w)")
+        Log.d(TAG, "BleGattService created (Build 38w)")
         initializeVibrator()
         initializeBluetooth()
         registerSensorReceivers()
@@ -99,12 +99,33 @@ class BleGattService : Service() {
             getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
         }
         val hasAmp = vibrator?.hasAmplitudeControl() ?: false
-        Log.i(TAG, "Vibrator initialized: hasAmplitudeControl=$hasAmp")
+        val supportsPrimitives = checkPrimitiveSupport()
+        Log.i(TAG, "Vibrator initialized: hasAmplitudeControl=$hasAmp, supportsPrimitives=$supportsPrimitives")
+    }
+
+    private var usePrimitives = false
+
+    private fun checkPrimitiveSupport(): Boolean {
+        val vib = vibrator ?: return false
+        return try {
+            val supported = vib.areAllPrimitivesSupported(
+                VibrationEffect.Composition.PRIMITIVE_CLICK,
+                VibrationEffect.Composition.PRIMITIVE_THUD,
+                VibrationEffect.Composition.PRIMITIVE_TICK
+            )
+            usePrimitives = supported
+            Log.i(TAG, "Primitive support check: CLICK+THUD+TICK = $supported")
+            supported
+        } catch (e: Exception) {
+            Log.w(TAG, "Primitive support check failed: ${e.message}")
+            usePrimitives = false
+            false
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "BleGattService destroyed (Build 37w)")
+        Log.d(TAG, "BleGattService destroyed (Build 38w)")
         vibrator?.cancel()
         unregisterSensorReceivers()
         stopAdvertising()
@@ -478,10 +499,11 @@ class BleGattService : Service() {
         }
     }
 
-    // ─── GRANULAR HAPTIC ENGINE (Build 37w) ─────────────────────────────────────
-    // Direct vibration — no broadcast middleman. Granular wave architecture:
-    // Wave made of perceptible taps. Each tap at MAX amplitude (255).
-    // Wave shape from tap DENSITY, not amplitude modulation.
+    // ─── GRANULAR HAPTIC ENGINE (Build 38w) ─────────────────────────────────────
+    // PRIMITIVE-FIRST architecture: Uses hardware-optimized primitives (CLICK, THUD, SPIN)
+    // which are the SAME engine that powers Samsung's Gallop/Heartbeat/Bounce patterns.
+    // Falls back to waveform if primitives not supported.
+    // Wave made of perceptible grains. Wave shape from grain DENSITY, not amplitude.
     // State-dependent: calm=gentle, activated=breathing, overwhelmed=grounding, disconnected=wake-up
 
     private fun executeGranularHaptic(data: ByteArray) {
@@ -491,15 +513,25 @@ class BleGattService : Service() {
             return
         }
         val patternId = data[0].toInt() and 0xFF
-        Log.i(TAG, "HAPTIC executing pattern $patternId (granular)")
+        Log.i(TAG, "HAPTIC executing pattern $patternId (usePrimitives=$usePrimitives)")
 
         try {
-            when (patternId) {
-                1 -> playGranularCalm(vib)
-                2 -> playGranularBreathing(vib)
-                3 -> playGranularGrounding(vib)
-                4 -> playGranularWakeUp(vib)
-                else -> playGranularGrounding(vib)
+            if (usePrimitives) {
+                when (patternId) {
+                    1 -> playPrimitiveCalm(vib)
+                    2 -> playPrimitiveBreathing(vib)
+                    3 -> playPrimitiveGrounding(vib)
+                    4 -> playPrimitiveWakeUp(vib)
+                    else -> playPrimitiveGrounding(vib)
+                }
+            } else {
+                when (patternId) {
+                    1 -> playWaveformCalm(vib)
+                    2 -> playWaveformBreathing(vib)
+                    3 -> playWaveformGrounding(vib)
+                    4 -> playWaveformWakeUp(vib)
+                    else -> playWaveformGrounding(vib)
+                }
             }
         } catch (e: Exception) {
             Log.e(TAG, "HAPTIC error: ${e.message}", e)
@@ -512,17 +544,93 @@ class BleGattService : Service() {
         }
     }
 
-    // Pattern 1: CALM — "I see you" — 2 double-taps with constructive interference
-    private fun playGranularCalm(vib: Vibrator) {
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // PRIMITIVE-BASED PATTERNS (hardware-optimized, same engine as Samsung Gallop/Heartbeat)
+    // These use CLICK, THUD, SPIN — the strongest haptic primitives available
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    // Pattern 1: CALM — "I see you" — 2 CLICKs with pause
+    private fun playPrimitiveCalm(vib: Vibrator) {
+        val effect = VibrationEffect.startComposition()
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 1.0f)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 0.7f, 300)
+            .compose()
+        vib.vibrate(effect)
+        Log.i(TAG, "HAPTIC PRIMITIVE: Calm (2 CLICKs)")
+    }
+
+    // Pattern 2: ACTIVATED — attention CLICKs + breathing wave (SLOW_RISE → QUICK_FALL)
+    private fun playPrimitiveBreathing(vib: Vibrator) {
+        val effect = VibrationEffect.startComposition()
+            // ATTENTION: 3 rapid CLICKs (strongest possible)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 1.0f)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 1.0f, 50)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 1.0f, 50)
+            // PAUSE — "listen"
+            // BREATHING WAVE: inhale (rise) → exhale (fall) — granular with SPINs
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SLOW_RISE, 0.8f, 400)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_QUICK_FALL, 0.6f)
+            // Second breath cycle
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SLOW_RISE, 0.9f, 100)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_QUICK_FALL, 0.5f)
+            .compose()
+        vib.vibrate(effect)
+        Log.i(TAG, "HAPTIC PRIMITIVE: Breathing (3 CLICKs + 2 breath cycles)")
+    }
+
+    // Pattern 3: OVERWHELMED — strong attention THUDs + grounding SPINs + calming fall
+    private fun playPrimitiveGrounding(vib: Vibrator) {
+        val effect = VibrationEffect.startComposition()
+            // ATTENTION: THUD + CLICKs (maximum physical impact)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_THUD, 1.0f)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 1.0f, 80)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 1.0f, 50)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 1.0f, 50)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_THUD, 1.0f, 50)
+            // GROUNDING WAVE: slow calming descent
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SLOW_RISE, 0.7f, 500)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_QUICK_FALL, 0.4f)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SPIN, 0.5f, 200)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SPIN, 0.3f, 100)
+            .compose()
+        vib.vibrate(effect)
+        Log.i(TAG, "HAPTIC PRIMITIVE: Grounding (THUD+CLICKs + calming wave)")
+    }
+
+    // Pattern 4: DISCONNECTED — aggressive wake-up (maximum everything)
+    private fun playPrimitiveWakeUp(vib: Vibrator) {
+        val effect = VibrationEffect.startComposition()
+            // AGGRESSIVE ATTENTION: alternating THUD and CLICK at max scale
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_THUD, 1.0f)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 1.0f, 30)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_THUD, 1.0f, 30)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 1.0f, 30)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_THUD, 1.0f, 30)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 1.0f, 30)
+            // URGENT WAVE: fast SPINs (wobble/unstable feel)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SPIN, 1.0f, 200)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SPIN, 0.9f, 30)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SPIN, 1.0f, 30)
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_SPIN, 0.8f, 30)
+            // FINAL THUD — "you're HERE"
+            .addPrimitive(VibrationEffect.Composition.PRIMITIVE_THUD, 1.0f, 200)
+            .compose()
+        vib.vibrate(effect)
+        Log.i(TAG, "HAPTIC PRIMITIVE: Wake-up (THUD/CLICK cascade + SPIN wave + final THUD)")
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // WAVEFORM FALLBACK (if primitives not supported — uses createWaveform at max amp)
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    private fun playWaveformCalm(vib: Vibrator) {
         val t = longArrayOf(0, 25, 8, 25, 300, 25, 8, 25)
         val a = intArrayOf(0, 255, 0, 255, 0, 255, 0, 255)
         vib.vibrate(VibrationEffect.createWaveform(t, a, -1))
-        Log.i(TAG, "HAPTIC: Calm (2 double-taps)")
+        Log.i(TAG, "HAPTIC WAVEFORM: Calm (2 double-taps)")
     }
 
-    // Pattern 2: ACTIVATED — attention burst + granular breathing wave
-    // Inhale = dense taps, exhale = sparse taps. Each grain 20ms at MAX.
-    private fun playGranularBreathing(vib: Vibrator) {
+    private fun playWaveformBreathing(vib: Vibrator) {
         val t = longArrayOf(
             0, 20, 8, 20, 8, 20, 400,
             20, 100, 20, 80, 20, 60, 20, 50, 20, 40, 20, 40, 20, 40, 20, 40,
@@ -534,11 +642,10 @@ class BleGattService : Service() {
             255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0
         )
         vib.vibrate(VibrationEffect.createWaveform(t, a, -1))
-        Log.i(TAG, "HAPTIC: Breathing guide (3-tap attention + granular wave)")
+        Log.i(TAG, "HAPTIC WAVEFORM: Breathing (3-tap + granular wave)")
     }
 
-    // Pattern 3: OVERWHELMED — strong 5-tap attention + slow calming exhale wave
-    private fun playGranularGrounding(vib: Vibrator) {
+    private fun playWaveformGrounding(vib: Vibrator) {
         val t = longArrayOf(
             0, 25, 8, 25, 8, 25, 8, 25, 8, 25, 500,
             20, 50, 20, 40, 20, 40, 20, 40,
@@ -550,11 +657,10 @@ class BleGattService : Service() {
             255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0
         )
         vib.vibrate(VibrationEffect.createWaveform(t, a, -1))
-        Log.i(TAG, "HAPTIC: Grounding (5-tap attention + slow exhale)")
+        Log.i(TAG, "HAPTIC WAVEFORM: Grounding (5-tap + slow exhale)")
     }
 
-    // Pattern 4: DISCONNECTED — aggressive 8-tap attention + fast dense wave + repeat
-    private fun playGranularWakeUp(vib: Vibrator) {
+    private fun playWaveformWakeUp(vib: Vibrator) {
         val t = longArrayOf(
             0, 25, 8, 25, 8, 25, 8, 25, 8, 25, 8, 25, 8, 25, 8, 25, 300,
             20, 30, 20, 30, 20, 30, 20, 30, 20, 30, 20, 30, 200,
@@ -566,7 +672,7 @@ class BleGattService : Service() {
             255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0
         )
         vib.vibrate(VibrationEffect.createWaveform(t, a, -1))
-        Log.i(TAG, "HAPTIC: Wake-up (8-tap attention + fast dense wave x2)")
+        Log.i(TAG, "HAPTIC WAVEFORM: Wake-up (8-tap + fast dense x2)")
     }
 
     // ─── Notification Methods (push data to connected phone) ────────────────────
