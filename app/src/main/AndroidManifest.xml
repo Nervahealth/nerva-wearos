@@ -57,6 +57,10 @@
             android:name=".HapticLabActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".HapticLab2Activity"
+            android:exported="false" />
+
         <!-- Samsung Health Sensor service -->
         <service
             android:name=".HealthSensorService"

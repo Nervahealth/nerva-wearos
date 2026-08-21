@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
         }
 
         statusText = TextView(this).apply {
-            text = "HUGR BUILD 39w\nBackground-capable"
+            text = "HUGR BUILD 40w\nBackground-capable"
             textSize = 12f
             setTextColor(android.graphics.Color.WHITE)
         }
@@ -79,6 +79,19 @@ class MainActivity : ComponentActivity() {
             }
         }
         layout.addView(hapticLabBtn)
+
+        // Haptic Lab 2 button (System Path Investigation)
+        val hapticLab2Btn = android.widget.Button(this).apply {
+            text = "HAPTIC LAB 2 (System)"
+            textSize = 10f
+            setTextColor(android.graphics.Color.WHITE)
+            setBackgroundColor(android.graphics.Color.parseColor("#FF6600"))
+            setPadding(8, 4, 8, 4)
+            setOnClickListener {
+                startActivity(android.content.Intent(this@MainActivity, HapticLab2Activity::class.java))
+            }
+        }
+        layout.addView(hapticLab2Btn)
 
         logText = TextView(this).apply {
             text = ""
@@ -99,7 +112,7 @@ class MainActivity : ComponentActivity() {
         appendLog("App started.")
         appendLog("Model: ${Build.MODEL}")
         appendLog("SDK: ${Build.VERSION.SDK_INT}")
-            appendLog("Build: 39w (Haptic Lab)")
+            appendLog("Build: 40w (Haptic Lab)")
         requestForegroundPermissions()
     }
 
@@ -188,7 +201,7 @@ class MainActivity : ComponentActivity() {
         }
         appendLog("Health Sensor service started")
 
-        statusText.text = "HUGR BUILD 39w\nServices active"
+        statusText.text = "HUGR BUILD 40w\nServices active"
         appendLog("=== SERVICES LAUNCHED ===")
         appendLog("Screen can turn off — data continues")
     }
