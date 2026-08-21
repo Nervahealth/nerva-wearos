@@ -20,7 +20,7 @@ import java.nio.ByteOrder
 import java.util.UUID
 
 /**
- * BleGattService — BLE GATT Peripheral Server for HUGR Watch (Build 38w)
+ * BleGattService — BLE GATT Peripheral Server for HUGR Watch (Build 39w)
  *
  * This service:
  * 1. Opens a BluetoothGattServer with a custom HUGR service
@@ -30,7 +30,7 @@ import java.util.UUID
  * 5. Pushes sensor data to connected phone via GATT notifications
  * 6. Executes haptic commands DIRECTLY via Vibrator (no broadcast middleman)
  *
- * BLE DATA CONTRACT (Build 38w):
+ * BLE DATA CONTRACT (Build 39w):
  * - EDA (UUID 11111111): [conductance:float32] = 4 bytes
  * - PPG/Cardiac (UUID 44444444): [format:uint8][d0:int32][d1:int32][d2:int32] = 13 bytes
  *     format=0x01: raw PPG → d0=Green, d1=IR, d2=Red
@@ -84,7 +84,7 @@ class BleGattService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "BleGattService created (Build 38w)")
+        Log.d(TAG, "BleGattService created (Build 39w)")
         initializeVibrator()
         initializeBluetooth()
         registerSensorReceivers()
@@ -125,7 +125,7 @@ class BleGattService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "BleGattService destroyed (Build 38w)")
+        Log.d(TAG, "BleGattService destroyed (Build 39w)")
         vibrator?.cancel()
         unregisterSensorReceivers()
         stopAdvertising()
@@ -499,7 +499,7 @@ class BleGattService : Service() {
         }
     }
 
-    // ─── GRANULAR HAPTIC ENGINE (Build 38w) ─────────────────────────────────────
+    // ─── GRANULAR HAPTIC ENGINE (Build 39w) ─────────────────────────────────────
     // PRIMITIVE-FIRST architecture: Uses hardware-optimized primitives (CLICK, THUD, SPIN)
     // which are the SAME engine that powers Samsung's Gallop/Heartbeat/Bounce patterns.
     // Falls back to waveform if primitives not supported.

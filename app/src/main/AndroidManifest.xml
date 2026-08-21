@@ -53,6 +53,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".HapticLabActivity"
+            android:exported="false" />
+
         <!-- Samsung Health Sensor service -->
         <service
             android:name=".HealthSensorService"
