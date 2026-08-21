@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
         }
 
         statusText = TextView(this).apply {
-            text = "HUGR BUILD 36w\nBackground-capable"
+            text = "HUGR BUILD 37w\nBackground-capable"
             textSize = 12f
             setTextColor(android.graphics.Color.WHITE)
         }
@@ -175,7 +175,7 @@ class MainActivity : ComponentActivity() {
         }
         appendLog("Health Sensor service started")
 
-        statusText.text = "HUGR BUILD 36w\nServices active"
+        statusText.text = "HUGR BUILD 37w\nServices active"
         appendLog("=== SERVICES LAUNCHED ===")
         appendLog("Screen can turn off — data continues")
     }

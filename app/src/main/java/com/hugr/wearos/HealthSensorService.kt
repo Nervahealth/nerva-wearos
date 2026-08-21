@@ -25,7 +25,7 @@ import java.util.Timer
 import java.util.TimerTask
 
 /**
- * HUGR Labs — HealthSensorService (Build 36w — PPG_CONTINUOUS + Skin Temp + Format Byte)
+ * HUGR Labs — HealthSensorService (Build 37w — PPG_CONTINUOUS + Skin Temp + Format Byte)
  *
  * Foreground service with WAKE_LOCK + BODY_SENSORS_BACKGROUND + foregroundServiceType="health"
  * Sensors: EDA_CONTINUOUS (1 Hz) + PPG_CONTINUOUS (25 Hz, Green+IR+Red) + ACCELEROMETER_CONTINUOUS (25 Hz) + SKIN_TEMPERATURE_CONTINUOUS
@@ -304,7 +304,7 @@ class HealthSensorService : Service() {
             Log.e(TAG, "HR dual-stream failed: ${e.message}", e)
         }
 
-        sendStatus("=== BUILD 36w INIT COMPLETE ===")
+        sendStatus("=== BUILD 37w INIT COMPLETE ===")
     }
 
     // ─── Sensor Listeners ──────────────────────────────────────────────────────

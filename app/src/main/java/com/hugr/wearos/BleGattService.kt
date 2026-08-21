@@ -10,13 +10,17 @@ import android.content.IntentFilter
 import android.os.Binder
 import android.os.IBinder
 import android.os.ParcelUuid
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.util.Log
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.UUID
 
 /**
- * BleGattService — BLE GATT Peripheral Server for HUGR Watch (Build 36w)
+ * BleGattService — BLE GATT Peripheral Server for HUGR Watch (Build 37w)
  *
  * This service:
  * 1. Opens a BluetoothGattServer with a custom HUGR service
@@ -24,9 +28,9 @@ import java.util.UUID
  * 3. Advertises the HUGR service UUID so the phone can discover it
  * 4. Listens for sensor data broadcasts from HealthSensorService
  * 5. Pushes sensor data to connected phone via GATT notifications
- * 6. Forwards haptic write commands to HapticService via broadcast
+ * 6. Executes haptic commands DIRECTLY via Vibrator (no broadcast middleman)
  *
- * BLE DATA CONTRACT (Build 36w):
+ * BLE DATA CONTRACT (Build 37w):
  * - EDA (UUID 11111111): [conductance:float32] = 4 bytes
  * - PPG/Cardiac (UUID 44444444): [format:uint8][d0:int32][d1:int32][d2:int32] = 13 bytes
  *     format=0x01: raw PPG → d0=Green, d1=IR, d2=Red
@@ -48,6 +52,9 @@ class BleGattService : Service() {
     private var notifyCount = 0
 
     // GATT Characteristics (held as references for notification updates)
+    // Direct vibrator reference — no broadcast middleman
+    private var vibrator: Vibrator? = null
+
     private var edaCharacteristic: BluetoothGattCharacteristic? = null
     private var ppgCharacteristic: BluetoothGattCharacteristic? = null
     private var accelCharacteristic: BluetoothGattCharacteristic? = null
@@ -77,14 +84,28 @@ class BleGattService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "BleGattService created")
+        Log.d(TAG, "BleGattService created (Build 37w)")
+        initializeVibrator()
         initializeBluetooth()
         registerSensorReceivers()
     }
 
+    private fun initializeVibrator() {
+        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vm = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+            vm?.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+        }
+        val hasAmp = vibrator?.hasAmplitudeControl() ?: false
+        Log.i(TAG, "Vibrator initialized: hasAmplitudeControl=$hasAmp")
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "BleGattService destroyed")
+        Log.d(TAG, "BleGattService destroyed (Build 37w)")
+        vibrator?.cancel()
         unregisterSensorReceivers()
         stopAdvertising()
         closeGattServer()
@@ -264,12 +285,8 @@ class BleGattService : Service() {
             // Handle haptic command writes
             if (characteristic?.uuid == HAPTIC_CHARACTERISTIC_UUID && value != null) {
                 Log.i(TAG, "Haptic command received: ${value.size} bytes")
-                // Forward to HapticService via broadcast
-                val intent = Intent(ACTION_HAPTIC_COMMAND).apply {
-                    putExtra("pattern", value)
-                    setPackage(packageName)
-                }
-                sendBroadcast(intent)
+                // DIRECT vibration — no broadcast, no middleman, no failure point
+                executeGranularHaptic(value)
             }
 
             if (responseNeeded) {
@@ -456,10 +473,100 @@ class BleGattService : Service() {
             unregisterReceiver(accelReceiver)
             unregisterReceiver(skinTempReceiver)
             unregisterReceiver(hrReceiver)
-        registerReceiver(hrReceiver, IntentFilter("com.hugr.wearos.HR_DATA"), Context.RECEIVER_NOT_EXPORTED)
         } catch (e: Exception) {
             Log.w(TAG, "Error unregistering receivers: ${e.message}")
         }
+    }
+
+    // ─── GRANULAR HAPTIC ENGINE (Build 37w) ─────────────────────────────────────
+    // Direct vibration — no broadcast middleman. Granular wave architecture:
+    // Wave made of perceptible taps. Each tap at MAX amplitude (255).
+    // Wave shape from tap DENSITY, not amplitude modulation.
+    // State-dependent: calm=gentle, activated=breathing, overwhelmed=grounding, disconnected=wake-up
+
+    private fun executeGranularHaptic(data: ByteArray) {
+        if (data.isEmpty()) return
+        val vib = vibrator ?: run {
+            Log.e(TAG, "HAPTIC FAIL: vibrator is null!")
+            return
+        }
+        val patternId = data[0].toInt() and 0xFF
+        Log.i(TAG, "HAPTIC executing pattern $patternId (granular)")
+
+        try {
+            when (patternId) {
+                1 -> playGranularCalm(vib)
+                2 -> playGranularBreathing(vib)
+                3 -> playGranularGrounding(vib)
+                4 -> playGranularWakeUp(vib)
+                else -> playGranularGrounding(vib)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "HAPTIC error: ${e.message}", e)
+            try {
+                vib.vibrate(VibrationEffect.createOneShot(500, 255))
+                Log.i(TAG, "HAPTIC fallback: 500ms oneshot at max")
+            } catch (e2: Exception) {
+                Log.e(TAG, "HAPTIC even fallback failed: ${e2.message}")
+            }
+        }
+    }
+
+    // Pattern 1: CALM — "I see you" — 2 double-taps with constructive interference
+    private fun playGranularCalm(vib: Vibrator) {
+        val t = longArrayOf(0, 25, 8, 25, 300, 25, 8, 25)
+        val a = intArrayOf(0, 255, 0, 255, 0, 255, 0, 255)
+        vib.vibrate(VibrationEffect.createWaveform(t, a, -1))
+        Log.i(TAG, "HAPTIC: Calm (2 double-taps)")
+    }
+
+    // Pattern 2: ACTIVATED — attention burst + granular breathing wave
+    // Inhale = dense taps, exhale = sparse taps. Each grain 20ms at MAX.
+    private fun playGranularBreathing(vib: Vibrator) {
+        val t = longArrayOf(
+            0, 20, 8, 20, 8, 20, 400,
+            20, 100, 20, 80, 20, 60, 20, 50, 20, 40, 20, 40, 20, 40, 20, 40,
+            20, 60, 20, 80, 20, 100, 20, 120, 20, 140, 20, 160, 20, 200
+        )
+        val a = intArrayOf(
+            0, 255, 0, 255, 0, 255, 0,
+            255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0,
+            255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0
+        )
+        vib.vibrate(VibrationEffect.createWaveform(t, a, -1))
+        Log.i(TAG, "HAPTIC: Breathing guide (3-tap attention + granular wave)")
+    }
+
+    // Pattern 3: OVERWHELMED — strong 5-tap attention + slow calming exhale wave
+    private fun playGranularGrounding(vib: Vibrator) {
+        val t = longArrayOf(
+            0, 25, 8, 25, 8, 25, 8, 25, 8, 25, 500,
+            20, 50, 20, 40, 20, 40, 20, 40,
+            20, 80, 20, 100, 20, 120, 20, 140, 20, 160, 20, 180, 20, 200, 20, 220, 20, 250
+        )
+        val a = intArrayOf(
+            0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0,
+            255, 0, 255, 0, 255, 0, 255, 0,
+            255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0
+        )
+        vib.vibrate(VibrationEffect.createWaveform(t, a, -1))
+        Log.i(TAG, "HAPTIC: Grounding (5-tap attention + slow exhale)")
+    }
+
+    // Pattern 4: DISCONNECTED — aggressive 8-tap attention + fast dense wave + repeat
+    private fun playGranularWakeUp(vib: Vibrator) {
+        val t = longArrayOf(
+            0, 25, 8, 25, 8, 25, 8, 25, 8, 25, 8, 25, 8, 25, 8, 25, 300,
+            20, 30, 20, 30, 20, 30, 20, 30, 20, 30, 20, 30, 200,
+            20, 30, 20, 30, 20, 30, 20, 30, 20, 30, 20, 30
+        )
+        val a = intArrayOf(
+            0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0,
+            255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 0,
+            255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0
+        )
+        vib.vibrate(VibrationEffect.createWaveform(t, a, -1))
+        Log.i(TAG, "HAPTIC: Wake-up (8-tap attention + fast dense wave x2)")
     }
 
     // ─── Notification Methods (push data to connected phone) ────────────────────
