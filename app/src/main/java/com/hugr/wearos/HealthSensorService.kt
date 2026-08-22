@@ -40,6 +40,7 @@ class HealthSensorService : Service() {
         const val ACTION_START_TRACKING = "com.hugr.wearos.START_TRACKING"
         const val ACTION_STOP_TRACKING = "com.hugr.wearos.STOP_TRACKING"
         const val ACTION_STATUS_UPDATE = "com.hugr.wearos.STATUS_UPDATE"
+        const val ACTION_DEVICE_HEALTH_UPDATE = "com.hugr.wearos.DEVICE_HEALTH_UPDATE"
         private const val CHANNEL_ID = "hugr_sensor_channel"
         private const val NOTIFICATION_ID = 1
         private const val FLUSH_INTERVAL_MS = 30000L
@@ -55,6 +56,9 @@ class HealthSensorService : Service() {
     private var wakeLock: PowerManager.WakeLock? = null
     private var flushTimer: Timer? = null
     private var isScreenOn = true
+    private var activeSensorMask = 0
+    private var sdkStatus = 0
+    private var flushCount = 0L
 
     // Screen state receiver — tracks when screen goes on/off for metadata tagging
     private val screenReceiver = object : BroadcastReceiver() {
@@ -63,10 +67,12 @@ class HealthSensorService : Service() {
                 Intent.ACTION_SCREEN_ON -> {
                     isScreenOn = true
                     Log.d(TAG, "Screen ON — switching to real-time delivery")
+                    sendDeviceHealthMetadata()
                 }
                 Intent.ACTION_SCREEN_OFF -> {
                     isScreenOn = false
                     Log.d(TAG, "Screen OFF — flush timer active for batched delivery")
+                    sendDeviceHealthMetadata()
                 }
             }
         }
@@ -190,6 +196,8 @@ class HealthSensorService : Service() {
             Log.i(TAG, "Health Tracking Service connected")
             sendStatus("=== SDK CONNECTED ===")
             isConnected = true
+            sdkStatus = 1
+            sendDeviceHealthMetadata()
             startAllTrackers()
         }
 
@@ -197,6 +205,9 @@ class HealthSensorService : Service() {
             Log.i(TAG, "Health Tracking Service connection ended")
             sendStatus("SDK connection ENDED")
             isConnected = false
+            sdkStatus = 2
+            activeSensorMask = 0
+            sendDeviceHealthMetadata()
             healthTrackingService = null
         }
 
@@ -204,6 +215,9 @@ class HealthSensorService : Service() {
             Log.e(TAG, "Connection failed: ${error?.message}")
             sendStatus("SDK FAILED: ${error?.message}")
             isConnected = false
+            sdkStatus = 3
+            activeSensorMask = 0
+            sendDeviceHealthMetadata()
             healthTrackingService = null
         }
     }
@@ -219,6 +233,7 @@ class HealthSensorService : Service() {
             if (supportedTypes.contains(HealthTrackerType.EDA_CONTINUOUS)) {
                 edaTracker = service.getHealthTracker(HealthTrackerType.EDA_CONTINUOUS)
                 edaTracker?.setEventListener(edaListener)
+                activeSensorMask = activeSensorMask or 0x01
                 sendStatus("EDA tracker STARTED")
             } else {
                 sendStatus("EDA NOT SUPPORTED!")
@@ -237,12 +252,14 @@ class HealthSensorService : Service() {
                     setOf(PpgType.GREEN, PpgType.IR, PpgType.RED)
                 )
                 ppgTracker?.setEventListener(ppgListener)
+                activeSensorMask = activeSensorMask or 0x04
                 sendStatus("PPG tracker STARTED (25 Hz, Green+IR+Red)")
             } else {
                 sendStatus("PPG NOT SUPPORTED! Falling back to HR...")
                 if (supportedTypes.contains(HealthTrackerType.HEART_RATE_CONTINUOUS)) {
                     ppgTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
                     ppgTracker?.setEventListener(heartRateFallbackListener)
+                    activeSensorMask = activeSensorMask or 0x02
                     sendStatus("HR fallback tracker STARTED")
                 }
             }
@@ -254,6 +271,7 @@ class HealthSensorService : Service() {
                 if (supportedTypes.contains(HealthTrackerType.HEART_RATE_CONTINUOUS)) {
                     ppgTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
                     ppgTracker?.setEventListener(heartRateFallbackListener)
+                    activeSensorMask = activeSensorMask or 0x02
                     sendStatus("HR fallback tracker STARTED (after PPG error)")
                 }
             } catch (e2: Exception) {
@@ -267,6 +285,7 @@ class HealthSensorService : Service() {
             if (supportedTypes.contains(HealthTrackerType.ACCELEROMETER_CONTINUOUS)) {
                 accelerometerTracker = service.getHealthTracker(HealthTrackerType.ACCELEROMETER_CONTINUOUS)
                 accelerometerTracker?.setEventListener(accelerometerListener)
+                activeSensorMask = activeSensorMask or 0x08
                 sendStatus("Accel tracker STARTED")
             } else {
                 sendStatus("Accel NOT SUPPORTED!")
@@ -281,6 +300,7 @@ class HealthSensorService : Service() {
             if (supportedTypes.contains(HealthTrackerType.SKIN_TEMPERATURE_CONTINUOUS)) {
                 skinTempTracker = service.getHealthTracker(HealthTrackerType.SKIN_TEMPERATURE_CONTINUOUS)
                 skinTempTracker?.setEventListener(skinTempListener)
+                activeSensorMask = activeSensorMask or 0x10
                 sendStatus("Skin Temp tracker STARTED (continuous)")
             } else {
                 sendStatus("Skin Temp CONTINUOUS not supported on this device")
@@ -297,6 +317,7 @@ class HealthSensorService : Service() {
             if (supportedTypes.contains(HealthTrackerType.HEART_RATE_CONTINUOUS)) {
                 hrTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
                 hrTracker?.setEventListener(hrDualStreamListener)
+                activeSensorMask = activeSensorMask or 0x02
                 sendStatus("HR dual-stream STARTED (hardware IBI alongside PPG)")
             }
         } catch (e: Exception) {
@@ -304,13 +325,16 @@ class HealthSensorService : Service() {
             Log.e(TAG, "HR dual-stream failed: ${e.message}", e)
         }
 
-        sendStatus("=== BUILD 37w INIT COMPLETE ===")
+        sendDeviceHealthMetadata()
+        sendStatus("=== TRACKER INIT COMPLETE ===")
     }
 
     // ─── Sensor Listeners ──────────────────────────────────────────────────────
 
     private val edaListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            val batchSize = dataPoints.size
+            val deliveryMode = if (isScreenOn) "REALTIME" else "FLUSH"
             for (dp in dataPoints) {
                 val conductance = dp.getValue(ValueKey.EdaSet.SKIN_CONDUCTANCE) as? Float ?: 0f
                 val ts = dp.timestamp
@@ -319,6 +343,9 @@ class HealthSensorService : Service() {
                     setPackage(packageName)
                     putExtra("conductance", conductance)
                     putExtra("timestamp", ts)
+                    putExtra("deliveryMode", deliveryMode)
+                    putExtra("batchSize", batchSize)
+                    putExtra("screenOn", isScreenOn)
                 }
                 sendBroadcast(intent)
             }
@@ -444,6 +471,9 @@ class HealthSensorService : Service() {
                 putExtra("ibiMs", ibiMs)
                 putExtra("hrStatus", hrStatus)
                 putExtra("timestamp", ts)
+                putExtra("deliveryMode", if (isScreenOn) "REALTIME" else "FLUSH")
+                putExtra("batchSize", dataPoints.size)
+                putExtra("screenOn", isScreenOn)
             }
             sendBroadcast(intent)
         }
@@ -454,6 +484,8 @@ class HealthSensorService : Service() {
     // Skin Temperature listener (Clusters 33, 43, 48 — circadian, disambiguation, sports)
     private val skinTempListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            val batchSize = dataPoints.size
+            val deliveryMode = if (isScreenOn) "REALTIME" else "FLUSH"
             for (dp in dataPoints) {
                 val objectTemp = dp.getValue(ValueKey.SkinTemperatureSet.OBJECT_TEMPERATURE) as? Float ?: 0f
                 val ambientTemp = dp.getValue(ValueKey.SkinTemperatureSet.AMBIENT_TEMPERATURE) as? Float ?: 0f
@@ -468,6 +500,9 @@ class HealthSensorService : Service() {
                     putExtra("ambientTemp", ambientTemp)
                     putExtra("status", status)
                     putExtra("timestamp", ts)
+                    putExtra("deliveryMode", deliveryMode)
+                    putExtra("batchSize", batchSize)
+                    putExtra("screenOn", isScreenOn)
                 }
                 sendBroadcast(intent)
             }
@@ -481,6 +516,8 @@ class HealthSensorService : Service() {
 
     private val accelerometerListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            val batchSize = dataPoints.size
+            val deliveryMode = if (isScreenOn) "REALTIME" else "FLUSH"
             for (dp in dataPoints) {
                 val x = dp.getValue(ValueKey.AccelerometerSet.ACCELEROMETER_X) as? Int ?: 0
                 val y = dp.getValue(ValueKey.AccelerometerSet.ACCELEROMETER_Y) as? Int ?: 0
@@ -493,6 +530,9 @@ class HealthSensorService : Service() {
                     putExtra("y", y)
                     putExtra("z", z)
                     putExtra("timestamp", ts)
+                    putExtra("deliveryMode", deliveryMode)
+                    putExtra("batchSize", batchSize)
+                    putExtra("screenOn", isScreenOn)
                 }
                 sendBroadcast(intent)
             }
@@ -509,6 +549,7 @@ class HealthSensorService : Service() {
         try {
             edaTracker?.unsetEventListener()
             ppgTracker?.unsetEventListener()
+            hrTracker?.unsetEventListener()
             accelerometerTracker?.unsetEventListener()
             skinTempTracker?.unsetEventListener()
         } catch (e: Exception) {
@@ -516,6 +557,7 @@ class HealthSensorService : Service() {
         }
         edaTracker = null
         ppgTracker = null
+        hrTracker = null
         accelerometerTracker = null
         skinTempTracker = null
         try {
@@ -525,6 +567,9 @@ class HealthSensorService : Service() {
         }
         healthTrackingService = null
         isConnected = false
+        sdkStatus = 2
+        activeSensorMask = 0
+        sendDeviceHealthMetadata()
     }
 
     private fun sendStatus(message: String) {
@@ -534,6 +579,18 @@ class HealthSensorService : Service() {
         }
         sendBroadcast(intent)
         Log.i(TAG, "STATUS: $message")
+    }
+
+    private fun sendDeviceHealthMetadata() {
+        val intent = Intent(ACTION_DEVICE_HEALTH_UPDATE).apply {
+            setPackage(packageName)
+            putExtra("sdkConnected", isConnected)
+            putExtra("sdkStatus", sdkStatus)
+            putExtra("activeSensorMask", activeSensorMask)
+            putExtra("flushCount", flushCount)
+            putExtra("screenOn", isScreenOn)
+        }
+        sendBroadcast(intent)
     }
 
     // ─── Flush Timer (forces Samsung SDK to deliver batched data every 30s) ───
@@ -549,6 +606,8 @@ class HealthSensorService : Service() {
                         ppgTracker?.flush()
                         accelerometerTracker?.flush()
                         skinTempTracker?.flush()
+                        flushCount += 1
+                        sendDeviceHealthMetadata()
                         Log.d(TAG, "Flush triggered (screen off)")
                     } catch (e: Exception) {
                         Log.e(TAG, "Flush error: ${e.message}")

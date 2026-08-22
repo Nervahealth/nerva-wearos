@@ -2,8 +2,10 @@
 ## Definitive Specification — Watch ↔ Phone Communication
 
 **Date:** 2026-08-18
-**Status:** AUTHORITATIVE — both watch and phone MUST implement this exactly
+**Status:** **SUPERSEDED DESIGN CANDIDATE — NOT THE LIVE BLE CONTRACT**
 **Patent relevance:** Clusters 36 (Tiered Intelligence), 39 (Batch-Aware), 49 (Cross-Domain Platform)
+
+> **Reality correction — 2026-08-22:** The deployed source does not implement this document exactly. In the verified Build 39w/phone source, UUID `4444...` carries both raw PPG and HR/IBI via a format byte, UUID `5555...` carries skin temperature, and UUID `6666...` is the status characteristic. This document is retained as design history only. The governing cross-device scientific-memory specification is `docs/HUGR_Scientific_Memory_Event_Contract_2026_08_22.md` in the mobile repository; any revised BLE packet contract must be versioned, backward-compatible and verified against both watch and phone source before promotion.
 
 ---
 
@@ -224,4 +226,4 @@ Each new characteristic follows the same pattern:
 
 ---
 
-*This contract is FINAL. Both watch and phone are built to this spec. Any future changes require updating this document FIRST, then both implementations.*
+*Historical note: this proposal was once labelled final, but the runtime audit found it was never implemented as written. Future changes require a new versioned contract, matched watch/phone tests and evidence-state reconciliation.*

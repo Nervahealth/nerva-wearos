@@ -8,9 +8,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Binder
+import android.os.BatteryManager
 import android.os.IBinder
 import android.os.ParcelUuid
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -60,6 +63,28 @@ class BleGattService : Service() {
     private var accelCharacteristic: BluetoothGattCharacteristic? = null
     private var skinTempCharacteristic: BluetoothGattCharacteristic? = null
     private var statusCharacteristic: BluetoothGattCharacteristic? = null
+    private var hapticReceiptCharacteristic: BluetoothGattCharacteristic? = null
+
+    private var edaSequence = 0L
+    private var ppgSequence = 0L
+    private var cardiacSequence = 0L
+    private var accelSequence = 0L
+    private var skinTempSequence = 0L
+    private var healthSequence = 0L
+    private var totalSensorPackets = 0L
+    private var droppedNoConnectionCount = 0L
+    private var healthSdkConnected = false
+    private var healthSdkStatus = 0
+    private var activeSensorMask = 0
+    private var healthFlushCount = 0L
+    private var healthScreenOn = true
+    private val healthHandler = Handler(Looper.getMainLooper())
+    private val healthTicker = object : Runnable {
+        override fun run() {
+            notifyDeviceHealth()
+            healthHandler.postDelayed(this, DEVICE_HEALTH_INTERVAL_MS)
+        }
+    }
 
     companion object {
         val HUGR_SERVICE_UUID: UUID = UUID.fromString("12345678-1234-5678-1234-567812345678")
@@ -69,11 +94,14 @@ class BleGattService : Service() {
         val SKIN_TEMP_CHARACTERISTIC_UUID: UUID = UUID.fromString("55555555-5555-5555-5555-555555555555")
         val HAPTIC_CHARACTERISTIC_UUID: UUID = UUID.fromString("0000fff5-0000-1000-8000-00805f9b34fb")
         val STATUS_CHARACTERISTIC_UUID: UUID = UUID.fromString("66666666-6666-6666-6666-666666666666")
+        val HAPTIC_RECEIPT_CHARACTERISTIC_UUID: UUID = UUID.fromString("99999999-9999-9999-9999-999999999999")
 
         // Client Characteristic Configuration Descriptor (required for NOTIFY)
         val CCCD_UUID: UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
 
         const val ACTION_HAPTIC_COMMAND = "com.hugr.wearos.HAPTIC_COMMAND"
+        private const val WATCHTOWER_V2_MARKER = 0xA2
+        private const val DEVICE_HEALTH_INTERVAL_MS = 30_000L
     }
 
     inner class LocalBinder : Binder() {
@@ -88,6 +116,7 @@ class BleGattService : Service() {
         initializeVibrator()
         initializeBluetooth()
         registerSensorReceivers()
+        healthHandler.post(healthTicker)
     }
 
     private fun initializeVibrator() {
@@ -127,6 +156,7 @@ class BleGattService : Service() {
         super.onDestroy()
         Log.d(TAG, "BleGattService destroyed (Build 39w)")
         vibrator?.cancel()
+        healthHandler.removeCallbacks(healthTicker)
         unregisterSensorReceivers()
         stopAdvertising()
         closeGattServer()
@@ -223,6 +253,18 @@ class BleGattService : Service() {
         }
         service.addCharacteristic(statusCharacteristic!!)
 
+        // Haptic acknowledgement (READ + NOTIFY). This reports watch receipt and
+        // Android API acceptance/failure; it never claims physical perception.
+        hapticReceiptCharacteristic = BluetoothGattCharacteristic(
+            HAPTIC_RECEIPT_CHARACTERISTIC_UUID,
+            BluetoothGattCharacteristic.PROPERTY_READ or BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+            BluetoothGattCharacteristic.PERMISSION_READ
+        ).apply {
+            addDescriptor(createCccdDescriptor())
+            value = byteArrayOf(WATCHTOWER_V2_MARKER.toByte())
+        }
+        service.addCharacteristic(hapticReceiptCharacteristic!!)
+
         // Haptic Command Characteristic (WRITE)
         val hapticCharacteristic = BluetoothGattCharacteristic(
             HAPTIC_CHARACTERISTIC_UUID,
@@ -258,6 +300,7 @@ class BleGattService : Service() {
                     if (device != null) subscribedDevices.add(device)
                     Log.i(TAG, "Phone connected: ${device?.address}")
                     broadcastStatus("BLE: Phone CONNECTED (${device?.address})")
+                    notifyDeviceHealth()
                     // Start advertising after connection? No — stop advertising to save power
                     // KEEP ADVERTISING for reconnection
                 }
@@ -306,8 +349,24 @@ class BleGattService : Service() {
             // Handle haptic command writes
             if (characteristic?.uuid == HAPTIC_CHARACTERISTIC_UUID && value != null) {
                 Log.i(TAG, "Haptic command received: ${value.size} bytes")
-                // DIRECT vibration — no broadcast, no middleman, no failure point
-                executeGranularHaptic(value)
+                val isV2 = value.size >= 7 && (value[0].toInt() and 0xFF) == WATCHTOWER_V2_MARKER
+                val commandSequence = if (isV2) {
+                    ByteBuffer.wrap(value, 1, 4).order(ByteOrder.LITTLE_ENDIAN).int.toLong() and 0xFFFF_FFFFL
+                } else {
+                    0L
+                }
+                val patternId = if (isV2) value[5].toInt() and 0xFF else value.firstOrNull()?.toInt()?.and(0xFF) ?: 3
+                val intensity = if (isV2) value[6].toInt() and 0xFF else value.getOrNull(1)?.toInt()?.and(0xFF) ?: 255
+                val executionBytes = byteArrayOf(patternId.toByte(), intensity.toByte())
+
+                notifyHapticReceipt(commandSequence, 1, patternId, 0) // Watch application received command.
+                val execution = executeGranularHaptic(executionBytes)
+                notifyHapticReceipt(
+                    commandSequence,
+                    if (execution.first) 2 else 3,
+                    patternId,
+                    execution.second
+                )
             }
 
             if (responseNeeded) {
@@ -426,7 +485,13 @@ class BleGattService : Service() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val conductance = intent?.getFloatExtra("conductance", 0f) ?: return
             val timestamp = intent.getLongExtra("timestamp", System.currentTimeMillis())
-            notifyEda(conductance, timestamp)
+            notifyEda(
+                conductance,
+                timestamp,
+                intent.getStringExtra("deliveryMode") ?: "REALTIME",
+                intent.getIntExtra("batchSize", 1),
+                intent.getBooleanExtra("screenOn", true)
+            )
         }
     }
 
@@ -437,12 +502,14 @@ class BleGattService : Service() {
             val ppgRed = intent.getIntExtra("ppgRed", 0)
             val timestamp = intent.getLongExtra("timestamp", System.currentTimeMillis())
             val deliveryMode = intent.getStringExtra("deliveryMode") ?: "REALTIME"
+            val batchSize = intent.getIntExtra("batchSize", 1)
+            val screenOn = intent.getBooleanExtra("screenOn", true)
             if (deliveryMode == "FALLBACK") {
                 // HR+IBI fallback — format byte 0x02
-                notifyHeartRateFallback(ppgGreen, ppgIR, ppgRed, timestamp)
+                notifyHeartRateFallback(ppgGreen, ppgIR, ppgRed, timestamp, deliveryMode, batchSize, screenOn)
             } else {
                 // Raw PPG — format byte 0x01
-                notifyPpg(ppgGreen, ppgIR, ppgRed, timestamp)
+                notifyPpg(ppgGreen, ppgIR, ppgRed, timestamp, deliveryMode, batchSize, screenOn)
             }
         }
     }
@@ -454,7 +521,15 @@ class BleGattService : Service() {
             val ibiMs = intent.getIntExtra("ibiMs", 0)
             val hrStatus = intent.getIntExtra("hrStatus", -1)
             val timestamp = intent.getLongExtra("timestamp", System.currentTimeMillis())
-            notifyHeartRateFallback(hr, ibiMs, hrStatus, timestamp)
+            notifyHeartRateFallback(
+                hr,
+                ibiMs,
+                hrStatus,
+                timestamp,
+                intent.getStringExtra("deliveryMode") ?: "REALTIME",
+                intent.getIntExtra("batchSize", 1),
+                intent.getBooleanExtra("screenOn", true)
+            )
         }
     }
 
@@ -464,7 +539,15 @@ class BleGattService : Service() {
             val ambientTemp = intent.getFloatExtra("ambientTemp", 0f)
             val status = intent.getIntExtra("status", -1)
             val timestamp = intent.getLongExtra("timestamp", System.currentTimeMillis())
-            notifySkinTemp(skinTemp, ambientTemp, status, timestamp)
+            notifySkinTemp(
+                skinTemp,
+                ambientTemp,
+                status,
+                timestamp,
+                intent.getStringExtra("deliveryMode") ?: "REALTIME",
+                intent.getIntExtra("batchSize", 1),
+                intent.getBooleanExtra("screenOn", true)
+            )
         }
     }
 
@@ -474,7 +557,27 @@ class BleGattService : Service() {
             val y = intent.getIntExtra("y", 0)
             val z = intent.getIntExtra("z", 0)
             val timestamp = intent.getLongExtra("timestamp", System.currentTimeMillis())
-            notifyAccel(x, y, z, timestamp)
+            notifyAccel(
+                x,
+                y,
+                z,
+                timestamp,
+                intent.getStringExtra("deliveryMode") ?: "REALTIME",
+                intent.getIntExtra("batchSize", 1),
+                intent.getBooleanExtra("screenOn", true)
+            )
+        }
+    }
+
+    private val healthMetadataReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent == null) return
+            healthSdkConnected = intent.getBooleanExtra("sdkConnected", healthSdkConnected)
+            healthSdkStatus = intent.getIntExtra("sdkStatus", healthSdkStatus)
+            activeSensorMask = intent.getIntExtra("activeSensorMask", activeSensorMask)
+            healthFlushCount = intent.getLongExtra("flushCount", healthFlushCount)
+            healthScreenOn = intent.getBooleanExtra("screenOn", healthScreenOn)
+            notifyDeviceHealth()
         }
     }
 
@@ -484,6 +587,7 @@ class BleGattService : Service() {
         registerReceiver(accelReceiver, IntentFilter("com.hugr.wearos.ACCEL_DATA"), RECEIVER_EXPORTED)
         registerReceiver(skinTempReceiver, IntentFilter("com.hugr.wearos.TEMP_DATA"), RECEIVER_EXPORTED)
         registerReceiver(hrReceiver, IntentFilter("com.hugr.wearos.HR_DATA"), Context.RECEIVER_NOT_EXPORTED)
+        registerReceiver(healthMetadataReceiver, IntentFilter(HealthSensorService.ACTION_DEVICE_HEALTH_UPDATE), Context.RECEIVER_NOT_EXPORTED)
         Log.d(TAG, "Sensor broadcast receivers registered")
     }
 
@@ -494,6 +598,7 @@ class BleGattService : Service() {
             unregisterReceiver(accelReceiver)
             unregisterReceiver(skinTempReceiver)
             unregisterReceiver(hrReceiver)
+            unregisterReceiver(healthMetadataReceiver)
         } catch (e: Exception) {
             Log.w(TAG, "Error unregistering receivers: ${e.message}")
         }
@@ -506,11 +611,11 @@ class BleGattService : Service() {
     // Wave made of perceptible grains. Wave shape from grain DENSITY, not amplitude.
     // State-dependent: calm=gentle, activated=breathing, overwhelmed=grounding, disconnected=wake-up
 
-    private fun executeGranularHaptic(data: ByteArray) {
-        if (data.isEmpty()) return
+    private fun executeGranularHaptic(data: ByteArray): Pair<Boolean, Int> {
+        if (data.isEmpty()) return Pair(false, 3)
         val vib = vibrator ?: run {
             Log.e(TAG, "HAPTIC FAIL: vibrator is null!")
-            return
+            return Pair(false, 2)
         }
         val patternId = data[0].toInt() and 0xFF
         Log.i(TAG, "HAPTIC executing pattern $patternId (usePrimitives=$usePrimitives)")
@@ -533,14 +638,40 @@ class BleGattService : Service() {
                     else -> playWaveformGrounding(vib)
                 }
             }
+            return Pair(true, 0)
         } catch (e: Exception) {
             Log.e(TAG, "HAPTIC error: ${e.message}", e)
             try {
                 vib.vibrate(VibrationEffect.createOneShot(500, 255))
                 Log.i(TAG, "HAPTIC fallback: 500ms oneshot at max")
+                return Pair(true, 1)
             } catch (e2: Exception) {
                 Log.e(TAG, "HAPTIC even fallback failed: ${e2.message}")
+                return Pair(false, 4)
             }
+        }
+    }
+
+    private fun notifyHapticReceipt(
+        commandSequence: Long,
+        status: Int,
+        patternId: Int,
+        detailCode: Int
+    ) {
+        val characteristic = hapticReceiptCharacteristic ?: return
+        val device = connectedDevice ?: return
+        val buffer = ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN)
+        buffer.put(WATCHTOWER_V2_MARKER.toByte())
+        buffer.putInt(commandSequence.toInt())
+        buffer.putLong(System.currentTimeMillis())
+        buffer.put(status.toByte())
+        buffer.put(patternId.coerceIn(0, 255).toByte())
+        buffer.put(detailCode.coerceIn(0, 255).toByte())
+        characteristic.value = buffer.array()
+        try {
+            gattServer?.notifyCharacteristicChanged(device, characteristic, false)
+        } catch (e: SecurityException) {
+            Log.w(TAG, "SecurityException notifying haptic acknowledgement: ${e.message}")
         }
     }
 
@@ -677,116 +808,204 @@ class BleGattService : Service() {
 
     // ─── Notification Methods (push data to connected phone) ────────────────────
 
-    private fun notifyEda(conductance: Float, timestamp: Long) {
-        val char = edaCharacteristic ?: return
-        val device = connectedDevice
-        if (device == null) {
-            if (notifyCount++ % 100 == 0) Log.w(TAG, "notifyEda: NO connected device (dropped)")
-            return
-        }
-
-        // Pack: [conductance (4 bytes float32, little-endian)]
-        // Phone's parseEDA() expects exactly 4 bytes: DataView.getFloat32(0, true)
-        val buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN)
-        buffer.putFloat(conductance)
-        char.value = buffer.array()
-
-        try {
-            gattServer?.notifyCharacteristicChanged(device, char, false)
-            if (notifyCount++ % 50 == 0) {
-                broadcastStatus("BLE TX: EDA=${String.format("%.3f", conductance)} → ${device.address?.takeLast(5)}")
-            }
-        } catch (e: SecurityException) {
-            Log.w(TAG, "SecurityException notifying EDA: ${e.message}")
+    private fun nextSensorSequence(stream: String): Long {
+        totalSensorPackets = (totalSensorPackets + 1) and 0xFFFF_FFFFL
+        return when (stream) {
+            "EDA" -> { edaSequence = (edaSequence + 1) and 0xFFFF_FFFFL; edaSequence }
+            "PPG" -> { ppgSequence = (ppgSequence + 1) and 0xFFFF_FFFFL; ppgSequence }
+            "CARDIAC" -> { cardiacSequence = (cardiacSequence + 1) and 0xFFFF_FFFFL; cardiacSequence }
+            "ACCEL" -> { accelSequence = (accelSequence + 1) and 0xFFFF_FFFFL; accelSequence }
+            "SKIN_TEMP" -> { skinTempSequence = (skinTempSequence + 1) and 0xFFFF_FFFFL; skinTempSequence }
+            else -> totalSensorPackets
         }
     }
 
-    private fun notifyPpg(ppgGreen: Int, ppgIR: Int, ppgRed: Int, timestamp: Long) {
-        val char = ppgCharacteristic ?: return
+    private fun deliveryFlags(deliveryMode: String, batchSize: Int, screenOn: Boolean): Byte {
+        var flags = 0
+        if (screenOn) flags = flags or 0x01
+        if (deliveryMode == "FLUSH" || (!screenOn && deliveryMode == "FALLBACK")) flags = flags or 0x02
+        if (batchSize > 1) flags = flags or 0x04
+        return flags.toByte()
+    }
+
+    private fun putSensorEnvelope(
+        buffer: ByteBuffer,
+        sequence: Long,
+        timestamp: Long,
+        deliveryMode: String,
+        batchSize: Int,
+        screenOn: Boolean
+    ) {
+        buffer.put(WATCHTOWER_V2_MARKER.toByte())
+        buffer.putInt(sequence.toInt())
+        buffer.putLong(timestamp)
+        buffer.put(deliveryFlags(deliveryMode, batchSize, screenOn))
+        buffer.putShort(batchSize.coerceIn(0, 65_535).toShort())
+    }
+
+    private fun transmitSensor(characteristic: BluetoothGattCharacteristic, payload: ByteArray, stream: String): Boolean {
+        characteristic.value = payload
         val device = connectedDevice
         if (device == null) {
-            return
+            droppedNoConnectionCount = (droppedNoConnectionCount + 1) and 0xFFFF_FFFFL
+            if (droppedNoConnectionCount % 100L == 1L) Log.w(TAG, "$stream packet unavailable to phone: no connected device")
+            return false
         }
-        // Pack: [format (1 byte)] [d0 (4 bytes int32)] [d1 (4 bytes int32)] [d2 (4 bytes int32)] = 13 bytes
-        // format=0x01: raw PPG (d0=Green, d1=IR, d2=Red)
-        // format=0x02: HR+IBI fallback (d0=HR, d1=IBI_ms, d2=hrStatus)
-        // Determine format from delivery mode
-        val deliveryMode = "RAW_PPG" // HealthSensorService sets deliveryMode in intent
-        val formatByte: Byte = 0x01 // Raw PPG
-        val buffer = ByteBuffer.allocate(13).order(ByteOrder.LITTLE_ENDIAN)
-        buffer.put(formatByte)
+        return try {
+            gattServer?.notifyCharacteristicChanged(device, characteristic, false) == true
+        } catch (e: SecurityException) {
+            Log.w(TAG, "SecurityException notifying $stream: ${e.message}")
+            false
+        }
+    }
+
+    private fun batteryState(): Pair<Int, Boolean> {
+        val manager = getSystemService(BATTERY_SERVICE) as BatteryManager
+        val level = manager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+        val batteryIntent = registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        val status = batteryIntent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
+        val charging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL
+        return Pair(if (level in 0..100) level else 255, charging)
+    }
+
+    private fun appVersionCode(): Int {
+        return try {
+            val packageInfo = packageManager.getPackageInfo(packageName, 0)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                packageInfo.longVersionCode.toInt()
+            } else {
+                @Suppress("DEPRECATION")
+                packageInfo.versionCode
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Unable to read package version code: ${e.message}")
+            0
+        }
+    }
+
+    private fun notifyDeviceHealth() {
+        val characteristic = statusCharacteristic ?: return
+        val device = connectedDevice ?: return
+        healthSequence = (healthSequence + 1) and 0xFFFF_FFFFL
+        val (batteryPercent, charging) = batteryState()
+        var flags = 0
+        if (charging) flags = flags or 0x01
+        flags = flags or 0x02 // A connected device exists.
+        if (healthSdkConnected) flags = flags or 0x04
+        if (healthScreenOn) flags = flags or 0x08
+        val buffer = ByteBuffer.allocate(33).order(ByteOrder.LITTLE_ENDIAN)
+        buffer.put(WATCHTOWER_V2_MARKER.toByte())
+        buffer.putInt(healthSequence.toInt())
+        buffer.putLong(System.currentTimeMillis())
+        buffer.put(batteryPercent.toByte())
+        buffer.put(flags.toByte())
+        buffer.put(activeSensorMask.toByte())
+        buffer.put(healthSdkStatus.toByte())
+        buffer.putInt(appVersionCode())
+        buffer.putInt(totalSensorPackets.toInt())
+        buffer.putInt(healthFlushCount.toInt())
+        buffer.putInt(droppedNoConnectionCount.toInt())
+        characteristic.value = buffer.array()
+        try {
+            gattServer?.notifyCharacteristicChanged(device, characteristic, false)
+        } catch (e: SecurityException) {
+            Log.w(TAG, "SecurityException notifying device health: ${e.message}")
+        }
+    }
+
+    private fun notifyEda(
+        conductance: Float,
+        timestamp: Long,
+        deliveryMode: String,
+        batchSize: Int,
+        screenOn: Boolean
+    ) {
+        val char = edaCharacteristic ?: return
+        val sequence = nextSensorSequence("EDA")
+        val buffer = ByteBuffer.allocate(20).order(ByteOrder.LITTLE_ENDIAN)
+        putSensorEnvelope(buffer, sequence, timestamp, deliveryMode, batchSize, screenOn)
+        buffer.putFloat(conductance)
+        if (transmitSensor(char, buffer.array(), "EDA") && notifyCount++ % 50 == 0) {
+            broadcastStatus("BLE TX v2: EDA=${String.format("%.3f", conductance)} seq=$sequence")
+        }
+    }
+
+    private fun notifyPpg(
+        ppgGreen: Int,
+        ppgIR: Int,
+        ppgRed: Int,
+        timestamp: Long,
+        deliveryMode: String,
+        batchSize: Int,
+        screenOn: Boolean
+    ) {
+        val char = ppgCharacteristic ?: return
+        val sequence = nextSensorSequence("PPG")
+        val buffer = ByteBuffer.allocate(29).order(ByteOrder.LITTLE_ENDIAN)
+        buffer.put(0x01.toByte())
+        putSensorEnvelope(buffer, sequence, timestamp, deliveryMode, batchSize, screenOn)
         buffer.putInt(ppgGreen)
         buffer.putInt(ppgIR)
         buffer.putInt(ppgRed)
-        char.value = buffer.array()
-        try {
-            gattServer?.notifyCharacteristicChanged(device, char, false)
-        } catch (e: SecurityException) {
-            Log.w(TAG, "SecurityException notifying PPG: ${e.message}")
-        }
+        transmitSensor(char, buffer.array(), "PPG")
     }
 
-    private fun notifyHeartRateFallback(hr: Int, ibiMs: Int, hrStatus: Int, timestamp: Long) {
+    private fun notifyHeartRateFallback(
+        hr: Int,
+        ibiMs: Int,
+        hrStatus: Int,
+        timestamp: Long,
+        deliveryMode: String,
+        batchSize: Int,
+        screenOn: Boolean
+    ) {
         val char = ppgCharacteristic ?: return
-        val device = connectedDevice
-        if (device == null) {
-            return
-        }
-        // Same characteristic, different format byte
-        val formatByte: Byte = 0x02 // HR+IBI fallback
-        val buffer = ByteBuffer.allocate(13).order(ByteOrder.LITTLE_ENDIAN)
-        buffer.put(formatByte)
+        val sequence = nextSensorSequence("CARDIAC")
+        val buffer = ByteBuffer.allocate(29).order(ByteOrder.LITTLE_ENDIAN)
+        buffer.put(0x02.toByte())
+        putSensorEnvelope(buffer, sequence, timestamp, deliveryMode, batchSize, screenOn)
         buffer.putInt(hr)
         buffer.putInt(ibiMs)
         buffer.putInt(hrStatus)
-        char.value = buffer.array()
-        try {
-            gattServer?.notifyCharacteristicChanged(device, char, false)
-        } catch (e: SecurityException) {
-            Log.w(TAG, "SecurityException notifying HR fallback: ${e.message}")
-        }
+        transmitSensor(char, buffer.array(), "CARDIAC")
     }
 
-    private fun notifySkinTemp(skinTemp: Float, ambientTemp: Float, status: Int, timestamp: Long) {
+    private fun notifySkinTemp(
+        skinTemp: Float,
+        ambientTemp: Float,
+        status: Int,
+        timestamp: Long,
+        deliveryMode: String,
+        batchSize: Int,
+        screenOn: Boolean
+    ) {
         val char = skinTempCharacteristic ?: return
-        val device = connectedDevice
-        if (device == null) {
-            return
-        }
-        // Pack: [skinTemp:float32][ambientTemp:float32][status:int32] = 12 bytes
-        val buffer = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN)
+        val sequence = nextSensorSequence("SKIN_TEMP")
+        val buffer = ByteBuffer.allocate(28).order(ByteOrder.LITTLE_ENDIAN)
+        putSensorEnvelope(buffer, sequence, timestamp, deliveryMode, batchSize, screenOn)
         buffer.putFloat(skinTemp)
         buffer.putFloat(ambientTemp)
         buffer.putInt(status)
-        char.value = buffer.array()
-        try {
-            gattServer?.notifyCharacteristicChanged(device, char, false)
-        } catch (e: SecurityException) {
-            Log.w(TAG, "SecurityException notifying SkinTemp: ${e.message}")
-        }
+        transmitSensor(char, buffer.array(), "SKIN_TEMP")
     }
 
-    private fun notifyAccel(x: Int, y: Int, z: Int, timestamp: Long) {
+    private fun notifyAccel(
+        x: Int,
+        y: Int,
+        z: Int,
+        timestamp: Long,
+        deliveryMode: String,
+        batchSize: Int,
+        screenOn: Boolean
+    ) {
         val char = accelCharacteristic ?: return
-        val device = connectedDevice
-        if (device == null) {
-            return
-        }
-
-        // Pack: [x (4 bytes float32)] [y (4 bytes float32)] [z (4 bytes float32)]
-        // Phone's parseAccel() expects exactly 12 bytes: 3x getFloat32()
-        // Convert from Samsung SDK raw int (milli-g) to m/s²
-        val buffer = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN)
+        val sequence = nextSensorSequence("ACCEL")
+        val buffer = ByteBuffer.allocate(28).order(ByteOrder.LITTLE_ENDIAN)
+        putSensorEnvelope(buffer, sequence, timestamp, deliveryMode, batchSize, screenOn)
         buffer.putFloat(x.toFloat() / 1000f * 9.81f)  // milli-g to m/s²
         buffer.putFloat(y.toFloat() / 1000f * 9.81f)
         buffer.putFloat(z.toFloat() / 1000f * 9.81f)
-        char.value = buffer.array()
-
-        try {
-            gattServer?.notifyCharacteristicChanged(device, char, false)
-        } catch (e: SecurityException) {
-            Log.w(TAG, "SecurityException notifying Accel: ${e.message}")
-        }
+        transmitSensor(char, buffer.array(), "ACCEL")
     }
 
     // ─── Cleanup ────────────────────────────────────────────────────────────────
