@@ -42,7 +42,7 @@ import java.util.UUID
  *    high-importance notification channel. Direct vibrator code remains
  *    contained below for research comparison and is not the active command path.
  *
- * BLE DATA CONTRACT (Build 39w):
+ * BLE DATA CONTRACT (Build 42w Watchtower candidate):
  * - EDA (UUID 11111111): [conductance:float32] = 4 bytes
  * - PPG/Cardiac (UUID 44444444): [format:uint8][d0:int32][d1:int32][d2:int32] = 13 bytes
  *     format=0x01: raw PPG → d0=Green, d1=IR, d2=Red
@@ -136,7 +136,7 @@ class BleGattService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "BleGattService created (Build 39w)")
+        Log.d(TAG, "BleGattService created (Build 42w Watchtower candidate)")
         initializeVibrator()
         initializeHapticNotificationChannel()
         initializeBluetooth()
@@ -197,7 +197,7 @@ class BleGattService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "BleGattService destroyed (Build 39w)")
+        Log.d(TAG, "BleGattService destroyed (Build 42w Watchtower candidate)")
         vibrator?.cancel()
         healthHandler.removeCallbacks(healthTicker)
         unregisterSensorReceivers()

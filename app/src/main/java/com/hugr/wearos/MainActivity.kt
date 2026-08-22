@@ -16,7 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 /**
- * HUGR Labs — Build 28d (Background-Capable)
+ * HUGR Labs — Build 42w Watchtower candidate
  *
  * Based on Samsung's official tutorial (April 2026):
  * - Foreground service with foregroundServiceType="health"
@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
         }
 
         statusText = TextView(this).apply {
-            text = "HUGR BUILD 41w\nBackground-capable"
+            text = "HUGR BUILD 42w\nWatchtower candidate"
             textSize = 12f
             setTextColor(android.graphics.Color.WHITE)
         }
@@ -112,7 +112,7 @@ class MainActivity : ComponentActivity() {
         appendLog("App started.")
         appendLog("Model: ${Build.MODEL}")
         appendLog("SDK: ${Build.VERSION.SDK_INT}")
-            appendLog("Build: 41w (Haptic Lab)")
+        appendLog("Build: 42w (Watchtower candidate)")
         requestForegroundPermissions()
     }
 
@@ -201,7 +201,7 @@ class MainActivity : ComponentActivity() {
         }
         appendLog("Health Sensor service started")
 
-        statusText.text = "HUGR BUILD 41w\nServices active"
+        statusText.text = "HUGR BUILD 42w\nServices active"
         appendLog("=== SERVICES LAUNCHED ===")
         appendLog("Screen can turn off — data continues")
     }

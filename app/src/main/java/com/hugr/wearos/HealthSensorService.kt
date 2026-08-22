@@ -25,7 +25,7 @@ import java.util.Timer
 import java.util.TimerTask
 
 /**
- * HUGR Labs — HealthSensorService (Build 39w — PPG_CONTINUOUS + Skin Temp + Format Byte)
+ * HUGR Labs — HealthSensorService (Build 42w Watchtower candidate)
  *
  * Foreground service with WAKE_LOCK + BODY_SENSORS_BACKGROUND + foregroundServiceType="health"
  * Sensors: EDA_CONTINUOUS (1 Hz) + PPG_CONTINUOUS (25 Hz, Green+IR+Red) + ACCELEROMETER_CONTINUOUS (25 Hz) + SKIN_TEMPERATURE_CONTINUOUS
