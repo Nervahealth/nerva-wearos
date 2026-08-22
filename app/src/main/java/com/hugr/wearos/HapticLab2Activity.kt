@@ -56,9 +56,6 @@ class HapticLab2Activity : ComponentActivity() {
 
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Create all notification channels
-        createNotificationChannels()
-
         val root = ScrollView(this)
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -234,6 +231,9 @@ class HapticLab2Activity : ComponentActivity() {
 
         root.addView(layout)
         setContentView(root)
+
+        // Create notification channels AFTER UI is built (log() needs logText)
+        createNotificationChannels()
     }
 
     private fun createNotificationChannels() {
@@ -262,7 +262,6 @@ class HapticLab2Activity : ComponentActivity() {
             enableVibration(true)
             vibrationPattern = longArrayOf(0, 500, 200, 500, 200, 500)
             description = "Alarm-class notification"
-            setBypassDnd(true)
         }
 
         // Channel 5: USER-CONFIGURABLE — user assigns Gallop to this channel
@@ -283,7 +282,7 @@ class HapticLab2Activity : ComponentActivity() {
 
     private fun fireNotification(channelId: String, title: String, text: String, notifId: Int) {
         val notification = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title)
             .setContentText(text)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
         }
 
         statusText = TextView(this).apply {
-            text = "HUGR BUILD 40w\nBackground-capable"
+            text = "HUGR BUILD 41w\nBackground-capable"
             textSize = 12f
             setTextColor(android.graphics.Color.WHITE)
         }
@@ -112,7 +112,7 @@ class MainActivity : ComponentActivity() {
         appendLog("App started.")
         appendLog("Model: ${Build.MODEL}")
         appendLog("SDK: ${Build.VERSION.SDK_INT}")
-            appendLog("Build: 40w (Haptic Lab)")
+            appendLog("Build: 41w (Haptic Lab)")
         requestForegroundPermissions()
     }
 
@@ -201,7 +201,7 @@ class MainActivity : ComponentActivity() {
         }
         appendLog("Health Sensor service started")
 
-        statusText.text = "HUGR BUILD 40w\nServices active"
+        statusText.text = "HUGR BUILD 41w\nServices active"
         appendLog("=== SERVICES LAUNCHED ===")
         appendLog("Screen can turn off — data continues")
     }
