@@ -1,5 +1,9 @@
 package com.hugr.wearos
 
+import android.Manifest
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
 import android.bluetooth.*
 import android.bluetooth.le.*
@@ -17,13 +21,16 @@ import android.os.Looper
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.UUID
 
 /**
- * BleGattService — BLE GATT Peripheral Server for HUGR Watch (Build 39w)
+ * BleGattService — BLE GATT Peripheral Server for HUGR Watchtower v2.
  *
  * This service:
  * 1. Opens a BluetoothGattServer with a custom HUGR service
@@ -31,7 +38,9 @@ import java.util.UUID
  * 3. Advertises the HUGR service UUID so the phone can discover it
  * 4. Listens for sensor data broadcasts from HealthSensorService
  * 5. Pushes sensor data to connected phone via GATT notifications
- * 6. Executes haptic commands DIRECTLY via Vibrator (no broadcast middleman)
+ * 6. Routes explicit research haptic commands through one versioned, silent,
+ *    high-importance notification channel. Direct vibrator code remains
+ *    contained below for research comparison and is not the active command path.
  *
  * BLE DATA CONTRACT (Build 39w):
  * - EDA (UUID 11111111): [conductance:float32] = 4 bytes
@@ -57,6 +66,9 @@ class BleGattService : Service() {
     // GATT Characteristics (held as references for notification updates)
     // Direct vibrator reference — no broadcast middleman
     private var vibrator: Vibrator? = null
+    private lateinit var notificationManager: NotificationManager
+    private val processedHapticCommands = HapticCommandRegistry(128)
+    private val activeHapticNotificationIds = mutableSetOf<Int>()
 
     private var edaCharacteristic: BluetoothGattCharacteristic? = null
     private var ppgCharacteristic: BluetoothGattCharacteristic? = null
@@ -101,6 +113,18 @@ class BleGattService : Service() {
 
         const val ACTION_HAPTIC_COMMAND = "com.hugr.wearos.HAPTIC_COMMAND"
         private const val WATCHTOWER_V2_MARKER = 0xA2
+        private const val WATCHTOWER_TELEMETRY_VERSION = 2
+        private const val HAPTIC_POLICY_VERSION = 1
+        private const val HAPTIC_CHANNEL_ID = "hugr_research_haptic_v1"
+        private const val HAPTIC_CHANNEL_NAME = "HUGR research haptics"
+        private const val DETAIL_OK = 0
+        private const val DETAIL_DUPLICATE_REPLAY = 10
+        private const val DETAIL_UNSUPPORTED_POLICY = 11
+        private const val DETAIL_NOTIFICATIONS_DISABLED = 12
+        private const val DETAIL_PERMISSION_MISSING = 13
+        private const val DETAIL_CHANNEL_DISABLED = 14
+        private const val DETAIL_NOTIFY_EXCEPTION = 15
+        private const val DETAIL_STOP_ACCEPTED = 16
         private const val DEVICE_HEALTH_INTERVAL_MS = 30_000L
     }
 
@@ -114,6 +138,7 @@ class BleGattService : Service() {
         super.onCreate()
         Log.d(TAG, "BleGattService created (Build 39w)")
         initializeVibrator()
+        initializeHapticNotificationChannel()
         initializeBluetooth()
         registerSensorReceivers()
         healthHandler.post(healthTicker)
@@ -133,6 +158,24 @@ class BleGattService : Service() {
     }
 
     private var usePrimitives = false
+
+    private fun initializeHapticNotificationChannel() {
+        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channel = NotificationChannel(
+            HAPTIC_CHANNEL_ID,
+            HAPTIC_CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Silent research-only HUGR wrist haptic delivery"
+            enableVibration(true)
+            vibrationPattern = longArrayOf(0, 300, 100, 300)
+            setSound(null, null)
+            setShowBadge(false)
+            lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+        }
+        notificationManager.createNotificationChannel(channel)
+        Log.i(TAG, "Haptic notification channel ready: policy=$HAPTIC_POLICY_VERSION channel=$HAPTIC_CHANNEL_ID")
+    }
 
     private fun checkPrimitiveSupport(): Boolean {
         val vib = vibrator ?: return false
@@ -357,15 +400,28 @@ class BleGattService : Service() {
                 }
                 val patternId = if (isV2) value[5].toInt() and 0xFF else value.firstOrNull()?.toInt()?.and(0xFF) ?: 3
                 val intensity = if (isV2) value[6].toInt() and 0xFF else value.getOrNull(1)?.toInt()?.and(0xFF) ?: 255
-                val executionBytes = byteArrayOf(patternId.toByte(), intensity.toByte())
+                val policyVersion = if (isV2 && value.size >= 8) value[7].toInt() and 0xFF else 0
 
-                notifyHapticReceipt(commandSequence, 1, patternId, 0) // Watch application received command.
-                val execution = executeGranularHaptic(executionBytes)
+                notifyHapticReceipt(commandSequence, 1, patternId, DETAIL_OK, policyVersion) // Watch application received command.
+                val previous = if (isV2) processedHapticCommands[commandSequence] else null
+                val execution = when {
+                    previous != null -> {
+                        Log.w(TAG, "Duplicate haptic command suppressed and prior result replayed: $commandSequence")
+                        notifyHapticReceipt(commandSequence, 1, patternId, DETAIL_DUPLICATE_REPLAY, previous.policyVersion)
+                        previous
+                    }
+                    isV2 && policyVersion != HAPTIC_POLICY_VERSION -> {
+                        HapticCommandRegistry.Result(false, DETAIL_UNSUPPORTED_POLICY, patternId, policyVersion)
+                    }
+                    else -> executeNotificationHaptic(commandSequence, patternId, intensity, HAPTIC_POLICY_VERSION)
+                }
+                if (isV2 && previous == null) processedHapticCommands[commandSequence] = execution
                 notifyHapticReceipt(
                     commandSequence,
-                    if (execution.first) 2 else 3,
+                    if (execution.accepted) 2 else 3,
                     patternId,
-                    execution.second
+                    execution.detailCode,
+                    execution.policyVersion
                 )
             }
 
@@ -604,7 +660,65 @@ class BleGattService : Service() {
         }
     }
 
-    // ─── GRANULAR HAPTIC ENGINE (Build 39w) ─────────────────────────────────────
+    // ─── PRODUCTION RESEARCH HAPTIC POLICY v1 ───────────────────────────────────
+    // One channel and one vibration pattern only until matched-device delivery and
+    // perception are verified. Pattern ID records intended semantic action; it does
+    // not select a different physical notification pattern in policy v1.
+
+    private fun executeNotificationHaptic(
+        commandSequence: Long,
+        patternId: Int,
+        intensity: Int,
+        policyVersion: Int
+    ): HapticCommandRegistry.Result {
+        if (patternId == 0) {
+            val ids = synchronized(activeHapticNotificationIds) {
+                val snapshot = activeHapticNotificationIds.toList()
+                activeHapticNotificationIds.clear()
+                snapshot
+            }
+            ids.forEach(notificationManager::cancel)
+            Log.i(TAG, "Haptic stop requested: command=$commandSequence cancelled=${ids.size}")
+            return HapticCommandRegistry.Result(true, DETAIL_STOP_ACCEPTED, patternId, policyVersion)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return HapticCommandRegistry.Result(false, DETAIL_PERMISSION_MISSING, patternId, policyVersion)
+        }
+        if (!notificationManager.areNotificationsEnabled()) {
+            return HapticCommandRegistry.Result(false, DETAIL_NOTIFICATIONS_DISABLED, patternId, policyVersion)
+        }
+        val channel = notificationManager.getNotificationChannel(HAPTIC_CHANNEL_ID)
+        if (channel == null || channel.importance == NotificationManager.IMPORTANCE_NONE || !channel.shouldVibrate()) {
+            return HapticCommandRegistry.Result(false, DETAIL_CHANNEL_DISABLED, patternId, policyVersion)
+        }
+
+        return try {
+            val notification = NotificationCompat.Builder(this, HAPTIC_CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("HUGR research haptic")
+                .setContentText("Manual test · command $commandSequence")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_REMINDER)
+                .setAutoCancel(true)
+                .setLocalOnly(true)
+                .setTimeoutAfter(30_000L)
+                .build()
+            val notificationId = 4_100 + ((commandSequence and 0x7FFF_FFFFL) % 100_000L).toInt()
+            notificationManager.notify(notificationId, notification)
+            synchronized(activeHapticNotificationIds) {
+                activeHapticNotificationIds.add(notificationId)
+            }
+            Log.i(TAG, "Haptic notification requested: command=$commandSequence policy=$policyVersion pattern=$patternId intensityMetadata=$intensity")
+            HapticCommandRegistry.Result(true, DETAIL_OK, patternId, policyVersion)
+        } catch (e: Exception) {
+            Log.e(TAG, "Haptic notification request failed: ${e.message}", e)
+            HapticCommandRegistry.Result(false, DETAIL_NOTIFY_EXCEPTION, patternId, policyVersion)
+        }
+    }
+
+    // ─── CONTAINED LEGACY DIRECT HAPTIC ENGINE (INACTIVE) ───────────────────────
     // PRIMITIVE-FIRST architecture: Uses hardware-optimized primitives (CLICK, THUD, SPIN)
     // which are the SAME engine that powers Samsung's Gallop/Heartbeat/Bounce patterns.
     // Falls back to waveform if primitives not supported.
@@ -656,17 +770,19 @@ class BleGattService : Service() {
         commandSequence: Long,
         status: Int,
         patternId: Int,
-        detailCode: Int
+        detailCode: Int,
+        policyVersion: Int
     ) {
         val characteristic = hapticReceiptCharacteristic ?: return
         val device = connectedDevice ?: return
-        val buffer = ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN)
+        val buffer = ByteBuffer.allocate(17).order(ByteOrder.LITTLE_ENDIAN)
         buffer.put(WATCHTOWER_V2_MARKER.toByte())
         buffer.putInt(commandSequence.toInt())
         buffer.putLong(System.currentTimeMillis())
         buffer.put(status.toByte())
         buffer.put(patternId.coerceIn(0, 255).toByte())
         buffer.put(detailCode.coerceIn(0, 255).toByte())
+        buffer.put(policyVersion.coerceIn(0, 255).toByte())
         characteristic.value = buffer.array()
         try {
             gattServer?.notifyCharacteristicChanged(device, characteristic, false)
@@ -893,7 +1009,7 @@ class BleGattService : Service() {
         flags = flags or 0x02 // A connected device exists.
         if (healthSdkConnected) flags = flags or 0x04
         if (healthScreenOn) flags = flags or 0x08
-        val buffer = ByteBuffer.allocate(33).order(ByteOrder.LITTLE_ENDIAN)
+        val buffer = ByteBuffer.allocate(35).order(ByteOrder.LITTLE_ENDIAN)
         buffer.put(WATCHTOWER_V2_MARKER.toByte())
         buffer.putInt(healthSequence.toInt())
         buffer.putLong(System.currentTimeMillis())
@@ -905,6 +1021,8 @@ class BleGattService : Service() {
         buffer.putInt(totalSensorPackets.toInt())
         buffer.putInt(healthFlushCount.toInt())
         buffer.putInt(droppedNoConnectionCount.toInt())
+        buffer.put(WATCHTOWER_TELEMETRY_VERSION.toByte())
+        buffer.put(HAPTIC_POLICY_VERSION.toByte())
         characteristic.value = buffer.array()
         try {
             gattServer?.notifyCharacteristicChanged(device, characteristic, false)
