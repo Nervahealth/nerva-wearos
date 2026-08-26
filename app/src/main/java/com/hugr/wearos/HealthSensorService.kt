@@ -25,7 +25,7 @@ import java.util.Timer
 import java.util.TimerTask
 
 /**
- * HUGR Labs — HealthSensorService (Build 42w Watchtower candidate)
+ * HUGR Labs — HealthSensorService (Build 43w cardiac evidence candidate)
  *
  * Foreground service with WAKE_LOCK + BODY_SENSORS_BACKGROUND + foregroundServiceType="health"
  * Sensors: EDA_CONTINUOUS (1 Hz) + PPG_CONTINUOUS (25 Hz, Green+IR+Red) + ACCELEROMETER_CONTINUOUS (25 Hz) + SKIN_TEMPERATURE_CONTINUOUS
@@ -59,6 +59,7 @@ class HealthSensorService : Service() {
     private var activeSensorMask = 0
     private var sdkStatus = 0
     private var flushCount = 0L
+    private var cardiacCallbackId = 0
 
     // Screen state receiver — tracks when screen goes on/off for metadata tagging
     private val screenReceiver = object : BroadcastReceiver() {
@@ -243,7 +244,7 @@ class HealthSensorService : Service() {
             Log.e(TAG, "EDA tracker failed: ${e.message}", e)
         }
 
-        // PPG tracker — independent try/catch (falls back to HR)
+        // Raw PPG tracker — independent evidence stream. It never substitutes for HR.
         try {
             if (supportedTypes.contains(HealthTrackerType.PPG_CONTINUOUS)) {
                 // SDK v1.4.1 REQUIRES PpgType set for PPG_CONTINUOUS
@@ -255,29 +256,11 @@ class HealthSensorService : Service() {
                 activeSensorMask = activeSensorMask or 0x04
                 sendStatus("PPG tracker STARTED (25 Hz, Green+IR+Red)")
             } else {
-                sendStatus("PPG NOT SUPPORTED! Falling back to HR...")
-                if (supportedTypes.contains(HealthTrackerType.HEART_RATE_CONTINUOUS)) {
-                    ppgTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
-                    ppgTracker?.setEventListener(heartRateFallbackListener)
-                    activeSensorMask = activeSensorMask or 0x02
-                    sendStatus("HR fallback tracker STARTED")
-                }
+                sendStatus("PPG NOT SUPPORTED — raw PPG stream unavailable")
             }
         } catch (e: Exception) {
-            sendStatus("PPG/HR ERROR: ${e.message} — trying HR fallback...")
+            sendStatus("PPG ERROR: ${e.message}")
             Log.e(TAG, "PPG tracker failed: ${e.message}", e)
-            // If PPG threw an exception (policy issue), try HR fallback
-            try {
-                if (supportedTypes.contains(HealthTrackerType.HEART_RATE_CONTINUOUS)) {
-                    ppgTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
-                    ppgTracker?.setEventListener(heartRateFallbackListener)
-                    activeSensorMask = activeSensorMask or 0x02
-                    sendStatus("HR fallback tracker STARTED (after PPG error)")
-                }
-            } catch (e2: Exception) {
-                sendStatus("HR FALLBACK ALSO FAILED: ${e2.message}")
-                Log.e(TAG, "HR fallback also failed: ${e2.message}", e2)
-            }
         }
 
         // Accelerometer tracker — independent try/catch
@@ -310,19 +293,21 @@ class HealthSensorService : Service() {
             Log.e(TAG, "Skin temp tracker failed: ${e.message}", e)
         }
 
-        sendStatus("=== TRACKER INIT (PPG+HR dual) ===")
+        sendStatus("=== TRACKER INIT (typed cardiac evidence) ===")
 
-        // HR dual-stream: runs ALONGSIDE PPG for hardware-derived IBI (Option C)
+        // Exactly one authoritative hardware HR tracker. Raw PPG remains separate.
         try {
             if (supportedTypes.contains(HealthTrackerType.HEART_RATE_CONTINUOUS)) {
                 hrTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
-                hrTracker?.setEventListener(hrDualStreamListener)
+                hrTracker?.setEventListener(cardiacEvidenceListener)
                 activeSensorMask = activeSensorMask or 0x02
-                sendStatus("HR dual-stream STARTED (hardware IBI alongside PPG)")
+                sendStatus("HR evidence tracker STARTED")
+            } else {
+                sendStatus("HEART_RATE_CONTINUOUS NOT SUPPORTED")
             }
         } catch (e: Exception) {
-            sendStatus("HR dual-stream ERROR: ${e.message}")
-            Log.e(TAG, "HR dual-stream failed: ${e.message}", e)
+            sendStatus("HR evidence tracker ERROR: ${e.message}")
+            Log.e(TAG, "HR evidence tracker failed: ${e.message}", e)
         }
 
         sendDeviceHealthMetadata()
@@ -391,93 +376,51 @@ class HealthSensorService : Service() {
         override fun onFlushCompleted() {}
     }
 
-    // Fallback listener if PPG_CONTINUOUS is not available (uses HEART_RATE_CONTINUOUS)
-    private val heartRateFallbackListener = object : HealthTracker.TrackerEventListener {
+    private val cardiacEvidenceListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
             if (dataPoints.isEmpty()) return
-            
-            // Samsung docs: "IBI values stored in the FIRST data point. Others contain NULL."
-            val firstDp = dataPoints[0]
-            val hr = firstDp.getValue(ValueKey.HeartRateSet.HEART_RATE) as? Int ?: 0
-            val hrStatus = firstDp.getValue(ValueKey.HeartRateSet.HEART_RATE_STATUS) as? Int ?: -1
-            val ts = firstDp.timestamp
-            
-            // Extract IBI from FIRST data point only
-            var ibiMs = 0
-            try {
-                val ibiList = firstDp.getValue(ValueKey.HeartRateSet.IBI_LIST) as? List<*>
-                val ibiStatusList = firstDp.getValue(ValueKey.HeartRateSet.IBI_STATUS_LIST) as? List<*>
-                val rawIbiCount = ibiList?.size ?: 0
-                sendStatus("HR: $hr [st=$hrStatus] IBI_RAW: $rawIbiCount items")
-                
-                if (ibiList != null && ibiList.isNotEmpty()) {
-                    for (i in ibiList.indices) {
-                        val ibiVal = (ibiList[i] as? Number)?.toInt() ?: 0
-                        val ibiSt = if (i < (ibiStatusList?.size ?: 0)) (ibiStatusList!![i] as? Number)?.toInt() ?: -1 else -1
-                        if (ibiVal > 0) {
-                            ibiMs = ibiVal
-                            sendStatus("  IBI[$i]: ${ibiVal}ms (status=$ibiSt)")
-                            break // Take first valid IBI
-                        }
-                    }
+            cardiacCallbackId = (cardiacCallbackId + 1) and 0x7FFF_FFFF
+            val points = dataPoints.map { point ->
+                val ibiValues = (point.getValue(ValueKey.HeartRateSet.IBI_LIST) as? List<*>)
+                    ?.mapNotNull { (it as? Number)?.toInt() }
+                    ?: emptyList()
+                val ibiStatuses = (point.getValue(ValueKey.HeartRateSet.IBI_STATUS_LIST) as? List<*>)
+                    ?.mapNotNull { (it as? Number)?.toInt() }
+                    ?: emptyList()
+                SamsungCardiacPoint(
+                    sourceTimestamp = point.timestamp,
+                    heartRate = (point.getValue(ValueKey.HeartRateSet.HEART_RATE) as? Number)?.toInt() ?: 0,
+                    heartRateStatus = (point.getValue(ValueKey.HeartRateSet.HEART_RATE_STATUS) as? Number)?.toInt() ?: -1,
+                    ibiValuesMs = ibiValues,
+                    ibiStatuses = ibiStatuses
+                )
+            }
+            val records = flattenCardiacBatch(cardiacCallbackId, points)
+            val deliveryMode = if (isScreenOn) "REALTIME" else "FLUSH"
+            records.forEach { record ->
+                val intent = Intent("com.hugr.wearos.CARDIAC_EVIDENCE_DATA").apply {
+                    setPackage(packageName)
+                    putExtra("kind", record.kind.wireCode)
+                    putExtra("value", record.value)
+                    putExtra("status", record.status)
+                    putExtra("timestamp", record.sourceTimestamp)
+                    putExtra("callbackId", record.callbackId)
+                    putExtra("pointIndex", record.pointIndex)
+                    putExtra("pointCount", record.pointCount)
+                    putExtra("listIndex", record.listIndex)
+                    putExtra("listCount", record.listCount)
+                    putExtra("contractAnomaly", record.contractAnomaly)
+                    putExtra("deliveryMode", deliveryMode)
+                    putExtra("batchSize", dataPoints.size)
+                    putExtra("screenOn", isScreenOn)
                 }
-            } catch (e: Exception) {
-                sendStatus("IBI extract error: ${e.message}")
+                sendBroadcast(intent)
             }
-            
-            // Send HR + IBI via PPG_DATA broadcast (phone will parse)
-            // ppgGreen = HR, ppgIR = IBI, ppgRed = hrStatus
-            val intent = Intent("com.hugr.wearos.PPG_DATA").apply {
-                setPackage(packageName)
-                putExtra("ppgGreen", hr)
-                putExtra("ppgIR", ibiMs)
-                putExtra("ppgRed", hrStatus)
-                putExtra("timestamp", ts)
-                putExtra("deliveryMode", "FALLBACK")
-                putExtra("batchSize", dataPoints.size)
-                putExtra("screenOn", isScreenOn)
-            }
-            sendBroadcast(intent)
+            sendStatus("Cardiac callback ${cardiacCallbackId}: ${dataPoints.size} points → ${records.size} evidence records")
         }
         override fun onError(error: HealthTracker.TrackerError) {
-            sendStatus("HR FALLBACK ERROR: ${error.name}")
+            sendStatus("HR evidence ERROR: ${error.name}")
         }
-        override fun onFlushCompleted() {}
-    }
-
-    // HR dual-stream listener — hardware-derived HR + IBI with accurate timestamps
-    // Phone uses THIS for HRV calculation. PPG is stored for offline analysis.
-    private val hrDualStreamListener = object : HealthTracker.TrackerEventListener {
-        override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
-            if (dataPoints.isEmpty()) return
-            val firstDp = dataPoints[0]
-            val hr = firstDp.getValue(ValueKey.HeartRateSet.HEART_RATE) as? Int ?: 0
-            val hrStatus = firstDp.getValue(ValueKey.HeartRateSet.HEART_RATE_STATUS) as? Int ?: -1
-            val ts = firstDp.timestamp
-            var ibiMs = 0
-            try {
-                val ibiList = firstDp.getValue(ValueKey.HeartRateSet.IBI_LIST) as? List<*>
-                if (ibiList != null && ibiList.isNotEmpty()) {
-                    for (i in ibiList.indices) {
-                        val ibiVal = (ibiList[i] as? Number)?.toInt() ?: 0
-                        if (ibiVal > 0) { ibiMs = ibiVal; break }
-                    }
-                }
-            } catch (e: Exception) { Log.w(TAG, "IBI extract: ${e.message}") }
-            if (hr > 0) sendStatus("HR(hw): $hr bpm IBI: ${ibiMs}ms")
-            val intent = Intent("com.hugr.wearos.HR_DATA").apply {
-                setPackage(packageName)
-                putExtra("heartRate", hr)
-                putExtra("ibiMs", ibiMs)
-                putExtra("hrStatus", hrStatus)
-                putExtra("timestamp", ts)
-                putExtra("deliveryMode", if (isScreenOn) "REALTIME" else "FLUSH")
-                putExtra("batchSize", dataPoints.size)
-                putExtra("screenOn", isScreenOn)
-            }
-            sendBroadcast(intent)
-        }
-        override fun onError(error: HealthTracker.TrackerError) { sendStatus("HR dual ERROR: ${error.name}") }
         override fun onFlushCompleted() {}
     }
 
@@ -604,6 +547,7 @@ class HealthSensorService : Service() {
                     try {
                         edaTracker?.flush()
                         ppgTracker?.flush()
+                        hrTracker?.flush()
                         accelerometerTracker?.flush()
                         skinTempTracker?.flush()
                         flushCount += 1

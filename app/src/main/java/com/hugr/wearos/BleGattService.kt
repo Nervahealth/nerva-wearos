@@ -30,7 +30,7 @@ import java.nio.ByteOrder
 import java.util.UUID
 
 /**
- * BleGattService — BLE GATT Peripheral Server for HUGR Watchtower v2.
+ * BleGattService — BLE GATT Peripheral Server for HUGR Watchtower v3.
  *
  * This service:
  * 1. Opens a BluetoothGattServer with a custom HUGR service
@@ -42,11 +42,12 @@ import java.util.UUID
  *    high-importance notification channel. Direct vibrator code remains
  *    contained below for research comparison and is not the active command path.
  *
- * BLE DATA CONTRACT (Build 42w Watchtower candidate):
+ * BLE DATA CONTRACT (Build 43w cardiac evidence candidate):
  * - EDA (UUID 11111111): [conductance:float32] = 4 bytes
  * - PPG/Cardiac (UUID 44444444): [format:uint8][d0:int32][d1:int32][d2:int32] = 13 bytes
  *     format=0x01: raw PPG → d0=Green, d1=IR, d2=Red
- *     format=0x02: HR+IBI fallback → d0=HR, d1=IBI_ms, d2=hrStatus
+ *     format=0x02: legacy scalar HR+IBI → d0=HR, d1=IBI_ms, d2=hrStatus
+ *     format=0x03: typed HR/IBI evidence with source/callback/list provenance
  * - Accel (UUID 33333333): [x:float32][y:float32][z:float32] = 12 bytes
  * - SkinTemp (UUID 55555555): [skinTemp:float32][ambientTemp:float32][status:int32] = 12 bytes
  * - Haptic (UUID 0000fff5): write-only, variable length
@@ -113,7 +114,8 @@ class BleGattService : Service() {
 
         const val ACTION_HAPTIC_COMMAND = "com.hugr.wearos.HAPTIC_COMMAND"
         private const val WATCHTOWER_V2_MARKER = 0xA2
-        private const val WATCHTOWER_TELEMETRY_VERSION = 2
+        private const val WATCHTOWER_V3_MARKER = 0xA3
+        private const val WATCHTOWER_TELEMETRY_VERSION = 3
         private const val HAPTIC_POLICY_VERSION = 1
         private const val HAPTIC_CHANNEL_ID = "hugr_research_haptic_v1"
         private const val HAPTIC_CHANNEL_NAME = "HUGR research haptics"
@@ -136,7 +138,7 @@ class BleGattService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "BleGattService created (Build 42w Watchtower candidate)")
+        Log.d(TAG, "BleGattService created (Build 43w cardiac evidence candidate)")
         initializeVibrator()
         initializeHapticNotificationChannel()
         initializeBluetooth()
@@ -197,7 +199,7 @@ class BleGattService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "BleGattService destroyed (Build 42w Watchtower candidate)")
+        Log.d(TAG, "BleGattService destroyed (Build 43w cardiac evidence candidate)")
         vibrator?.cancel()
         healthHandler.removeCallbacks(healthTicker)
         unregisterSensorReceivers()
@@ -589,6 +591,27 @@ class BleGattService : Service() {
         }
     }
 
+    private val cardiacEvidenceReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent == null) return
+            notifyCardiacEvidence(
+                kind = intent.getIntExtra("kind", 0),
+                value = intent.getIntExtra("value", 0),
+                status = intent.getIntExtra("status", -1),
+                sourceTimestamp = intent.getLongExtra("timestamp", System.currentTimeMillis()),
+                callbackId = intent.getIntExtra("callbackId", 0),
+                pointIndex = intent.getIntExtra("pointIndex", 0),
+                pointCount = intent.getIntExtra("pointCount", 0),
+                listIndex = intent.getIntExtra("listIndex", -1),
+                listCount = intent.getIntExtra("listCount", 0),
+                contractAnomaly = intent.getBooleanExtra("contractAnomaly", false),
+                deliveryMode = intent.getStringExtra("deliveryMode") ?: "REALTIME",
+                batchSize = intent.getIntExtra("batchSize", 1),
+                screenOn = intent.getBooleanExtra("screenOn", true)
+            )
+        }
+    }
+
     private val skinTempReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val skinTemp = intent?.getFloatExtra("skinTemp", 0f) ?: return
@@ -643,6 +666,7 @@ class BleGattService : Service() {
         registerReceiver(accelReceiver, IntentFilter("com.hugr.wearos.ACCEL_DATA"), RECEIVER_EXPORTED)
         registerReceiver(skinTempReceiver, IntentFilter("com.hugr.wearos.TEMP_DATA"), RECEIVER_EXPORTED)
         registerReceiver(hrReceiver, IntentFilter("com.hugr.wearos.HR_DATA"), Context.RECEIVER_NOT_EXPORTED)
+        registerReceiver(cardiacEvidenceReceiver, IntentFilter("com.hugr.wearos.CARDIAC_EVIDENCE_DATA"), Context.RECEIVER_NOT_EXPORTED)
         registerReceiver(healthMetadataReceiver, IntentFilter(HealthSensorService.ACTION_DEVICE_HEALTH_UPDATE), Context.RECEIVER_NOT_EXPORTED)
         Log.d(TAG, "Sensor broadcast receivers registered")
     }
@@ -654,6 +678,7 @@ class BleGattService : Service() {
             unregisterReceiver(accelReceiver)
             unregisterReceiver(skinTempReceiver)
             unregisterReceiver(hrReceiver)
+            unregisterReceiver(cardiacEvidenceReceiver)
             unregisterReceiver(healthMetadataReceiver)
         } catch (e: Exception) {
             Log.w(TAG, "Error unregistering receivers: ${e.message}")
@@ -1066,6 +1091,43 @@ class BleGattService : Service() {
         buffer.putInt(ppgIR)
         buffer.putInt(ppgRed)
         transmitSensor(char, buffer.array(), "PPG")
+    }
+
+    private fun notifyCardiacEvidence(
+        kind: Int,
+        value: Int,
+        status: Int,
+        sourceTimestamp: Long,
+        callbackId: Int,
+        pointIndex: Int,
+        pointCount: Int,
+        listIndex: Int,
+        listCount: Int,
+        contractAnomaly: Boolean,
+        deliveryMode: String,
+        batchSize: Int,
+        screenOn: Boolean
+    ) {
+        val char = ppgCharacteristic ?: return
+        val sequence = nextSensorSequence("CARDIAC")
+        val buffer = ByteBuffer.allocate(37).order(ByteOrder.LITTLE_ENDIAN)
+        buffer.put(0x03.toByte())
+        buffer.put(WATCHTOWER_V3_MARKER.toByte())
+        buffer.put(WATCHTOWER_TELEMETRY_VERSION.toByte())
+        buffer.put(kind.coerceIn(0, 255).toByte())
+        buffer.putInt(sequence.toInt())
+        buffer.putLong(sourceTimestamp)
+        buffer.putInt(status)
+        buffer.putInt(value)
+        buffer.putInt(callbackId)
+        buffer.putShort(pointIndex.coerceIn(0, 65_535).toShort())
+        buffer.putShort(pointCount.coerceIn(0, 65_535).toShort())
+        buffer.putShort(if (listIndex < 0) 0xFFFF.toShort() else listIndex.coerceIn(0, 65_535).toShort())
+        buffer.putShort(listCount.coerceIn(0, 65_535).toShort())
+        var flags = deliveryFlags(deliveryMode, batchSize, screenOn).toInt() and 0xFF
+        if (contractAnomaly) flags = flags or 0x08
+        buffer.put(flags.toByte())
+        transmitSensor(char, buffer.array(), "CARDIAC_EVIDENCE")
     }
 
     private fun notifyHeartRateFallback(
