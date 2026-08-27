@@ -16,7 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 /**
- * HUGR Labs — Build 43w cardiac evidence candidate
+ * HUGR Labs — Build 44w transport and temporal truth candidate
  *
  * Based on Samsung's official tutorial (April 2026):
  * - Foreground service with foregroundServiceType="health"
@@ -61,37 +61,27 @@ class MainActivity : ComponentActivity() {
         }
 
         statusText = TextView(this).apply {
-            text = "HUGR BUILD 43w\nCardiac evidence candidate"
+            text = "HUGR BUILD 44w\nTransport + temporal truth candidate"
             textSize = 12f
             setTextColor(android.graphics.Color.WHITE)
         }
         layout.addView(statusText)
 
-        // Haptic Lab button
-        val hapticLabBtn = android.widget.Button(this).apply {
-            text = "HAPTIC LAB"
-            textSize = 10f
-            setTextColor(android.graphics.Color.BLACK)
-            setBackgroundColor(android.graphics.Color.parseColor("#00FF88"))
-            setPadding(8, 4, 8, 4)
-            setOnClickListener {
-                startActivity(android.content.Intent(this@MainActivity, HapticLabActivity::class.java))
+        val keepAwakeSwitch = android.widget.Switch(this).apply {
+            text = "TEST ONLY: keep screen awake"
+            textSize = 9f
+            setTextColor(android.graphics.Color.YELLOW)
+            setOnCheckedChangeListener { _, enabled ->
+                if (enabled) {
+                    window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    appendLog("TEST instrumentation: screen keep-awake enabled")
+                } else {
+                    window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    appendLog("TEST instrumentation: screen keep-awake disabled")
+                }
             }
         }
-        layout.addView(hapticLabBtn)
-
-        // Haptic Lab 2 button (System Path Investigation)
-        val hapticLab2Btn = android.widget.Button(this).apply {
-            text = "HAPTIC LAB 2 (System)"
-            textSize = 10f
-            setTextColor(android.graphics.Color.WHITE)
-            setBackgroundColor(android.graphics.Color.parseColor("#FF6600"))
-            setPadding(8, 4, 8, 4)
-            setOnClickListener {
-                startActivity(android.content.Intent(this@MainActivity, HapticLab2Activity::class.java))
-            }
-        }
-        layout.addView(hapticLab2Btn)
+        layout.addView(keepAwakeSwitch)
 
         logText = TextView(this).apply {
             text = ""
@@ -100,19 +90,24 @@ class MainActivity : ComponentActivity() {
             setPadding(0, 8, 0, 0)
         }
 
-        scrollView = ScrollView(this)
-        scrollView.addView(logText)
+        scrollView = ScrollView(this).apply {
+            isFillViewport = true
+            addView(logText, android.view.ViewGroup.LayoutParams(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+            ))
+        }
         layout.addView(scrollView, android.widget.LinearLayout.LayoutParams(
             android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+            0,
+            1f,
         ))
-
         setContentView(layout)
 
         appendLog("App started.")
         appendLog("Model: ${Build.MODEL}")
         appendLog("SDK: ${Build.VERSION.SDK_INT}")
-        appendLog("Build: 43w (cardiac evidence candidate)")
+        appendLog("Build: 44w (transport + temporal truth candidate)")
         requestForegroundPermissions()
     }
 
@@ -201,7 +196,7 @@ class MainActivity : ComponentActivity() {
         }
         appendLog("Health Sensor service started")
 
-        statusText.text = "HUGR BUILD 43w\nServices active"
+        statusText.text = "HUGR BUILD 44w\nServices active"
         appendLog("=== SERVICES LAUNCHED ===")
         appendLog("Screen can turn off — data continues")
     }

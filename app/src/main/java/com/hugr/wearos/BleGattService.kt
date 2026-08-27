@@ -18,6 +18,7 @@ import android.os.ParcelUuid
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -61,7 +62,8 @@ class BleGattService : Service() {
     private var gattServer: BluetoothGattServer? = null
     private var advertiser: BluetoothLeAdvertiser? = null
     private var connectedDevice: BluetoothDevice? = null
-    private val subscribedDevices = mutableSetOf<BluetoothDevice>()
+    private val notificationSubscriptions = mutableMapOf<String, MutableSet<UUID>>()
+    private var notificationCompletionBlocked = false
     private var notifyCount = 0
 
     // GATT Characteristics (held as references for notification updates)
@@ -92,10 +94,41 @@ class BleGattService : Service() {
     private var healthFlushCount = 0L
     private var healthScreenOn = true
     private val healthHandler = Handler(Looper.getMainLooper())
+    private val transportHandler = Handler(Looper.getMainLooper())
+    private val notificationQueue = GattNotificationQueue(
+        maxDepth = 256,
+        ppgSoftLimit = 96,
+        timeoutMs = GATT_NOTIFICATION_TIMEOUT_MS,
+        nowElapsedMs = { SystemClock.elapsedRealtime() },
+        nowWallMs = { System.currentTimeMillis() },
+        trigger = { triggerGattNotification(it) },
+        onCriticalFault = { reason ->
+            Log.e(TAG, "CRITICAL BLE transport fault: $reason")
+            broadcastStatus("BLE TRANSPORT FAULT: $reason")
+        },
+    )
     private val healthTicker = object : Runnable {
         override fun run() {
             notifyDeviceHealth()
             healthHandler.postDelayed(this, DEVICE_HEALTH_INTERVAL_MS)
+        }
+    }
+    private val transportTicker = object : Runnable {
+        override fun run() {
+            if (notificationQueue.checkTimeout()) {
+                Log.e(TAG, "BLE notification timed out; transport evidence marked failed")
+                broadcastStatus("BLE TRANSPORT TIMEOUT")
+                val stalledDevice = connectedDevice
+                notificationCompletionBlocked = true
+                notificationSubscriptions.clear()
+                connectedDevice = null
+                notificationQueue.reset()
+                if (stalledDevice != null) {
+                    runCatching { gattServer?.cancelConnection(stalledDevice) }
+                        .onFailure { Log.e(TAG, "Failed to cancel stalled GATT connection", it) }
+                }
+            }
+            transportHandler.postDelayed(this, GATT_TIMEOUT_CHECK_INTERVAL_MS)
         }
     }
 
@@ -115,7 +148,8 @@ class BleGattService : Service() {
         const val ACTION_HAPTIC_COMMAND = "com.hugr.wearos.HAPTIC_COMMAND"
         private const val WATCHTOWER_V2_MARKER = 0xA2
         private const val WATCHTOWER_V3_MARKER = 0xA3
-        private const val WATCHTOWER_TELEMETRY_VERSION = 3
+        private const val WATCHTOWER_CARDIAC_EVIDENCE_VERSION = 3
+        private const val WATCHTOWER_TELEMETRY_VERSION = 4
         private const val HAPTIC_POLICY_VERSION = 1
         private const val HAPTIC_CHANNEL_ID = "hugr_research_haptic_v1"
         private const val HAPTIC_CHANNEL_NAME = "HUGR research haptics"
@@ -128,6 +162,8 @@ class BleGattService : Service() {
         private const val DETAIL_NOTIFY_EXCEPTION = 15
         private const val DETAIL_STOP_ACCEPTED = 16
         private const val DEVICE_HEALTH_INTERVAL_MS = 30_000L
+        private const val GATT_NOTIFICATION_TIMEOUT_MS = 3_000L
+        private const val GATT_TIMEOUT_CHECK_INTERVAL_MS = 250L
     }
 
     inner class LocalBinder : Binder() {
@@ -138,12 +174,13 @@ class BleGattService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "BleGattService created (Build 43w cardiac evidence candidate)")
+        Log.d(TAG, "BleGattService created (Build 44w transport temporal truth)")
         initializeVibrator()
         initializeHapticNotificationChannel()
         initializeBluetooth()
         registerSensorReceivers()
         healthHandler.post(healthTicker)
+        transportHandler.post(transportTicker)
     }
 
     private fun initializeVibrator() {
@@ -199,9 +236,11 @@ class BleGattService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "BleGattService destroyed (Build 43w cardiac evidence candidate)")
+        Log.d(TAG, "BleGattService destroyed (Build 44w transport temporal truth)")
         vibrator?.cancel()
         healthHandler.removeCallbacks(healthTicker)
+        transportHandler.removeCallbacks(transportTicker)
+        notificationQueue.reset()
         unregisterSensorReceivers()
         stopAdvertising()
         closeGattServer()
@@ -341,8 +380,12 @@ class BleGattService : Service() {
         override fun onConnectionStateChange(device: BluetoothDevice?, status: Int, newState: Int) {
             when (newState) {
                 BluetoothProfile.STATE_CONNECTED -> {
+                    notificationQueue.reset()
+                    notificationCompletionBlocked = true
                     connectedDevice = device
-                    if (device != null) subscribedDevices.add(device)
+                    if (device != null) synchronized(notificationSubscriptions) {
+                        notificationSubscriptions.getOrPut(device.address) { mutableSetOf() }
+                    }
                     Log.i(TAG, "Phone connected: ${device?.address}")
                     broadcastStatus("BLE: Phone CONNECTED (${device?.address})")
                     notifyDeviceHealth()
@@ -350,8 +393,12 @@ class BleGattService : Service() {
                     // KEEP ADVERTISING for reconnection
                 }
                 BluetoothProfile.STATE_DISCONNECTED -> {
+                    notificationCompletionBlocked = true
                     connectedDevice = null
-                    if (device != null) subscribedDevices.remove(device)
+                    notificationQueue.reset()
+                    if (device != null) synchronized(notificationSubscriptions) {
+                        notificationSubscriptions.remove(device.address)
+                    }
                     Log.i(TAG, "Phone disconnected: ${device?.address}")
                     broadcastStatus("BLE: Phone DISCONNECTED")
                     // Resume advertising so phone can reconnect
@@ -439,8 +486,12 @@ class BleGattService : Service() {
             descriptor: BluetoothGattDescriptor?
         ) {
             if (descriptor?.uuid == CCCD_UUID) {
-                // Return notifications enabled
-                val value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                val characteristicUuid = descriptor.characteristic?.uuid
+                val value = if (device != null && characteristicUuid != null && isNotificationEnabled(device, characteristicUuid)) {
+                    BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                } else {
+                    BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE
+                }
                 gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, value)
             } else {
                 gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, descriptor?.value)
@@ -458,21 +509,38 @@ class BleGattService : Service() {
         ) {
             if (descriptor?.uuid == CCCD_UUID) {
                 // Client is subscribing/unsubscribing to notifications
-                descriptor.value = value
                 val charUuid = descriptor.characteristic?.uuid
                 val enabled = value?.contentEquals(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE) == true
                 Log.i(TAG, "Notifications ${if (enabled) "ENABLED" else "DISABLED"} for $charUuid")
-                broadcastStatus("BLE: Notifications ${if (enabled) "ON" else "OFF"} for ${charUuid.toString().substring(0, 8)}")
-                // If client subscribes, make sure we know about them
-                if (enabled && device != null) {
+                broadcastStatus("BLE: Notifications ${if (enabled) "ON" else "OFF"} for ${charUuid?.toString()?.take(8) ?: "unknown"}")
+                if (device != null && charUuid != null) {
                     connectedDevice = device
-                    subscribedDevices.add(device)
+                    synchronized(notificationSubscriptions) {
+                        val enabledCharacteristics = notificationSubscriptions.getOrPut(device.address) { mutableSetOf() }
+                        if (enabled) enabledCharacteristics.add(charUuid) else enabledCharacteristics.remove(charUuid)
+                    }
+                    if (enabled) notificationCompletionBlocked = false
                 }
             }
 
             if (responseNeeded) {
                 gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, value)
             }
+        }
+
+        override fun onNotificationSent(device: BluetoothDevice?, status: Int) {
+            if (notificationCompletionBlocked) {
+                Log.w(TAG, "Ignoring notification completion from an aborted transport lineage")
+                return
+            }
+            val activeDevice = connectedDevice
+            if (device == null || activeDevice == null || device.address != activeDevice.address) {
+                Log.w(TAG, "Ignoring notification completion from a non-active device")
+                return
+            }
+            val success = status == BluetoothGatt.GATT_SUCCESS
+            if (!success) Log.e(TAG, "BLE notification completion failed: status=$status device=${device?.address}")
+            notificationQueue.onNotificationSent(success)
         }
     }
 
@@ -799,21 +867,22 @@ class BleGattService : Service() {
         policyVersion: Int
     ) {
         val characteristic = hapticReceiptCharacteristic ?: return
-        val device = connectedDevice ?: return
+        val occurredAtWatchMs = System.currentTimeMillis()
         val buffer = ByteBuffer.allocate(17).order(ByteOrder.LITTLE_ENDIAN)
         buffer.put(WATCHTOWER_V2_MARKER.toByte())
         buffer.putInt(commandSequence.toInt())
-        buffer.putLong(System.currentTimeMillis())
+        buffer.putLong(occurredAtWatchMs)
         buffer.put(status.toByte())
         buffer.put(patternId.coerceIn(0, 255).toByte())
         buffer.put(detailCode.coerceIn(0, 255).toByte())
         buffer.put(policyVersion.coerceIn(0, 255).toByte())
-        characteristic.value = buffer.array()
-        try {
-            gattServer?.notifyCharacteristicChanged(device, characteristic, false)
-        } catch (e: SecurityException) {
-            Log.w(TAG, "SecurityException notifying haptic acknowledgement: ${e.message}")
-        }
+        transmitSensor(
+            characteristic = characteristic,
+            payload = buffer.array(),
+            stream = GattNotificationStream.HAPTIC_RECEIPT,
+            sourceSequence = commandSequence,
+            sourceTimestampMs = occurredAtWatchMs,
+        )
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════
@@ -984,19 +1053,64 @@ class BleGattService : Service() {
         buffer.putShort(batchSize.coerceIn(0, 65_535).toShort())
     }
 
-    private fun transmitSensor(characteristic: BluetoothGattCharacteristic, payload: ByteArray, stream: String): Boolean {
-        characteristic.value = payload
-        val device = connectedDevice
-        if (device == null) {
+    private fun transmitSensor(
+        characteristic: BluetoothGattCharacteristic,
+        payload: ByteArray,
+        stream: GattNotificationStream,
+        sourceSequence: Long,
+        sourceTimestampMs: Long,
+    ): Boolean {
+        if (connectedDevice == null) {
             droppedNoConnectionCount = (droppedNoConnectionCount + 1) and 0xFFFF_FFFFL
-            if (droppedNoConnectionCount % 100L == 1L) Log.w(TAG, "$stream packet unavailable to phone: no connected device")
+            if (droppedNoConnectionCount % 100L == 1L) Log.w(TAG, "${stream.name} packet unavailable to phone: no connected device")
             return false
         }
+        return when (notificationQueue.enqueue(stream, characteristic.uuid, payload, sourceSequence, sourceTimestampMs)) {
+            GattEnqueueResult.QUEUED, GattEnqueueResult.COALESCED -> true
+            GattEnqueueResult.DROPPED_LOW_PRIORITY -> false
+            GattEnqueueResult.CRITICAL_OVERFLOW -> {
+                Log.e(TAG, "CRITICAL BLE queue overflow for ${stream.name} sequence=$sourceSequence")
+                false
+            }
+        }
+    }
+
+    private fun triggerGattNotification(item: GattNotification): GattNotificationTrigger {
+        val device = connectedDevice ?: return GattNotificationTrigger.NO_CONNECTION
+        if (!isNotificationEnabled(device, item.characteristicUuid)) return GattNotificationTrigger.NOT_SUBSCRIBED
+        val characteristic = characteristicFor(item.characteristicUuid) ?: return GattNotificationTrigger.IMMEDIATE_FAILURE
+        val server = gattServer ?: return GattNotificationTrigger.NO_CONNECTION
         return try {
-            gattServer?.notifyCharacteristicChanged(device, characteristic, false) == true
+            val triggered = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                server.notifyCharacteristicChanged(device, characteristic, false, item.payload.copyOf()) == BluetoothStatusCodes.SUCCESS
+            } else {
+                @Suppress("DEPRECATION")
+                characteristic.value = item.payload.copyOf()
+                @Suppress("DEPRECATION")
+                server.notifyCharacteristicChanged(device, characteristic, false)
+            }
+            if (triggered) GattNotificationTrigger.TRIGGERED else GattNotificationTrigger.IMMEDIATE_FAILURE
         } catch (e: SecurityException) {
-            Log.w(TAG, "SecurityException notifying $stream: ${e.message}")
-            false
+            Log.w(TAG, "SecurityException notifying ${item.stream.name}: ${e.message}")
+            GattNotificationTrigger.IMMEDIATE_FAILURE
+        }
+    }
+
+    private fun characteristicFor(uuid: UUID): BluetoothGattCharacteristic? {
+        return when (uuid) {
+            EDA_CHARACTERISTIC_UUID -> edaCharacteristic
+            PPG_CHARACTERISTIC_UUID -> ppgCharacteristic
+            ACCEL_CHARACTERISTIC_UUID -> accelCharacteristic
+            SKIN_TEMP_CHARACTERISTIC_UUID -> skinTempCharacteristic
+            STATUS_CHARACTERISTIC_UUID -> statusCharacteristic
+            HAPTIC_RECEIPT_CHARACTERISTIC_UUID -> hapticReceiptCharacteristic
+            else -> null
+        }
+    }
+
+    private fun isNotificationEnabled(device: BluetoothDevice, characteristicUuid: UUID): Boolean {
+        return synchronized(notificationSubscriptions) {
+            notificationSubscriptions[device.address]?.contains(characteristicUuid) == true
         }
     }
 
@@ -1026,18 +1140,20 @@ class BleGattService : Service() {
 
     private fun notifyDeviceHealth() {
         val characteristic = statusCharacteristic ?: return
-        val device = connectedDevice ?: return
+        connectedDevice ?: return
         healthSequence = (healthSequence + 1) and 0xFFFF_FFFFL
+        val occurredAtWatchMs = System.currentTimeMillis()
         val (batteryPercent, charging) = batteryState()
         var flags = 0
         if (charging) flags = flags or 0x01
         flags = flags or 0x02 // A connected device exists.
         if (healthSdkConnected) flags = flags or 0x04
         if (healthScreenOn) flags = flags or 0x08
-        val buffer = ByteBuffer.allocate(35).order(ByteOrder.LITTLE_ENDIAN)
+        val transport = notificationQueue.snapshot()
+        val buffer = ByteBuffer.allocate(81).order(ByteOrder.LITTLE_ENDIAN)
         buffer.put(WATCHTOWER_V2_MARKER.toByte())
         buffer.putInt(healthSequence.toInt())
-        buffer.putLong(System.currentTimeMillis())
+        buffer.putLong(occurredAtWatchMs)
         buffer.put(batteryPercent.toByte())
         buffer.put(flags.toByte())
         buffer.put(activeSensorMask.toByte())
@@ -1048,12 +1164,25 @@ class BleGattService : Service() {
         buffer.putInt(droppedNoConnectionCount.toInt())
         buffer.put(WATCHTOWER_TELEMETRY_VERSION.toByte())
         buffer.put(HAPTIC_POLICY_VERSION.toByte())
-        characteristic.value = buffer.array()
-        try {
-            gattServer?.notifyCharacteristicChanged(device, characteristic, false)
-        } catch (e: SecurityException) {
-            Log.w(TAG, "SecurityException notifying device health: ${e.message}")
-        }
+        buffer.putShort(transport.queueDepth.coerceIn(0, 65_535).toShort())
+        buffer.putInt(transport.oldestAgeMs.coerceIn(0L, 0xFFFF_FFFFL).toInt())
+        buffer.putInt(transport.completedCount.toInt())
+        buffer.putInt(transport.failedCount.toInt())
+        buffer.putInt(transport.timeoutCount.toInt())
+        buffer.putInt(transport.droppedPpgCount.toInt())
+        buffer.putInt(transport.coalescedAccelCount.toInt())
+        buffer.putInt(transport.coalescedEdaCount.toInt())
+        buffer.putInt(transport.criticalOverflowCount.toInt())
+        buffer.putInt(transport.notSubscribedCount.toInt())
+        buffer.putInt(transport.noConnectionCount.toInt())
+        buffer.putInt(transport.resetCount.toInt())
+        transmitSensor(
+            characteristic = characteristic,
+            payload = buffer.array(),
+            stream = GattNotificationStream.DEVICE_HEALTH,
+            sourceSequence = healthSequence,
+            sourceTimestampMs = occurredAtWatchMs,
+        )
     }
 
     private fun notifyEda(
@@ -1068,7 +1197,7 @@ class BleGattService : Service() {
         val buffer = ByteBuffer.allocate(20).order(ByteOrder.LITTLE_ENDIAN)
         putSensorEnvelope(buffer, sequence, timestamp, deliveryMode, batchSize, screenOn)
         buffer.putFloat(conductance)
-        if (transmitSensor(char, buffer.array(), "EDA") && notifyCount++ % 50 == 0) {
+        if (transmitSensor(char, buffer.array(), GattNotificationStream.EDA, sequence, timestamp) && notifyCount++ % 50 == 0) {
             broadcastStatus("BLE TX v2: EDA=${String.format("%.3f", conductance)} seq=$sequence")
         }
     }
@@ -1090,7 +1219,7 @@ class BleGattService : Service() {
         buffer.putInt(ppgGreen)
         buffer.putInt(ppgIR)
         buffer.putInt(ppgRed)
-        transmitSensor(char, buffer.array(), "PPG")
+        transmitSensor(char, buffer.array(), GattNotificationStream.PPG, sequence, timestamp)
     }
 
     private fun notifyCardiacEvidence(
@@ -1113,7 +1242,7 @@ class BleGattService : Service() {
         val buffer = ByteBuffer.allocate(37).order(ByteOrder.LITTLE_ENDIAN)
         buffer.put(0x03.toByte())
         buffer.put(WATCHTOWER_V3_MARKER.toByte())
-        buffer.put(WATCHTOWER_TELEMETRY_VERSION.toByte())
+        buffer.put(WATCHTOWER_CARDIAC_EVIDENCE_VERSION.toByte())
         buffer.put(kind.coerceIn(0, 255).toByte())
         buffer.putInt(sequence.toInt())
         buffer.putLong(sourceTimestamp)
@@ -1127,7 +1256,7 @@ class BleGattService : Service() {
         var flags = deliveryFlags(deliveryMode, batchSize, screenOn).toInt() and 0xFF
         if (contractAnomaly) flags = flags or 0x08
         buffer.put(flags.toByte())
-        transmitSensor(char, buffer.array(), "CARDIAC_EVIDENCE")
+        transmitSensor(char, buffer.array(), GattNotificationStream.CARDIAC, sequence, sourceTimestamp)
     }
 
     private fun notifyHeartRateFallback(
@@ -1147,7 +1276,7 @@ class BleGattService : Service() {
         buffer.putInt(hr)
         buffer.putInt(ibiMs)
         buffer.putInt(hrStatus)
-        transmitSensor(char, buffer.array(), "CARDIAC")
+        transmitSensor(char, buffer.array(), GattNotificationStream.CARDIAC, sequence, timestamp)
     }
 
     private fun notifySkinTemp(
@@ -1166,7 +1295,7 @@ class BleGattService : Service() {
         buffer.putFloat(skinTemp)
         buffer.putFloat(ambientTemp)
         buffer.putInt(status)
-        transmitSensor(char, buffer.array(), "SKIN_TEMP")
+        transmitSensor(char, buffer.array(), GattNotificationStream.SKIN_TEMP, sequence, timestamp)
     }
 
     private fun notifyAccel(
@@ -1185,12 +1314,14 @@ class BleGattService : Service() {
         buffer.putFloat(x.toFloat() / 1000f * 9.81f)  // milli-g to m/s²
         buffer.putFloat(y.toFloat() / 1000f * 9.81f)
         buffer.putFloat(z.toFloat() / 1000f * 9.81f)
-        transmitSensor(char, buffer.array(), "ACCEL")
+        transmitSensor(char, buffer.array(), GattNotificationStream.ACCEL, sequence, timestamp)
     }
 
     // ─── Cleanup ────────────────────────────────────────────────────────────────
 
     private fun closeGattServer() {
+        notificationQueue.reset()
+        synchronized(notificationSubscriptions) { notificationSubscriptions.clear() }
         try {
             gattServer?.clearServices()
             gattServer?.close()

@@ -20,8 +20,8 @@ android {
         applicationId 'com.hugr.wearos'
         minSdk 30
         targetSdk 34
-        versionCode 43
-        versionName '0.43.0-cardiac-evidence'
+        versionCode 44
+        versionName '0.44.0-transport-temporal-truth'
     }
 
     buildTypes {
