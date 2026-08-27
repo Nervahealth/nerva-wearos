@@ -11,6 +11,31 @@ class GattNotificationQueueTest {
     private val characteristic = UUID.fromString("44444444-4444-4444-4444-444444444444")
 
     @Test
+    fun `completion callback observes completed notification removed from in flight state`() {
+        var elapsed = 0L
+        lateinit var queue: GattNotificationQueue
+        var depthSeenByCompletion = -1
+        queue = GattNotificationQueue(
+            nowElapsedMs = { elapsed },
+            nowWallMs = { 1_000L + elapsed },
+            trigger = { GattNotificationTrigger.TRIGGERED },
+            onCompleted = { depthSeenByCompletion = queue.snapshot().queueDepth },
+        )
+        queue.enqueue(
+            GattNotificationStream.ACCEL,
+            characteristic,
+            byteArrayOf(1),
+            1,
+            1,
+            origin = GattNotificationOrigin.REPLAY,
+        )
+
+        queue.onNotificationSent(success = true)
+
+        assertEquals(0, depthSeenByCompletion)
+    }
+
+    @Test
     fun `does not trigger a second notification before completion`() {
         var elapsed = 0L
         val triggered = mutableListOf<Long>()
@@ -69,7 +94,7 @@ class GattNotificationQueueTest {
     }
 
     @Test
-    fun `disconnect reset discards old lineage before resubscription`() {
+    fun `disconnect reset discards old transport lineage before resubscription`() {
         var elapsed = 0L
         val triggered = mutableListOf<Long>()
         val queue = queue(elapsed = { elapsed }) { item ->
@@ -88,7 +113,7 @@ class GattNotificationQueueTest {
     }
 
     @Test
-    fun `cardiac pressure evicts lower priority data but never cardiac`() {
+    fun `cardiac pressure evicts lower priority live data but never cardiac`() {
         var elapsed = 0L
         val triggered = mutableListOf<Pair<GattNotificationStream, Long>>()
         val queue = queue(elapsed = { elapsed }, maxDepth = 3, ppgSoftLimit = 3) { item ->
@@ -162,17 +187,229 @@ class GattNotificationQueueTest {
         assertEquals(1L, queue.snapshot().coalescedAccelCount)
     }
 
+    @Test
+    fun `lossless canonical accelerometer frames are never coalesced`() {
+        var elapsed = 0L
+        val triggered = mutableListOf<Long>()
+        val queue = queue(elapsed = { elapsed }) { item ->
+            triggered += item.sourceSequence
+            GattNotificationTrigger.TRIGGERED
+        }
+
+        queue.enqueue(GattNotificationStream.ACCEL, characteristic, byteArrayOf(1), 1, 100, lossless = true)
+        val second = queue.enqueue(GattNotificationStream.ACCEL, characteristic, byteArrayOf(2), 2, 200, lossless = true)
+        val third = queue.enqueue(GattNotificationStream.ACCEL, characteristic, byteArrayOf(3), 3, 300, lossless = true)
+        queue.onNotificationSent(true)
+        queue.onNotificationSent(true)
+
+        assertEquals(GattEnqueueResult.QUEUED, second)
+        assertEquals(GattEnqueueResult.QUEUED, third)
+        assertEquals(listOf(1L, 2L, 3L), triggered)
+        assertEquals(0L, queue.snapshot().coalescedAccelCount)
+    }
+
+    @Test
+    fun `lossless queue pressure is explicit critical overflow rather than silent replacement`() {
+        var elapsed = 0L
+        val faults = mutableListOf<String>()
+        val queue = GattNotificationQueue(
+            maxDepth = 2,
+            ppgSoftLimit = 2,
+            replayHighWaterMark = 2,
+            nowElapsedMs = { elapsed },
+            nowWallMs = { 1_000L + elapsed },
+            trigger = { GattNotificationTrigger.TRIGGERED },
+            onCriticalFault = faults::add,
+        )
+
+        queue.enqueue(GattNotificationStream.ACCEL, characteristic, byteArrayOf(1), 1, 100, lossless = true)
+        queue.enqueue(GattNotificationStream.ACCEL, characteristic, byteArrayOf(2), 2, 200, lossless = true)
+        val result = queue.enqueue(GattNotificationStream.ACCEL, characteristic, byteArrayOf(3), 3, 300, lossless = true)
+
+        assertEquals(GattEnqueueResult.CRITICAL_OVERFLOW, result)
+        assertEquals(1L, queue.snapshot().criticalOverflowCount)
+        assertTrue(faults.single().startsWith("lossless_notification_queue_overflow"))
+    }
+
+    @Test
+    fun `overdue required context is promoted after at most eight high priority live sends`() {
+        var elapsed = 0L
+        val triggered = mutableListOf<Pair<GattNotificationStream, Long>>()
+        val queue = queue(elapsed = { elapsed }) { item ->
+            triggered += item.stream to item.sourceSequence
+            GattNotificationTrigger.TRIGGERED
+        }
+
+        queue.enqueue(GattNotificationStream.CARDIAC, characteristic, byteArrayOf(1), 1, 100)
+        queue.enqueue(GattNotificationStream.ACCEL, characteristic, byteArrayOf(2), 1, 100)
+        for (sequence in 2L..12L) {
+            queue.enqueue(GattNotificationStream.CARDIAC, characteristic, byteArrayOf(3), sequence, 100 + sequence)
+        }
+        elapsed = 600L
+        repeat(8) { queue.onNotificationSent(true) }
+
+        assertEquals(9, triggered.size)
+        assertEquals(8, triggered.take(8).count { it.first == GattNotificationStream.CARDIAC })
+        assertEquals(GattNotificationStream.ACCEL to 1L, triggered[8])
+    }
+
+    @Test
+    fun `replay receives an opportunity after four live sends when required live context is not overdue`() {
+        var elapsed = 0L
+        val triggered = mutableListOf<GattNotificationOrigin>()
+        val queue = queue(elapsed = { elapsed }) { item ->
+            triggered += item.origin
+            GattNotificationTrigger.TRIGGERED
+        }
+
+        queue.enqueue(GattNotificationStream.CARDIAC, characteristic, byteArrayOf(1), 1, 100)
+        repeat(6) { index ->
+            queue.enqueue(GattNotificationStream.CARDIAC, characteristic, byteArrayOf(2), index + 2L, 200 + index.toLong())
+        }
+        queue.enqueue(
+            GattNotificationStream.ACCEL,
+            characteristic,
+            byteArrayOf(9),
+            50,
+            50,
+            origin = GattNotificationOrigin.REPLAY,
+            recordCount = 5,
+        )
+
+        repeat(4) { queue.onNotificationSent(true) }
+        assertEquals(
+            listOf(
+                GattNotificationOrigin.LIVE,
+                GattNotificationOrigin.LIVE,
+                GattNotificationOrigin.LIVE,
+                GattNotificationOrigin.LIVE,
+                GattNotificationOrigin.REPLAY,
+            ),
+            triggered,
+        )
+    }
+
+    @Test
+    fun `replay cannot pass overdue required live context`() {
+        var elapsed = 0L
+        val triggered = mutableListOf<Pair<GattNotificationOrigin, GattNotificationStream>>()
+        val queue = queue(elapsed = { elapsed }, maxLiveBeforeReplay = 1) { item ->
+            triggered += item.origin to item.stream
+            GattNotificationTrigger.TRIGGERED
+        }
+
+        queue.enqueue(GattNotificationStream.CARDIAC, characteristic, byteArrayOf(1), 1, 100)
+        queue.enqueue(GattNotificationStream.ACCEL, characteristic, byteArrayOf(2), 1, 100)
+        queue.enqueue(
+            GattNotificationStream.ACCEL,
+            characteristic,
+            byteArrayOf(3),
+            2,
+            200,
+            origin = GattNotificationOrigin.REPLAY,
+            recordCount = 5,
+        )
+        elapsed = 600
+        queue.onNotificationSent(true)
+
+        assertEquals(GattNotificationOrigin.LIVE to GattNotificationStream.ACCEL, triggered[1])
+    }
+
+    @Test
+    fun `per stream evidence records enqueue completion coalescing and maximum service gap`() {
+        var elapsed = 0L
+        val queue = queue(elapsed = { elapsed }) { GattNotificationTrigger.TRIGGERED }
+
+        queue.enqueue(GattNotificationStream.CARDIAC, characteristic, byteArrayOf(1), 1, 100)
+        queue.enqueue(GattNotificationStream.ACCEL, characteristic, byteArrayOf(2), 1, 100)
+        queue.enqueue(GattNotificationStream.ACCEL, characteristic, byteArrayOf(3), 2, 200)
+        elapsed = 750
+        queue.onNotificationSent(true)
+        elapsed = 900
+        queue.onNotificationSent(true)
+
+        val snapshot = queue.snapshot()
+        assertEquals(2L, snapshot.streams.getValue(GattNotificationStream.ACCEL).enqueuedCount)
+        assertEquals(1L, snapshot.streams.getValue(GattNotificationStream.ACCEL).coalescedCount)
+        assertEquals(1L, snapshot.streams.getValue(GattNotificationStream.ACCEL).completedCount)
+        assertTrue(snapshot.streams.getValue(GattNotificationStream.ACCEL).maximumServiceGapMs >= 900L)
+    }
+
+    @Test
+    fun `batched replay reduces backlog at lower Build 44 completion fixture while live context remains served`() {
+        var elapsed = 0L
+        var completedReplayRecords = 0
+        val completedLiveStreams = mutableListOf<GattNotificationStream>()
+        val queue = GattNotificationQueue(
+            maxDepth = 512,
+            ppgSoftLimit = 480,
+            timeoutMs = 3_000,
+            contextPromotionAgeMs = 500,
+            maxConsecutiveHighPriorityLive = 8,
+            maxLiveBeforeReplay = 4,
+            replayHighWaterMark = 500,
+            nowElapsedMs = { elapsed },
+            nowWallMs = { 1_000L + elapsed },
+            trigger = { GattNotificationTrigger.TRIGGERED },
+            onCompleted = { item ->
+                if (item.origin == GattNotificationOrigin.REPLAY) completedReplayRecords += item.recordCount
+                else completedLiveStreams += item.stream
+            },
+        )
+        repeat(50) { index ->
+            queue.enqueue(
+                GattNotificationStream.ACCEL,
+                characteristic,
+                byteArrayOf(9),
+                index + 1L,
+                index.toLong(),
+                origin = GattNotificationOrigin.REPLAY,
+                recordCount = 5,
+            )
+        }
+
+        repeat(10) { second ->
+            elapsed = second * 1_000L
+            repeat(3) { beat ->
+                queue.enqueue(GattNotificationStream.CARDIAC, characteristic, byteArrayOf(1), second * 3L + beat + 1L, elapsed)
+            }
+            queue.enqueue(GattNotificationStream.EDA, characteristic, byteArrayOf(2), second + 1L, elapsed)
+            queue.enqueue(GattNotificationStream.SKIN_TEMP, characteristic, byteArrayOf(3), second + 1L, elapsed)
+            queue.enqueue(GattNotificationStream.ACCEL, characteristic, byteArrayOf(4), second + 1L, elapsed)
+            repeat(14) { completion ->
+                elapsed = second * 1_000L + completion * 71L
+                queue.onNotificationSent(true)
+            }
+        }
+
+        assertTrue("Replay must complete more than zero records", completedReplayRecords > 0)
+        assertTrue("Replay completions must remain within the 250-record backlog", completedReplayRecords in 1..250)
+        assertTrue("A 250-record backlog must decrease", 250 - completedReplayRecords < 250)
+        assertTrue(completedLiveStreams.contains(GattNotificationStream.CARDIAC))
+        assertTrue(completedLiveStreams.contains(GattNotificationStream.EDA))
+        assertTrue(completedLiveStreams.contains(GattNotificationStream.ACCEL))
+        assertTrue(queue.snapshot().streams.getValue(GattNotificationStream.ACCEL).maximumServiceGapMs <= 2_000L)
+    }
+
     private fun queue(
         elapsed: () -> Long,
         maxDepth: Int = 32,
         ppgSoftLimit: Int = 16,
         timeoutMs: Long = 3_000,
+        contextPromotionAgeMs: Long = 500,
+        maxConsecutiveHighPriorityLive: Int = 8,
+        maxLiveBeforeReplay: Int = 4,
+        replayHighWaterMark: Int = maxDepth,
         trigger: (GattNotification) -> GattNotificationTrigger,
     ): GattNotificationQueue {
         return GattNotificationQueue(
             maxDepth = maxDepth,
             ppgSoftLimit = ppgSoftLimit,
             timeoutMs = timeoutMs,
+            contextPromotionAgeMs = contextPromotionAgeMs,
+            maxConsecutiveHighPriorityLive = maxConsecutiveHighPriorityLive,
+            maxLiveBeforeReplay = maxLiveBeforeReplay,
+            replayHighWaterMark = replayHighWaterMark,
             nowElapsedMs = elapsed,
             nowWallMs = { 1_000L + elapsed() },
             trigger = trigger,

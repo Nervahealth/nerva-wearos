@@ -79,6 +79,8 @@ class BleGattService : Service() {
     private var skinTempCharacteristic: BluetoothGattCharacteristic? = null
     private var statusCharacteristic: BluetoothGattCharacteristic? = null
     private var hapticReceiptCharacteristic: BluetoothGattCharacteristic? = null
+    private var sourceRecordCharacteristic: BluetoothGattCharacteristic? = null
+    private var sourceControlCharacteristic: BluetoothGattCharacteristic? = null
 
     private var edaSequence = 0L
     private var ppgSequence = 0L
@@ -93,8 +95,27 @@ class BleGattService : Service() {
     private var activeSensorMask = 0
     private var healthFlushCount = 0L
     private var healthScreenOn = true
+    private var healthSourceDataLoss = false
+    private var healthSourceDataLossStreamCode = 0
+    private var healthSourceDataLossFirstSequence = 0L
+    private var healthSourceDataLossLastSequence = 0L
+    private var healthSourceDataLossReasonCode = 0
+    private lateinit var sourceJournal: SourceJournal
+    private var negotiatedMtu = 23
+    private var durablePhoneRecordIndex = 0L
+    private var lastReplayQueuedRecordIndex = 0L
+    private var replayBacklogCount = 0L
+    private var replayActive = false
+    private var activeReplaySessionId: UUID? = null
+    private var pendingSourceResumeRequest: SourceResumeRequest? = null
+    private val pendingLiveSourceRecords = ArrayList<WatchSourceRecord>()
+    private var liveSourceFlushScheduled = false
     private val healthHandler = Handler(Looper.getMainLooper())
     private val transportHandler = Handler(Looper.getMainLooper())
+    private val liveSourceFlush = Runnable {
+        liveSourceFlushScheduled = false
+        flushLiveSourceRecords()
+    }
     private val notificationQueue = GattNotificationQueue(
         maxDepth = 256,
         ppgSoftLimit = 96,
@@ -105,7 +126,11 @@ class BleGattService : Service() {
         onCriticalFault = { reason ->
             Log.e(TAG, "CRITICAL BLE transport fault: $reason")
             broadcastStatus("BLE TRANSPORT FAULT: $reason")
+            transportHandler.post { abortTransportLineage("critical_queue_fault") }
         },
+        onTriggered = { item -> handleNotificationTriggered(item) },
+        onCompleted = { item -> handleNotificationCompleted(item) },
+        onFailed = { item -> handleNotificationFailed(item) },
     )
     private val healthTicker = object : Runnable {
         override fun run() {
@@ -118,15 +143,7 @@ class BleGattService : Service() {
             if (notificationQueue.checkTimeout()) {
                 Log.e(TAG, "BLE notification timed out; transport evidence marked failed")
                 broadcastStatus("BLE TRANSPORT TIMEOUT")
-                val stalledDevice = connectedDevice
-                notificationCompletionBlocked = true
-                notificationSubscriptions.clear()
-                connectedDevice = null
-                notificationQueue.reset()
-                if (stalledDevice != null) {
-                    runCatching { gattServer?.cancelConnection(stalledDevice) }
-                        .onFailure { Log.e(TAG, "Failed to cancel stalled GATT connection", it) }
-                }
+                abortTransportLineage("notification_timeout")
             }
             transportHandler.postDelayed(this, GATT_TIMEOUT_CHECK_INTERVAL_MS)
         }
@@ -141,6 +158,8 @@ class BleGattService : Service() {
         val HAPTIC_CHARACTERISTIC_UUID: UUID = UUID.fromString("0000fff5-0000-1000-8000-00805f9b34fb")
         val STATUS_CHARACTERISTIC_UUID: UUID = UUID.fromString("66666666-6666-6666-6666-666666666666")
         val HAPTIC_RECEIPT_CHARACTERISTIC_UUID: UUID = UUID.fromString("99999999-9999-9999-9999-999999999999")
+        val SOURCE_RECORD_CHARACTERISTIC_UUID: UUID = UUID.fromString("77777777-7777-7777-7777-777777777777")
+        val SOURCE_CONTROL_CHARACTERISTIC_UUID: UUID = UUID.fromString("88888888-8888-8888-8888-888888888888")
 
         // Client Characteristic Configuration Descriptor (required for NOTIFY)
         val CCCD_UUID: UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
@@ -164,6 +183,9 @@ class BleGattService : Service() {
         private const val DEVICE_HEALTH_INTERVAL_MS = 30_000L
         private const val GATT_NOTIFICATION_TIMEOUT_MS = 3_000L
         private const val GATT_TIMEOUT_CHECK_INTERVAL_MS = 250L
+        private const val ATT_PROTOCOL_OVERHEAD_BYTES = 3
+        private const val REPLAY_PAGE_RECORDS = 96
+        private const val LIVE_SOURCE_BATCH_MS = 200L
     }
 
     inner class LocalBinder : Binder() {
@@ -174,7 +196,8 @@ class BleGattService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "BleGattService created (Build 44w transport temporal truth)")
+        Log.d(TAG, "BleGattService created (Build 45w continuous-collection candidate)")
+        sourceJournal = WatchSourceRuntime.journal(this)
         initializeVibrator()
         initializeHapticNotificationChannel()
         initializeBluetooth()
@@ -236,10 +259,13 @@ class BleGattService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "BleGattService destroyed (Build 44w transport temporal truth)")
+        Log.d(TAG, "BleGattService destroyed (Build 45w continuous-collection candidate)")
         vibrator?.cancel()
         healthHandler.removeCallbacks(healthTicker)
         transportHandler.removeCallbacks(transportTicker)
+        transportHandler.removeCallbacks(liveSourceFlush)
+        pendingLiveSourceRecords.clear()
+        liveSourceFlushScheduled = false
         notificationQueue.reset()
         unregisterSensorReceivers()
         stopAdvertising()
@@ -349,6 +375,26 @@ class BleGattService : Service() {
         }
         service.addCharacteristic(hapticReceiptCharacteristic!!)
 
+        // Build 45 canonical source records (READ + NOTIFY). Live and replay use
+        // the same CRC-framed canonical bytes; the frame carries replay truth.
+        sourceRecordCharacteristic = BluetoothGattCharacteristic(
+            SOURCE_RECORD_CHARACTERISTIC_UUID,
+            BluetoothGattCharacteristic.PROPERTY_READ or BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+            BluetoothGattCharacteristic.PERMISSION_READ
+        ).apply {
+            addDescriptor(createCccdDescriptor())
+            value = byteArrayOf(SourceReplayProtocol.MARKER.toByte(), SourceReplayProtocol.VERSION.toByte())
+        }
+        service.addCharacteristic(sourceRecordCharacteristic!!)
+
+        // Build 45 resume and completed-segment acknowledgement control writes.
+        sourceControlCharacteristic = BluetoothGattCharacteristic(
+            SOURCE_CONTROL_CHARACTERISTIC_UUID,
+            BluetoothGattCharacteristic.PROPERTY_WRITE,
+            BluetoothGattCharacteristic.PERMISSION_WRITE
+        )
+        service.addCharacteristic(sourceControlCharacteristic!!)
+
         // Haptic Command Characteristic (WRITE)
         val hapticCharacteristic = BluetoothGattCharacteristic(
             HAPTIC_CHARACTERISTIC_UUID,
@@ -383,6 +429,15 @@ class BleGattService : Service() {
                     notificationQueue.reset()
                     notificationCompletionBlocked = true
                     connectedDevice = device
+                    negotiatedMtu = 23
+                    replayActive = false
+                    durablePhoneRecordIndex = 0L
+                    lastReplayQueuedRecordIndex = 0L
+                    replayBacklogCount = 0L
+                    activeReplaySessionId = null
+                    transportHandler.removeCallbacks(liveSourceFlush)
+                    pendingLiveSourceRecords.clear()
+                    liveSourceFlushScheduled = false
                     if (device != null) synchronized(notificationSubscriptions) {
                         notificationSubscriptions.getOrPut(device.address) { mutableSetOf() }
                     }
@@ -395,6 +450,15 @@ class BleGattService : Service() {
                 BluetoothProfile.STATE_DISCONNECTED -> {
                     notificationCompletionBlocked = true
                     connectedDevice = null
+                    negotiatedMtu = 23
+                    replayActive = false
+                    durablePhoneRecordIndex = 0L
+                    lastReplayQueuedRecordIndex = 0L
+                    replayBacklogCount = 0L
+                    activeReplaySessionId = null
+                    transportHandler.removeCallbacks(liveSourceFlush)
+                    pendingLiveSourceRecords.clear()
+                    liveSourceFlushScheduled = false
                     notificationQueue.reset()
                     if (device != null) synchronized(notificationSubscriptions) {
                         notificationSubscriptions.remove(device.address)
@@ -405,6 +469,15 @@ class BleGattService : Service() {
                     startAdvertising()
                 }
             }
+        }
+
+        override fun onMtuChanged(device: BluetoothDevice?, mtu: Int) {
+            val activeDevice = connectedDevice
+            if (device == null || activeDevice == null || device.address != activeDevice.address) return
+            negotiatedMtu = mtu.coerceAtLeast(23)
+            Log.i(TAG, "Negotiated GATT MTU=$negotiatedMtu ATT payload=${maximumAttPayloadBytes()}")
+            broadcastStatus("BLE MTU: $negotiatedMtu (payload ${maximumAttPayloadBytes()})")
+            notifyDeviceHealth()
         }
 
         override fun onServiceAdded(status: Int, service: BluetoothGattService?) {
@@ -437,6 +510,7 @@ class BleGattService : Service() {
             value: ByteArray?
         ) {
             Log.d(TAG, "Write request for ${characteristic?.uuid}, ${value?.size} bytes")
+            var writeResponseStatus = BluetoothGatt.GATT_SUCCESS
 
             // Handle haptic command writes
             if (characteristic?.uuid == HAPTIC_CHARACTERISTIC_UUID && value != null) {
@@ -474,8 +548,28 @@ class BleGattService : Service() {
                 )
             }
 
+            if (characteristic?.uuid == SOURCE_CONTROL_CHARACTERISTIC_UUID && value != null) {
+                try {
+                    when (value.getOrNull(2)?.toInt()?.and(0xFF)) {
+                        SourceReplayProtocol.RESUME_REQUEST -> handleSourceResume(
+                            SourceReplayProtocol.decodeResumeRequest(value),
+                        )
+
+                        SourceReplayProtocol.SEGMENT_ACKNOWLEDGEMENT -> handleSourceAcknowledgement(
+                            SourceReplayProtocol.decodeSegmentAcknowledgement(value),
+                        )
+
+                        else -> throw SourceJournalCorruptionException("Unknown source-control message")
+                    }
+                } catch (error: Exception) {
+                    writeResponseStatus = BluetoothGatt.GATT_FAILURE
+                    Log.e(TAG, "Build 45 source-control rejection: ${error.message}", error)
+                    broadcastStatus("SOURCE CONTROL REJECTED: ${error.javaClass.simpleName}")
+                }
+            }
+
             if (responseNeeded) {
-                gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, value)
+                gattServer?.sendResponse(device, requestId, writeResponseStatus, offset, value)
             }
         }
 
@@ -520,6 +614,9 @@ class BleGattService : Service() {
                         if (enabled) enabledCharacteristics.add(charUuid) else enabledCharacteristics.remove(charUuid)
                     }
                     if (enabled) notificationCompletionBlocked = false
+                    if (enabled && charUuid == SOURCE_RECORD_CHARACTERISTIC_UUID) {
+                        pendingSourceResumeRequest?.let(::beginSourceReplay)
+                    }
                 }
             }
 
@@ -724,32 +821,339 @@ class BleGattService : Service() {
             activeSensorMask = intent.getIntExtra("activeSensorMask", activeSensorMask)
             healthFlushCount = intent.getLongExtra("flushCount", healthFlushCount)
             healthScreenOn = intent.getBooleanExtra("screenOn", healthScreenOn)
+            healthSourceDataLoss = intent.getBooleanExtra("sourceDataLoss", healthSourceDataLoss)
+            healthSourceDataLossStreamCode = intent.getIntExtra("sourceDataLossStreamCode", healthSourceDataLossStreamCode)
+            healthSourceDataLossFirstSequence = intent.getLongExtra("sourceDataLossFirstSequence", healthSourceDataLossFirstSequence)
+            healthSourceDataLossLastSequence = intent.getLongExtra("sourceDataLossLastSequence", healthSourceDataLossLastSequence)
+            healthSourceDataLossReasonCode = intent.getIntExtra("sourceDataLossReasonCode", healthSourceDataLossReasonCode)
             notifyDeviceHealth()
         }
     }
 
+    private val sourceRecordReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val bytes = intent?.getByteArrayExtra("canonicalBytes") ?: return
+            try {
+                val decoded = SourceJournalCodec.decodeAll(bytes)
+                if (decoded.records.size != 1 || decoded.validBytes != bytes.size) {
+                    throw SourceJournalCorruptionException("Live source broadcast was not one canonical record")
+                }
+                if (activeReplaySessionId != null && activeReplaySessionId != sourceJournal.watchBootSessionId) {
+                    return
+                }
+                enqueueNewlyFinalizedManifests()
+                queueLiveSourceRecord(decoded.records.single())
+            } catch (error: Exception) {
+                Log.e(TAG, "Build 45 live source-record rejection: ${error.message}", error)
+                broadcastStatus("DATA LOSS: invalid live source record")
+            }
+        }
+    }
+
     private fun registerSensorReceivers() {
-        registerReceiver(edaReceiver, IntentFilter("com.hugr.wearos.EDA_DATA"), RECEIVER_EXPORTED)
         registerReceiver(ppgReceiver, IntentFilter("com.hugr.wearos.PPG_DATA"), RECEIVER_EXPORTED)
-        registerReceiver(accelReceiver, IntentFilter("com.hugr.wearos.ACCEL_DATA"), RECEIVER_EXPORTED)
-        registerReceiver(skinTempReceiver, IntentFilter("com.hugr.wearos.TEMP_DATA"), RECEIVER_EXPORTED)
-        registerReceiver(hrReceiver, IntentFilter("com.hugr.wearos.HR_DATA"), Context.RECEIVER_NOT_EXPORTED)
-        registerReceiver(cardiacEvidenceReceiver, IntentFilter("com.hugr.wearos.CARDIAC_EVIDENCE_DATA"), Context.RECEIVER_NOT_EXPORTED)
         registerReceiver(healthMetadataReceiver, IntentFilter(HealthSensorService.ACTION_DEVICE_HEALTH_UPDATE), Context.RECEIVER_NOT_EXPORTED)
+        registerReceiver(sourceRecordReceiver, IntentFilter(HealthSensorService.ACTION_SOURCE_RECORD), Context.RECEIVER_NOT_EXPORTED)
         Log.d(TAG, "Sensor broadcast receivers registered")
     }
 
     private fun unregisterSensorReceivers() {
         try {
-            unregisterReceiver(edaReceiver)
             unregisterReceiver(ppgReceiver)
-            unregisterReceiver(accelReceiver)
-            unregisterReceiver(skinTempReceiver)
-            unregisterReceiver(hrReceiver)
-            unregisterReceiver(cardiacEvidenceReceiver)
             unregisterReceiver(healthMetadataReceiver)
+            unregisterReceiver(sourceRecordReceiver)
         } catch (e: Exception) {
             Log.w(TAG, "Error unregistering receivers: ${e.message}")
+        }
+    }
+
+    // ─── Build 45 durable source record and replay path ──────────────────────────
+
+    private fun maximumAttPayloadBytes(): Int = (negotiatedMtu - ATT_PROTOCOL_OVERHEAD_BYTES).coerceAtLeast(20)
+
+    private fun abortTransportLineage(reason: String) {
+        val stalledDevice = connectedDevice
+        notificationCompletionBlocked = true
+        notificationSubscriptions.clear()
+        connectedDevice = null
+        activeReplaySessionId = null
+        replayActive = false
+        durablePhoneRecordIndex = 0L
+        lastReplayQueuedRecordIndex = 0L
+        replayBacklogCount = 0L
+        pendingLiveSourceRecords.clear()
+        liveSourceFlushScheduled = false
+        transportHandler.removeCallbacks(liveSourceFlush)
+        notificationQueue.reset()
+        if (stalledDevice != null) {
+            runCatching { gattServer?.cancelConnection(stalledDevice) }
+                .onFailure { Log.e(TAG, "Failed to cancel stalled GATT connection after $reason", it) }
+        }
+    }
+
+    private fun queueStreamFor(stream: SourceStreamCode): GattNotificationStream = when (stream) {
+        SourceStreamCode.CARDIAC -> GattNotificationStream.CARDIAC
+        SourceStreamCode.EDA -> GattNotificationStream.EDA
+        SourceStreamCode.ACCEL -> GattNotificationStream.ACCEL
+        SourceStreamCode.SKIN_TEMP -> GattNotificationStream.SKIN_TEMP
+        SourceStreamCode.DEVICE_HEALTH -> GattNotificationStream.DEVICE_HEALTH
+    }
+
+    private fun queueLiveSourceRecord(record: WatchSourceRecord) {
+        val device = connectedDevice ?: return
+        if (!isNotificationEnabled(device, SOURCE_RECORD_CHARACTERISTIC_UUID)) return
+        pendingLiveSourceRecords += record
+        if (!liveSourceFlushScheduled) {
+            liveSourceFlushScheduled = true
+            transportHandler.postDelayed(liveSourceFlush, LIVE_SOURCE_BATCH_MS)
+        }
+    }
+
+    private fun flushLiveSourceRecords() {
+        if (pendingLiveSourceRecords.isEmpty()) return
+        val device = connectedDevice
+        if (device == null || !isNotificationEnabled(device, SOURCE_RECORD_CHARACTERISTIC_UUID)) {
+            pendingLiveSourceRecords.clear()
+            return
+        }
+        val records = pendingLiveSourceRecords.sortedBy { it.recordIndex }
+        pendingLiveSourceRecords.clear()
+        enqueueSourceRecords(records, replay = false)
+    }
+
+    private fun enqueueSourceRecords(records: List<WatchSourceRecord>, replay: Boolean) {
+        if (records.isEmpty()) return
+        val characteristic = sourceRecordCharacteristic ?: return
+        val payloadLimit = maximumAttPayloadBytes()
+        if (replay && payloadLimit < SourceReplayProtocol.MIN_ATT_PAYLOAD_FOR_FIVE_ACCEL) {
+            replayActive = false
+            broadcastStatus("DATA LOSS RISK: MTU $negotiatedMtu cannot meet five-ACCEL replay gate")
+            return
+        }
+        try {
+            SourceReplayProtocol.buildDataFrames(records, replay, payloadLimit).forEach { frameBytes ->
+                val frame = SourceReplayProtocol.decodeDataFrame(frameBytes)
+                val first = frame.records.first()
+                val result = notificationQueue.enqueue(
+                    stream = queueStreamFor(first.stream),
+                    characteristicUuid = characteristic.uuid,
+                    payload = frameBytes,
+                    sourceSequence = first.sourceSequence,
+                    sourceTimestampMs = first.sourceTimestampMs,
+                    origin = if (replay) GattNotificationOrigin.REPLAY else GattNotificationOrigin.LIVE,
+                    recordCount = frame.records.size,
+                    lossless = true,
+                )
+                if (result == GattEnqueueResult.CRITICAL_OVERFLOW) {
+                    replayActive = false
+                    broadcastStatus("DATA LOSS: canonical source queue overflow")
+                    return
+                }
+                if (replay && (result == GattEnqueueResult.QUEUED || result == GattEnqueueResult.COALESCED)) {
+                    lastReplayQueuedRecordIndex = maxOf(lastReplayQueuedRecordIndex, frame.records.last().recordIndex)
+                }
+            }
+        } catch (error: Exception) {
+            replayActive = false
+            Log.e(TAG, "Build 45 source-frame enqueue failed: ${error.message}", error)
+            broadcastStatus("DATA LOSS: source frame enqueue failed")
+        }
+    }
+
+    private fun enqueueNewlyFinalizedManifests() {
+        sourceJournal.drainNewlyFinalizedManifests().forEach { manifest ->
+            val bytes = SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(manifest))
+            if (bytes.size > maximumAttPayloadBytes()) {
+                replayActive = false
+                throw SourceJournalCorruptionException("Live segment manifest exceeds negotiated ATT payload")
+            }
+            val result = notificationQueue.enqueue(
+                stream = GattNotificationStream.DEVICE_HEALTH,
+                characteristicUuid = SOURCE_RECORD_CHARACTERISTIC_UUID,
+                payload = bytes,
+                sourceSequence = manifest.firstRecordIndex,
+                sourceTimestampMs = System.currentTimeMillis(),
+                origin = GattNotificationOrigin.REPLAY,
+                lossless = true,
+            )
+            if (result == GattEnqueueResult.CRITICAL_OVERFLOW || result == GattEnqueueResult.DROPPED_LOW_PRIORITY) {
+                throw SourceJournalCapacityException("Finalized segment manifest could not enter the transport queue")
+            }
+        }
+    }
+
+    private fun handleSourceResume(request: SourceResumeRequest) {
+        pendingSourceResumeRequest = request
+        val device = connectedDevice ?: return
+        if (!isNotificationEnabled(device, SOURCE_RECORD_CHARACTERISTIC_UUID)) return
+        beginSourceReplay(request)
+    }
+
+    private fun beginSourceReplay(request: SourceResumeRequest) {
+        sourceJournal.finalizeActiveSegment()
+        sourceJournal.drainNewlyFinalizedManifests()
+        val retainedSessions = sourceJournal.retainedSessionIds()
+        if (retainedSessions.isEmpty()) {
+            activeReplaySessionId = sourceJournal.watchBootSessionId
+            durablePhoneRecordIndex = if (request.watchBootSessionId == sourceJournal.watchBootSessionId) {
+                request.cumulativeRecordIndex.coerceAtLeast(0L)
+            } else {
+                0L
+            }
+            lastReplayQueuedRecordIndex = durablePhoneRecordIndex
+            replayBacklogCount = 0L
+            replayActive = false
+            broadcastStatus("CAUGHT UP: source journal empty")
+            return
+        }
+        val session = retainedSessions.first()
+        val acceptedIndex = if (request.watchBootSessionId == session) request.cumulativeRecordIndex.coerceAtLeast(0L) else 0L
+        beginSourceReplaySession(session, acceptedIndex)
+    }
+
+    private fun beginSourceReplaySession(session: UUID, acceptedIndex: Long) {
+        val highestRecordIndex = sourceJournal.highestRecordIndex(session)
+        if (acceptedIndex > highestRecordIndex) {
+            throw SourceJournalCorruptionException("Phone resume index exceeds watch journal")
+        }
+        activeReplaySessionId = session
+        durablePhoneRecordIndex = acceptedIndex
+        lastReplayQueuedRecordIndex = acceptedIndex
+        replayBacklogCount = sourceJournal.countRecordsAfter(session, durablePhoneRecordIndex)
+        replayActive = replayBacklogCount > 0
+
+        sourceJournal.finalizedManifests(session)
+            .sortedBy { it.firstRecordIndex }
+            .forEach { manifest ->
+                val bytes = SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(manifest))
+                if (bytes.size > maximumAttPayloadBytes()) {
+                    replayActive = false
+                    throw SourceJournalCorruptionException("Manifest exceeds negotiated ATT payload")
+                }
+                val result = notificationQueue.enqueue(
+                    stream = GattNotificationStream.DEVICE_HEALTH,
+                    characteristicUuid = SOURCE_RECORD_CHARACTERISTIC_UUID,
+                    payload = bytes,
+                    sourceSequence = manifest.firstRecordIndex,
+                    sourceTimestampMs = System.currentTimeMillis(),
+                    origin = GattNotificationOrigin.REPLAY,
+                    lossless = true,
+                )
+                if (result == GattEnqueueResult.CRITICAL_OVERFLOW || result == GattEnqueueResult.DROPPED_LOW_PRIORITY) {
+                    replayActive = false
+                    throw SourceJournalCapacityException("Retained manifest could not enter the transport queue")
+                }
+            }
+        broadcastStatus("REPLAYING ${session.toString().take(8)}: $replayBacklogCount source records from index ${durablePhoneRecordIndex + 1L}")
+        pumpReplay()
+    }
+
+    private fun handleSourceAcknowledgement(acknowledgement: SourceSegmentAcknowledgement) {
+        val activeSession = activeReplaySessionId
+            ?: throw SourceJournalCorruptionException("Acknowledgement arrived without an active replay session")
+        if (acknowledgement.watchBootSessionId != activeSession) {
+            throw SourceJournalCorruptionException("Acknowledgement watch session mismatch")
+        }
+        if (acknowledgement.cumulativeRecordIndex < durablePhoneRecordIndex) {
+            throw SourceJournalCorruptionException("Acknowledgement moved backwards")
+        }
+        if (!sourceJournal.acknowledgeCompletedSegment(
+                acknowledgement.watchBootSessionId,
+                acknowledgement.cumulativeRecordIndex,
+                acknowledgement.completedSegmentSha256,
+            )
+        ) {
+            throw SourceJournalCorruptionException("Acknowledgement endpoint/hash did not match a finalized segment")
+        }
+        durablePhoneRecordIndex = acknowledgement.cumulativeRecordIndex
+        lastReplayQueuedRecordIndex = maxOf(lastReplayQueuedRecordIndex, durablePhoneRecordIndex)
+        replayBacklogCount = sourceJournal.countRecordsAfter(activeSession, durablePhoneRecordIndex)
+        replayActive = replayBacklogCount > 0
+        broadcastStatus(if (replayActive) "REPLAYING: $replayBacklogCount remain" else "CAUGHT UP: source journal acknowledged")
+        pumpReplay()
+        advanceReplaySessionIfReady()
+    }
+
+    private fun pumpReplay() {
+        if (!replayActive || notificationCompletionBlocked) return
+        val device = connectedDevice ?: return
+        if (!isNotificationEnabled(device, SOURCE_RECORD_CHARACTERISTIC_UUID)) return
+        if (notificationQueue.snapshot().pendingReplayFrames >= 4) return
+        val activeSession = activeReplaySessionId ?: return
+        val page = sourceJournal.readRecordsAfter(
+            activeSession,
+            lastReplayQueuedRecordIndex,
+            REPLAY_PAGE_RECORDS,
+        )
+        if (page.isEmpty()) {
+            replayBacklogCount = sourceJournal.countRecordsAfter(activeSession, durablePhoneRecordIndex)
+            if (replayBacklogCount == 0L) {
+                replayActive = false
+                broadcastStatus("CAUGHT UP: no source replay backlog")
+                advanceReplaySessionIfReady()
+            }
+            return
+        }
+        enqueueSourceRecords(page, replay = true)
+    }
+
+    private fun advanceReplaySessionIfReady() {
+        val completedSession = activeReplaySessionId ?: return
+        if (completedSession == sourceJournal.watchBootSessionId) return
+        if (sourceJournal.countRecordsAfter(completedSession, durablePhoneRecordIndex) != 0L) return
+        if (sourceJournal.hasFinalizedSegments(completedSession)) return
+        if (notificationQueue.snapshot().pendingReplayFrames != 0) return
+        val nextSession = sourceJournal.retainedSessionIds().firstOrNull()
+        if (nextSession == null) {
+            activeReplaySessionId = sourceJournal.watchBootSessionId
+            replayActive = false
+            broadcastStatus("CAUGHT UP: all retained watch sessions acknowledged")
+            return
+        }
+        beginSourceReplaySession(nextSession, 0L)
+    }
+
+    private fun sourceFrameRecords(item: GattNotification): List<WatchSourceRecord> {
+        if (item.characteristicUuid != SOURCE_RECORD_CHARACTERISTIC_UUID) return emptyList()
+        if (item.payload.size < 3 || (item.payload[2].toInt() and 0xFF) != SourceReplayProtocol.DATA_FRAME) return emptyList()
+        return SourceReplayProtocol.decodeDataFrame(item.payload).records
+    }
+
+    private fun handleNotificationTriggered(item: GattNotification) {
+        val records = runCatching { sourceFrameRecords(item) }.getOrElse {
+            broadcastStatus("DATA LOSS: triggered source frame failed canonical decode")
+            emptyList()
+        }
+        if (records.isNotEmpty()) {
+            sourceJournal.recordDelivery(
+                records,
+                if (item.origin == GattNotificationOrigin.REPLAY) SourceDeliveryState.REPLAY_SENT else SourceDeliveryState.LIVE_SENT,
+            )
+        }
+    }
+
+    private fun handleNotificationCompleted(item: GattNotification) {
+        val records = runCatching { sourceFrameRecords(item) }.getOrElse {
+            broadcastStatus("DATA LOSS: completed source frame failed canonical decode")
+            emptyList()
+        }
+        if (records.isNotEmpty()) {
+            sourceJournal.recordDelivery(
+                records,
+                if (item.origin == GattNotificationOrigin.REPLAY) SourceDeliveryState.REPLAY_CONFIRMED else SourceDeliveryState.LIVE_CONFIRMED,
+            )
+        }
+        if (item.origin == GattNotificationOrigin.REPLAY) {
+            pumpReplay()
+            advanceReplaySessionIfReady()
+        }
+    }
+
+    private fun handleNotificationFailed(item: GattNotification) {
+        if (item.characteristicUuid == SOURCE_RECORD_CHARACTERISTIC_UUID) {
+            replayActive = false
+            lastReplayQueuedRecordIndex = durablePhoneRecordIndex
+            broadcastStatus("SOURCE DELIVERY FAILED: reconnect/resume required")
         }
     }
 
@@ -1104,6 +1508,7 @@ class BleGattService : Service() {
             SKIN_TEMP_CHARACTERISTIC_UUID -> skinTempCharacteristic
             STATUS_CHARACTERISTIC_UUID -> statusCharacteristic
             HAPTIC_RECEIPT_CHARACTERISTIC_UUID -> hapticReceiptCharacteristic
+            SOURCE_RECORD_CHARACTERISTIC_UUID -> sourceRecordCharacteristic
             else -> null
         }
     }
@@ -1139,9 +1544,6 @@ class BleGattService : Service() {
     }
 
     private fun notifyDeviceHealth() {
-        val characteristic = statusCharacteristic ?: return
-        connectedDevice ?: return
-        healthSequence = (healthSequence + 1) and 0xFFFF_FFFFL
         val occurredAtWatchMs = System.currentTimeMillis()
         val (batteryPercent, charging) = batteryState()
         var flags = 0
@@ -1150,39 +1552,45 @@ class BleGattService : Service() {
         if (healthSdkConnected) flags = flags or 0x04
         if (healthScreenOn) flags = flags or 0x08
         val transport = notificationQueue.snapshot()
-        val buffer = ByteBuffer.allocate(81).order(ByteOrder.LITTLE_ENDIAN)
-        buffer.put(WATCHTOWER_V2_MARKER.toByte())
-        buffer.putInt(healthSequence.toInt())
-        buffer.putLong(occurredAtWatchMs)
-        buffer.put(batteryPercent.toByte())
-        buffer.put(flags.toByte())
-        buffer.put(activeSensorMask.toByte())
-        buffer.put(healthSdkStatus.toByte())
-        buffer.putInt(appVersionCode())
-        buffer.putInt(totalSensorPackets.toInt())
-        buffer.putInt(healthFlushCount.toInt())
-        buffer.putInt(droppedNoConnectionCount.toInt())
-        buffer.put(WATCHTOWER_TELEMETRY_VERSION.toByte())
-        buffer.put(HAPTIC_POLICY_VERSION.toByte())
-        buffer.putShort(transport.queueDepth.coerceIn(0, 65_535).toShort())
-        buffer.putInt(transport.oldestAgeMs.coerceIn(0L, 0xFFFF_FFFFL).toInt())
-        buffer.putInt(transport.completedCount.toInt())
-        buffer.putInt(transport.failedCount.toInt())
-        buffer.putInt(transport.timeoutCount.toInt())
-        buffer.putInt(transport.droppedPpgCount.toInt())
-        buffer.putInt(transport.coalescedAccelCount.toInt())
-        buffer.putInt(transport.coalescedEdaCount.toInt())
-        buffer.putInt(transport.criticalOverflowCount.toInt())
-        buffer.putInt(transport.notSubscribedCount.toInt())
-        buffer.putInt(transport.noConnectionCount.toInt())
-        buffer.putInt(transport.resetCount.toInt())
-        transmitSensor(
-            characteristic = characteristic,
-            payload = buffer.array(),
-            stream = GattNotificationStream.DEVICE_HEALTH,
-            sourceSequence = healthSequence,
-            sourceTimestampMs = occurredAtWatchMs,
+        val latestAnomaly = sourceJournal.latestAnomaly()
+        val dataLoss = healthSourceDataLoss || !sourceJournal.preflight().eligible || latestAnomaly != null
+        val dataLossStreamCode = healthSourceDataLossStreamCode.takeIf { it != 0 }
+            ?: latestAnomaly?.stream?.wireCode
+            ?: 0
+        val dataLossFirstSequence = healthSourceDataLossFirstSequence.takeIf { it != 0L }
+            ?: latestAnomaly?.firstAffectedSourceSequence
+            ?: 0L
+        val dataLossLastSequence = healthSourceDataLossLastSequence.takeIf { it != 0L }
+            ?: latestAnomaly?.lastAffectedSourceSequence
+            ?: dataLossFirstSequence
+        val payload = SourcePayloadCodec.deviceHealth(
+            batteryPercent = batteryPercent,
+            flags = flags,
+            activeSensorMask = activeSensorMask,
+            sdkStatus = healthSdkStatus,
+            buildVersionCode = appVersionCode(),
+            totalSourceRecords = sourceJournal.latestRecordIndex(),
+            flushCount = healthFlushCount,
+            transportCompletedCount = transport.completedCount,
+            transportFailedCount = transport.failedCount,
+            transportTimeoutCount = transport.timeoutCount,
+            transportCoalescedAccelCount = transport.coalescedAccelCount,
+            negotiatedMtu = negotiatedMtu,
+            replayBacklogCount = replayBacklogCount,
+            dataLoss = dataLoss,
+            dataLossStreamCode = dataLossStreamCode,
+            dataLossFirstSequence = dataLossFirstSequence,
+            dataLossLastSequence = dataLossLastSequence,
+            dataLossReasonCode = healthSourceDataLossReasonCode,
         )
+        try {
+            val record = sourceJournal.append(SourceStreamCode.DEVICE_HEALTH, occurredAtWatchMs, payload)
+            if (connectedDevice != null) enqueueSourceRecords(listOf(record), replay = false)
+        } catch (error: Exception) {
+            healthSourceDataLoss = true
+            Log.e(TAG, "DATA LOSS: device-health journal append failed", error)
+            broadcastStatus("DATA LOSS: device-health journal append failed")
+        }
     }
 
     private fun notifyEda(

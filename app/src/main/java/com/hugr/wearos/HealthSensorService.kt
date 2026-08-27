@@ -7,7 +7,9 @@ import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.PowerManager
 import android.util.Log
 import com.samsung.android.service.health.tracking.ConnectionListener
@@ -41,6 +43,7 @@ class HealthSensorService : Service() {
         const val ACTION_STOP_TRACKING = "com.hugr.wearos.STOP_TRACKING"
         const val ACTION_STATUS_UPDATE = "com.hugr.wearos.STATUS_UPDATE"
         const val ACTION_DEVICE_HEALTH_UPDATE = "com.hugr.wearos.DEVICE_HEALTH_UPDATE"
+        const val ACTION_SOURCE_RECORD = "com.hugr.wearos.SOURCE_RECORD"
         private const val CHANNEL_ID = "hugr_sensor_channel"
         private const val NOTIFICATION_ID = 1
         private const val FLUSH_INTERVAL_MS = 30000L
@@ -60,6 +63,14 @@ class HealthSensorService : Service() {
     private var sdkStatus = 0
     private var flushCount = 0L
     private var cardiacCallbackId = 0
+    private var sourceJournal: SourceJournal? = null
+    private var journalSyncTimer: Timer? = null
+    private var sourceDataLoss = false
+    private var sourceDataLossStreamCode = 0
+    private var sourceDataLossFirstSequence = 0L
+    private var sourceDataLossLastSequence = 0L
+    private var sourceDataLossReasonCode = 0
+    private val controlHandler = Handler(Looper.getMainLooper())
 
     // Screen state receiver — tracks when screen goes on/off for metadata tagging
     private val screenReceiver = object : BroadcastReceiver() {
@@ -85,14 +96,17 @@ class HealthSensorService : Service() {
         when (intent?.action) {
             ACTION_START_TRACKING -> {
                 startForegroundWithNotification()
+                if (!initializeSourceJournal()) return START_STICKY
                 acquireWakeLock()
                 registerScreenReceiver()
+                startJournalSyncTimer()
                 startFlushTimer()
                 connectAndStartTracking()
             }
             ACTION_STOP_TRACKING -> {
                 stopTrackingAndDisconnect()
                 stopFlushTimer()
+                stopJournalSyncTimer()
                 unregisterScreenReceiver()
                 releaseWakeLock()
                 stopForeground(STOP_FOREGROUND_REMOVE)
@@ -100,8 +114,10 @@ class HealthSensorService : Service() {
             }
             else -> {
                 startForegroundWithNotification()
+                if (!initializeSourceJournal()) return START_STICKY
                 acquireWakeLock()
                 registerScreenReceiver()
+                startJournalSyncTimer()
                 startFlushTimer()
                 connectAndStartTracking()
             }
@@ -112,6 +128,7 @@ class HealthSensorService : Service() {
     override fun onDestroy() {
         stopTrackingAndDisconnect()
         stopFlushTimer()
+        stopJournalSyncTimer()
         unregisterScreenReceiver()
         releaseWakeLock()
         super.onDestroy()
@@ -323,6 +340,11 @@ class HealthSensorService : Service() {
             for (dp in dataPoints) {
                 val conductance = dp.getValue(ValueKey.EdaSet.SKIN_CONDUCTANCE) as? Float ?: 0f
                 val ts = dp.timestamp
+                if (appendRequiredSourceRecord(
+                    SourceStreamCode.EDA,
+                    ts,
+                    SourcePayloadCodec.eda(conductance, deliveryMode, batchSize, isScreenOn),
+                ) == null) return
                 sendStatus("EDA: ${String.format("%.4f", conductance)} µS")
                 val intent = Intent("com.hugr.wearos.EDA_DATA").apply {
                     setPackage(packageName)
@@ -397,7 +419,25 @@ class HealthSensorService : Service() {
             }
             val records = flattenCardiacBatch(cardiacCallbackId, points)
             val deliveryMode = if (isScreenOn) "REALTIME" else "FLUSH"
-            records.forEach { record ->
+            for (record in records) {
+                if (appendRequiredSourceRecord(
+                    SourceStreamCode.CARDIAC,
+                    record.sourceTimestamp,
+                    SourcePayloadCodec.cardiac(
+                        kind = record.kind.wireCode,
+                        value = record.value,
+                        status = record.status,
+                        callbackId = record.callbackId,
+                        pointIndex = record.pointIndex,
+                        pointCount = record.pointCount,
+                        listIndex = record.listIndex,
+                        listCount = record.listCount,
+                        contractAnomaly = record.contractAnomaly,
+                        deliveryMode = deliveryMode,
+                        batchSize = dataPoints.size,
+                        screenOn = isScreenOn,
+                    ),
+                ) == null) return
                 val intent = Intent("com.hugr.wearos.CARDIAC_EVIDENCE_DATA").apply {
                     setPackage(packageName)
                     putExtra("kind", record.kind.wireCode)
@@ -434,6 +474,18 @@ class HealthSensorService : Service() {
                 val ambientTemp = dp.getValue(ValueKey.SkinTemperatureSet.AMBIENT_TEMPERATURE) as? Float ?: 0f
                 val status = dp.getValue(ValueKey.SkinTemperatureSet.STATUS) as? Int ?: -1
                 val ts = dp.timestamp
+                if (appendRequiredSourceRecord(
+                    SourceStreamCode.SKIN_TEMP,
+                    ts,
+                    SourcePayloadCodec.skinTemperature(
+                        objectTemp,
+                        ambientTemp,
+                        status,
+                        deliveryMode,
+                        batchSize,
+                        isScreenOn,
+                    ),
+                ) == null) return
 
                 sendStatus("Temp: skin=${String.format("%.2f", objectTemp)}°C amb=${String.format("%.1f", ambientTemp)}°C [st=$status]")
 
@@ -466,6 +518,11 @@ class HealthSensorService : Service() {
                 val y = dp.getValue(ValueKey.AccelerometerSet.ACCELEROMETER_Y) as? Int ?: 0
                 val z = dp.getValue(ValueKey.AccelerometerSet.ACCELEROMETER_Z) as? Int ?: 0
                 val ts = dp.timestamp
+                if (appendRequiredSourceRecord(
+                    SourceStreamCode.ACCEL,
+                    ts,
+                    SourcePayloadCodec.accel(x, y, z, deliveryMode, batchSize, isScreenOn),
+                ) == null) return
 
                 val intent = Intent("com.hugr.wearos.ACCEL_DATA").apply {
                     setPackage(packageName)
@@ -532,8 +589,108 @@ class HealthSensorService : Service() {
             putExtra("activeSensorMask", activeSensorMask)
             putExtra("flushCount", flushCount)
             putExtra("screenOn", isScreenOn)
+            putExtra("sourceDataLoss", sourceDataLoss)
+            putExtra("sourceDataLossStreamCode", sourceDataLossStreamCode)
+            putExtra("sourceDataLossFirstSequence", sourceDataLossFirstSequence)
+            putExtra("sourceDataLossLastSequence", sourceDataLossLastSequence)
+            putExtra("sourceDataLossReasonCode", sourceDataLossReasonCode)
         }
         sendBroadcast(intent)
+    }
+
+    private fun initializeSourceJournal(): Boolean {
+        return try {
+            val journal = WatchSourceRuntime.journal(this)
+            sourceJournal = journal
+            val preflight = journal.preflight()
+            if (!preflight.eligible) {
+                sourceDataLoss = true
+                sourceDataLossReasonCode = 1
+                sendStatus("DATA LOSS: source journal preflight refused (${preflight.availableBytes}/${preflight.requiredBytes} bytes)")
+                sendDeviceHealthMetadata()
+                false
+            } else {
+                sendStatus("Build 45 source journal ready: session=${journal.watchBootSessionId} capacity=${preflight.availableBytes}")
+                true
+            }
+        } catch (error: Exception) {
+            sourceDataLoss = true
+            sourceDataLossReasonCode = 2
+            sendStatus("DATA LOSS: source journal unavailable (${error.javaClass.simpleName})")
+            sendDeviceHealthMetadata()
+            false
+        }
+    }
+
+    private fun appendRequiredSourceRecord(
+        stream: SourceStreamCode,
+        sourceTimestampMs: Long,
+        payload: ByteArray,
+    ): WatchSourceRecord? {
+        if (sourceDataLoss) return null
+        return try {
+            val record = requireNotNull(sourceJournal) { "Source journal not initialized" }
+                .append(stream, sourceTimestampMs, payload)
+            val intent = Intent(ACTION_SOURCE_RECORD).apply {
+                setPackage(packageName)
+                putExtra("streamCode", record.stream.wireCode)
+                putExtra("recordIndex", record.recordIndex)
+                putExtra("sourceSequence", record.sourceSequence)
+                putExtra("sourceTimestampMs", record.sourceTimestampMs)
+                putExtra("canonicalBytes", record.canonicalBytes())
+            }
+            sendBroadcast(intent)
+            record
+        } catch (error: Exception) {
+            sourceDataLoss = true
+            sourceDataLossStreamCode = (error as? SourceJournalCapacityException)?.stream?.wireCode ?: stream.wireCode
+            sourceDataLossFirstSequence = (error as? SourceJournalCapacityException)?.firstAffectedSourceSequence ?: 0L
+            sourceDataLossLastSequence = (error as? SourceJournalCapacityException)?.lastAffectedSourceSequence ?: sourceDataLossFirstSequence
+            sourceDataLossReasonCode = if (error is SourceJournalCapacityException) 3 else 4
+            sendStatus("DATA LOSS: required ${stream.name} journal append failed seq=${sourceDataLossFirstSequence}-${sourceDataLossLastSequence} (${error.javaClass.simpleName})")
+            sendDeviceHealthMetadata()
+            haltTrackingAfterSourceLoss()
+            null
+        }
+    }
+
+    private fun startJournalSyncTimer() {
+        stopJournalSyncTimer()
+        journalSyncTimer = Timer("HUGR-SourceJournalSync", true).apply {
+            scheduleAtFixedRate(object : TimerTask() {
+                override fun run() {
+                    try {
+                        sourceJournal?.forceSync()
+                    } catch (error: Exception) {
+                        if (!sourceDataLoss) {
+                            sourceDataLoss = true
+                            sourceDataLossReasonCode = 5
+                            sendStatus("DATA LOSS: source journal sync failed (${error.javaClass.simpleName})")
+                            sendDeviceHealthMetadata()
+                            haltTrackingAfterSourceLoss()
+                        }
+                    }
+                }
+            }, 1_000L, 1_000L)
+        }
+    }
+
+    private fun stopJournalSyncTimer() {
+        journalSyncTimer?.cancel()
+        journalSyncTimer = null
+        runCatching { sourceJournal?.forceSync() }
+    }
+
+    private fun haltTrackingAfterSourceLoss() {
+        controlHandler.post {
+            stopTrackingAndDisconnect()
+            stopFlushTimer()
+            stopJournalSyncTimer()
+            releaseWakeLock()
+            activeSensorMask = 0
+            sendDeviceHealthMetadata()
+            sendStatus("STUDY MODE HALTED: required source journal integrity failed")
+        }
     }
 
     // ─── Flush Timer (forces Samsung SDK to deliver batched data every 30s) ───
