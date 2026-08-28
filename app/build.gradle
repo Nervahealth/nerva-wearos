@@ -20,8 +20,8 @@ android {
         applicationId 'com.hugr.wearos'
         minSdk 30
         targetSdk 34
-        versionCode 46
-        versionName '0.46.0-bounded-replay-recovery-candidate'
+        versionCode 47
+        versionName '0.47.0-causal-flight-recorder'
     }
 
     buildTypes {

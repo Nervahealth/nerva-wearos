@@ -25,6 +25,7 @@ import android.content.Context
 import android.content.IntentFilter
 import java.util.Timer
 import java.util.TimerTask
+import java.util.UUID
 
 /**
  * HUGR Labs — HealthSensorService (Build 43w cardiac evidence candidate)
@@ -71,6 +72,8 @@ class HealthSensorService : Service() {
     private var sourceDataLossLastSequence = 0L
     private var sourceDataLossReasonCode = 0
     private val controlHandler = Handler(Looper.getMainLooper())
+    private val causalComponentInstanceId = UUID.randomUUID()
+    private val causalFirstEventGate = FirstCausalEventGate()
 
     // Screen state receiver — tracks when screen goes on/off for metadata tagging
     private val screenReceiver = object : BroadcastReceiver() {
@@ -92,7 +95,21 @@ class HealthSensorService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    override fun onCreate() {
+        super.onCreate()
+        recordCausal(CausalEventCode.HEALTH_SERVICE_CREATED)
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        recordCausal(
+            CausalEventCode.HEALTH_START_COMMAND,
+            arg0 = when (intent?.action) {
+                ACTION_START_TRACKING -> 1L
+                ACTION_STOP_TRACKING -> 2L
+                else -> 0L
+            },
+            arg1 = startId.toLong(),
+        )
         when (intent?.action) {
             ACTION_START_TRACKING -> {
                 startForegroundWithNotification()
@@ -126,6 +143,7 @@ class HealthSensorService : Service() {
     }
 
     override fun onDestroy() {
+        recordCausal(CausalEventCode.HEALTH_SERVICE_DESTROYED)
         stopTrackingAndDisconnect()
         stopFlushTimer()
         stopJournalSyncTimer()
@@ -194,16 +212,19 @@ class HealthSensorService : Service() {
 
     private fun connectAndStartTracking() {
         if (isConnected) {
+            recordCausal(CausalEventCode.SDK_ALREADY_CONNECTED)
             sendStatus("Already connected, starting trackers...")
             startAllTrackers()
             return
         }
         try {
+            recordCausal(CausalEventCode.SDK_CONNECT_REQUESTED)
             sendStatus("Connecting to Samsung Health SDK...")
             healthTrackingService = HealthTrackingService(connectionListener, applicationContext)
             healthTrackingService?.connectService()
             Log.i(TAG, "Connecting to Health Tracking Service...")
         } catch (e: Exception) {
+            recordCausal(CausalEventCode.SDK_CONNECTION_FAILED, arg0 = 1L)
             sendStatus("ERROR connecting: ${e.message}")
             Log.e(TAG, "Failed to connect: ${e.message}", e)
         }
@@ -211,6 +232,7 @@ class HealthSensorService : Service() {
 
     private val connectionListener = object : ConnectionListener {
         override fun onConnectionSuccess() {
+            recordCausal(CausalEventCode.SDK_CONNECTED)
             Log.i(TAG, "Health Tracking Service connected")
             sendStatus("=== SDK CONNECTED ===")
             isConnected = true
@@ -220,6 +242,7 @@ class HealthSensorService : Service() {
         }
 
         override fun onConnectionEnded() {
+            recordCausal(CausalEventCode.SDK_CONNECTION_ENDED)
             Log.i(TAG, "Health Tracking Service connection ended")
             sendStatus("SDK connection ENDED")
             isConnected = false
@@ -230,6 +253,7 @@ class HealthSensorService : Service() {
         }
 
         override fun onConnectionFailed(error: HealthTrackerException?) {
+            recordCausal(CausalEventCode.SDK_CONNECTION_FAILED, arg0 = 2L)
             Log.e(TAG, "Connection failed: ${error?.message}")
             sendStatus("SDK FAILED: ${error?.message}")
             isConnected = false
@@ -247,21 +271,26 @@ class HealthSensorService : Service() {
         sendStatus("Supported: ${supportedTypes.size} types: ${supportedTypes.joinToString(", ") { it.name }}")
 
         // EDA tracker — independent try/catch
+        recordTracker(CausalEventCode.TRACKER_START_ATTEMPT, CausalStreamCode.EDA)
         try {
             if (supportedTypes.contains(HealthTrackerType.EDA_CONTINUOUS)) {
                 edaTracker = service.getHealthTracker(HealthTrackerType.EDA_CONTINUOUS)
                 edaTracker?.setEventListener(edaListener)
                 activeSensorMask = activeSensorMask or 0x01
+                recordTracker(CausalEventCode.TRACKER_STARTED, CausalStreamCode.EDA)
                 sendStatus("EDA tracker STARTED")
             } else {
+                recordTracker(CausalEventCode.TRACKER_UNSUPPORTED, CausalStreamCode.EDA)
                 sendStatus("EDA NOT SUPPORTED!")
             }
         } catch (e: Exception) {
+            recordTracker(CausalEventCode.TRACKER_START_FAILED, CausalStreamCode.EDA)
             sendStatus("EDA ERROR: ${e.message}")
             Log.e(TAG, "EDA tracker failed: ${e.message}", e)
         }
 
         // Raw PPG tracker — independent evidence stream. It never substitutes for HR.
+        recordTracker(CausalEventCode.TRACKER_START_ATTEMPT, CausalStreamCode.PPG)
         try {
             if (supportedTypes.contains(HealthTrackerType.PPG_CONTINUOUS)) {
                 // SDK v1.4.1 REQUIRES PpgType set for PPG_CONTINUOUS
@@ -271,41 +300,52 @@ class HealthSensorService : Service() {
                 )
                 ppgTracker?.setEventListener(ppgListener)
                 activeSensorMask = activeSensorMask or 0x04
+                recordTracker(CausalEventCode.TRACKER_STARTED, CausalStreamCode.PPG)
                 sendStatus("PPG tracker STARTED (25 Hz, Green+IR+Red)")
             } else {
+                recordTracker(CausalEventCode.TRACKER_UNSUPPORTED, CausalStreamCode.PPG)
                 sendStatus("PPG NOT SUPPORTED — raw PPG stream unavailable")
             }
         } catch (e: Exception) {
+            recordTracker(CausalEventCode.TRACKER_START_FAILED, CausalStreamCode.PPG)
             sendStatus("PPG ERROR: ${e.message}")
             Log.e(TAG, "PPG tracker failed: ${e.message}", e)
         }
 
         // Accelerometer tracker — independent try/catch
+        recordTracker(CausalEventCode.TRACKER_START_ATTEMPT, CausalStreamCode.ACCEL)
         try {
             if (supportedTypes.contains(HealthTrackerType.ACCELEROMETER_CONTINUOUS)) {
                 accelerometerTracker = service.getHealthTracker(HealthTrackerType.ACCELEROMETER_CONTINUOUS)
                 accelerometerTracker?.setEventListener(accelerometerListener)
                 activeSensorMask = activeSensorMask or 0x08
+                recordTracker(CausalEventCode.TRACKER_STARTED, CausalStreamCode.ACCEL)
                 sendStatus("Accel tracker STARTED")
             } else {
+                recordTracker(CausalEventCode.TRACKER_UNSUPPORTED, CausalStreamCode.ACCEL)
                 sendStatus("Accel NOT SUPPORTED!")
             }
         } catch (e: Exception) {
+            recordTracker(CausalEventCode.TRACKER_START_FAILED, CausalStreamCode.ACCEL)
             sendStatus("ACCEL ERROR: ${e.message}")
             Log.e(TAG, "Accel tracker failed: ${e.message}", e)
         }
 
         // Skin Temperature tracker — independent try/catch (Cluster 33, 43, 48)
+        recordTracker(CausalEventCode.TRACKER_START_ATTEMPT, CausalStreamCode.SKIN_TEMP)
         try {
             if (supportedTypes.contains(HealthTrackerType.SKIN_TEMPERATURE_CONTINUOUS)) {
                 skinTempTracker = service.getHealthTracker(HealthTrackerType.SKIN_TEMPERATURE_CONTINUOUS)
                 skinTempTracker?.setEventListener(skinTempListener)
                 activeSensorMask = activeSensorMask or 0x10
+                recordTracker(CausalEventCode.TRACKER_STARTED, CausalStreamCode.SKIN_TEMP)
                 sendStatus("Skin Temp tracker STARTED (continuous)")
             } else {
+                recordTracker(CausalEventCode.TRACKER_UNSUPPORTED, CausalStreamCode.SKIN_TEMP)
                 sendStatus("Skin Temp CONTINUOUS not supported on this device")
             }
         } catch (e: Exception) {
+            recordTracker(CausalEventCode.TRACKER_START_FAILED, CausalStreamCode.SKIN_TEMP)
             sendStatus("SKIN_TEMP ERROR: ${e.message}")
             Log.e(TAG, "Skin temp tracker failed: ${e.message}", e)
         }
@@ -313,16 +353,20 @@ class HealthSensorService : Service() {
         sendStatus("=== TRACKER INIT (typed cardiac evidence) ===")
 
         // Exactly one authoritative hardware HR tracker. Raw PPG remains separate.
+        recordTracker(CausalEventCode.TRACKER_START_ATTEMPT, CausalStreamCode.CARDIAC)
         try {
             if (supportedTypes.contains(HealthTrackerType.HEART_RATE_CONTINUOUS)) {
                 hrTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
                 hrTracker?.setEventListener(cardiacEvidenceListener)
                 activeSensorMask = activeSensorMask or 0x02
+                recordTracker(CausalEventCode.TRACKER_STARTED, CausalStreamCode.CARDIAC)
                 sendStatus("HR evidence tracker STARTED")
             } else {
+                recordTracker(CausalEventCode.TRACKER_UNSUPPORTED, CausalStreamCode.CARDIAC)
                 sendStatus("HEART_RATE_CONTINUOUS NOT SUPPORTED")
             }
         } catch (e: Exception) {
+            recordTracker(CausalEventCode.TRACKER_START_FAILED, CausalStreamCode.CARDIAC)
             sendStatus("HR evidence tracker ERROR: ${e.message}")
             Log.e(TAG, "HR evidence tracker failed: ${e.message}", e)
         }
@@ -335,6 +379,7 @@ class HealthSensorService : Service() {
 
     private val edaListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            recordFirstCausal(CausalEventCode.FIRST_CALLBACK, CausalStreamCode.EDA, arg0 = dataPoints.size.toLong())
             val batchSize = dataPoints.size
             val deliveryMode = if (isScreenOn) "REALTIME" else "FLUSH"
             for (dp in dataPoints) {
@@ -358,6 +403,7 @@ class HealthSensorService : Service() {
             }
         }
         override fun onError(error: HealthTracker.TrackerError) {
+            recordTracker(CausalEventCode.CALLBACK_ERROR, CausalStreamCode.EDA, arg0 = error.ordinal.toLong())
             sendStatus("EDA ERROR: ${error.name}")
         }
         override fun onFlushCompleted() {}
@@ -365,6 +411,7 @@ class HealthSensorService : Service() {
 
     private val ppgListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            recordFirstCausal(CausalEventCode.FIRST_CALLBACK, CausalStreamCode.PPG, arg0 = dataPoints.size.toLong())
             val batchSize = dataPoints.size
             val deliveryMode = if (isScreenOn) "REALTIME" else "FLUSH"
             for (dp in dataPoints) {
@@ -393,6 +440,7 @@ class HealthSensorService : Service() {
             }
         }
         override fun onError(error: HealthTracker.TrackerError) {
+            recordTracker(CausalEventCode.CALLBACK_ERROR, CausalStreamCode.PPG, arg0 = error.ordinal.toLong())
             sendStatus("PPG ERROR: ${error.name}")
         }
         override fun onFlushCompleted() {}
@@ -401,6 +449,7 @@ class HealthSensorService : Service() {
     private val cardiacEvidenceListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
             if (dataPoints.isEmpty()) return
+            recordFirstCausal(CausalEventCode.FIRST_CALLBACK, CausalStreamCode.CARDIAC, arg0 = dataPoints.size.toLong())
             cardiacCallbackId = (cardiacCallbackId + 1) and 0x7FFF_FFFF
             val points = dataPoints.map { point ->
                 val ibiValues = (point.getValue(ValueKey.HeartRateSet.IBI_LIST) as? List<*>)
@@ -459,6 +508,7 @@ class HealthSensorService : Service() {
             sendStatus("Cardiac callback ${cardiacCallbackId}: ${dataPoints.size} points → ${records.size} evidence records")
         }
         override fun onError(error: HealthTracker.TrackerError) {
+            recordTracker(CausalEventCode.CALLBACK_ERROR, CausalStreamCode.CARDIAC, arg0 = error.ordinal.toLong())
             sendStatus("HR evidence ERROR: ${error.name}")
         }
         override fun onFlushCompleted() {}
@@ -467,6 +517,7 @@ class HealthSensorService : Service() {
     // Skin Temperature listener (Clusters 33, 43, 48 — circadian, disambiguation, sports)
     private val skinTempListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            recordFirstCausal(CausalEventCode.FIRST_CALLBACK, CausalStreamCode.SKIN_TEMP, arg0 = dataPoints.size.toLong())
             val batchSize = dataPoints.size
             val deliveryMode = if (isScreenOn) "REALTIME" else "FLUSH"
             for (dp in dataPoints) {
@@ -503,6 +554,7 @@ class HealthSensorService : Service() {
             }
         }
         override fun onError(error: HealthTracker.TrackerError) {
+            recordTracker(CausalEventCode.CALLBACK_ERROR, CausalStreamCode.SKIN_TEMP, arg0 = error.ordinal.toLong())
             sendStatus("SKIN_TEMP ERROR: ${error.name}")
             Log.e(TAG, "Skin temp error: ${error.name}")
         }
@@ -511,6 +563,7 @@ class HealthSensorService : Service() {
 
     private val accelerometerListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            recordFirstCausal(CausalEventCode.FIRST_CALLBACK, CausalStreamCode.ACCEL, arg0 = dataPoints.size.toLong())
             val batchSize = dataPoints.size
             val deliveryMode = if (isScreenOn) "REALTIME" else "FLUSH"
             for (dp in dataPoints) {
@@ -538,6 +591,7 @@ class HealthSensorService : Service() {
             }
         }
         override fun onError(error: HealthTracker.TrackerError) {
+            recordTracker(CausalEventCode.CALLBACK_ERROR, CausalStreamCode.ACCEL, arg0 = error.ordinal.toLong())
             Log.e(TAG, "Accel error: ${error.name}")
         }
         override fun onFlushCompleted() {}
@@ -604,16 +658,19 @@ class HealthSensorService : Service() {
             sourceJournal = journal
             val preflight = journal.preflight()
             if (!preflight.eligible) {
+                recordCausal(CausalEventCode.SOURCE_JOURNAL_REFUSED, arg0 = preflight.availableBytes, arg1 = preflight.requiredBytes)
                 sourceDataLoss = true
                 sourceDataLossReasonCode = 1
                 sendStatus("DATA LOSS: source journal preflight refused (${preflight.availableBytes}/${preflight.requiredBytes} bytes)")
                 sendDeviceHealthMetadata()
                 false
             } else {
+                recordCausal(CausalEventCode.SOURCE_JOURNAL_READY, arg0 = journal.latestRecordIndex())
                 sendStatus("Build 45 source journal ready: session=${journal.watchBootSessionId} capacity=${preflight.availableBytes}")
                 true
             }
         } catch (error: Exception) {
+            recordCausal(CausalEventCode.SOURCE_JOURNAL_REFUSED, arg0 = 2L)
             sourceDataLoss = true
             sourceDataLossReasonCode = 2
             sendStatus("DATA LOSS: source journal unavailable (${error.javaClass.simpleName})")
@@ -631,6 +688,13 @@ class HealthSensorService : Service() {
         return try {
             val record = requireNotNull(sourceJournal) { "Source journal not initialized" }
                 .append(stream, sourceTimestampMs, payload)
+            recordFirstCausal(
+                CausalEventCode.FIRST_APPEND,
+                CausalStreamCode.fromSourceStream(stream),
+                recordIndexStart = record.recordIndex,
+                recordIndexEnd = record.recordIndex,
+                arg0 = record.sourceSequence,
+            )
             val intent = Intent(ACTION_SOURCE_RECORD).apply {
                 setPackage(packageName)
                 putExtra("streamCode", record.stream.wireCode)
@@ -640,6 +704,13 @@ class HealthSensorService : Service() {
                 putExtra("canonicalBytes", record.canonicalBytes())
             }
             sendBroadcast(intent)
+            recordFirstCausal(
+                CausalEventCode.SOURCE_BROADCAST_SENT,
+                CausalStreamCode.fromSourceStream(stream),
+                recordIndexStart = record.recordIndex,
+                recordIndexEnd = record.recordIndex,
+                arg0 = record.sourceSequence,
+            )
             record
         } catch (error: Exception) {
             sourceDataLoss = true
@@ -647,6 +718,13 @@ class HealthSensorService : Service() {
             sourceDataLossFirstSequence = (error as? SourceJournalCapacityException)?.firstAffectedSourceSequence ?: 0L
             sourceDataLossLastSequence = (error as? SourceJournalCapacityException)?.lastAffectedSourceSequence ?: sourceDataLossFirstSequence
             sourceDataLossReasonCode = if (error is SourceJournalCapacityException) 3 else 4
+            recordCausal(
+                CausalEventCode.APPEND_FAILED,
+                stream = CausalStreamCode.fromSourceStream(stream),
+                arg0 = sourceDataLossFirstSequence,
+                arg1 = sourceDataLossLastSequence,
+                reasonCode = sourceDataLossReasonCode,
+            )
             sendStatus("DATA LOSS: required ${stream.name} journal append failed seq=${sourceDataLossFirstSequence}-${sourceDataLossLastSequence} (${error.javaClass.simpleName})")
             sendDeviceHealthMetadata()
             haltTrackingAfterSourceLoss()
@@ -663,6 +741,7 @@ class HealthSensorService : Service() {
                         sourceJournal?.forceSync()
                     } catch (error: Exception) {
                         if (!sourceDataLoss) {
+                            recordCausal(CausalEventCode.JOURNAL_SYNC_FAILED, reasonCode = 5)
                             sourceDataLoss = true
                             sourceDataLossReasonCode = 5
                             sendStatus("DATA LOSS: source journal sync failed (${error.javaClass.simpleName})")
@@ -679,6 +758,48 @@ class HealthSensorService : Service() {
         journalSyncTimer?.cancel()
         journalSyncTimer = null
         runCatching { sourceJournal?.forceSync() }
+    }
+
+    private fun recordTracker(
+        code: CausalEventCode,
+        stream: CausalStreamCode,
+        arg0: Long = 0L,
+    ) {
+        recordCausal(code, stream = stream, arg0 = arg0)
+    }
+
+    private fun recordFirstCausal(
+        code: CausalEventCode,
+        stream: CausalStreamCode,
+        recordIndexStart: Long = 0L,
+        recordIndexEnd: Long = 0L,
+        arg0: Long = 0L,
+    ) {
+        if (!causalFirstEventGate.shouldRecord(causalComponentInstanceId, code, stream)) return
+        recordCausal(code, stream, recordIndexStart, recordIndexEnd, arg0)
+    }
+
+    private fun recordCausal(
+        code: CausalEventCode,
+        stream: CausalStreamCode? = null,
+        recordIndexStart: Long = 0L,
+        recordIndexEnd: Long = 0L,
+        arg0: Long = 0L,
+        arg1: Long = 0L,
+        reasonCode: Int = CausalReasonCode.NONE.code,
+    ) {
+        WatchCausalRuntime.record(
+            this,
+            code,
+            CausalComponentCode.HEALTH,
+            causalComponentInstanceId,
+            stream = stream,
+            recordIndexStart = recordIndexStart,
+            recordIndexEnd = recordIndexEnd,
+            arg0 = arg0,
+            arg1 = arg1,
+            reasonCode = reasonCode,
+        )
     }
 
     private fun haltTrackingAfterSourceLoss() {

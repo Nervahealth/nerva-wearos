@@ -64,6 +64,7 @@ class BleGattService : Service() {
     private var connectedDevice: BluetoothDevice? = null
     private val notificationSubscriptions = mutableMapOf<String, MutableSet<UUID>>()
     private var notificationCompletionBlocked = false
+    private var causalNotificationGattStatus = BluetoothGatt.GATT_SUCCESS
     private var notifyCount = 0
 
     // GATT Characteristics (held as references for notification updates)
@@ -115,6 +116,9 @@ class BleGattService : Service() {
     private var liveSourceFlushScheduled = false
     private val healthHandler = Handler(Looper.getMainLooper())
     private val transportHandler = Handler(Looper.getMainLooper())
+    private val causalComponentInstanceId = UUID.randomUUID()
+    private val causalLineageState = CausalLineageState()
+    private val causalSourceDetailCountByLineage = mutableMapOf<Long, Int>()
     private val liveSourceFlush = Runnable {
         liveSourceFlushScheduled = false
         flushLiveSourceRecords()
@@ -133,12 +137,18 @@ class BleGattService : Service() {
         trigger = { triggerGattNotification(it) },
         onCriticalFault = { reason ->
             Log.e(TAG, "CRITICAL BLE transport fault: $reason")
+            recordCausal(
+                CausalEventCode.QUEUE_CRITICAL_FAULT,
+                reasonCode = CausalReasonCode.CRITICAL_QUEUE_FAULT.code,
+            )
             broadcastStatus("BLE TRANSPORT FAULT: $reason")
             transportHandler.post { abortTransportLineage("critical_queue_fault") }
         },
         onTriggered = { item -> handleNotificationTriggered(item) },
-        onCompleted = { item -> handleNotificationCompleted(item) },
-        onFailed = { item -> handleNotificationFailed(item) },
+        onCompleted = { item -> handleNotificationCompleted(item, causalNotificationGattStatus) },
+        onFailed = { item -> handleNotificationFailed(item, causalNotificationGattStatus) },
+        onTriggerResult = { item, result -> recordNotificationTriggerResult(item, result) },
+        onTimedOut = { item -> recordNotificationTimeout(item) },
     )
     private val healthTicker = object : Runnable {
         override fun run() {
@@ -194,6 +204,7 @@ class BleGattService : Service() {
         private const val ATT_PROTOCOL_OVERHEAD_BYTES = 3
         private const val REPLAY_PAGE_RECORDS = 96
         private const val LIVE_SOURCE_BATCH_MS = 200L
+        private const val MAX_CAUSAL_SOURCE_DETAILS_PER_LINEAGE = 32
     }
 
     inner class LocalBinder : Binder() {
@@ -204,7 +215,8 @@ class BleGattService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "BleGattService created (Build 46w bounded-replay recovery candidate)")
+        recordCausal(CausalEventCode.BLE_SERVICE_CREATED)
+        Log.d(TAG, "BleGattService created (Build 47w causal flight recorder)")
         sourceJournal = WatchSourceRuntime.journal(this)
         initializeVibrator()
         initializeHapticNotificationChannel()
@@ -266,8 +278,9 @@ class BleGattService : Service() {
     }
 
     override fun onDestroy() {
+        recordCausal(CausalEventCode.BLE_SERVICE_DESTROYED)
         super.onDestroy()
-        Log.d(TAG, "BleGattService destroyed (Build 46w bounded-replay recovery candidate)")
+        Log.d(TAG, "BleGattService destroyed (Build 47w causal flight recorder)")
         vibrator?.cancel()
         healthHandler.removeCallbacks(healthTicker)
         transportHandler.removeCallbacks(transportTicker)
@@ -436,6 +449,13 @@ class BleGattService : Service() {
         override fun onConnectionStateChange(device: BluetoothDevice?, status: Int, newState: Int) {
             when (newState) {
                 BluetoothProfile.STATE_CONNECTED -> {
+                    val lineage = causalLineageState.onConnected()
+                    causalSourceDetailCountByLineage[lineage] = 0
+                    recordCausal(
+                        CausalEventCode.GATT_CONNECTED,
+                        bleLineage = lineage,
+                        arg0 = status.toLong(),
+                    )
                     notificationQueue.reset()
                     notificationCompletionBlocked = true
                     connectedDevice = device
@@ -461,6 +481,14 @@ class BleGattService : Service() {
                     // KEEP ADVERTISING for reconnection
                 }
                 BluetoothProfile.STATE_DISCONNECTED -> {
+                    val disconnect = causalLineageState.onDisconnected(status)
+                    recordCausal(
+                        CausalEventCode.GATT_DISCONNECTED,
+                        bleLineage = disconnect.bleLineage,
+                        arg0 = disconnect.gattStatus.toLong(),
+                        arg1 = if (disconnect.localCancelRequested) 1L else 0L,
+                        reasonCode = disconnect.abortReasonCode,
+                    )
                     notificationCompletionBlocked = true
                     connectedDevice = null
                     negotiatedMtu = 23
@@ -491,6 +519,11 @@ class BleGattService : Service() {
             val activeDevice = connectedDevice
             if (device == null || activeDevice == null || device.address != activeDevice.address) return
             negotiatedMtu = mtu.coerceAtLeast(23)
+            recordCausal(
+                CausalEventCode.MTU_CHANGED,
+                arg0 = negotiatedMtu.toLong(),
+                arg1 = maximumAttPayloadBytes().toLong(),
+            )
             Log.i(TAG, "Negotiated GATT MTU=$negotiatedMtu ATT payload=${maximumAttPayloadBytes()}")
             broadcastStatus("BLE MTU: $negotiatedMtu (payload ${maximumAttPayloadBytes()})")
             notifyDeviceHealth()
@@ -630,8 +663,11 @@ class BleGattService : Service() {
                         if (enabled) enabledCharacteristics.add(charUuid) else enabledCharacteristics.remove(charUuid)
                     }
                     if (enabled) notificationCompletionBlocked = false
-                    if (enabled && charUuid == SOURCE_RECORD_CHARACTERISTIC_UUID) {
-                        pendingSourceResumeRequest?.let(::beginSourceReplay)
+                    if (charUuid == SOURCE_RECORD_CHARACTERISTIC_UUID) {
+                        recordCausal(
+                            if (enabled) CausalEventCode.SOURCE_CCCD_ENABLED else CausalEventCode.SOURCE_CCCD_DISABLED,
+                        )
+                        if (enabled) pendingSourceResumeRequest?.let(::beginSourceReplay)
                     }
                 }
             }
@@ -653,7 +689,12 @@ class BleGattService : Service() {
             }
             val success = status == BluetoothGatt.GATT_SUCCESS
             if (!success) Log.e(TAG, "BLE notification completion failed: status=$status device=${device?.address}")
-            notificationQueue.onNotificationSent(success)
+            causalNotificationGattStatus = status
+            try {
+                notificationQueue.onNotificationSent(success)
+            } finally {
+                causalNotificationGattStatus = BluetoothGatt.GATT_SUCCESS
+            }
         }
     }
 
@@ -857,8 +898,16 @@ class BleGattService : Service() {
                 if (activeReplaySessionId != null && activeReplaySessionId != sourceJournal.watchBootSessionId) {
                     return
                 }
+                val record = decoded.records.single()
+                recordSourceDetail(
+                    CausalEventCode.SOURCE_BROADCAST_RECEIVED,
+                    stream = CausalStreamCode.fromSourceStream(record.stream),
+                    recordIndexStart = record.recordIndex,
+                    recordIndexEnd = record.recordIndex,
+                    arg0 = record.sourceSequence,
+                )
                 enqueueNewlyFinalizedManifests()
-                queueLiveSourceRecord(decoded.records.single())
+                queueLiveSourceRecord(record)
             } catch (error: Exception) {
                 Log.e(TAG, "Build 45 live source-record rejection: ${error.message}", error)
                 broadcastStatus("DATA LOSS: invalid live source record")
@@ -890,6 +939,9 @@ class BleGattService : Service() {
 
     private fun abortTransportLineage(reason: String) {
         val stalledDevice = connectedDevice
+        val reasonCode = CausalReasonCode.fromAbortReason(reason).code
+        causalLineageState.markAbort(reasonCode)
+        recordCausal(CausalEventCode.ABORT_REQUESTED, reasonCode = reasonCode)
         notificationCompletionBlocked = true
         notificationSubscriptions.clear()
         connectedDevice = null
@@ -906,6 +958,8 @@ class BleGattService : Service() {
         replayStartLineageGuard.advanceLineage()
         notificationQueue.reset()
         if (stalledDevice != null) {
+            causalLineageState.markCancelRequested()
+            recordCausal(CausalEventCode.CANCEL_CONNECTION_REQUESTED, reasonCode = reasonCode)
             runCatching { gattServer?.cancelConnection(stalledDevice) }
                 .onFailure { Log.e(TAG, "Failed to cancel stalled GATT connection after $reason", it) }
         }
@@ -964,6 +1018,14 @@ class BleGattService : Service() {
                     recordCount = frame.records.size,
                     lossless = true,
                 )
+                recordSourceDetail(
+                    CausalEventCode.SOURCE_ENQUEUED,
+                    stream = CausalStreamCode.fromSourceStream(first.stream),
+                    recordIndexStart = first.recordIndex,
+                    recordIndexEnd = frame.records.last().recordIndex,
+                    arg0 = frame.records.size.toLong(),
+                    reasonCode = result.ordinal,
+                )
                 if (result == GattEnqueueResult.CRITICAL_OVERFLOW) {
                     replayActive = false
                     broadcastStatus("DATA LOSS: canonical source queue overflow")
@@ -1017,9 +1079,19 @@ class BleGattService : Service() {
     }
 
     private fun handleSourceResume(request: SourceResumeRequest) {
+        recordCausal(
+            CausalEventCode.RESUME_RECEIVED,
+            recordIndexStart = request.cumulativeRecordIndex.coerceAtLeast(0L),
+        )
         pendingSourceResumeRequest = request
-        val device = connectedDevice ?: return
-        if (!isNotificationEnabled(device, SOURCE_RECORD_CHARACTERISTIC_UUID)) return
+        val device = connectedDevice
+        if (device == null || !isNotificationEnabled(device, SOURCE_RECORD_CHARACTERISTIC_UUID)) {
+            recordCausal(
+                CausalEventCode.RESUME_DEFERRED,
+                recordIndexStart = request.cumulativeRecordIndex.coerceAtLeast(0L),
+            )
+            return
+        }
         beginSourceReplay(request)
     }
 
@@ -1038,6 +1110,12 @@ class BleGattService : Service() {
             replayHighWaterRecordIndex = durablePhoneRecordIndex
             replayBacklogCount = 0L
             replayActive = false
+            recordCausal(
+                CausalEventCode.RESUME_APPLIED,
+                recordIndexStart = durablePhoneRecordIndex,
+                recordIndexEnd = replayHighWaterRecordIndex,
+                arg0 = replayBacklogCount,
+            )
             broadcastStatus("CAUGHT UP: source journal empty")
             return
         }
@@ -1061,6 +1139,12 @@ class BleGattService : Service() {
             replayHighWaterRecordIndex,
         )
         replayActive = replayBacklogCount > 0
+        recordCausal(
+            CausalEventCode.RESUME_APPLIED,
+            recordIndexStart = durablePhoneRecordIndex,
+            recordIndexEnd = replayHighWaterRecordIndex,
+            arg0 = replayBacklogCount,
+        )
 
         sourceJournal.finalizedManifests(session)
             .sortedBy { it.firstRecordIndex }
@@ -1193,7 +1277,8 @@ class BleGattService : Service() {
         }
     }
 
-    private fun handleNotificationCompleted(item: GattNotification) {
+    private fun handleNotificationCompleted(item: GattNotification, gattStatus: Int) {
+        recordNotificationCompletion(item, success = true, gattStatus = gattStatus)
         val records = try {
             sourceFrameRecords(item)
         } catch (error: Exception) {
@@ -1213,13 +1298,115 @@ class BleGattService : Service() {
         }
     }
 
-    private fun handleNotificationFailed(item: GattNotification) {
+    private fun handleNotificationFailed(item: GattNotification, gattStatus: Int) {
+        recordNotificationCompletion(item, success = false, gattStatus = gattStatus)
         if (item.characteristicUuid == SOURCE_RECORD_CHARACTERISTIC_UUID) {
             replayActive = false
             lastReplayQueuedRecordIndex = durablePhoneRecordIndex
             broadcastStatus("SOURCE DELIVERY FAILED: reconnect/resume required")
             transportHandler.post { abortTransportLineage("source_notification_failed") }
         }
+    }
+
+    private fun recordNotificationTriggerResult(item: GattNotification, result: GattNotificationTrigger) {
+        if (item.characteristicUuid != SOURCE_RECORD_CHARACTERISTIC_UUID) return
+        val range = sourceRecordRange(item)
+        recordSourceDetail(
+            CausalEventCode.SOURCE_TRIGGER_RESULT,
+            stream = sourceStreamFor(item.stream),
+            recordIndexStart = range.first,
+            recordIndexEnd = range.second,
+            arg0 = item.recordCount.toLong(),
+            reasonCode = CausalReasonCode.fromTrigger(result).code,
+        )
+    }
+
+    private fun recordNotificationTimeout(item: GattNotification) {
+        val range = sourceRecordRange(item)
+        recordCausal(
+            CausalEventCode.SOURCE_NOTIFICATION_TIMEOUT,
+            stream = sourceStreamFor(item.stream),
+            recordIndexStart = range.first,
+            recordIndexEnd = range.second,
+            arg0 = item.recordCount.toLong(),
+            reasonCode = CausalReasonCode.NOTIFICATION_TIMEOUT.code,
+        )
+    }
+
+    private fun recordNotificationCompletion(item: GattNotification, success: Boolean, gattStatus: Int) {
+        if (item.characteristicUuid != SOURCE_RECORD_CHARACTERISTIC_UUID) return
+        val range = sourceRecordRange(item)
+        recordSourceDetail(
+            if (success) CausalEventCode.SOURCE_NOTIFICATION_COMPLETED else CausalEventCode.SOURCE_NOTIFICATION_FAILED,
+            stream = sourceStreamFor(item.stream),
+            recordIndexStart = range.first,
+            recordIndexEnd = range.second,
+            arg0 = item.recordCount.toLong(),
+            reasonCode = gattStatus,
+        )
+    }
+
+    private fun sourceRecordRange(item: GattNotification): Pair<Long, Long> = runCatching {
+        val records = sourceFrameRecords(item)
+        if (records.isEmpty()) 0L to 0L else records.first().recordIndex to records.last().recordIndex
+    }.getOrDefault(0L to 0L)
+
+    private fun sourceStreamFor(stream: GattNotificationStream): CausalStreamCode? = when (stream) {
+        GattNotificationStream.CARDIAC -> CausalStreamCode.CARDIAC
+        GattNotificationStream.DEVICE_HEALTH -> CausalStreamCode.DEVICE_HEALTH
+        GattNotificationStream.EDA -> CausalStreamCode.EDA
+        GattNotificationStream.SKIN_TEMP -> CausalStreamCode.SKIN_TEMP
+        GattNotificationStream.ACCEL -> CausalStreamCode.ACCEL
+        GattNotificationStream.PPG -> CausalStreamCode.PPG
+        GattNotificationStream.HAPTIC_RECEIPT -> null
+    }
+
+    private fun recordSourceDetail(
+        code: CausalEventCode,
+        stream: CausalStreamCode? = null,
+        recordIndexStart: Long = 0L,
+        recordIndexEnd: Long = 0L,
+        arg0: Long = 0L,
+        reasonCode: Int = CausalReasonCode.NONE.code,
+    ) {
+        val lineage = causalLineageState.currentLineage()
+        val count = causalSourceDetailCountByLineage[lineage] ?: 0
+        if (count >= MAX_CAUSAL_SOURCE_DETAILS_PER_LINEAGE) return
+        causalSourceDetailCountByLineage[lineage] = count + 1
+        recordCausal(
+            code,
+            bleLineage = lineage,
+            stream = stream,
+            recordIndexStart = recordIndexStart,
+            recordIndexEnd = recordIndexEnd,
+            arg0 = arg0,
+            reasonCode = reasonCode,
+        )
+    }
+
+    private fun recordCausal(
+        code: CausalEventCode,
+        bleLineage: Long = causalLineageState.currentLineage(),
+        stream: CausalStreamCode? = null,
+        recordIndexStart: Long = 0L,
+        recordIndexEnd: Long = 0L,
+        arg0: Long = 0L,
+        arg1: Long = 0L,
+        reasonCode: Int = CausalReasonCode.NONE.code,
+    ) {
+        WatchCausalRuntime.record(
+            this,
+            code,
+            CausalComponentCode.BLE,
+            causalComponentInstanceId,
+            bleLineage = bleLineage,
+            stream = stream,
+            recordIndexStart = recordIndexStart,
+            recordIndexEnd = recordIndexEnd,
+            arg0 = arg0,
+            arg1 = arg1,
+            reasonCode = reasonCode,
+        )
     }
 
     // ─── PRODUCTION RESEARCH HAPTIC POLICY v1 ───────────────────────────────────
@@ -1617,6 +1804,23 @@ class BleGattService : Service() {
         if (healthSdkConnected) flags = flags or 0x04
         if (healthScreenOn) flags = flags or 0x08
         val transport = notificationQueue.snapshot()
+        val packedTransportState =
+            (transport.queueDepth.toLong() and 0xFFFFL) or
+                ((activeSensorMask.toLong() and 0xFFFFL) shl 16) or
+                ((healthSdkStatus.toLong() and 0xFFL) shl 32) or
+                ((negotiatedMtu.toLong() and 0xFFFFL) shl 40)
+        val packedTransportCounts =
+            (transport.completedCount and 0x1F_FFFFL) or
+                ((transport.failedCount and 0x1F_FFFFL) shl 21) or
+                ((transport.timeoutCount and 0x1F_FFFFL) shl 42)
+        recordCausal(
+            CausalEventCode.TRANSPORT_SNAPSHOT,
+            recordIndexStart = sourceJournal.latestRecordIndex(),
+            recordIndexEnd = replayHighWaterRecordIndex,
+            arg0 = packedTransportState,
+            arg1 = packedTransportCounts,
+            reasonCode = replayBacklogCount.coerceAtMost(Int.MAX_VALUE.toLong()).toInt(),
+        )
         val latestAnomaly = sourceJournal.latestAnomaly()
         val dataLoss = healthSourceDataLoss || !sourceJournal.preflight().eligible || latestAnomaly != null
         val dataLossStreamCode = healthSourceDataLossStreamCode.takeIf { it != 0 }

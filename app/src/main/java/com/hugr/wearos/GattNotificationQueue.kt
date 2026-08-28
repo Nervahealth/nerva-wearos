@@ -103,6 +103,8 @@ internal class GattNotificationQueue(
     private val onTriggered: (GattNotification) -> Unit = {},
     private val onCompleted: (GattNotification) -> Unit = {},
     private val onFailed: (GattNotification) -> Unit = {},
+    private val onTriggerResult: (GattNotification, GattNotificationTrigger) -> Unit = { _, _ -> },
+    private val onTimedOut: (GattNotification) -> Unit = {},
 ) {
     init {
         require(maxDepth >= 2) { "maxDepth must be at least 2" }
@@ -260,8 +262,9 @@ internal class GattNotificationQueue(
 
     @Synchronized
     fun checkTimeout(): Boolean {
-        if (inFlight == null) return false
+        val timedOut = inFlight ?: return false
         if (nowElapsedMs() - inFlightStartedElapsedMs < timeoutMs) return false
+        runCatching { onTimedOut(timedOut) }
         timeoutCount += 1
         failedCount += 1
         inFlight = null
@@ -328,7 +331,9 @@ internal class GattNotificationQueue(
         while (pending.isNotEmpty()) {
             val next = removeNextPendingLocked()
             updateFairnessCounters(next)
-            when (trigger(next)) {
+            val result = trigger(next)
+            runCatching { onTriggerResult(next, result) }
+            when (result) {
                 GattNotificationTrigger.TRIGGERED -> {
                     inFlight = next
                     inFlightStartedElapsedMs = nowElapsedMs()

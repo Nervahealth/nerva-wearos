@@ -94,6 +94,108 @@ class GattNotificationQueueTest {
     }
 
     @Test
+    fun `diagnostic callback observes every trigger result without changing queue counters`() {
+        GattNotificationTrigger.entries.forEach { result ->
+            var elapsed = 0L
+            val observed = mutableListOf<Pair<Long, GattNotificationTrigger>>()
+            val queue = GattNotificationQueue(
+                nowElapsedMs = { elapsed },
+                nowWallMs = { 1_000L + elapsed },
+                trigger = { result },
+                onTriggerResult = { item, triggerResult -> observed += item.sourceSequence to triggerResult },
+            )
+
+            queue.enqueue(GattNotificationStream.CARDIAC, characteristic, byteArrayOf(1), 44L, 100L)
+            assertEquals(listOf(44L to result), observed)
+            when (result) {
+                GattNotificationTrigger.TRIGGERED -> {
+                    assertEquals(1, queue.snapshot().queueDepth)
+                    queue.onNotificationSent(success = true)
+                    assertEquals(1L, queue.snapshot().completedCount)
+                }
+                GattNotificationTrigger.NOT_SUBSCRIBED -> assertEquals(1L, queue.snapshot().notSubscribedCount)
+                GattNotificationTrigger.NO_CONNECTION -> assertEquals(1L, queue.snapshot().noConnectionCount)
+                GattNotificationTrigger.IMMEDIATE_FAILURE -> assertEquals(1L, queue.snapshot().failedCount)
+            }
+        }
+    }
+
+    @Test
+    fun `diagnostic timeout callback receives exact in flight item before existing reset`() {
+        var elapsed = 0L
+        var timedOut: GattNotification? = null
+        val queue = GattNotificationQueue(
+            timeoutMs = 1_000L,
+            nowElapsedMs = { elapsed },
+            nowWallMs = { 1_000L + elapsed },
+            trigger = { GattNotificationTrigger.TRIGGERED },
+            onTimedOut = { timedOut = it },
+        )
+        queue.enqueue(
+            GattNotificationStream.ACCEL,
+            characteristic,
+            byteArrayOf(7, 8),
+            91L,
+            900L,
+            origin = GattNotificationOrigin.REPLAY,
+            recordCount = 5,
+            lossless = true,
+        )
+
+        elapsed = 1_001L
+        assertTrue(queue.checkTimeout())
+
+        assertEquals(91L, timedOut?.sourceSequence)
+        assertEquals(GattNotificationStream.ACCEL, timedOut?.stream)
+        assertEquals(GattNotificationOrigin.REPLAY, timedOut?.origin)
+        assertEquals(5, timedOut?.recordCount)
+        assertEquals(1L, queue.snapshot().timeoutCount)
+        assertEquals(0, queue.snapshot().queueDepth)
+    }
+
+    @Test
+    fun `trigger-result observer exception cannot alter queue delivery semantics`() {
+        val triggered = mutableListOf<GattNotification>()
+        val queue = GattNotificationQueue(
+            nowElapsedMs = { 0L },
+            nowWallMs = { 1_000L },
+            trigger = { item ->
+                triggered += item
+                GattNotificationTrigger.TRIGGERED
+            },
+            onTriggerResult = { _, _ -> error("diagnostic observer failure") },
+        )
+
+        assertEquals(
+            GattEnqueueResult.QUEUED,
+            queue.enqueue(GattNotificationStream.EDA, characteristic, byteArrayOf(1), 1L, 10L),
+        )
+        assertEquals(1, triggered.size)
+        queue.onNotificationSent(success = true)
+        assertEquals(1L, queue.snapshot().completedCount)
+        assertEquals(0L, queue.snapshot().failedCount)
+    }
+
+    @Test
+    fun `timeout observer exception cannot alter timeout reset semantics`() {
+        var elapsed = 0L
+        val queue = GattNotificationQueue(
+            timeoutMs = 100L,
+            nowElapsedMs = { elapsed },
+            nowWallMs = { 1_000L + elapsed },
+            trigger = { GattNotificationTrigger.TRIGGERED },
+            onTimedOut = { error("diagnostic observer failure") },
+        )
+        queue.enqueue(GattNotificationStream.CARDIAC, characteristic, byteArrayOf(1), 9L, 90L)
+        elapsed = 101L
+
+        assertTrue(queue.checkTimeout())
+        assertEquals(1L, queue.snapshot().timeoutCount)
+        assertEquals(1L, queue.snapshot().failedCount)
+        assertEquals(0, queue.snapshot().queueDepth)
+    }
+
+    @Test
     fun `disconnect reset discards old transport lineage before resubscription`() {
         var elapsed = 0L
         val triggered = mutableListOf<Long>()
