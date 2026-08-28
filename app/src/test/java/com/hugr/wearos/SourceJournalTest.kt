@@ -217,6 +217,49 @@ class SourceJournalTest {
     }
 
     @Test
+    fun `Build 45 reproduction - current replay paging crosses the resume-time high water`() {
+        val root = temporaryFolder.newFolder("replay-race")
+        val journal = journal(root, bootCount = 46) { 1_000L }
+        repeat(100) { index ->
+            journal.append(SourceStreamCode.ACCEL, 100 + index.toLong(), byteArrayOf(index.toByte()))
+        }
+        val replayHighWaterAtResume = journal.highestRecordIndex(journal.watchBootSessionId)
+        assertEquals(100L, replayHighWaterAtResume)
+
+        repeat(100) { index ->
+            journal.append(SourceStreamCode.CARDIAC, 1_000 + index.toLong(), byteArrayOf(index.toByte()))
+        }
+
+        val boundedBuild46ReplayPage = journal.readRecordsAfter(
+            journal.watchBootSessionId,
+            recordIndexExclusive = 0L,
+            recordIndexInclusive = replayHighWaterAtResume,
+            limit = 256,
+        )
+
+        assertEquals(
+            "Build 45 replay must not cross the record index present at resume",
+            (1L..replayHighWaterAtResume).toList(),
+            boundedBuild46ReplayPage.map { it.recordIndex },
+        )
+        assertEquals(100L, journal.countRecordsAfter(journal.watchBootSessionId, 0L, replayHighWaterAtResume))
+        assertEquals(0L, journal.countRecordsAfter(journal.watchBootSessionId, replayHighWaterAtResume, replayHighWaterAtResume))
+        assertEquals(200L, journal.countRecordsAfter(journal.watchBootSessionId, 0L))
+
+        val nextResumeHighWater = journal.highestRecordIndex(journal.watchBootSessionId)
+        val retainedForNextResume = journal.readRecordsAfter(
+            journal.watchBootSessionId,
+            recordIndexExclusive = replayHighWaterAtResume,
+            recordIndexInclusive = nextResumeHighWater,
+            limit = 256,
+        )
+        assertEquals((101L..200L).toList(), retainedForNextResume.map { it.recordIndex })
+        assertEquals((1L..100L).toList(), retainedForNextResume.map { it.sourceSequence })
+        assertEquals((1_000L..1_099L).toList(), retainedForNextResume.map { it.sourceTimestampMs })
+        journal.close()
+    }
+
+    @Test
     fun `delivery ledger distinguishes buffered live and replay transitions without changing canonical bytes`() {
         val root = temporaryFolder.newFolder("journal")
         var now = 1_000L

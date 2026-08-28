@@ -104,9 +104,12 @@ class BleGattService : Service() {
     private var negotiatedMtu = 23
     private var durablePhoneRecordIndex = 0L
     private var lastReplayQueuedRecordIndex = 0L
+    private var replayHighWaterRecordIndex = 0L
     private var replayBacklogCount = 0L
     private var replayActive = false
     private var activeReplaySessionId: UUID? = null
+    private val replayStartLineageGuard = ReplayStartLineageGuard()
+    private var replayStartGeneration = -1L
     private var pendingSourceResumeRequest: SourceResumeRequest? = null
     private val pendingLiveSourceRecords = ArrayList<WatchSourceRecord>()
     private var liveSourceFlushScheduled = false
@@ -115,6 +118,11 @@ class BleGattService : Service() {
     private val liveSourceFlush = Runnable {
         liveSourceFlushScheduled = false
         flushLiveSourceRecords()
+    }
+    private val replayStartAfterLiveOpportunity = Runnable {
+        if (!replayStartLineageGuard.isCurrent(replayStartGeneration)) return@Runnable
+        flushLiveSourceRecords()
+        pumpReplay()
     }
     private val notificationQueue = GattNotificationQueue(
         maxDepth = 256,
@@ -196,7 +204,7 @@ class BleGattService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "BleGattService created (Build 45w continuous-collection candidate)")
+        Log.d(TAG, "BleGattService created (Build 46w bounded-replay recovery candidate)")
         sourceJournal = WatchSourceRuntime.journal(this)
         initializeVibrator()
         initializeHapticNotificationChannel()
@@ -259,11 +267,13 @@ class BleGattService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "BleGattService destroyed (Build 45w continuous-collection candidate)")
+        Log.d(TAG, "BleGattService destroyed (Build 46w bounded-replay recovery candidate)")
         vibrator?.cancel()
         healthHandler.removeCallbacks(healthTicker)
         transportHandler.removeCallbacks(transportTicker)
         transportHandler.removeCallbacks(liveSourceFlush)
+        transportHandler.removeCallbacks(replayStartAfterLiveOpportunity)
+        replayStartLineageGuard.advanceLineage()
         pendingLiveSourceRecords.clear()
         liveSourceFlushScheduled = false
         notificationQueue.reset()
@@ -433,11 +443,14 @@ class BleGattService : Service() {
                     replayActive = false
                     durablePhoneRecordIndex = 0L
                     lastReplayQueuedRecordIndex = 0L
+                    replayHighWaterRecordIndex = 0L
                     replayBacklogCount = 0L
                     activeReplaySessionId = null
                     transportHandler.removeCallbacks(liveSourceFlush)
+                    transportHandler.removeCallbacks(replayStartAfterLiveOpportunity)
                     pendingLiveSourceRecords.clear()
                     liveSourceFlushScheduled = false
+                    replayStartLineageGuard.advanceLineage()
                     if (device != null) synchronized(notificationSubscriptions) {
                         notificationSubscriptions.getOrPut(device.address) { mutableSetOf() }
                     }
@@ -454,11 +467,14 @@ class BleGattService : Service() {
                     replayActive = false
                     durablePhoneRecordIndex = 0L
                     lastReplayQueuedRecordIndex = 0L
+                    replayHighWaterRecordIndex = 0L
                     replayBacklogCount = 0L
                     activeReplaySessionId = null
                     transportHandler.removeCallbacks(liveSourceFlush)
+                    transportHandler.removeCallbacks(replayStartAfterLiveOpportunity)
                     pendingLiveSourceRecords.clear()
                     liveSourceFlushScheduled = false
+                    replayStartLineageGuard.advanceLineage()
                     notificationQueue.reset()
                     if (device != null) synchronized(notificationSubscriptions) {
                         notificationSubscriptions.remove(device.address)
@@ -846,6 +862,7 @@ class BleGattService : Service() {
             } catch (error: Exception) {
                 Log.e(TAG, "Build 45 live source-record rejection: ${error.message}", error)
                 broadcastStatus("DATA LOSS: invalid live source record")
+                transportHandler.post { abortTransportLineage("live_source_record_rejected") }
             }
         }
     }
@@ -880,10 +897,13 @@ class BleGattService : Service() {
         replayActive = false
         durablePhoneRecordIndex = 0L
         lastReplayQueuedRecordIndex = 0L
+        replayHighWaterRecordIndex = 0L
         replayBacklogCount = 0L
         pendingLiveSourceRecords.clear()
         liveSourceFlushScheduled = false
         transportHandler.removeCallbacks(liveSourceFlush)
+        transportHandler.removeCallbacks(replayStartAfterLiveOpportunity)
+        replayStartLineageGuard.advanceLineage()
         notificationQueue.reset()
         if (stalledDevice != null) {
             runCatching { gattServer?.cancelConnection(stalledDevice) }
@@ -957,11 +977,25 @@ class BleGattService : Service() {
             replayActive = false
             Log.e(TAG, "Build 45 source-frame enqueue failed: ${error.message}", error)
             broadcastStatus("DATA LOSS: source frame enqueue failed")
+            transportHandler.post { abortTransportLineage("source_frame_enqueue_failed") }
         }
     }
 
     private fun enqueueNewlyFinalizedManifests() {
         sourceJournal.drainNewlyFinalizedManifests().forEach { manifest ->
+            if (!SourceReplayWindow.includesManifest(
+                    activeSession = activeReplaySessionId,
+                    replayHighWaterRecordIndex = replayHighWaterRecordIndex,
+                    manifest = manifest,
+                )
+            ) {
+                Log.d(
+                    TAG,
+                    "Deferring source manifest ${manifest.firstRecordIndex}-${manifest.lastRecordIndex} " +
+                        "until a replay window includes it",
+                )
+                return@forEach
+            }
             val bytes = SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(manifest))
             if (bytes.size > maximumAttPayloadBytes()) {
                 replayActive = false
@@ -1001,6 +1035,7 @@ class BleGattService : Service() {
                 0L
             }
             lastReplayQueuedRecordIndex = durablePhoneRecordIndex
+            replayHighWaterRecordIndex = durablePhoneRecordIndex
             replayBacklogCount = 0L
             replayActive = false
             broadcastStatus("CAUGHT UP: source journal empty")
@@ -1019,7 +1054,12 @@ class BleGattService : Service() {
         activeReplaySessionId = session
         durablePhoneRecordIndex = acceptedIndex
         lastReplayQueuedRecordIndex = acceptedIndex
-        replayBacklogCount = sourceJournal.countRecordsAfter(session, durablePhoneRecordIndex)
+        replayHighWaterRecordIndex = highestRecordIndex
+        replayBacklogCount = sourceJournal.countRecordsAfter(
+            session,
+            durablePhoneRecordIndex,
+            replayHighWaterRecordIndex,
+        )
         replayActive = replayBacklogCount > 0
 
         sourceJournal.finalizedManifests(session)
@@ -1044,19 +1084,22 @@ class BleGattService : Service() {
                     throw SourceJournalCapacityException("Retained manifest could not enter the transport queue")
                 }
             }
-        broadcastStatus("REPLAYING ${session.toString().take(8)}: $replayBacklogCount source records from index ${durablePhoneRecordIndex + 1L}")
-        pumpReplay()
+        broadcastStatus(
+            "REPLAYING ${session.toString().take(8)}: $replayBacklogCount source records " +
+                "from index ${durablePhoneRecordIndex + 1L} through frozen $replayHighWaterRecordIndex"
+        )
+        transportHandler.removeCallbacks(replayStartAfterLiveOpportunity)
+        replayStartGeneration = replayStartLineageGuard.capture()
+        transportHandler.postDelayed(replayStartAfterLiveOpportunity, LIVE_SOURCE_BATCH_MS)
     }
 
     private fun handleSourceAcknowledgement(acknowledgement: SourceSegmentAcknowledgement) {
-        val activeSession = activeReplaySessionId
-            ?: throw SourceJournalCorruptionException("Acknowledgement arrived without an active replay session")
-        if (acknowledgement.watchBootSessionId != activeSession) {
-            throw SourceJournalCorruptionException("Acknowledgement watch session mismatch")
-        }
-        if (acknowledgement.cumulativeRecordIndex < durablePhoneRecordIndex) {
-            throw SourceJournalCorruptionException("Acknowledgement moved backwards")
-        }
+        val activeSession = SourceReplayWindow.validateAcknowledgement(
+            activeSession = activeReplaySessionId,
+            durablePhoneRecordIndex = durablePhoneRecordIndex,
+            replayHighWaterRecordIndex = replayHighWaterRecordIndex,
+            acknowledgement = acknowledgement,
+        )
         if (!sourceJournal.acknowledgeCompletedSegment(
                 acknowledgement.watchBootSessionId,
                 acknowledgement.cumulativeRecordIndex,
@@ -1067,7 +1110,11 @@ class BleGattService : Service() {
         }
         durablePhoneRecordIndex = acknowledgement.cumulativeRecordIndex
         lastReplayQueuedRecordIndex = maxOf(lastReplayQueuedRecordIndex, durablePhoneRecordIndex)
-        replayBacklogCount = sourceJournal.countRecordsAfter(activeSession, durablePhoneRecordIndex)
+        replayBacklogCount = sourceJournal.countRecordsAfter(
+            activeSession,
+            durablePhoneRecordIndex,
+            replayHighWaterRecordIndex,
+        )
         replayActive = replayBacklogCount > 0
         broadcastStatus(if (replayActive) "REPLAYING: $replayBacklogCount remain" else "CAUGHT UP: source journal acknowledged")
         pumpReplay()
@@ -1083,10 +1130,15 @@ class BleGattService : Service() {
         val page = sourceJournal.readRecordsAfter(
             activeSession,
             lastReplayQueuedRecordIndex,
+            replayHighWaterRecordIndex,
             REPLAY_PAGE_RECORDS,
         )
         if (page.isEmpty()) {
-            replayBacklogCount = sourceJournal.countRecordsAfter(activeSession, durablePhoneRecordIndex)
+            replayBacklogCount = sourceJournal.countRecordsAfter(
+                activeSession,
+                durablePhoneRecordIndex,
+                replayHighWaterRecordIndex,
+            )
             if (replayBacklogCount == 0L) {
                 replayActive = false
                 broadcastStatus("CAUGHT UP: no source replay backlog")
@@ -1100,12 +1152,18 @@ class BleGattService : Service() {
     private fun advanceReplaySessionIfReady() {
         val completedSession = activeReplaySessionId ?: return
         if (completedSession == sourceJournal.watchBootSessionId) return
-        if (sourceJournal.countRecordsAfter(completedSession, durablePhoneRecordIndex) != 0L) return
+        if (sourceJournal.countRecordsAfter(
+                completedSession,
+                durablePhoneRecordIndex,
+                replayHighWaterRecordIndex,
+            ) != 0L
+        ) return
         if (sourceJournal.hasFinalizedSegments(completedSession)) return
         if (notificationQueue.snapshot().pendingReplayFrames != 0) return
         val nextSession = sourceJournal.retainedSessionIds().firstOrNull()
         if (nextSession == null) {
             activeReplaySessionId = sourceJournal.watchBootSessionId
+            replayHighWaterRecordIndex = 0L
             replayActive = false
             broadcastStatus("CAUGHT UP: all retained watch sessions acknowledged")
             return
@@ -1120,9 +1178,12 @@ class BleGattService : Service() {
     }
 
     private fun handleNotificationTriggered(item: GattNotification) {
-        val records = runCatching { sourceFrameRecords(item) }.getOrElse {
+        val records = try {
+            sourceFrameRecords(item)
+        } catch (error: Exception) {
             broadcastStatus("DATA LOSS: triggered source frame failed canonical decode")
-            emptyList()
+            transportHandler.post { abortTransportLineage("source_trigger_decode_failed") }
+            return
         }
         if (records.isNotEmpty()) {
             sourceJournal.recordDelivery(
@@ -1133,9 +1194,12 @@ class BleGattService : Service() {
     }
 
     private fun handleNotificationCompleted(item: GattNotification) {
-        val records = runCatching { sourceFrameRecords(item) }.getOrElse {
+        val records = try {
+            sourceFrameRecords(item)
+        } catch (error: Exception) {
             broadcastStatus("DATA LOSS: completed source frame failed canonical decode")
-            emptyList()
+            transportHandler.post { abortTransportLineage("source_completion_decode_failed") }
+            return
         }
         if (records.isNotEmpty()) {
             sourceJournal.recordDelivery(
@@ -1154,6 +1218,7 @@ class BleGattService : Service() {
             replayActive = false
             lastReplayQueuedRecordIndex = durablePhoneRecordIndex
             broadcastStatus("SOURCE DELIVERY FAILED: reconnect/resume required")
+            transportHandler.post { abortTransportLineage("source_notification_failed") }
         }
     }
 

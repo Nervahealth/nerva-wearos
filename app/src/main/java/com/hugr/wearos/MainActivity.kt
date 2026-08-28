@@ -16,7 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 /**
- * HUGR Labs — Build 45w continuous-collection candidate
+ * HUGR Labs — Build 46w bounded-replay recovery candidate
  *
  * Based on Samsung's official tutorial (April 2026):
  * - Foreground service with foregroundServiceType="health"
@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
         }
 
         statusText = TextView(this).apply {
-            text = "HUGR BUILD 45w\nContinuous-collection candidate"
+            text = "HUGR BUILD 46w\nBounded-replay recovery candidate"
             textSize = 12f
             setTextColor(android.graphics.Color.WHITE)
         }
@@ -196,7 +196,7 @@ class MainActivity : ComponentActivity() {
         }
         appendLog("Health Sensor service started")
 
-        statusText.text = "HUGR BUILD 45w\nServices active"
+        statusText.text = "HUGR BUILD 46w\nServices active"
         appendLog("=== SERVICES LAUNCHED ===")
         appendLog("Screen can turn off — data continues")
     }

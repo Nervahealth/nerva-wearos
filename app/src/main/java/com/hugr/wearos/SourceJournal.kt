@@ -152,7 +152,10 @@ internal object SourceJournalCodec {
             .array()
     }
 
-    fun decodeAll(bytes: ByteArray): DecodeResult {
+    fun decodeAll(bytes: ByteArray): DecodeResult = decodeAll(bytes, Long.MAX_VALUE)
+
+    fun decodeAll(bytes: ByteArray, maximumRecordIndexInclusive: Long): DecodeResult {
+        require(maximumRecordIndexInclusive >= 0L) { "maximumRecordIndexInclusive cannot be negative" }
         val records = mutableListOf<WatchSourceRecord>()
         var offset = 0
         while (offset < bytes.size) {
@@ -193,6 +196,9 @@ internal object SourceJournalCodec {
                 payload = bytes.copyOfRange(payloadOffset, payloadOffset + payloadLength),
             )
             offset += recordLength
+            if (recordIndex >= maximumRecordIndexInclusive) {
+                return DecodeResult(records, offset, 0)
+            }
         }
         return DecodeResult(records, offset, 0)
     }
@@ -478,19 +484,35 @@ internal class SourceJournal(
         sessionId: UUID,
         recordIndexExclusive: Long,
         limit: Int,
+    ): List<WatchSourceRecord> = readRecordsAfter(
+        sessionId,
+        recordIndexExclusive,
+        Long.MAX_VALUE,
+        limit,
+    )
+
+    @Synchronized
+    fun readRecordsAfter(
+        sessionId: UUID,
+        recordIndexExclusive: Long,
+        recordIndexInclusive: Long,
+        limit: Int,
     ): List<WatchSourceRecord> {
         require(limit > 0) { "limit must be positive" }
+        if (recordIndexInclusive <= recordIndexExclusive) return emptyList()
         val result = ArrayList<WatchSourceRecord>(minOf(limit, 256))
         val files = allSegmentFiles()
             .mapNotNull { file -> segmentFileIndex(file)?.let { index -> file to index } }
             .filter { (_, index) ->
                 index.watchBootSessionId == sessionId &&
+                    index.firstRecordIndex <= recordIndexInclusive &&
                     (index.lastRecordIndex == null || index.lastRecordIndex > recordIndexExclusive)
             }
             .sortedBy { (_, index) -> index.firstRecordIndex }
         for ((file, _) in files) {
-            for (record in decodeFile(file).records) {
+            for (record in decodeFile(file, recordIndexInclusive).records) {
                 if (record.watchBootSessionId != sessionId || record.recordIndex <= recordIndexExclusive) continue
+                if (record.recordIndex > recordIndexInclusive) break
                 result += record
                 if (result.size >= limit) return result
             }
@@ -500,16 +522,24 @@ internal class SourceJournal(
 
     @Synchronized
     fun countRecordsAfter(sessionId: UUID, recordIndexExclusive: Long): Long {
+        return countRecordsAfter(sessionId, recordIndexExclusive, Long.MAX_VALUE)
+    }
+
+    @Synchronized
+    fun countRecordsAfter(sessionId: UUID, recordIndexExclusive: Long, recordIndexInclusive: Long): Long {
+        if (recordIndexInclusive <= recordIndexExclusive) return 0L
         var count = 0L
         finalizedFiles().mapNotNull(::segmentFileIndex)
-            .filter { it.watchBootSessionId == sessionId }
+            .filter { it.watchBootSessionId == sessionId && it.firstRecordIndex <= recordIndexInclusive }
             .forEach { index ->
-                val last = requireNotNull(index.lastRecordIndex)
+                val last = minOf(requireNotNull(index.lastRecordIndex), recordIndexInclusive)
                 val firstUnacknowledged = maxOf(index.firstRecordIndex, recordIndexExclusive + 1L)
                 if (last >= firstUnacknowledged) count += last - firstUnacknowledged + 1L
             }
         openFiles(sessionId).forEach { file ->
-            count += decodeFile(file).records.count { it.recordIndex > recordIndexExclusive }
+            count += decodeFile(file, recordIndexInclusive).records.count {
+                it.recordIndex > recordIndexExclusive && it.recordIndex <= recordIndexInclusive
+            }
         }
         return count
     }
@@ -715,6 +745,9 @@ internal class SourceJournal(
     }
 
     private fun decodeFile(file: File): SourceJournalCodec.DecodeResult = SourceJournalCodec.decodeAll(file.readBytes())
+
+    private fun decodeFile(file: File, maximumRecordIndexInclusive: Long): SourceJournalCodec.DecodeResult =
+        SourceJournalCodec.decodeAll(file.readBytes(), maximumRecordIndexInclusive)
 
     private fun finalizedFiles(): List<File> = rootDir.listFiles { file ->
         file.isFile && file.name.startsWith("segment_") && file.name.endsWith(".seg")
