@@ -1926,14 +1926,26 @@ class BleGattService : Service() {
             (transport.completedCount and 0x1F_FFFFL) or
                 ((transport.failedCount and 0x1F_FFFFL) shl 21) or
                 ((transport.timeoutCount and 0x1F_FFFFL) shl 42)
-        recordCausal(
-            CausalEventCode.TRANSPORT_SNAPSHOT,
-            recordIndexStart = sourceJournal.latestRecordIndex(),
-            recordIndexEnd = replayHighWaterRecordIndex,
-            arg0 = packedTransportState,
-            arg1 = packedTransportCounts,
-            reasonCode = replayBacklogCount.coerceAtMost(Int.MAX_VALUE.toLong()).toInt(),
-        )
+        try {
+            CausalTransportSnapshotPlan.create(
+                latestRecordIndex = sourceJournal.latestRecordIndex(),
+                replayHighWaterRecordIndex = replayHighWaterRecordIndex,
+                packedTransportState = packedTransportState,
+                packedTransportCounts = packedTransportCounts,
+                replayBacklogCount = replayBacklogCount,
+            ).events.forEach { event ->
+                recordCausal(
+                    event.code,
+                    recordIndexStart = event.recordIndexStart,
+                    recordIndexEnd = event.recordIndexEnd,
+                    arg0 = event.arg0,
+                    arg1 = event.arg1,
+                    reasonCode = event.reasonCode,
+                )
+            }
+        } catch (failure: Exception) {
+            WatchCausalRuntime.markFailure(this, failure)
+        }
         val latestAnomaly = sourceJournal.latestAnomaly()
         val dataLoss = healthSourceDataLoss || !sourceJournal.preflight().eligible || latestAnomaly != null
         val dataLossStreamCode = healthSourceDataLossStreamCode.takeIf { it != 0 }

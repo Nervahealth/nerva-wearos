@@ -93,7 +93,8 @@ internal enum class CausalEventCode(val wireCode: Int) {
     CANCEL_CONNECTION_REQUESTED(76),
     GATT_DISCONNECTED(77),
     BLE_SERVICE_DESTROYED(78),
-    TRANSPORT_SNAPSHOT(79);
+    TRANSPORT_SNAPSHOT(79),
+    SOURCE_PROGRESS_SNAPSHOT(80);
 
     companion object {
         fun fromWireCode(code: Int): CausalEventCode =
@@ -146,6 +147,21 @@ internal enum class CausalRecorderIntegrity {
     DEGRADED,
 }
 
+internal enum class CausalRecorderFailureClass {
+    NONE,
+    INITIALIZATION,
+    EVENT_VALIDATION,
+    PERSISTENCE,
+}
+
+internal object CausalRecorderFailureClassifier {
+    fun classify(failure: Exception, duringInitialization: Boolean): CausalRecorderFailureClass = when {
+        duringInitialization -> CausalRecorderFailureClass.INITIALIZATION
+        failure is IllegalArgumentException -> CausalRecorderFailureClass.EVENT_VALIDATION
+        else -> CausalRecorderFailureClass.PERSISTENCE
+    }
+}
+
 internal data class CausalFlightEvent(
     val schemaVersion: Int,
     val eventSequence: Long,
@@ -164,6 +180,48 @@ internal data class CausalFlightEvent(
     val arg1: Long,
     val reasonCode: Int,
 )
+
+internal data class CausalSnapshotEvent(
+    val code: CausalEventCode,
+    val recordIndexStart: Long = 0L,
+    val recordIndexEnd: Long = 0L,
+    val arg0: Long = 0L,
+    val arg1: Long = 0L,
+    val reasonCode: Int = CausalReasonCode.NONE.code,
+)
+
+internal data class CausalTransportSnapshotPlan(
+    val events: List<CausalSnapshotEvent>,
+) {
+    companion object {
+        fun create(
+            latestRecordIndex: Long,
+            replayHighWaterRecordIndex: Long,
+            packedTransportState: Long,
+            packedTransportCounts: Long,
+            replayBacklogCount: Long,
+        ): CausalTransportSnapshotPlan {
+            require(latestRecordIndex >= 0L) { "latestRecordIndex cannot be negative" }
+            require(replayHighWaterRecordIndex >= 0L) { "replayHighWaterRecordIndex cannot be negative" }
+            require(replayBacklogCount >= 0L) { "replayBacklogCount cannot be negative" }
+            return CausalTransportSnapshotPlan(
+                events = listOf(
+                    CausalSnapshotEvent(
+                        code = CausalEventCode.TRANSPORT_SNAPSHOT,
+                        arg0 = packedTransportState,
+                        arg1 = packedTransportCounts,
+                        reasonCode = replayBacklogCount.coerceAtMost(Int.MAX_VALUE.toLong()).toInt(),
+                    ),
+                    CausalSnapshotEvent(
+                        code = CausalEventCode.SOURCE_PROGRESS_SNAPSHOT,
+                        arg0 = latestRecordIndex,
+                        arg1 = replayHighWaterRecordIndex,
+                    ),
+                ),
+            )
+        }
+    }
+}
 
 internal class CausalFlightRecorder(
     private val rootDir: File,
@@ -562,25 +620,41 @@ internal object WatchCausalRuntime {
     @Volatile
     private var recorder: CausalFlightRecorder? = null
 
+    @Volatile
+    private var recorderFailureClass = CausalRecorderFailureClass.NONE
+
     @Synchronized
     fun recorder(context: Context): CausalFlightRecorder {
         recorder?.let { return it }
         val applicationContext = context.applicationContext
         val journal = WatchSourceRuntime.journal(applicationContext)
-        return CausalFlightRecorder(
-            rootDir = File(applicationContext.filesDir, DIRECTORY_NAME),
-            watchBootSessionId = journal.watchBootSessionId,
-            processInstanceId = processInstanceId,
-            nowElapsedMs = { SystemClock.elapsedRealtime() },
-            nowWallMs = { System.currentTimeMillis() },
-        ).also { created ->
-            recorder = created
-            created.record(
-                CausalEventCode.PROCESS_STARTED,
-                CausalComponentCode.RUNTIME,
-                processInstanceId,
-            )
+        return try {
+            CausalFlightRecorder(
+                rootDir = File(applicationContext.filesDir, DIRECTORY_NAME),
+                watchBootSessionId = journal.watchBootSessionId,
+                processInstanceId = processInstanceId,
+                nowElapsedMs = { SystemClock.elapsedRealtime() },
+                nowWallMs = { System.currentTimeMillis() },
+            ).also { created ->
+                recorder = created
+                created.record(
+                    CausalEventCode.PROCESS_STARTED,
+                    CausalComponentCode.RUNTIME,
+                    processInstanceId,
+                )
+            }
+        } catch (failure: Exception) {
+            recorderFailureClass = CausalRecorderFailureClassifier.classify(failure, duringInitialization = true)
+            recorder?.markDegraded()
+            throw failure
         }
+    }
+
+    fun failureClass(): CausalRecorderFailureClass = recorderFailureClass
+
+    fun markFailure(context: Context, failure: Exception) {
+        val activeRecorder = runCatching { recorder(context) }.getOrNull() ?: return
+        degrade(context, activeRecorder, failure, duringInitialization = false)
     }
 
     fun record(
@@ -612,12 +686,22 @@ internal object WatchCausalRuntime {
             )?.also {
                 context.sendBroadcast(Intent(ACTION_CAUSAL_EVENT_UPDATE).setPackage(context.packageName))
             }
-        } catch (_: Exception) {
-            activeRecorder.markDegraded()
-            runCatching {
-                context.sendBroadcast(Intent(ACTION_CAUSAL_EVENT_UPDATE).setPackage(context.packageName))
-            }
+        } catch (failure: Exception) {
+            degrade(context, activeRecorder, failure, duringInitialization = false)
             null
+        }
+    }
+
+    private fun degrade(
+        context: Context,
+        activeRecorder: CausalFlightRecorder,
+        failure: Exception,
+        duringInitialization: Boolean,
+    ) {
+        recorderFailureClass = CausalRecorderFailureClassifier.classify(failure, duringInitialization)
+        activeRecorder.markDegraded()
+        runCatching {
+            context.sendBroadcast(Intent(ACTION_CAUSAL_EVENT_UPDATE).setPackage(context.packageName))
         }
     }
 
@@ -625,5 +709,6 @@ internal object WatchCausalRuntime {
     fun resetForTests() {
         recorder?.close()
         recorder = null
+        recorderFailureClass = CausalRecorderFailureClass.NONE
     }
 }

@@ -11,6 +11,155 @@ import java.util.UUID
 
 class CausalFlightRecorderTest {
     @Test
+    fun `build 48 snapshot mapping rejects latest index beyond frozen replay high water`() {
+        val root = tempDir()
+        val recorder = recorder(root, UUID.randomUUID(), UUID.randomUUID(), { 1L }, { 2L })
+
+        val failure = runCatching {
+            recorder.record(
+                code = CausalEventCode.TRANSPORT_SNAPSHOT,
+                component = CausalComponentCode.BLE,
+                componentInstanceId = UUID.randomUUID(),
+                recordIndexStart = 1_014L,
+                recordIndexEnd = 1_013L,
+                arg0 = 77L,
+                arg1 = 88L,
+                reasonCode = 12,
+            )
+        }.exceptionOrNull()
+
+        assertTrue(failure is IllegalArgumentException)
+        assertEquals("record index range is invalid", failure?.message)
+        assertEquals(CausalRecorderIntegrity.OK, recorder.integrity())
+        assertTrue(recorder.events().isEmpty())
+    }
+
+    @Test
+    fun `build 49 snapshot plan preserves independent progress counters without degrading recorder`() {
+        val root = tempDir()
+        val recorder = recorder(root, UUID.randomUUID(), UUID.randomUUID(), { 1L }, { 2L })
+        val component = UUID.randomUUID()
+        val plan = CausalTransportSnapshotPlan.create(
+            latestRecordIndex = 1_014L,
+            replayHighWaterRecordIndex = 1_013L,
+            packedTransportState = 77L,
+            packedTransportCounts = 88L,
+            replayBacklogCount = 12L,
+        )
+
+        plan.events.forEach { event ->
+            requireNotNull(recorder.record(
+                code = event.code,
+                component = CausalComponentCode.BLE,
+                componentInstanceId = component,
+                recordIndexStart = event.recordIndexStart,
+                recordIndexEnd = event.recordIndexEnd,
+                arg0 = event.arg0,
+                arg1 = event.arg1,
+                reasonCode = event.reasonCode,
+            ))
+        }
+
+        val events = recorder.events()
+        assertEquals(CausalRecorderIntegrity.OK, recorder.integrity())
+        assertEquals(listOf(1L, 2L), events.map { it.eventSequence })
+        assertEquals(
+            listOf(CausalEventCode.TRANSPORT_SNAPSHOT, CausalEventCode.SOURCE_PROGRESS_SNAPSHOT),
+            events.map { it.code },
+        )
+        assertTrue(events.all { it.recordIndexStart == 0L && it.recordIndexEnd == 0L })
+        assertEquals(77L, events[0].arg0)
+        assertEquals(88L, events[0].arg1)
+        assertEquals(12, events[0].reasonCode)
+        assertEquals(1_014L, events[1].arg0)
+        assertEquals(1_013L, events[1].arg1)
+        assertEquals(CausalReasonCode.NONE.code, events[1].reasonCode)
+    }
+
+    @Test
+    fun `snapshot plan accepts every nonnegative latest to high water ordering without mutation`() {
+        val pairs = listOf(
+            0L to 0L,
+            9L to 10L,
+            10L to 10L,
+            11L to 10L,
+            4_426L to 1_013L,
+        )
+
+        pairs.forEach { (latest, highWater) ->
+            val progress = CausalTransportSnapshotPlan.create(
+                latestRecordIndex = latest,
+                replayHighWaterRecordIndex = highWater,
+                packedTransportState = 0L,
+                packedTransportCounts = 0L,
+                replayBacklogCount = 0L,
+            ).events.single { it.code == CausalEventCode.SOURCE_PROGRESS_SNAPSHOT }
+
+            assertEquals(0L, progress.recordIndexStart)
+            assertEquals(0L, progress.recordIndexEnd)
+            assertEquals(latest, progress.arg0)
+            assertEquals(highWater, progress.arg1)
+        }
+    }
+
+    @Test
+    fun `snapshot plan rejects negative counters without weakening true range validation`() {
+        listOf(
+            Triple(-1L, 0L, 0L),
+            Triple(0L, -1L, 0L),
+            Triple(0L, 0L, -1L),
+        ).forEach { (latest, highWater, backlog) ->
+            assertTrue(
+                runCatching {
+                    CausalTransportSnapshotPlan.create(
+                        latestRecordIndex = latest,
+                        replayHighWaterRecordIndex = highWater,
+                        packedTransportState = 0L,
+                        packedTransportCounts = 0L,
+                        replayBacklogCount = backlog,
+                    )
+                }.exceptionOrNull() is IllegalArgumentException,
+            )
+        }
+
+        val recorder = recorder(tempDir(), UUID.randomUUID(), UUID.randomUUID(), { 1L }, { 2L })
+        assertTrue(
+            runCatching {
+                recorder.record(
+                    CausalEventCode.FIRST_APPEND,
+                    CausalComponentCode.HEALTH,
+                    UUID.randomUUID(),
+                    recordIndexStart = 20L,
+                    recordIndexEnd = 19L,
+                )
+            }.exceptionOrNull() is IllegalArgumentException,
+        )
+    }
+
+    @Test
+    fun `recorder failure classifier is bounded and contains no exception text`() {
+        val validation = CausalRecorderFailureClassifier.classify(
+            IllegalArgumentException("FORBIDDEN-PHYSIOLOGY-SENTINEL"),
+            duringInitialization = false,
+        )
+        val initialization = CausalRecorderFailureClassifier.classify(
+            IllegalStateException("/private/path/FORBIDDEN-PHYSIOLOGY-SENTINEL"),
+            duringInitialization = true,
+        )
+        val persistence = CausalRecorderFailureClassifier.classify(
+            IllegalStateException("FORBIDDEN-PHYSIOLOGY-SENTINEL"),
+            duringInitialization = false,
+        )
+
+        assertEquals(CausalRecorderFailureClass.EVENT_VALIDATION, validation)
+        assertEquals(CausalRecorderFailureClass.INITIALIZATION, initialization)
+        assertEquals(CausalRecorderFailureClass.PERSISTENCE, persistence)
+        val serializedClasses = listOf(validation, initialization, persistence).joinToString("|") { it.name }
+        assertFalse(serializedClasses.contains("FORBIDDEN-PHYSIOLOGY-SENTINEL"))
+        assertFalse(serializedClasses.contains("/private/path"))
+    }
+
+    @Test
     fun `events survive restart with exact fields crc and increasing sequence`() {
         val root = tempDir()
         val session = UUID.randomUUID()

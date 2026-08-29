@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
         }
 
         statusText = TextView(this).apply {
-            text = "HUGR BUILD 48w\n0.48.0-mtu-readiness-recovery-candidate"
+            text = "HUGR BUILD 49w\n0.49.0-recorder-integrity-candidate"
             textSize = 12f
             setTextColor(Color.WHITE)
         }
@@ -197,7 +197,7 @@ class MainActivity : ComponentActivity() {
         } else {
             startService(sensorIntent)
         }
-        statusText.text = "HUGR BUILD 48w\nServices active · MTU readiness recovery"
+        statusText.text = "HUGR BUILD 49w\nServices active · recorder integrity hardening"
         renderEvidence()
     }
 
@@ -267,6 +267,7 @@ class MainActivity : ComponentActivity() {
         val callbacks = events.filter { it.code == CausalEventCode.FIRST_CALLBACK }.mapNotNull { it.stream }.toSet()
         val appends = events.filter { it.code == CausalEventCode.FIRST_APPEND }.mapNotNull { it.stream }.toSet()
         val integrity = recorder.integrity().name
+        val failureClass = WatchCausalRuntime.failureClass()
         val bleState = when {
             latest(CausalEventCode.GATT_DISCONNECTED)?.eventSequence.orZero() > latest(CausalEventCode.GATT_CONNECTED)?.eventSequence.orZero() -> "DISCONNECTED"
             latest(CausalEventCode.GATT_CONNECTED) != null -> "CONNECTED"
@@ -290,7 +291,9 @@ class MainActivity : ComponentActivity() {
         val abort = latest(CausalEventCode.ABORT_REQUESTED)
 
         evidenceText.text = buildString {
-            append("RECORDER $integrity\n")
+            append("RECORDER $integrity")
+            if (failureClass != CausalRecorderFailureClass.NONE) append(" ${failureClass.name}")
+            append('\n')
             append(baselineText).append('\n')
             append("ACQ T/C/A $acquisition\n")
             append("BLE $bleState L${events.maxOfOrNull { it.bleLineage } ?: 0L} MTU=$mtu CCCD=$cccd\n")
