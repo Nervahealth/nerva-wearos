@@ -21,7 +21,7 @@ import java.io.File
 import java.util.UUID
 
 /**
- * HUGR Labs — Build 47w causal flight recorder.
+ * HUGR Labs — Build 48w MTU-readiness recovery with causal flight recorder.
  *
  * The activity shows fixed-field watch-local diagnostic evidence only. Sensor
  * values and source payloads never enter this UI.
@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
         }
 
         statusText = TextView(this).apply {
-            text = "HUGR BUILD 47w\n0.47.0-causal-flight-recorder"
+            text = "HUGR BUILD 48w\n0.48.0-mtu-readiness-recovery-candidate"
             textSize = 12f
             setTextColor(Color.WHITE)
         }
@@ -197,7 +197,7 @@ class MainActivity : ComponentActivity() {
         } else {
             startService(sensorIntent)
         }
-        statusText.text = "HUGR BUILD 47w\nServices active · causal recorder"
+        statusText.text = "HUGR BUILD 48w\nServices active · MTU readiness recovery"
         renderEvidence()
     }
 

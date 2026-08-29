@@ -306,6 +306,15 @@ class CausalLineageStateTest {
         assertFalse(external.localCancelRequested)
         assertEquals(CausalReasonCode.NONE.code, external.abortReasonCode)
     }
+
+    @Test
+    fun `unsafe MTU after release has an explicit fail closed reason`() {
+        assertEquals(
+            CausalReasonCode.UNSAFE_MTU_AFTER_RELEASE,
+            CausalReasonCode.fromAbortReason("unsafe_mtu_after_release"),
+        )
+        assertEquals(27, CausalReasonCode.UNSAFE_MTU_AFTER_RELEASE.code)
+    }
 }
 
 class CausalFlightFormatterTest {

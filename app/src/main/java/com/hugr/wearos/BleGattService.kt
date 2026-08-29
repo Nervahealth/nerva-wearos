@@ -109,6 +109,8 @@ class BleGattService : Service() {
     private var replayBacklogCount = 0L
     private var replayActive = false
     private var activeReplaySessionId: UUID? = null
+    private val sourceMtuReadinessGate = SourceMtuReadinessGate()
+    private var sourceMtuLineageGeneration = -1L
     private val replayStartLineageGuard = ReplayStartLineageGuard()
     private var replayStartGeneration = -1L
     private var pendingSourceResumeRequest: SourceResumeRequest? = null
@@ -286,7 +288,9 @@ class BleGattService : Service() {
         transportHandler.removeCallbacks(transportTicker)
         transportHandler.removeCallbacks(liveSourceFlush)
         transportHandler.removeCallbacks(replayStartAfterLiveOpportunity)
+        sourceMtuLineageGeneration = sourceMtuReadinessGate.onDisconnected()
         replayStartLineageGuard.advanceLineage()
+        pendingSourceResumeRequest = null
         pendingLiveSourceRecords.clear()
         liveSourceFlushScheduled = false
         notificationQueue.reset()
@@ -450,6 +454,7 @@ class BleGattService : Service() {
             when (newState) {
                 BluetoothProfile.STATE_CONNECTED -> {
                     val lineage = causalLineageState.onConnected()
+                    sourceMtuLineageGeneration = sourceMtuReadinessGate.onConnected()
                     causalSourceDetailCountByLineage[lineage] = 0
                     recordCausal(
                         CausalEventCode.GATT_CONNECTED,
@@ -459,6 +464,7 @@ class BleGattService : Service() {
                     notificationQueue.reset()
                     notificationCompletionBlocked = true
                     connectedDevice = device
+                    pendingSourceResumeRequest = null
                     negotiatedMtu = 23
                     replayActive = false
                     durablePhoneRecordIndex = 0L
@@ -482,6 +488,7 @@ class BleGattService : Service() {
                 }
                 BluetoothProfile.STATE_DISCONNECTED -> {
                     val disconnect = causalLineageState.onDisconnected(status)
+                    sourceMtuLineageGeneration = sourceMtuReadinessGate.onDisconnected()
                     recordCausal(
                         CausalEventCode.GATT_DISCONNECTED,
                         bleLineage = disconnect.bleLineage,
@@ -491,6 +498,7 @@ class BleGattService : Service() {
                     )
                     notificationCompletionBlocked = true
                     connectedDevice = null
+                    pendingSourceResumeRequest = null
                     negotiatedMtu = 23
                     replayActive = false
                     durablePhoneRecordIndex = 0L
@@ -519,6 +527,7 @@ class BleGattService : Service() {
             val activeDevice = connectedDevice
             if (device == null || activeDevice == null || device.address != activeDevice.address) return
             negotiatedMtu = mtu.coerceAtLeast(23)
+            if (!sourceMtuReadinessGate.onMtuChanged(sourceMtuLineageGeneration, negotiatedMtu)) return
             recordCausal(
                 CausalEventCode.MTU_CHANGED,
                 arg0 = negotiatedMtu.toLong(),
@@ -526,7 +535,12 @@ class BleGattService : Service() {
             )
             Log.i(TAG, "Negotiated GATT MTU=$negotiatedMtu ATT payload=${maximumAttPayloadBytes()}")
             broadcastStatus("BLE MTU: $negotiatedMtu (payload ${maximumAttPayloadBytes()})")
-            notifyDeviceHealth()
+            val readiness = sourceMtuReadinessGate.snapshot()
+            if (readiness.released && readiness.attPayloadBytes < SourceReplayProtocol.MIN_ATT_PAYLOAD_FOR_FIVE_ACCEL) {
+                transportHandler.post { abortTransportLineage("unsafe_mtu_after_release") }
+                return
+            }
+            if (!releasePreparedSourceIfReady()) notifyDeviceHealth()
         }
 
         override fun onServiceAdded(status: Int, service: BluetoothGattService?) {
@@ -664,10 +678,19 @@ class BleGattService : Service() {
                     }
                     if (enabled) notificationCompletionBlocked = false
                     if (charUuid == SOURCE_RECORD_CHARACTERISTIC_UUID) {
+                        sourceMtuReadinessGate.onSourceCccdChanged(sourceMtuLineageGeneration, enabled)
                         recordCausal(
                             if (enabled) CausalEventCode.SOURCE_CCCD_ENABLED else CausalEventCode.SOURCE_CCCD_DISABLED,
                         )
-                        if (enabled) pendingSourceResumeRequest?.let(::beginSourceReplay)
+                        if (enabled) {
+                            val request = pendingSourceResumeRequest
+                            if (request != null && sourceMtuReadinessGate.snapshot().preparedResumePlan == null) {
+                                beginSourceReplay(request)
+                            } else {
+                                releasePreparedSourceIfReady()
+                            }
+                            scheduleLiveSourceFlushIfReady()
+                        }
                     }
                 }
             }
@@ -944,7 +967,9 @@ class BleGattService : Service() {
         recordCausal(CausalEventCode.ABORT_REQUESTED, reasonCode = reasonCode)
         notificationCompletionBlocked = true
         notificationSubscriptions.clear()
+        sourceMtuLineageGeneration = sourceMtuReadinessGate.onDisconnected()
         connectedDevice = null
+        pendingSourceResumeRequest = null
         activeReplaySessionId = null
         replayActive = false
         durablePhoneRecordIndex = 0L
@@ -974,10 +999,37 @@ class BleGattService : Service() {
     }
 
     private fun queueLiveSourceRecord(record: WatchSourceRecord) {
-        val device = connectedDevice ?: return
-        if (!isNotificationEnabled(device, SOURCE_RECORD_CHARACTERISTIC_UUID)) return
+        connectedDevice ?: return
+        val readiness = sourceMtuReadinessGate.snapshot()
+        if (!readiness.released) {
+            val plan = readiness.preparedResumePlan ?: return
+            if (record.watchBootSessionId != plan.watchBootSessionId ||
+                record.recordIndex <= plan.replayHighWaterRecordIndex
+            ) return
+        } else {
+            val activeSession = activeReplaySessionId ?: return
+            if (record.watchBootSessionId != activeSession || record.recordIndex <= replayHighWaterRecordIndex) return
+        }
+        if (!sourceMtuReadinessGate.canConstructSourceFrames(sourceMtuLineageGeneration)) {
+            when (sourceMtuReadinessGate.reservePendingLiveRecord(sourceMtuLineageGeneration)) {
+                PendingLiveReservationResult.ACCEPTED -> Unit
+                PendingLiveReservationResult.STALE_LINEAGE -> return
+                PendingLiveReservationResult.CAPACITY_EXCEEDED -> {
+                    broadcastStatus("DATA LOSS RISK: pre-MTU live pending capacity reached")
+                    transportHandler.post { abortTransportLineage("critical_queue_fault") }
+                    return
+                }
+            }
+        }
         pendingLiveSourceRecords += record
-        if (!liveSourceFlushScheduled) {
+        scheduleLiveSourceFlushIfReady()
+    }
+
+    private fun scheduleLiveSourceFlushIfReady() {
+        if (pendingLiveSourceRecords.isNotEmpty() &&
+            sourceMtuReadinessGate.canConstructSourceFrames(sourceMtuLineageGeneration) &&
+            !liveSourceFlushScheduled
+        ) {
             liveSourceFlushScheduled = true
             transportHandler.postDelayed(liveSourceFlush, LIVE_SOURCE_BATCH_MS)
         }
@@ -985,6 +1037,7 @@ class BleGattService : Service() {
 
     private fun flushLiveSourceRecords() {
         if (pendingLiveSourceRecords.isEmpty()) return
+        if (!sourceMtuReadinessGate.canConstructSourceFrames(sourceMtuLineageGeneration)) return
         val device = connectedDevice
         if (device == null || !isNotificationEnabled(device, SOURCE_RECORD_CHARACTERISTIC_UUID)) {
             pendingLiveSourceRecords.clear()
@@ -997,6 +1050,7 @@ class BleGattService : Service() {
 
     private fun enqueueSourceRecords(records: List<WatchSourceRecord>, replay: Boolean) {
         if (records.isEmpty()) return
+        if (!sourceMtuReadinessGate.canConstructSourceFrames(sourceMtuLineageGeneration)) return
         val characteristic = sourceRecordCharacteristic ?: return
         val payloadLimit = maximumAttPayloadBytes()
         if (replay && payloadLimit < SourceReplayProtocol.MIN_ATT_PAYLOAD_FOR_FIVE_ACCEL) {
@@ -1044,6 +1098,7 @@ class BleGattService : Service() {
     }
 
     private fun enqueueNewlyFinalizedManifests() {
+        if (!sourceMtuReadinessGate.canConstructSourceFrames(sourceMtuLineageGeneration)) return
         sourceJournal.drainNewlyFinalizedManifests().forEach { manifest ->
             if (!SourceReplayWindow.includesManifest(
                     activeSession = activeReplaySessionId,
@@ -1083,15 +1138,15 @@ class BleGattService : Service() {
             CausalEventCode.RESUME_RECEIVED,
             recordIndexStart = request.cumulativeRecordIndex.coerceAtLeast(0L),
         )
-        pendingSourceResumeRequest = request
-        val device = connectedDevice
-        if (device == null || !isNotificationEnabled(device, SOURCE_RECORD_CHARACTERISTIC_UUID)) {
-            recordCausal(
-                CausalEventCode.RESUME_DEFERRED,
-                recordIndexStart = request.cumulativeRecordIndex.coerceAtLeast(0L),
-            )
+        val existingRequest = pendingSourceResumeRequest
+        if (existingRequest != null) {
+            if (existingRequest != request) {
+                throw SourceJournalCorruptionException("Conflicting source resume in active BLE lineage")
+            }
+            releasePreparedSourceIfReady()
             return
         }
+        pendingSourceResumeRequest = request
         beginSourceReplay(request)
     }
 
@@ -1099,29 +1154,80 @@ class BleGattService : Service() {
         sourceJournal.finalizeActiveSegment()
         sourceJournal.drainNewlyFinalizedManifests()
         val retainedSessions = sourceJournal.retainedSessionIds()
-        if (retainedSessions.isEmpty()) {
-            activeReplaySessionId = sourceJournal.watchBootSessionId
-            durablePhoneRecordIndex = if (request.watchBootSessionId == sourceJournal.watchBootSessionId) {
-                request.cumulativeRecordIndex.coerceAtLeast(0L)
-            } else {
-                0L
-            }
-            lastReplayQueuedRecordIndex = durablePhoneRecordIndex
-            replayHighWaterRecordIndex = durablePhoneRecordIndex
-            replayBacklogCount = 0L
-            replayActive = false
+        val session = retainedSessions.firstOrNull() ?: sourceJournal.watchBootSessionId
+        val acceptedIndex = if (request.watchBootSessionId == session) request.cumulativeRecordIndex.coerceAtLeast(0L) else 0L
+        val highWater = sourceJournal.highestRecordIndex(session)
+        if (acceptedIndex > highWater) {
+            throw SourceJournalCorruptionException("Phone resume index exceeds watch journal")
+        }
+        val plan = PreparedSourceResumePlan(
+            watchBootSessionId = session,
+            acceptedRecordIndex = acceptedIndex,
+            replayHighWaterRecordIndex = highWater,
+            replayBacklogCount = sourceJournal.countRecordsAfter(session, acceptedIndex, highWater),
+        )
+        when (sourceMtuReadinessGate.prepareResume(sourceMtuLineageGeneration, plan)) {
+            ResumePreparationResult.PREPARED,
+            ResumePreparationResult.DUPLICATE -> Unit
+            ResumePreparationResult.CONFLICT -> throw SourceJournalCorruptionException(
+                "Conflicting source resume changed the frozen replay window",
+            )
+            ResumePreparationResult.STALE_LINEAGE -> throw SourceJournalCorruptionException(
+                "Source resume arrived outside the active BLE lineage",
+            )
+        }
+        activeReplaySessionId = session
+        durablePhoneRecordIndex = acceptedIndex
+        lastReplayQueuedRecordIndex = acceptedIndex
+        replayHighWaterRecordIndex = highWater
+        replayBacklogCount = plan.replayBacklogCount
+        replayActive = false
+        if (!releasePreparedSourceIfReady()) {
             recordCausal(
-                CausalEventCode.RESUME_APPLIED,
-                recordIndexStart = durablePhoneRecordIndex,
-                recordIndexEnd = replayHighWaterRecordIndex,
+                CausalEventCode.RESUME_DEFERRED,
+                recordIndexStart = acceptedIndex,
+                recordIndexEnd = highWater,
                 arg0 = replayBacklogCount,
             )
-            broadcastStatus("CAUGHT UP: source journal empty")
-            return
+            broadcastStatus(
+                "SOURCE WAITING: frozen ${acceptedIndex + 1L}-$highWater; " +
+                    "MTU=$negotiatedMtu payload=${maximumAttPayloadBytes()}",
+            )
         }
-        val session = retainedSessions.first()
-        val acceptedIndex = if (request.watchBootSessionId == session) request.cumulativeRecordIndex.coerceAtLeast(0L) else 0L
-        beginSourceReplaySession(session, acceptedIndex)
+    }
+
+    private fun releasePreparedSourceIfReady(): Boolean {
+        val release = sourceMtuReadinessGate.takeReleaseIfReady(sourceMtuLineageGeneration) ?: return false
+        val plan = release.preparedResumePlan
+        activeReplaySessionId = plan.watchBootSessionId
+        durablePhoneRecordIndex = plan.acceptedRecordIndex
+        lastReplayQueuedRecordIndex = plan.acceptedRecordIndex
+        replayHighWaterRecordIndex = plan.replayHighWaterRecordIndex
+        replayBacklogCount = plan.replayBacklogCount
+        replayActive = replayBacklogCount > 0L
+
+        notifyDeviceHealth()
+        flushLiveSourceRecords()
+        enqueueManifestsForReplayWindow(plan.watchBootSessionId, plan.replayHighWaterRecordIndex)
+        recordCausal(
+            CausalEventCode.RESUME_APPLIED,
+            recordIndexStart = durablePhoneRecordIndex,
+            recordIndexEnd = replayHighWaterRecordIndex,
+            arg0 = replayBacklogCount,
+            arg1 = release.pendingLiveRecordCount.toLong(),
+        )
+        if (replayActive) {
+            broadcastStatus(
+                "REPLAYING ${plan.watchBootSessionId.toString().take(8)}: $replayBacklogCount source records " +
+                    "from index ${durablePhoneRecordIndex + 1L} through frozen $replayHighWaterRecordIndex",
+            )
+            transportHandler.removeCallbacks(replayStartAfterLiveOpportunity)
+            replayStartGeneration = replayStartLineageGuard.capture()
+            transportHandler.postDelayed(replayStartAfterLiveOpportunity, LIVE_SOURCE_BATCH_MS)
+        } else {
+            broadcastStatus("CAUGHT UP: frozen source replay window empty")
+        }
+        return true
     }
 
     private fun beginSourceReplaySession(session: UUID, acceptedIndex: Long) {
@@ -1146,9 +1252,22 @@ class BleGattService : Service() {
             arg0 = replayBacklogCount,
         )
 
+        enqueueManifestsForReplayWindow(session, replayHighWaterRecordIndex)
+        broadcastStatus(
+            "REPLAYING ${session.toString().take(8)}: $replayBacklogCount source records " +
+                "from index ${durablePhoneRecordIndex + 1L} through frozen $replayHighWaterRecordIndex"
+        )
+        transportHandler.removeCallbacks(replayStartAfterLiveOpportunity)
+        replayStartGeneration = replayStartLineageGuard.capture()
+        transportHandler.postDelayed(replayStartAfterLiveOpportunity, LIVE_SOURCE_BATCH_MS)
+    }
+
+    private fun enqueueManifestsForReplayWindow(session: UUID, highWaterRecordIndex: Long) {
+        if (!sourceMtuReadinessGate.canConstructSourceFrames(sourceMtuLineageGeneration)) return
         sourceJournal.finalizedManifests(session)
             .sortedBy { it.firstRecordIndex }
             .forEach { manifest ->
+                if (manifest.lastRecordIndex > highWaterRecordIndex) return@forEach
                 val bytes = SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(manifest))
                 if (bytes.size > maximumAttPayloadBytes()) {
                     replayActive = false
@@ -1168,13 +1287,6 @@ class BleGattService : Service() {
                     throw SourceJournalCapacityException("Retained manifest could not enter the transport queue")
                 }
             }
-        broadcastStatus(
-            "REPLAYING ${session.toString().take(8)}: $replayBacklogCount source records " +
-                "from index ${durablePhoneRecordIndex + 1L} through frozen $replayHighWaterRecordIndex"
-        )
-        transportHandler.removeCallbacks(replayStartAfterLiveOpportunity)
-        replayStartGeneration = replayStartLineageGuard.capture()
-        transportHandler.postDelayed(replayStartAfterLiveOpportunity, LIVE_SOURCE_BATCH_MS)
     }
 
     private fun handleSourceAcknowledgement(acknowledgement: SourceSegmentAcknowledgement) {
@@ -1207,6 +1319,7 @@ class BleGattService : Service() {
 
     private fun pumpReplay() {
         if (!replayActive || notificationCompletionBlocked) return
+        if (!sourceMtuReadinessGate.canConstructSourceFrames(sourceMtuLineageGeneration)) return
         val device = connectedDevice ?: return
         if (!isNotificationEnabled(device, SOURCE_RECORD_CHARACTERISTIC_UUID)) return
         if (notificationQueue.snapshot().pendingReplayFrames >= 4) return
@@ -1854,7 +1967,7 @@ class BleGattService : Service() {
         )
         try {
             val record = sourceJournal.append(SourceStreamCode.DEVICE_HEALTH, occurredAtWatchMs, payload)
-            if (connectedDevice != null) enqueueSourceRecords(listOf(record), replay = false)
+            if (connectedDevice != null) queueLiveSourceRecord(record)
         } catch (error: Exception) {
             healthSourceDataLoss = true
             Log.e(TAG, "DATA LOSS: device-health journal append failed", error)

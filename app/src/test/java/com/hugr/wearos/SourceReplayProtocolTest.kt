@@ -80,6 +80,67 @@ class SourceReplayProtocolTest {
         assertThrows(SourceJournalCorruptionException::class.java) { SourceReplayProtocol.decodeDataFrame(bytes) }
     }
 
+    @Test
+    fun `source-safe payload is exactly the five accelerometer replay threshold`() {
+        val records = records(SourceStreamCode.ACCEL, 5, 16)
+
+        val exact = SourceReplayProtocol.buildDataFrames(
+            records,
+            replay = true,
+            maximumAttPayloadBytes = SourceReplayProtocol.MIN_ATT_PAYLOAD_FOR_FIVE_ACCEL,
+        )
+        val oneByteShort = SourceReplayProtocol.buildDataFrames(
+            records,
+            replay = true,
+            maximumAttPayloadBytes = SourceReplayProtocol.MIN_ATT_PAYLOAD_FOR_FIVE_ACCEL - 1,
+        )
+
+        assertEquals(364, SourceReplayProtocol.MIN_ATT_PAYLOAD_FOR_FIVE_ACCEL)
+        assertEquals(1, exact.size)
+        assertEquals(364, exact.single().size)
+        assertTrue(oneByteShort.size > 1)
+    }
+
+    @Test
+    fun `source-safe payload also fits the largest single record and maximum manifest`() {
+        val session = UUID.randomUUID()
+        val deviceHealth = record(
+            session = session,
+            recordIndex = 1L,
+            stream = SourceStreamCode.DEVICE_HEALTH,
+            sourceSequence = 1L,
+            payload = ByteArray(58),
+        )
+        val deviceHealthFrame = SourceReplayProtocol.buildDataFrames(
+            listOf(deviceHealth),
+            replay = false,
+            maximumAttPayloadBytes = SourceReplayProtocol.MIN_ATT_PAYLOAD_FOR_FIVE_ACCEL,
+        ).single()
+        val maximumManifest = SourceManifestFrame(
+            SourceSegmentManifest(
+                segmentId = "ignored",
+                watchBootSessionId = session,
+                firstRecordIndex = 1L,
+                lastRecordIndex = 5L,
+                recordCount = 5L,
+                byteCount = 500L,
+                sha256Hex = "ab".repeat(32),
+                streamRanges = SourceStreamCode.entries.associateWith { stream ->
+                    SourceStreamRange(1L, stream.wireCode.toLong(), stream.wireCode.toLong())
+                },
+            ),
+        )
+        val manifestBytes = SourceReplayProtocol.encodeManifestFrame(maximumManifest)
+
+        assertEquals(142, deviceHealthFrame.size)
+        assertEquals(149, manifestBytes.size)
+        assertTrue(deviceHealthFrame.size <= SourceReplayProtocol.MIN_ATT_PAYLOAD_FOR_FIVE_ACCEL)
+        assertTrue(manifestBytes.size <= SourceReplayProtocol.MIN_ATT_PAYLOAD_FOR_FIVE_ACCEL)
+        assertThrows(IllegalArgumentException::class.java) {
+            SourceReplayProtocol.buildDataFrames(listOf(deviceHealth), false, deviceHealthFrame.size - 1)
+        }
+    }
+
     private fun records(stream: SourceStreamCode, count: Int, payloadBytes: Int): List<WatchSourceRecord> {
         val session = UUID.randomUUID()
         return (1..count).map { index -> record(session, index.toLong(), stream, index.toLong(), ByteArray(payloadBytes) { index.toByte() }) }

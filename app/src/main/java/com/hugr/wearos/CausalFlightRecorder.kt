@@ -115,6 +115,7 @@ internal enum class CausalReasonCode(val code: Int) {
     SOURCE_COMPLETION_DECODE_FAILED(24),
     SOURCE_NOTIFICATION_FAILED(25),
     NOTIFICATION_TIMEOUT(26),
+    UNSAFE_MTU_AFTER_RELEASE(27),
     UNKNOWN(255);
 
     companion object {
@@ -133,6 +134,7 @@ internal enum class CausalReasonCode(val code: Int) {
             "source_completion_decode_failed" -> SOURCE_COMPLETION_DECODE_FAILED
             "source_notification_failed" -> SOURCE_NOTIFICATION_FAILED
             "notification_timeout" -> NOTIFICATION_TIMEOUT
+            "unsafe_mtu_after_release" -> UNSAFE_MTU_AFTER_RELEASE
             else -> UNKNOWN
         }
     }
