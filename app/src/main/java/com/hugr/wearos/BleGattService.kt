@@ -109,6 +109,7 @@ class BleGattService : Service() {
     private var replayBacklogCount = 0L
     private var replayActive = false
     private var activeReplaySessionId: UUID? = null
+    private var queuedReplayManifestEndIndex: Long? = null
     private val sourceMtuReadinessGate = SourceMtuReadinessGate()
     private var sourceMtuLineageGeneration = -1L
     private val replayStartLineageGuard = ReplayStartLineageGuard()
@@ -291,6 +292,7 @@ class BleGattService : Service() {
         sourceMtuLineageGeneration = sourceMtuReadinessGate.onDisconnected()
         replayStartLineageGuard.advanceLineage()
         pendingSourceResumeRequest = null
+        queuedReplayManifestEndIndex = null
         pendingLiveSourceRecords.clear()
         liveSourceFlushScheduled = false
         notificationQueue.reset()
@@ -465,6 +467,7 @@ class BleGattService : Service() {
                     notificationCompletionBlocked = true
                     connectedDevice = device
                     pendingSourceResumeRequest = null
+                    queuedReplayManifestEndIndex = null
                     negotiatedMtu = 23
                     replayActive = false
                     durablePhoneRecordIndex = 0L
@@ -499,6 +502,7 @@ class BleGattService : Service() {
                     notificationCompletionBlocked = true
                     connectedDevice = null
                     pendingSourceResumeRequest = null
+                    queuedReplayManifestEndIndex = null
                     negotiatedMtu = 23
                     replayActive = false
                     durablePhoneRecordIndex = 0L
@@ -971,6 +975,7 @@ class BleGattService : Service() {
         connectedDevice = null
         pendingSourceResumeRequest = null
         activeReplaySessionId = null
+        queuedReplayManifestEndIndex = null
         replayActive = false
         durablePhoneRecordIndex = 0L
         lastReplayQueuedRecordIndex = 0L
@@ -1182,6 +1187,7 @@ class BleGattService : Service() {
         replayHighWaterRecordIndex = highWater
         replayBacklogCount = plan.replayBacklogCount
         replayActive = false
+        queuedReplayManifestEndIndex = null
         if (!releasePreparedSourceIfReady()) {
             recordCausal(
                 CausalEventCode.RESUME_DEFERRED,
@@ -1205,10 +1211,11 @@ class BleGattService : Service() {
         replayHighWaterRecordIndex = plan.replayHighWaterRecordIndex
         replayBacklogCount = plan.replayBacklogCount
         replayActive = replayBacklogCount > 0L
+        queuedReplayManifestEndIndex = null
 
         notifyDeviceHealth()
         flushLiveSourceRecords()
-        enqueueManifestsForReplayWindow(plan.watchBootSessionId, plan.replayHighWaterRecordIndex)
+        enqueueNextManifestForReplayWindow(plan.watchBootSessionId, plan.replayHighWaterRecordIndex)
         recordCausal(
             CausalEventCode.RESUME_APPLIED,
             recordIndexStart = durablePhoneRecordIndex,
@@ -1245,6 +1252,7 @@ class BleGattService : Service() {
             replayHighWaterRecordIndex,
         )
         replayActive = replayBacklogCount > 0
+        queuedReplayManifestEndIndex = null
         recordCausal(
             CausalEventCode.RESUME_APPLIED,
             recordIndexStart = durablePhoneRecordIndex,
@@ -1252,7 +1260,7 @@ class BleGattService : Service() {
             arg0 = replayBacklogCount,
         )
 
-        enqueueManifestsForReplayWindow(session, replayHighWaterRecordIndex)
+        enqueueNextManifestForReplayWindow(session, replayHighWaterRecordIndex)
         broadcastStatus(
             "REPLAYING ${session.toString().take(8)}: $replayBacklogCount source records " +
                 "from index ${durablePhoneRecordIndex + 1L} through frozen $replayHighWaterRecordIndex"
@@ -1262,31 +1270,36 @@ class BleGattService : Service() {
         transportHandler.postDelayed(replayStartAfterLiveOpportunity, LIVE_SOURCE_BATCH_MS)
     }
 
-    private fun enqueueManifestsForReplayWindow(session: UUID, highWaterRecordIndex: Long) {
+    private fun enqueueNextManifestForReplayWindow(session: UUID, highWaterRecordIndex: Long) {
         if (!sourceMtuReadinessGate.canConstructSourceFrames(sourceMtuLineageGeneration)) return
-        sourceJournal.finalizedManifests(session)
-            .sortedBy { it.firstRecordIndex }
-            .forEach { manifest ->
-                if (manifest.lastRecordIndex > highWaterRecordIndex) return@forEach
-                val bytes = SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(manifest))
-                if (bytes.size > maximumAttPayloadBytes()) {
-                    replayActive = false
-                    throw SourceJournalCorruptionException("Manifest exceeds negotiated ATT payload")
-                }
-                val result = notificationQueue.enqueue(
-                    stream = GattNotificationStream.DEVICE_HEALTH,
-                    characteristicUuid = SOURCE_RECORD_CHARACTERISTIC_UUID,
-                    payload = bytes,
-                    sourceSequence = manifest.firstRecordIndex,
-                    sourceTimestampMs = System.currentTimeMillis(),
-                    origin = GattNotificationOrigin.REPLAY,
-                    lossless = true,
-                )
-                if (result == GattEnqueueResult.CRITICAL_OVERFLOW || result == GattEnqueueResult.DROPPED_LOW_PRIORITY) {
-                    replayActive = false
-                    throw SourceJournalCapacityException("Retained manifest could not enter the transport queue")
-                }
-            }
+        val manifest = SourceReplayWindow.nextManifestToQueue(
+            activeSession = session,
+            durablePhoneRecordIndex = durablePhoneRecordIndex,
+            replayHighWaterRecordIndex = highWaterRecordIndex,
+            queuedManifestEndIndex = queuedReplayManifestEndIndex,
+            manifests = sourceJournal.finalizedManifests(session),
+        ) ?: return
+        val bytes = SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(manifest))
+        if (bytes.size > maximumAttPayloadBytes()) {
+            replayActive = false
+            throw SourceJournalCorruptionException("Manifest exceeds negotiated ATT payload")
+        }
+        val result = notificationQueue.enqueue(
+            stream = GattNotificationStream.DEVICE_HEALTH,
+            characteristicUuid = SOURCE_RECORD_CHARACTERISTIC_UUID,
+            payload = bytes,
+            sourceSequence = manifest.firstRecordIndex,
+            sourceTimestampMs = System.currentTimeMillis(),
+            origin = GattNotificationOrigin.REPLAY,
+            lossless = true,
+        )
+        if (result == GattEnqueueResult.CRITICAL_OVERFLOW || result == GattEnqueueResult.DROPPED_LOW_PRIORITY) {
+            replayActive = false
+            throw SourceJournalCapacityException("Retained manifest could not enter the transport queue")
+        }
+        if (result == GattEnqueueResult.QUEUED || result == GattEnqueueResult.COALESCED) {
+            queuedReplayManifestEndIndex = manifest.lastRecordIndex
+        }
     }
 
     private fun handleSourceAcknowledgement(acknowledgement: SourceSegmentAcknowledgement) {
@@ -1294,6 +1307,10 @@ class BleGattService : Service() {
             activeSession = activeReplaySessionId,
             durablePhoneRecordIndex = durablePhoneRecordIndex,
             replayHighWaterRecordIndex = replayHighWaterRecordIndex,
+            acknowledgement = acknowledgement,
+        )
+        SourceReplayWindow.validateQueuedManifestAcknowledgement(
+            queuedManifestEndIndex = queuedReplayManifestEndIndex,
             acknowledgement = acknowledgement,
         )
         if (!sourceJournal.acknowledgeCompletedSegment(
@@ -1305,6 +1322,7 @@ class BleGattService : Service() {
             throw SourceJournalCorruptionException("Acknowledgement endpoint/hash did not match a finalized segment")
         }
         durablePhoneRecordIndex = acknowledgement.cumulativeRecordIndex
+        queuedReplayManifestEndIndex = null
         lastReplayQueuedRecordIndex = maxOf(lastReplayQueuedRecordIndex, durablePhoneRecordIndex)
         replayBacklogCount = sourceJournal.countRecordsAfter(
             activeSession,
@@ -1313,6 +1331,9 @@ class BleGattService : Service() {
         )
         replayActive = replayBacklogCount > 0
         broadcastStatus(if (replayActive) "REPLAYING: $replayBacklogCount remain" else "CAUGHT UP: source journal acknowledged")
+        if (replayActive) {
+            enqueueNextManifestForReplayWindow(activeSession, replayHighWaterRecordIndex)
+        }
         pumpReplay()
         advanceReplaySessionIfReady()
     }
@@ -1324,10 +1345,15 @@ class BleGattService : Service() {
         if (!isNotificationEnabled(device, SOURCE_RECORD_CHARACTERISTIC_UUID)) return
         if (notificationQueue.snapshot().pendingReplayFrames >= 4) return
         val activeSession = activeReplaySessionId ?: return
+        val replayReadUpperBound = SourceReplayWindow.replayReadUpperBound(
+            replayHighWaterRecordIndex = replayHighWaterRecordIndex,
+            queuedManifestEndIndex = queuedReplayManifestEndIndex,
+        ) ?: return
+        if (lastReplayQueuedRecordIndex >= replayReadUpperBound) return
         val page = sourceJournal.readRecordsAfter(
             activeSession,
             lastReplayQueuedRecordIndex,
-            replayHighWaterRecordIndex,
+            replayReadUpperBound,
             REPLAY_PAGE_RECORDS,
         )
         if (page.isEmpty()) {
@@ -1362,6 +1388,7 @@ class BleGattService : Service() {
             activeReplaySessionId = sourceJournal.watchBootSessionId
             replayHighWaterRecordIndex = 0L
             replayActive = false
+            queuedReplayManifestEndIndex = null
             broadcastStatus("CAUGHT UP: all retained watch sessions acknowledged")
             return
         }
