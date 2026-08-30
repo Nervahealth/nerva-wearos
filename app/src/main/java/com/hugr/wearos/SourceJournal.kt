@@ -12,6 +12,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.security.MessageDigest
 import java.util.ArrayDeque
+import java.util.TreeMap
 import java.util.UUID
 import java.util.zip.CRC32
 
@@ -233,6 +234,8 @@ internal class SourceJournal(
 
     private val anomalies = mutableListOf<SourceJournalAnomaly>()
     private val newlyFinalizedManifests = ArrayDeque<SourceSegmentManifest>()
+    private val finalizedSegmentIndex = mutableMapOf<UUID, TreeMap<Long, IndexedFinalizedSegment>>()
+    private val finalizedSessionOrder = mutableListOf<UUID>()
     private val preflightResult: SourceJournalPreflight
     private var integrityEligible = true
     val watchBootSessionId: UUID
@@ -279,6 +282,7 @@ internal class SourceJournal(
         if (stored == null || stored.bootCount != bootCount) writeSessionMeta(SessionMeta(bootCount, watchBootSessionId))
         recoverOrphanedSessions()
         recoverCurrentSession()
+        rebuildFinalizedSegmentIndex()
         deliveryOutput = FileOutputStream(File(rootDir, DELIVERY_LOG), true)
     }
 
@@ -426,6 +430,7 @@ internal class SourceJournal(
         if (!segment.file.renameTo(finalized)) throw IllegalStateException("Unable to finalize source journal segment")
         active = null
         val finalizedManifest = manifest.copy(segmentId = finalized.nameWithoutExtension)
+        indexFinalizedFile(finalized)
         newlyFinalizedManifests.addLast(finalizedManifest)
         return finalizedManifest
     }
@@ -433,6 +438,11 @@ internal class SourceJournal(
     @Synchronized
     fun drainNewlyFinalizedManifests(): List<SourceSegmentManifest> = buildList {
         while (newlyFinalizedManifests.isNotEmpty()) add(newlyFinalizedManifests.removeFirst())
+    }
+
+    @Synchronized
+    fun discardNewlyFinalizedManifests() {
+        newlyFinalizedManifests.clear()
     }
 
     @Synchronized
@@ -447,23 +457,40 @@ internal class SourceJournal(
         .sortedBy { it.firstRecordIndex }
 
     @Synchronized
-    fun retainedSessionIds(): List<UUID> = allSegmentFiles()
-        .mapNotNull { file -> segmentFileIndex(file)?.watchBootSessionId?.let { session -> file to session } }
-        .sortedWith(
-            compareBy<Pair<File, UUID>> { (_, session) -> session == watchBootSessionId }
-                .thenBy { (file, _) -> file.lastModified() }
-                .thenBy { (file, _) -> file.name },
-        )
-        .map { (_, session) -> session }
-        .distinct()
+    fun oldestFinalizedSessionId(): UUID? = finalizedSessionOrder.firstOrNull()
+
+    @Synchronized
+    fun highestFinalizedRecordIndex(sessionId: UUID): Long =
+        finalizedSegmentIndex[sessionId]?.lastEntry()?.value?.index?.lastRecordIndex ?: 0L
+
+    @Synchronized
+    fun nextFinalizedManifest(
+        sessionId: UUID,
+        recordIndexExclusive: Long,
+        recordIndexInclusive: Long,
+    ): SourceSegmentManifest? {
+        if (recordIndexInclusive <= recordIndexExclusive) return null
+        val segments = finalizedSegmentIndex[sessionId] ?: return null
+        val nextIndex = recordIndexExclusive + 1L
+        val indexed = segments.floorEntry(nextIndex)?.value
+            ?.takeIf { requireNotNull(it.index.lastRecordIndex) > recordIndexExclusive }
+            ?: segments.ceilingEntry(nextIndex)?.value
+            ?: return null
+        if (indexed.index.firstRecordIndex > recordIndexInclusive ||
+            requireNotNull(indexed.index.lastRecordIndex) > recordIndexInclusive
+        ) return null
+        return manifestFor(indexed.file)
+    }
+
+    @Synchronized
+    fun retainedSessionIds(): List<UUID> = buildList {
+        addAll(finalizedSessionOrder)
+        if (active != null && watchBootSessionId !in this) add(watchBootSessionId)
+    }
 
     @Synchronized
     fun highestRecordIndex(sessionId: UUID): Long {
-        val finalizedMaximum = finalizedFiles()
-            .mapNotNull(::segmentFileIndex)
-            .filter { it.watchBootSessionId == sessionId }
-            .maxOfOrNull { it.lastRecordIndex ?: 0L }
-            ?: 0L
+        val finalizedMaximum = highestFinalizedRecordIndex(sessionId)
         val openMaximum = active
             ?.takeIf { watchBootSessionId == sessionId }
             ?.lastRecordIndex
@@ -545,24 +572,28 @@ internal class SourceJournal(
     }
 
     @Synchronized
-    fun hasFinalizedSegments(sessionId: UUID): Boolean = finalizedFiles()
-        .any { segmentFileIndex(it)?.watchBootSessionId == sessionId }
+    fun hasFinalizedSegments(sessionId: UUID): Boolean = finalizedSegmentIndex[sessionId]?.isNotEmpty() == true
 
     @Synchronized
     fun acknowledgeCompletedSegment(sessionId: UUID, cumulativeRecordIndex: Long, completedSegmentSha256: String): Boolean {
         val normalizedHash = completedSegmentSha256.lowercase()
-        val file = finalizedFiles().firstOrNull {
-            val index = segmentFileIndex(it)
-            index?.watchBootSessionId == sessionId &&
-                index.lastRecordIndex == cumulativeRecordIndex &&
-                index.sha256Hex == normalizedHash
-        } ?: return false
+        val segments = finalizedSegmentIndex[sessionId] ?: return false
+        val indexed = segments.floorEntry(cumulativeRecordIndex)?.value ?: return false
+        val index = indexed.index
+        if (index.lastRecordIndex != cumulativeRecordIndex || index.sha256Hex != normalizedHash) return false
+        val file = indexed.file
         val completed = manifestFor(file)
         if (completed.watchBootSessionId != sessionId ||
             completed.lastRecordIndex != cumulativeRecordIndex ||
             completed.sha256Hex != normalizedHash
         ) return false
-        return file.delete()
+        if (!file.delete()) return false
+        segments.remove(index.firstRecordIndex)
+        if (segments.isEmpty()) {
+            finalizedSegmentIndex.remove(sessionId)
+            finalizedSessionOrder.remove(sessionId)
+        }
+        return true
     }
 
     @Synchronized
@@ -763,6 +794,35 @@ internal class SourceJournal(
         val lastRecordIndex: Long?,
         val sha256Hex: String?,
     )
+
+    private data class IndexedFinalizedSegment(
+        val file: File,
+        val index: SegmentFileIndex,
+    )
+
+    private fun rebuildFinalizedSegmentIndex() {
+        finalizedSegmentIndex.clear()
+        finalizedSessionOrder.clear()
+        finalizedFiles()
+            .mapNotNull { file -> segmentFileIndex(file)?.let { index -> IndexedFinalizedSegment(file, index) } }
+            .sortedWith(
+                compareBy<IndexedFinalizedSegment> { it.index.watchBootSessionId == watchBootSessionId }
+                    .thenBy { it.file.lastModified() }
+                    .thenBy { it.file.name },
+            )
+            .forEach { indexFinalizedSegment(it) }
+    }
+
+    private fun indexFinalizedFile(file: File) {
+        val index = segmentFileIndex(file) ?: return
+        indexFinalizedSegment(IndexedFinalizedSegment(file, index))
+    }
+
+    private fun indexFinalizedSegment(indexed: IndexedFinalizedSegment) {
+        val session = indexed.index.watchBootSessionId
+        finalizedSegmentIndex.getOrPut(session) { TreeMap() }[indexed.index.firstRecordIndex] = indexed
+        if (session !in finalizedSessionOrder) finalizedSessionOrder += session
+    }
 
     private fun segmentFileIndex(file: File): SegmentFileIndex? {
         val parts = file.name.removeSuffix(".seg").split('_')

@@ -1,14 +1,13 @@
 package com.hugr.wearos
 
+import java.util.concurrent.atomic.AtomicLong
+
 internal class ReplayStartLineageGuard {
-    private var generation = 0L
+    private val generation = AtomicLong(0L)
 
-    fun advanceLineage(): Long {
-        generation += 1L
-        return generation
-    }
+    fun advanceLineage(): Long = generation.incrementAndGet()
 
-    fun capture(): Long = generation
+    fun capture(): Long = generation.get()
 
-    fun isCurrent(capturedGeneration: Long): Boolean = capturedGeneration == generation
+    fun isCurrent(capturedGeneration: Long): Boolean = capturedGeneration == generation.get()
 }
