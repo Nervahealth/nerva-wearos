@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
         }
 
         statusText = TextView(this).apply {
-            text = "HUGR BUILD 49w\n0.49.0-recorder-integrity-candidate"
+            text = "HUGR BUILD 50w\n0.50.0-manifest-window-candidate"
             textSize = 12f
             setTextColor(Color.WHITE)
         }
@@ -197,7 +197,7 @@ class MainActivity : ComponentActivity() {
         } else {
             startService(sensorIntent)
         }
-        statusText.text = "HUGR BUILD 49w\nServices active · recorder integrity hardening"
+        statusText.text = "HUGR BUILD 50w\nServices active · bounded manifest window"
         renderEvidence()
     }
 
