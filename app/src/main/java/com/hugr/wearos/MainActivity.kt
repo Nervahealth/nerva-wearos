@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
         }
 
         statusText = TextView(this).apply {
-            text = "HUGR BUILD 50w\n0.50.0-manifest-window-candidate"
+            text = "HUGR BUILD 51w\n0.51.0-resume-scaling-candidate"
             textSize = 12f
             setTextColor(Color.WHITE)
         }
@@ -197,7 +197,7 @@ class MainActivity : ComponentActivity() {
         } else {
             startService(sensorIntent)
         }
-        statusText.text = "HUGR BUILD 50w\nServices active · bounded manifest window"
+        statusText.text = "HUGR BUILD 51w\nServices active · bounded resume replay"
         renderEvidence()
     }
 
