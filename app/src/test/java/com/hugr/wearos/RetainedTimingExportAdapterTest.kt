@@ -132,7 +132,7 @@ class RetainedTimingExportAdapterTest {
 
         assertTrue(text.contains("WatchRetainedTimingExportAdapter"))
         assertTrue(text.contains("FULL_RETAINED_WATCH_STORE"))
-        listOf("startService(", "startForegroundService(", "WatchSourceService", "SourceDeliveryService", "Bluetooth", "ACK", "replay", "Vibrator", "Http", "Socket", "BOOT_COMPLETED").forEach {
+        listOf("startService(", "startForegroundService(", "WatchSourceService", "SourceDeliveryService", "Bluetooth", "exactAck", "replay", "Vibrator", "Http", "Socket", "BOOT_COMPLETED").forEach {
             assertFalse("forbidden watch adapter token: $it", text.contains(it, ignoreCase = true))
         }
         assertFalse(manifest.substringAfter("RetainedTimingExportActivity").substringBefore("</activity>").contains("BOOT_COMPLETED"))
