@@ -11,6 +11,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.ServiceInfo
 import android.os.Binder
 import android.os.BatteryManager
 import android.os.IBinder
@@ -59,10 +60,13 @@ class BleGattService : Service() {
 
     private val TAG = "HUGR-BleGatt"
     private val binder = LocalBinder()
+    private var runtimeMode: EvidenceEgressGattRuntimeMode? = null
 
     private var bluetoothAdapter: BluetoothAdapter? = null
     private var gattServer: BluetoothGattServer? = null
     private var advertiser: BluetoothLeAdvertiser? = null
+    private var egressForegroundActive = false
+    private var egressAdvertiserReady = false
     private var connectedDevice: BluetoothDevice? = null
     private val notificationSubscriptions = mutableMapOf<String, MutableSet<UUID>>()
     private var notificationCompletionBlocked = false
@@ -84,6 +88,12 @@ class BleGattService : Service() {
     private var hapticReceiptCharacteristic: BluetoothGattCharacteristic? = null
     private var sourceRecordCharacteristic: BluetoothGattCharacteristic? = null
     private var sourceControlCharacteristic: BluetoothGattCharacteristic? = null
+    // Evidence Egress v1 is deliberately separate from typed telemetry and source replay.
+    // It is passive until EvidenceEgressActivity receives explicit watch-side consent.
+    private var egressOfferCharacteristic: BluetoothGattCharacteristic? = null
+    private var egressChunkCharacteristic: BluetoothGattCharacteristic? = null
+    private var egressControlCharacteristic: BluetoothGattCharacteristic? = null
+    private var egressReceiptCharacteristic: BluetoothGattCharacteristic? = null
 
     private var edaSequence = 0L
     private var ppgSequence = 0L
@@ -185,6 +195,11 @@ class BleGattService : Service() {
         val HAPTIC_RECEIPT_CHARACTERISTIC_UUID: UUID = UUID.fromString("99999999-9999-9999-9999-999999999999")
         val SOURCE_RECORD_CHARACTERISTIC_UUID: UUID = UUID.fromString("77777777-7777-7777-7777-777777777777")
         val SOURCE_CONTROL_CHARACTERISTIC_UUID: UUID = UUID.fromString("88888888-8888-8888-8888-888888888888")
+        // Dedicated Evidence Egress v1 characteristics. These are not source-record/control UUIDs.
+        val EGRESS_OFFER_CHARACTERISTIC_UUID: UUID = UUID.fromString("eeee0001-1234-5678-1234-567812345678")
+        val EGRESS_CHUNK_CHARACTERISTIC_UUID: UUID = UUID.fromString("eeee0002-1234-5678-1234-567812345678")
+        val EGRESS_CONTROL_CHARACTERISTIC_UUID: UUID = UUID.fromString("eeee0003-1234-5678-1234-567812345678")
+        val EGRESS_RECEIPT_CHARACTERISTIC_UUID: UUID = UUID.fromString("eeee0004-1234-5678-1234-567812345678")
 
         // Client Characteristic Configuration Descriptor (required for NOTIFY)
         val CCCD_UUID: UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
@@ -197,6 +212,9 @@ class BleGattService : Service() {
         private const val HAPTIC_POLICY_VERSION = 1
         private const val HAPTIC_CHANNEL_ID = "hugr_research_haptic_v1"
         private const val HAPTIC_CHANNEL_NAME = "HUGR research haptics"
+        private const val EGRESS_FOREGROUND_CHANNEL_ID = "hugr_evidence_egress_v1"
+        private const val EGRESS_FOREGROUND_CHANNEL_NAME = "HUGR Evidence Egress"
+        private const val EGRESS_FOREGROUND_NOTIFICATION_ID = 4_001
         private const val DETAIL_OK = 0
         private const val DETAIL_DUPLICATE_REPLAY = 10
         private const val DETAIL_UNSUPPORTED_POLICY = 11
@@ -222,15 +240,118 @@ class BleGattService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        recordCausal(CausalEventCode.BLE_SERVICE_CREATED)
-        Log.d(TAG, "BleGattService created (Build 47w causal flight recorder)")
-        sourceJournal = WatchSourceRuntime.journal(this)
-        initializeVibrator()
-        initializeHapticNotificationChannel()
+        Log.d(TAG, "BleGattService created; awaiting explicit runtime mode")
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (EvidenceEgressGattStartPolicy.isExplicitEgressStop(intent?.action)) {
+            if (isEgressOnlyRuntime()) {
+                EvidenceEgressVolatileDiagnostics.onForegroundStopped()
+                stopEgressForegroundLifetime()
+                stopSelf()
+            }
+            return START_NOT_STICKY
+        }
+        val requestedMode = EvidenceEgressGattStartPolicy.requestedMode(intent?.action)
+        val currentMode = runtimeMode
+        if (!EvidenceEgressGattStartPolicy.acceptsModeTransition(currentMode, requestedMode)) {
+            Log.w(TAG, "Rejected GATT runtime mode transition: $currentMode -> $requestedMode")
+            if (requestedMode == EvidenceEgressGattRuntimeMode.EGRESS_ONLY) {
+                EvidenceEgressVolatileDiagnostics.onAdvertiserStartFailed("MODE_CONFLICT")
+            }
+            return START_NOT_STICKY
+        }
+        if (currentMode == null) {
+            runtimeMode = requestedMode
+            if (requestedMode == EvidenceEgressGattRuntimeMode.EGRESS_ONLY) {
+                if (!startEgressForegroundLifetime()) {
+                    stopSelf()
+                    return START_NOT_STICKY
+                }
+            }
+            initializeRuntime(requestedMode)
+        } else if (currentMode == EvidenceEgressGattRuntimeMode.EGRESS_ONLY) {
+            EvidenceEgressVolatileDiagnostics.onRuntimeReused(
+                foregroundActive = egressForegroundActive,
+                advertiserReady = egressAdvertiserReady,
+            )
+        }
+        return START_NOT_STICKY
+    }
+
+    private fun initializeRuntime(mode: EvidenceEgressGattRuntimeMode) {
+        if (mode == EvidenceEgressGattRuntimeMode.STANDARD) {
+            recordCausal(CausalEventCode.BLE_SERVICE_CREATED)
+            sourceJournal = WatchSourceRuntime.journal(this)
+            initializeVibrator()
+            initializeHapticNotificationChannel()
+            registerSensorReceivers()
+            healthHandler.post(healthTicker)
+            transportHandler.post(transportTicker)
+            Log.d(TAG, "Standard BLE GATT runtime initialized")
+        } else {
+            EvidenceEgressVolatileDiagnostics.onRuntimeInitialized()
+            Log.i(TAG, "Evidence Egress-only BLE GATT runtime initialized")
+        }
         initializeBluetooth()
-        registerSensorReceivers()
-        healthHandler.post(healthTicker)
-        transportHandler.post(transportTicker)
+    }
+
+    private fun isEgressOnlyRuntime(): Boolean =
+        runtimeMode == EvidenceEgressGattRuntimeMode.EGRESS_ONLY
+
+    private fun isStandardRuntime(): Boolean =
+        runtimeMode == EvidenceEgressGattRuntimeMode.STANDARD
+
+    /**
+     * A temporary lifetime guard for an already explicitly activated, egress-only
+     * GATT advertiser. This service type is never entered by STANDARD runtime,
+     * sensing, telemetry, haptic, replay, or automatic reconnect paths.
+     */
+    private fun startEgressForegroundLifetime(): Boolean {
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channel = NotificationChannel(
+            EGRESS_FOREGROUND_CHANNEL_ID,
+            EGRESS_FOREGROUND_CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_LOW,
+        ).apply {
+            description = "Temporary read-only HUGR Evidence Egress session"
+            setSound(null, null)
+            enableVibration(false)
+            setShowBadge(false)
+            lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+        }
+        manager.createNotificationChannel(channel)
+        val notification = NotificationCompat.Builder(this, EGRESS_FOREGROUND_CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.stat_sys_data_bluetooth)
+            .setContentTitle("HUGR Evidence Egress")
+            .setContentText("Read-only session preparing; no sensing or telemetry")
+            .setOngoing(true)
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .build()
+        return try {
+            startForeground(
+                EGRESS_FOREGROUND_NOTIFICATION_ID,
+                notification,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE,
+            )
+            egressForegroundActive = true
+            EvidenceEgressVolatileDiagnostics.onForegroundStarted()
+            true
+        } catch (error: SecurityException) {
+            Log.e(TAG, "Egress foreground start rejected", error)
+            EvidenceEgressVolatileDiagnostics.onReadinessFailure("FOREGROUND_START_REJECTED")
+            false
+        } catch (error: Exception) {
+            Log.e(TAG, "Egress foreground start failed", error)
+            EvidenceEgressVolatileDiagnostics.onReadinessFailure("FOREGROUND_START_FAILED")
+            false
+        }
+    }
+
+    private fun stopEgressForegroundLifetime() {
+        if (!egressForegroundActive) return
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        egressForegroundActive = false
     }
 
     private fun initializeVibrator() {
@@ -285,23 +406,27 @@ class BleGattService : Service() {
     }
 
     override fun onDestroy() {
-        recordCausal(CausalEventCode.BLE_SERVICE_DESTROYED)
+        if (isStandardRuntime()) recordCausal(CausalEventCode.BLE_SERVICE_DESTROYED)
+        if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onRuntimeDestroyed()
+        if (isEgressOnlyRuntime()) stopEgressForegroundLifetime()
         super.onDestroy()
-        Log.d(TAG, "BleGattService destroyed (Build 47w causal flight recorder)")
+        Log.d(TAG, "BleGattService destroyed: mode=$runtimeMode")
         vibrator?.cancel()
-        healthHandler.removeCallbacks(healthTicker)
-        transportHandler.removeCallbacks(transportTicker)
-        transportHandler.removeCallbacks(liveSourceFlush)
-        transportHandler.removeCallbacks(replayStartAfterLiveOpportunity)
-        sourceMtuLineageGeneration = sourceMtuReadinessGate.onDisconnected()
-        sourceResumePreparationGeneration.set(-1L)
-        replayStartLineageGuard.advanceLineage()
-        pendingSourceResumeRequest = null
-        queuedReplayManifestEndIndex = null
-        pendingLiveSourceRecords.clear()
-        liveSourceFlushScheduled = false
-        notificationQueue.reset()
-        unregisterSensorReceivers()
+        if (isStandardRuntime()) {
+            healthHandler.removeCallbacks(healthTicker)
+            transportHandler.removeCallbacks(transportTicker)
+            transportHandler.removeCallbacks(liveSourceFlush)
+            transportHandler.removeCallbacks(replayStartAfterLiveOpportunity)
+            sourceMtuLineageGeneration = sourceMtuReadinessGate.onDisconnected()
+            sourceResumePreparationGeneration.set(-1L)
+            replayStartLineageGuard.advanceLineage()
+            pendingSourceResumeRequest = null
+            queuedReplayManifestEndIndex = null
+            pendingLiveSourceRecords.clear()
+            liveSourceFlushScheduled = false
+            notificationQueue.reset()
+            unregisterSensorReceivers()
+        }
         stopAdvertising()
         closeGattServer()
         sourceResumeExecutor.shutdownNow()
@@ -316,18 +441,21 @@ class BleGattService : Service() {
 
             if (bluetoothAdapter == null || !bluetoothAdapter!!.isEnabled) {
                 Log.e(TAG, "Bluetooth not available or disabled")
+                if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onReadinessFailure("BLUETOOTH_UNAVAILABLE")
                 return
             }
 
             advertiser = bluetoothAdapter!!.bluetoothLeAdvertiser
             if (advertiser == null) {
                 Log.e(TAG, "BLE advertiser not available")
+                if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onReadinessFailure("ADVERTISER_UNAVAILABLE")
                 return
             }
 
             openGattServer(bluetoothManager)
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing Bluetooth: ${e.message}", e)
+            if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onReadinessFailure("BLUETOOTH_INITIALIZATION_FAILED")
         }
     }
 
@@ -337,6 +465,7 @@ class BleGattService : Service() {
         gattServer = bluetoothManager.openGattServer(this, gattServerCallback)
         if (gattServer == null) {
             Log.e(TAG, "Failed to open GATT server")
+            if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onReadinessFailure("GATT_SERVER_UNAVAILABLE")
             return
         }
 
@@ -345,6 +474,12 @@ class BleGattService : Service() {
             HUGR_SERVICE_UUID,
             BluetoothGattService.SERVICE_TYPE_PRIMARY
         )
+
+        if (isEgressOnlyRuntime()) {
+            addEgressCharacteristics(service)
+            registerGattService(service)
+            return
+        }
 
         // EDA Characteristic (NOTIFY + READ)
         edaCharacteristic = BluetoothGattCharacteristic(
@@ -430,6 +565,8 @@ class BleGattService : Service() {
         )
         service.addCharacteristic(sourceControlCharacteristic!!)
 
+        addEgressCharacteristics(service)
+
         // Haptic Command Characteristic (WRITE)
         val hapticCharacteristic = BluetoothGattCharacteristic(
             HAPTIC_CHARACTERISTIC_UUID,
@@ -438,12 +575,48 @@ class BleGattService : Service() {
         )
         service.addCharacteristic(hapticCharacteristic)
 
-        // Add service to GATT server
+        registerGattService(service)
+    }
+
+    /**
+     * Evidence Egress v1 is an explicit pull protocol. In EGRESS_ONLY mode these
+     * are the only characteristics registered; no telemetry, source, or haptic
+     * characteristic is present and the notification queue remains untouched.
+     */
+    private fun addEgressCharacteristics(service: BluetoothGattService) {
+        egressOfferCharacteristic = BluetoothGattCharacteristic(
+            EGRESS_OFFER_CHARACTERISTIC_UUID,
+            BluetoothGattCharacteristic.PROPERTY_READ,
+            BluetoothGattCharacteristic.PERMISSION_READ,
+        )
+        service.addCharacteristic(egressOfferCharacteristic!!)
+        egressChunkCharacteristic = BluetoothGattCharacteristic(
+            EGRESS_CHUNK_CHARACTERISTIC_UUID,
+            BluetoothGattCharacteristic.PROPERTY_READ,
+            BluetoothGattCharacteristic.PERMISSION_READ,
+        )
+        service.addCharacteristic(egressChunkCharacteristic!!)
+        egressControlCharacteristic = BluetoothGattCharacteristic(
+            EGRESS_CONTROL_CHARACTERISTIC_UUID,
+            BluetoothGattCharacteristic.PROPERTY_WRITE,
+            BluetoothGattCharacteristic.PERMISSION_WRITE,
+        )
+        service.addCharacteristic(egressControlCharacteristic!!)
+        egressReceiptCharacteristic = BluetoothGattCharacteristic(
+            EGRESS_RECEIPT_CHARACTERISTIC_UUID,
+            BluetoothGattCharacteristic.PROPERTY_READ,
+            BluetoothGattCharacteristic.PERMISSION_READ,
+        )
+        service.addCharacteristic(egressReceiptCharacteristic!!)
+    }
+
+    private fun registerGattService(service: BluetoothGattService) {
         val added = gattServer!!.addService(service)
         if (added) {
             Log.i(TAG, "HUGR GATT service registered with ${service.characteristics.size} characteristics")
         } else {
             Log.e(TAG, "Failed to add HUGR service to GATT server")
+            if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onReadinessFailure("GATT_SERVICE_REGISTER_REJECTED")
         }
     }
 
@@ -461,6 +634,15 @@ class BleGattService : Service() {
         override fun onConnectionStateChange(device: BluetoothDevice?, status: Int, newState: Int) {
             when (newState) {
                 BluetoothProfile.STATE_CONNECTED -> {
+                    if (isEgressOnlyRuntime()) {
+                        // Each egress GATT connection starts a fresh, volatile correlation record.
+                        // This prevents an earlier offer callback from being mistaken for this attempt.
+                        EvidenceEgressVolatileDiagnostics.beginConnectionAttempt(status, newState)
+                        connectedDevice = device
+                        negotiatedMtu = 23
+                        Log.i(TAG, "Evidence Egress-only phone connected: ${device?.address}")
+                        return
+                    }
                     val lineage = causalLineageState.onConnected()
                     sourceMtuLineageGeneration = sourceMtuReadinessGate.onConnected()
                     sourceResumePreparationGeneration.set(-1L)
@@ -497,6 +679,14 @@ class BleGattService : Service() {
                     // KEEP ADVERTISING for reconnection
                 }
                 BluetoothProfile.STATE_DISCONNECTED -> {
+                    if (isEgressOnlyRuntime()) {
+                        EvidenceEgressVolatileDiagnostics.onConnectionStateChange(status, newState)
+                        connectedDevice = null
+                        negotiatedMtu = 23
+                        Log.i(TAG, "Evidence Egress-only phone disconnected: ${device?.address}")
+                        startAdvertising()
+                        return
+                    }
                     val disconnect = causalLineageState.onDisconnected(status)
                     sourceMtuLineageGeneration = sourceMtuReadinessGate.onDisconnected()
                     sourceResumePreparationGeneration.set(-1L)
@@ -539,6 +729,11 @@ class BleGattService : Service() {
             val activeDevice = connectedDevice
             if (device == null || activeDevice == null || device.address != activeDevice.address) return
             negotiatedMtu = mtu.coerceAtLeast(23)
+            if (isEgressOnlyRuntime()) {
+                EvidenceEgressVolatileDiagnostics.onMtuChanged(negotiatedMtu)
+                Log.i(TAG, "Evidence Egress-only negotiated GATT MTU=$negotiatedMtu")
+                return
+            }
             if (!sourceMtuReadinessGate.onMtuChanged(sourceMtuLineageGeneration, negotiatedMtu)) return
             recordCausal(
                 CausalEventCode.MTU_CHANGED,
@@ -558,6 +753,7 @@ class BleGattService : Service() {
         }
 
         override fun onServiceAdded(status: Int, service: BluetoothGattService?) {
+            if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onGattServiceAdded(status)
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.i(TAG, "Service added successfully — starting advertising")
                 startAdvertising()
@@ -573,8 +769,52 @@ class BleGattService : Service() {
             characteristic: BluetoothGattCharacteristic?
         ) {
             Log.d(TAG, "Read request for ${characteristic?.uuid}")
-            val value = characteristic?.value ?: byteArrayOf(0)
-            gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, value)
+            val isEgressRead = characteristic?.uuid in setOf(
+                EGRESS_OFFER_CHARACTERISTIC_UUID,
+                EGRESS_CHUNK_CHARACTERISTIC_UUID,
+                EGRESS_RECEIPT_CHARACTERISTIC_UUID,
+            )
+            val isEgressOfferRead = characteristic?.uuid == EGRESS_OFFER_CHARACTERISTIC_UUID
+            if (isEgressOnlyRuntime() && isEgressOfferRead) {
+                EvidenceEgressVolatileDiagnostics.onOfferReadEntered(requestId)
+            }
+            if (isEgressRead && negotiatedMtu < EvidenceEgressContract.MINIMUM_GATT_MTU) {
+                val sent = gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset, byteArrayOf()) == true
+                if (isEgressOnlyRuntime() && isEgressOfferRead) {
+                    EvidenceEgressVolatileDiagnostics.onOfferResponse(BluetoothGatt.GATT_FAILURE, sent)
+                }
+                return
+            }
+            if (isEgressRead && offset != 0) {
+                val sent = gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_INVALID_OFFSET, offset, byteArrayOf()) == true
+                if (isEgressOnlyRuntime() && isEgressOfferRead) {
+                    EvidenceEgressVolatileDiagnostics.onOfferResponse(BluetoothGatt.GATT_INVALID_OFFSET, sent)
+                }
+                return
+            }
+            val value = when (characteristic?.uuid) {
+                EGRESS_OFFER_CHARACTERISTIC_UUID -> EvidenceEgressActivation.offerBytes()
+                EGRESS_CHUNK_CHARACTERISTIC_UUID -> EvidenceEgressActivation.selectedChunkBytes() ?: byteArrayOf()
+                EGRESS_RECEIPT_CHARACTERISTIC_UUID -> EvidenceEgressActivation.receiptBytes()
+                else -> characteristic?.value ?: byteArrayOf(0)
+            }
+            val validOffset = offset in 0..value.size
+            val responseStatus = if (validOffset) BluetoothGatt.GATT_SUCCESS else BluetoothGatt.GATT_INVALID_OFFSET
+            val responseValue = if (validOffset) value.copyOfRange(offset, value.size) else byteArrayOf()
+            val sent = gattServer?.sendResponse(device, requestId, responseStatus, offset, responseValue) == true
+            if (isEgressOnlyRuntime() && isEgressOfferRead) {
+                EvidenceEgressVolatileDiagnostics.onOfferResponse(responseStatus, sent)
+            }
+            if (
+                sent &&
+                characteristic?.uuid == EGRESS_CHUNK_CHARACTERISTIC_UUID &&
+                responseValue.isNotEmpty() &&
+                offset + responseValue.size >= value.size
+            ) {
+                // The next ordered selection is available only after the phone has performed
+                // the dedicated chunk read; this does not alter telemetry queue state.
+                EvidenceEgressActivation.recordSelectedChunkRead()
+            }
         }
 
         override fun onCharacteristicWriteRequest(
@@ -642,6 +882,22 @@ class BleGattService : Service() {
                     writeResponseStatus = BluetoothGatt.GATT_FAILURE
                     Log.e(TAG, "Build 45 source-control rejection: ${error.message}", error)
                     broadcastStatus("SOURCE CONTROL REJECTED: ${error.javaClass.simpleName}")
+                }
+            }
+
+            if (characteristic?.uuid == EGRESS_CONTROL_CHARACTERISTIC_UUID && value != null) {
+                // A control write can only select a chunk for a previously consent-activated
+                // in-memory session or submit its final verified phone receipt. It never
+                // addresses source-control/replay, telemetry, journal, or package generation.
+                if (preparedWrite || offset != 0) {
+                    writeResponseStatus = BluetoothGatt.GATT_FAILURE
+                    Log.w(TAG, "Evidence Egress v1 rejects prepared or offset control writes")
+                } else if (negotiatedMtu < EvidenceEgressContract.MINIMUM_GATT_MTU) {
+                    writeResponseStatus = BluetoothGatt.GATT_FAILURE
+                    Log.w(TAG, "Evidence Egress v1 requires negotiated MTU ${EvidenceEgressContract.MINIMUM_GATT_MTU}")
+                } else if (!EvidenceEgressActivation.handleControl(value)) {
+                    writeResponseStatus = BluetoothGatt.GATT_FAILURE
+                    Log.w(TAG, "Evidence Egress v1 control rejected")
                 }
             }
 
@@ -738,6 +994,7 @@ class BleGattService : Service() {
     // ─── BLE Advertising ────────────────────────────────────────────────────────
 
     private fun startAdvertising() {
+        if (isEgressOnlyRuntime() && egressAdvertiserReady) return
         val adv = advertiser ?: return
 
         val settings = AdvertiseSettings.Builder()
@@ -765,14 +1022,17 @@ class BleGattService : Service() {
             adv.startAdvertising(settings, advertisingData, scanResponse, advertiseCallback)
         } catch (e: SecurityException) {
             Log.e(TAG, "SecurityException starting advertising: ${e.message}")
+            if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onAdvertiserStartFailed("SECURITY_EXCEPTION")
         } catch (e: Exception) {
             Log.e(TAG, "Error starting advertising: ${e.message}", e)
+            if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onAdvertiserStartFailed("START_EXCEPTION")
         }
     }
 
     private fun stopAdvertising() {
         try {
             advertiser?.stopAdvertising(advertiseCallback)
+            egressAdvertiserReady = false
         } catch (e: Exception) {
             Log.w(TAG, "Error stopping advertising: ${e.message}")
         }
@@ -781,6 +1041,10 @@ class BleGattService : Service() {
     private val advertiseCallback = object : AdvertiseCallback() {
         override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
             Log.i(TAG, "BLE advertising started — UUID visible to phone")
+            if (isEgressOnlyRuntime()) {
+                egressAdvertiserReady = true
+                EvidenceEgressVolatileDiagnostics.onAdvertiserStarted()
+            }
         }
 
         override fun onStartFailure(errorCode: Int) {
@@ -793,6 +1057,13 @@ class BleGattService : Service() {
                 else -> "UNKNOWN($errorCode)"
             }
             Log.e(TAG, "BLE advertising FAILED: $reason")
+            if (isEgressOnlyRuntime()) {
+                if (errorCode == ADVERTISE_FAILED_ALREADY_STARTED && egressAdvertiserReady) {
+                    EvidenceEgressVolatileDiagnostics.onAdvertiserStarted()
+                } else {
+                    EvidenceEgressVolatileDiagnostics.onAdvertiserStartFailed(reason)
+                }
+            }
         }
     }
 

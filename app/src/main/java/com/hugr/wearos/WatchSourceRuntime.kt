@@ -3,13 +3,10 @@ package com.hugr.wearos
 import android.content.Context
 import android.os.StatFs
 import android.provider.Settings
-import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 internal object WatchSourceRuntime {
-    private const val JOURNAL_DIRECTORY = "build45_source_journal"
-
     @Volatile
     private var journal: SourceJournal? = null
 
@@ -17,7 +14,7 @@ internal object WatchSourceRuntime {
     fun journal(context: Context): SourceJournal {
         journal?.let { return it }
         val applicationContext = context.applicationContext
-        val root = File(applicationContext.filesDir, JOURNAL_DIRECTORY)
+        val root = FreshOrdinaryRunScope.journalRoot(applicationContext.filesDir)
         val bootCount = Settings.Global.getInt(
             applicationContext.contentResolver,
             Settings.Global.BOOT_COUNT,

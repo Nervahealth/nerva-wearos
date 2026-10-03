@@ -613,7 +613,6 @@ internal object CausalFlightFormatter {
 
 internal object WatchCausalRuntime {
     const val ACTION_CAUSAL_EVENT_UPDATE = "com.hugr.wearos.CAUSAL_EVENT_UPDATE"
-    private const val DIRECTORY_NAME = "build47_causal_flight_recorder"
 
     val processInstanceId: UUID = UUID.randomUUID()
 
@@ -630,7 +629,7 @@ internal object WatchCausalRuntime {
         val journal = WatchSourceRuntime.journal(applicationContext)
         return try {
             CausalFlightRecorder(
-                rootDir = File(applicationContext.filesDir, DIRECTORY_NAME),
+                rootDir = FreshOrdinaryRunScope.causalRoot(applicationContext.filesDir),
                 watchBootSessionId = journal.watchBootSessionId,
                 processInstanceId = processInstanceId,
                 nowElapsedMs = { SystemClock.elapsedRealtime() },

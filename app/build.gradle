@@ -20,8 +20,8 @@ android {
         applicationId 'com.hugr.wearos'
         minSdk 30
         targetSdk 34
-        versionCode 51
-        versionName '0.51.0-resume-scaling-candidate'
+        versionCode 68
+        versionName '0.68.0-fresh-ordinary-run-isolation-candidate'
     }
 
     buildTypes {

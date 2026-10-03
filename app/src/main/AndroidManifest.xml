@@ -30,6 +30,8 @@
     <!-- Foreground service for continuous monitoring -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
+    <!-- Explicit Evidence Egress-only GATT session; never a sensing/health service. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     
@@ -44,9 +46,66 @@
         android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault">
 
+        <meta-data
+            android:name="health.hugr.sourceCommit"
+            android:value="36258da5acbbaf94cfff687fcc7f6f9070c0d457" />
+
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:icon="@drawable/ic_startup_diagnostic_main">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".RetainedTimingExportActivity"
+            android:exported="true"
+            android:label="HUGR Evidence Export">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".StartupBreadcrumbDiagnosticActivity"
+            android:exported="true"
+            android:label="HUGR Retained State Check"
+            android:icon="@drawable/ic_retained_state_check">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".NormalStartupMarkerActivity"
+            android:exported="true"
+            android:label="HUGR Startup Readiness">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ExactRangeReadbackActivity"
+            android:exported="true"
+            android:label="HUGR Exact Range Readback"
+            android:icon="@drawable/ic_exact_range_readback">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".EvidenceEgressActivity"
+            android:exported="true"
+            android:label="HUGR Evidence Egress">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -72,7 +131,8 @@
         <service
             android:name=".BleGattService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice" />
 
         <!-- Haptic feedback service -->
         <service

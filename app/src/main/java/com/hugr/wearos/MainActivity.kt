@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.Switch
@@ -17,7 +18,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import java.io.File
 import java.util.UUID
 
 /**
@@ -34,11 +34,19 @@ class MainActivity : ComponentActivity() {
     }
 
     private val causalComponentInstanceId = UUID.randomUUID()
+    private var startupBreadcrumbRunId = causalComponentInstanceId.toString()
     private lateinit var statusText: TextView
     private lateinit var evidenceText: TextView
     private lateinit var scrollView: ScrollView
     private var receiverRegistered = false
     private var build46Baseline: Build46SourceBaseline? = null
+    private val firstFrameCoordinator = FirstFrameStartupCoordinator()
+    private var firstFramePresentation = FirstFramePresentation.localStarting()
+    private var permissionDecisionReached = false
+    private var startupScheduled = false
+    private lateinit var startupBreadcrumbStore: StartupBreadcrumbStore
+    private lateinit var normalStartupMarkerStore: NormalStartupMarkerStore
+    private val startupRecoveryGate = BoundedNormalStartupGate()
 
     private val foregroundPermissions = mutableListOf(
         Manifest.permission.BODY_SENSORS,
@@ -55,14 +63,18 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        startupBreadcrumbStore = StartupBreadcrumbStore(this)
+        normalStartupMarkerStore = NormalStartupMarkerStore(this)
+        intent.getStringExtra(StartupBreadcrumbPlan.EXTRA_DIAGNOSTIC_LAUNCH_ID)
+            ?.takeIf { it.isNotBlank() }
+            ?.let { startupBreadcrumbRunId = it }
+        recordStartupBreadcrumb(StartupBreadcrumbStage.ACTIVITY_ONCREATE_ENTER)
+        recordNormalStartupMarker(NormalStartupStage.UI_REACHED)
         createEvidenceLayout()
-
-        WatchCausalRuntime.recorder(this)
-        recordCausal(CausalEventCode.ACTIVITY_CREATED)
-        captureBuild46Baseline()
-        recordPermissionSnapshot()
-        renderEvidence()
-        requestForegroundPermissions()
+        recordStartupBreadcrumb(StartupBreadcrumbStage.FIRST_FRAME_LAYOUT_ATTACHED)
+        renderFirstFrame(firstFrameCoordinator.firstFrame())
+        recordStartupBreadcrumb(StartupBreadcrumbStage.FIRST_FRAME_PRESENTATION_SET)
+        scheduleStartupAfterFirstFrame()
     }
 
     private fun createEvidenceLayout() {
@@ -73,7 +85,7 @@ class MainActivity : ComponentActivity() {
         }
 
         statusText = TextView(this).apply {
-            text = "HUGR BUILD 51w\n0.51.0-resume-scaling-candidate"
+            text = "HUGR\nLocal startup check pending"
             textSize = 12f
             setTextColor(Color.WHITE)
         }
@@ -114,34 +126,105 @@ class MainActivity : ComponentActivity() {
         setContentView(layout)
     }
 
-    private fun captureBuild46Baseline() {
-        runCatching {
-            Build46BaselineStore(File(filesDir, "build47_causal_flight_recorder"))
-                .captureOnce { Build46SourceBaseline.from(WatchSourceRuntime.journal(this)) }
-        }.onSuccess { baseline ->
-            build46Baseline = baseline
-            val recorder = WatchCausalRuntime.recorder(this)
-            if (recorder.events().none { it.code == CausalEventCode.B46_BASELINE_SUMMARY }) {
-                recordCausal(
-                    CausalEventCode.B46_BASELINE_SUMMARY,
-                    arg0 = baseline.retainedSessionCount.toLong(),
-                    arg1 = baseline.latestRecordIndex,
-                )
-                SourceDeliveryState.entries.forEach { state ->
-                    recordCausal(
-                        CausalEventCode.B46_BASELINE_SUMMARY,
-                        arg0 = baseline.deliveryCounts[state] ?: 0L,
-                        reasonCode = state.ordinal + 1,
-                    )
+    private fun scheduleStartupAfterFirstFrame() {
+        if (startupScheduled) return
+        startupScheduled = true
+        lateinit var firstDrawListener: ViewTreeObserver.OnDrawListener
+        firstDrawListener = object : ViewTreeObserver.OnDrawListener {
+            override fun onDraw() {
+                if (!startupScheduled) return
+                startupScheduled = false
+                recordStartupBreadcrumb(StartupBreadcrumbStage.FIRST_DRAW_OBSERVED)
+                recordNormalStartupMarker(NormalStartupStage.FIRST_DRAW_OBSERVED)
+                evidenceText.post {
+                    evidenceText.viewTreeObserver
+                        .takeIf { it.isAlive }
+                        ?.removeOnDrawListener(firstDrawListener)
+                    beginStartupAfterFirstFrame()
                 }
             }
-        }.onFailure {
+        }
+        evidenceText.viewTreeObserver.addOnDrawListener(firstDrawListener)
+    }
+
+    private fun beginStartupAfterFirstFrame() {
+        if (isFinishing || isDestroyed) return
+
+        startupRecoveryGate.deferFreshScope()
+        recordNormalStartupMarker(NormalStartupStage.FRESH_SCOPE_DEFERRED)
+        renderFirstFrame(firstFrameCoordinator.freshScopePreparing())
+        Thread({ prepareFreshOrdinaryScopeInBackground() }, "HUGR-FreshOrdinaryScope").start()
+    }
+
+    private fun prepareFreshOrdinaryScopeInBackground() {
+        startupRecoveryGate.beginFreshScope()
+        recordNormalStartupMarker(NormalStartupStage.FRESH_SCOPE_PREPARING)
+        recordStartupBreadcrumb(StartupBreadcrumbStage.RECORDER_INITIALIZATION_ENTER)
+        val journal = runCatching { WatchSourceRuntime.journal(applicationContext) }.getOrElse { failure ->
+            recordStartupBreadcrumb(StartupBreadcrumbStage.RECORDER_INITIALIZATION_FAILURE)
+            recordNormalStartupMarker(NormalStartupStage.FRESH_SCOPE_FAILED)
+            completeFreshOrdinaryScopeFailure(failure)
+            return
+        }
+        if (!journal.preflight().eligible) {
+            recordNormalStartupMarker(NormalStartupStage.FRESH_SCOPE_FAILED)
+            completeFreshOrdinaryScopeFailure(
+                SourceJournalCorruptionException("Fresh ordinary source journal is not eligible for startup"),
+            )
+            return
+        }
+        runCatching { WatchCausalRuntime.recorder(applicationContext) }.getOrElse { failure ->
+            recordStartupBreadcrumb(StartupBreadcrumbStage.RECORDER_INITIALIZATION_FAILURE)
+            recordNormalStartupMarker(NormalStartupStage.FRESH_SCOPE_FAILED)
+            completeFreshOrdinaryScopeFailure(failure)
+            return
+        }
+        recordCausal(CausalEventCode.ACTIVITY_CREATED)
+
+        startupRecoveryGate.markFreshScopeReady()
+        recordNormalStartupMarker(NormalStartupStage.FRESH_SCOPE_READY)
+        runOnUiThread {
+            if (isFinishing || isDestroyed) return@runOnUiThread
             build46Baseline = null
-            recordCausal(CausalEventCode.RECORDER_DEGRADED, reasonCode = 1)
+            renderFirstFrame(firstFrameCoordinator.freshScopeReady())
+            requestForegroundPermissions()
         }
     }
 
+    private fun completeFreshOrdinaryScopeFailure(failure: Throwable) {
+        runOnUiThread {
+            if (isFinishing || isDestroyed) return@runOnUiThread
+            startupRecoveryGate.markFailed()
+            build46Baseline = null
+            renderFirstFrame(firstFrameCoordinator.onRecoveryFailure(failure))
+        }
+    }
+
+    private fun renderFirstFrame(presentation: FirstFramePresentation) {
+        firstFramePresentation = presentation
+        statusText.text = "HUGR\n${presentation.headline}"
+        evidenceText.text = buildString {
+            append(presentation.detail)
+            presentation.baselineText?.let { append('\n').append(it) }
+            presentation.failureClass?.let { append("\nFailure class: ").append(it.name) }
+        }
+    }
+
+    private fun recordStartupBreadcrumb(stage: StartupBreadcrumbStage) {
+        startupBreadcrumbStore.record(stage, startupBreadcrumbRunId)
+    }
+
+    private fun recordNormalStartupMarker(stage: NormalStartupStage) {
+        normalStartupMarkerStore.record(startupBreadcrumbRunId, stage)
+    }
+
     private fun requestForegroundPermissions() {
+        if (!startupRecoveryGate.permitsPermissionPath()) {
+            recordNormalStartupMarker(NormalStartupStage.SERVICE_START_BLOCKED)
+            renderFirstFrame(firstFrameCoordinator.recoveryFailed())
+            return
+        }
+        permissionDecisionReached = true
         val missing = foregroundPermissions.filter {
             ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
         }
@@ -180,13 +263,32 @@ class MainActivity : ComponentActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         recordPermissionSnapshot()
         when (requestCode) {
-            PERMISSION_REQUEST_CODE -> checkBackgroundPermission()
-            BACKGROUND_PERMISSION_REQUEST_CODE -> startAllServices()
+            PERMISSION_REQUEST_CODE -> {
+                if (allPermissionsGranted(grantResults)) checkBackgroundPermission() else onPermissionDenied()
+            }
+            BACKGROUND_PERMISSION_REQUEST_CODE -> {
+                if (allPermissionsGranted(grantResults)) startAllServices() else onPermissionDenied()
+            }
         }
         renderEvidence()
     }
 
+    private fun allPermissionsGranted(grantResults: IntArray): Boolean =
+        grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+
+    private fun onPermissionDenied() {
+        permissionDecisionReached = false
+        recordNormalStartupMarker(NormalStartupStage.PERMISSION_DENIED)
+        renderFirstFrame(firstFrameCoordinator.permissionUnavailable())
+    }
+
     private fun startAllServices() {
+        if (!startupRecoveryGate.permitsServiceStart()) {
+            recordNormalStartupMarker(NormalStartupStage.SERVICE_START_BLOCKED)
+            renderFirstFrame(firstFrameCoordinator.recoveryFailed())
+            return
+        }
+        recordNormalStartupMarker(NormalStartupStage.SERVICE_START_REQUESTED)
         recordCausal(CausalEventCode.SERVICES_START_REQUESTED)
         startService(Intent(this, BleGattService::class.java))
         val sensorIntent = Intent(this, HealthSensorService::class.java).apply {
@@ -197,13 +299,15 @@ class MainActivity : ComponentActivity() {
         } else {
             startService(sensorIntent)
         }
-        statusText.text = "HUGR BUILD 51w\nServices active · bounded resume replay"
+        statusText.text = "HUGR\nServices active · bounded resume replay"
         renderEvidence()
     }
 
     private val causalUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            runOnUiThread { renderEvidence() }
+            runOnUiThread {
+                if (permissionDecisionReached) renderEvidence()
+            }
         }
     }
 
@@ -217,7 +321,7 @@ class MainActivity : ComponentActivity() {
             )
             receiverRegistered = true
         }
-        renderEvidence()
+        if (permissionDecisionReached) renderEvidence() else renderFirstFrame(firstFramePresentation)
     }
 
     override fun onPause() {
@@ -259,6 +363,10 @@ class MainActivity : ComponentActivity() {
 
     private fun renderEvidence() {
         if (!::evidenceText.isInitialized) return
+        if (!permissionDecisionReached) {
+            renderFirstFrame(firstFramePresentation)
+            return
+        }
         val recorder = WatchCausalRuntime.recorder(this)
         val events = recorder.events()
         val baseline = build46Baseline

@@ -101,6 +101,7 @@ class HealthSensorService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.HEALTH_ON_START_ENTER)
         recordCausal(
             CausalEventCode.HEALTH_START_COMMAND,
             arg0 = when (intent?.action) {
@@ -155,6 +156,7 @@ class HealthSensorService : Service() {
     // ─── Foreground Service (Samsung-documented pattern) ────────────────────────
 
     private fun startForegroundWithNotification() {
+        NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.HEALTH_FOREGROUND_ENTER)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
@@ -180,6 +182,7 @@ class HealthSensorService : Service() {
         } else {
             startForeground(NOTIFICATION_ID, notification)
         }
+        NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.HEALTH_FOREGROUND_STARTED)
         Log.i(TAG, "Foreground service started with HEALTH type")
         sendStatus("Foreground service active (health type)")
     }
