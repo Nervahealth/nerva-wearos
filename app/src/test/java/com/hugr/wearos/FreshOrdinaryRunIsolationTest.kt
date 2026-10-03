@@ -44,8 +44,10 @@ class FreshOrdinaryRunIsolationTest {
 
     @Test
     fun `fresh scope names do not alias retained or frozen evidence roots`() {
-        assertEquals("fresh_ordinary_source_journal_v1", FreshOrdinaryRunScope.JOURNAL_DIRECTORY)
-        assertEquals("fresh_ordinary_causal_flight_recorder_v1", FreshOrdinaryRunScope.CAUSAL_DIRECTORY)
+        assertEquals("fresh_ordinary_source_journal_v2", FreshOrdinaryRunScope.JOURNAL_DIRECTORY)
+        assertEquals("fresh_ordinary_causal_flight_recorder_v2", FreshOrdinaryRunScope.CAUSAL_DIRECTORY)
+        assertNotEquals("fresh_ordinary_source_journal_v1", FreshOrdinaryRunScope.JOURNAL_DIRECTORY)
+        assertNotEquals("fresh_ordinary_causal_flight_recorder_v1", FreshOrdinaryRunScope.CAUSAL_DIRECTORY)
         assertNotEquals("build45_source_journal", FreshOrdinaryRunScope.JOURNAL_DIRECTORY)
         assertNotEquals("build47_causal_flight_recorder", FreshOrdinaryRunScope.CAUSAL_DIRECTORY)
         assertNotEquals("exact_range_readbacks", FreshOrdinaryRunScope.JOURNAL_DIRECTORY)

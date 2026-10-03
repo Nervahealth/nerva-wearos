@@ -92,17 +92,6 @@
         </activity>
 
         <activity
-            android:name=".ExactRangeReadbackActivity"
-            android:exported="true"
-            android:label="HUGR Exact Range Readback"
-            android:icon="@drawable/ic_exact_range_readback">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity
             android:name=".EvidenceEgressActivity"
             android:exported="true"
             android:label="HUGR Evidence Egress">

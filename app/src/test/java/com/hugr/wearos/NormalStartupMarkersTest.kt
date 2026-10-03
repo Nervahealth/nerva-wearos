@@ -27,6 +27,13 @@ class NormalStartupMarkersTest {
             NormalStartupStage.SERVICE_START_REQUESTED,
             NormalStartupStage.HEALTH_ON_START_ENTER,
             NormalStartupStage.HEALTH_FOREGROUND_STARTED,
+            NormalStartupStage.BOUNDED_RUN_STARTED,
+            NormalStartupStage.BOUNDED_RUN_SAMPLE_SEEN,
+            NormalStartupStage.BOUNDED_RUN_STOP_REQUESTED,
+            NormalStartupStage.BOUNDED_RUN_FINALIZED,
+            NormalStartupStage.BOUNDED_RUN_FINALIZATION_FAILED,
+            NormalStartupStage.BOUNDED_RUN_DELIVERY_ACKNOWLEDGED,
+            NormalStartupStage.BOUNDED_RUN_GATT_STOP_REQUESTED,
         ).forEach { required -> assertTrue("missing $required", required in stages) }
     }
 
@@ -52,15 +59,14 @@ class NormalStartupMarkersTest {
     }
 
     @Test
-    fun `normal and egress startup paths remain separate`() {
+    fun `normal startup markers remain outside explicit egress activation`() {
         val main = sourceAt("MainActivity.kt")
-        val egress = sourceAt("EvidenceEgressActivity.kt")
         val health = sourceAt("HealthSensorService.kt")
 
         assertTrue(main.contains("NormalStartupMarkerStore"))
         assertTrue(health.contains("NormalStartupMarkerStore"))
-        assertFalse(egress.contains("NormalStartupMarkerStore"))
-        assertFalse(egress.contains("NormalStartupStage"))
+        assertFalse(main.contains("ACTION_START_EGRESS_ONLY"))
+        assertFalse(health.contains("ACTION_START_EGRESS_ONLY"))
     }
 
     @Test

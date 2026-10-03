@@ -1197,6 +1197,16 @@ class BleGattService : Service() {
 
     private val sourceRecordReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == HealthSensorService.ACTION_SOURCE_FINALIZED) {
+                try {
+                    enqueueNewlyFinalizedManifests()
+                    pumpReplay()
+                } catch (error: Exception) {
+                    Log.e(TAG, "Bounded final manifest enqueue failed: ${error.message}", error)
+                    broadcastStatus("SOURCE DELIVERY FAILED: bounded final manifest pending reconnect/resume")
+                }
+                return
+            }
             val bytes = intent?.getByteArrayExtra("canonicalBytes") ?: return
             try {
                 val decoded = SourceJournalCodec.decodeAll(bytes)
@@ -1227,7 +1237,14 @@ class BleGattService : Service() {
     private fun registerSensorReceivers() {
         registerReceiver(ppgReceiver, IntentFilter("com.hugr.wearos.PPG_DATA"), RECEIVER_EXPORTED)
         registerReceiver(healthMetadataReceiver, IntentFilter(HealthSensorService.ACTION_DEVICE_HEALTH_UPDATE), Context.RECEIVER_NOT_EXPORTED)
-        registerReceiver(sourceRecordReceiver, IntentFilter(HealthSensorService.ACTION_SOURCE_RECORD), Context.RECEIVER_NOT_EXPORTED)
+        registerReceiver(
+            sourceRecordReceiver,
+            IntentFilter().apply {
+                addAction(HealthSensorService.ACTION_SOURCE_RECORD)
+                addAction(HealthSensorService.ACTION_SOURCE_FINALIZED)
+            },
+            Context.RECEIVER_NOT_EXPORTED,
+        )
         Log.d(TAG, "Sensor broadcast receivers registered")
     }
 
@@ -1640,6 +1657,17 @@ class BleGattService : Service() {
         }
         pumpReplay()
         advanceReplaySessionIfReady()
+        closeBoundedFreshRuntimeAfterDeliveryIfComplete()
+    }
+
+    private fun closeBoundedFreshRuntimeAfterDeliveryIfComplete() {
+        val marker = NormalStartupMarkerStore(this).read() ?: return
+        if (marker.stage != NormalStartupStage.BOUNDED_RUN_FINALIZED) return
+        if (sourceJournal.finalizedManifests().isNotEmpty()) return
+        NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.BOUNDED_RUN_DELIVERY_ACKNOWLEDGED)
+        WatchSourceRuntime.closeFreshAfterDelivery()
+        NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.BOUNDED_RUN_GATT_STOP_REQUESTED)
+        stopSelf()
     }
 
     private fun pumpReplay() {

@@ -42,9 +42,12 @@ class HealthSensorService : Service() {
         private const val TAG = "HUGR-HealthSensor"
         const val ACTION_START_TRACKING = "com.hugr.wearos.START_TRACKING"
         const val ACTION_STOP_TRACKING = "com.hugr.wearos.STOP_TRACKING"
+        const val ACTION_START_BOUNDED_ORDINARY_RUN = "com.hugr.wearos.START_BOUNDED_ORDINARY_RUN"
+        const val EXTRA_BOUNDED_RUN_DURATION_MS = "bounded_run_duration_ms"
         const val ACTION_STATUS_UPDATE = "com.hugr.wearos.STATUS_UPDATE"
         const val ACTION_DEVICE_HEALTH_UPDATE = "com.hugr.wearos.DEVICE_HEALTH_UPDATE"
         const val ACTION_SOURCE_RECORD = "com.hugr.wearos.SOURCE_RECORD"
+        const val ACTION_SOURCE_FINALIZED = "com.hugr.wearos.SOURCE_FINALIZED"
         private const val CHANNEL_ID = "hugr_sensor_channel"
         private const val NOTIFICATION_ID = 1
         private const val FLUSH_INTERVAL_MS = 30000L
@@ -72,6 +75,10 @@ class HealthSensorService : Service() {
     private var sourceDataLossLastSequence = 0L
     private var sourceDataLossReasonCode = 0
     private val controlHandler = Handler(Looper.getMainLooper())
+    private val journalLifecycleLock = Any()
+    private val boundedRunGate = BoundedOrdinaryRunGate()
+    private var boundedRunStop: Runnable? = null
+    private var sampleMarkerRecorded = false
     private val causalComponentInstanceId = UUID.randomUUID()
     private val causalFirstEventGate = FirstCausalEventGate()
 
@@ -107,11 +114,15 @@ class HealthSensorService : Service() {
             arg0 = when (intent?.action) {
                 ACTION_START_TRACKING -> 1L
                 ACTION_STOP_TRACKING -> 2L
+                ACTION_START_BOUNDED_ORDINARY_RUN -> 3L
                 else -> 0L
             },
             arg1 = startId.toLong(),
         )
         when (intent?.action) {
+            ACTION_START_BOUNDED_ORDINARY_RUN -> startBoundedOrdinaryRun(
+                intent.getLongExtra(EXTRA_BOUNDED_RUN_DURATION_MS, -1L),
+            )
             ACTION_START_TRACKING -> {
                 startForegroundWithNotification()
                 if (!initializeSourceJournal()) return START_STICKY
@@ -122,6 +133,7 @@ class HealthSensorService : Service() {
                 connectAndStartTracking()
             }
             ACTION_STOP_TRACKING -> {
+                cancelBoundedRunStop()
                 stopTrackingAndDisconnect()
                 stopFlushTimer()
                 stopJournalSyncTimer()
@@ -144,6 +156,7 @@ class HealthSensorService : Service() {
     }
 
     override fun onDestroy() {
+        cancelBoundedRunStop()
         recordCausal(CausalEventCode.HEALTH_SERVICE_DESTROYED)
         stopTrackingAndDisconnect()
         stopFlushTimer()
@@ -151,6 +164,78 @@ class HealthSensorService : Service() {
         unregisterScreenReceiver()
         releaseWakeLock()
         super.onDestroy()
+    }
+
+    private fun startBoundedOrdinaryRun(durationMs: Long) {
+        if (!BoundedOrdinaryRunPolicy.acceptsDuration(durationMs) || !boundedRunGate.begin()) {
+            NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.BOUNDED_RUN_FINALIZATION_FAILED)
+            sendStatus("BOUNDED ORDINARY RUN REFUSED")
+            stopSelf()
+            return
+        }
+        startForegroundWithNotification()
+        if (!initializeSourceJournal()) {
+            boundedRunGate.requestStop()
+            boundedRunGate.markFinalizationFailed()
+            NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.BOUNDED_RUN_FINALIZATION_FAILED)
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf()
+            return
+        }
+        NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.BOUNDED_RUN_STARTED)
+        acquireWakeLock()
+        registerScreenReceiver()
+        startJournalSyncTimer()
+        startFlushTimer()
+        connectAndStartTracking()
+        boundedRunStop = Runnable { finalizeBoundedOrdinaryRun() }.also {
+            controlHandler.postDelayed(it, durationMs)
+        }
+    }
+
+    private fun finalizeBoundedOrdinaryRun() {
+        if (!boundedRunGate.requestStop()) return
+        NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.BOUNDED_RUN_STOP_REQUESTED)
+        cancelBoundedRunStop()
+        // Stop producer callbacks before taking the lifecycle lock. A callback that
+        // arrives late then observes the quiescent gate and cannot append.
+        stopTrackingAndDisconnect()
+        stopFlushTimer()
+        stopJournalSyncTimer()
+        unregisterScreenReceiver()
+        releaseWakeLock()
+        val finalizationSucceeded = try {
+            synchronized(journalLifecycleLock) {
+                val journal = requireNotNull(sourceJournal) { "Source journal not initialized" }
+                journal.forceSync()
+                journal.finalizeActiveSegment()
+                journal.forceSync()
+            }
+            true
+        } catch (error: Exception) {
+            Log.e(TAG, "Bounded ordinary run finalization failed", error)
+            sendStatus("BOUNDED ORDINARY RUN FINALIZATION FAILED: ${error.javaClass.simpleName}")
+            false
+        }
+        if (!finalizationSucceeded || !boundedRunGate.markFinalized()) {
+            boundedRunGate.markFinalizationFailed()
+            NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.BOUNDED_RUN_FINALIZATION_FAILED)
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf()
+            return
+        }
+        NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.BOUNDED_RUN_FINALIZED)
+        sendBroadcast(Intent(ACTION_SOURCE_FINALIZED).apply { setPackage(packageName) })
+        // The standard GATT service remains alive only for the existing Phone
+        // resume/replay/acknowledgement path. It closes after that acknowledgement.
+        sendStatus("BOUNDED ORDINARY RUN FINALIZED: awaiting Phone delivery acknowledgement")
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
+    }
+
+    private fun cancelBoundedRunStop() {
+        boundedRunStop?.let(controlHandler::removeCallbacks)
+        boundedRunStop = null
     }
 
     // ─── Foreground Service (Samsung-documented pattern) ────────────────────────
@@ -688,9 +773,17 @@ class HealthSensorService : Service() {
         payload: ByteArray,
     ): WatchSourceRecord? {
         if (sourceDataLoss) return null
+        if (!boundedRunGate.acceptsSamples()) return null
         return try {
-            val record = requireNotNull(sourceJournal) { "Source journal not initialized" }
-                .append(stream, sourceTimestampMs, payload)
+            val record = synchronized(journalLifecycleLock) {
+                if (!boundedRunGate.acceptsSamples()) return null
+                requireNotNull(sourceJournal) { "Source journal not initialized" }
+                    .append(stream, sourceTimestampMs, payload)
+            }
+            if (!sampleMarkerRecorded) {
+                sampleMarkerRecorded = true
+                NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.BOUNDED_RUN_SAMPLE_SEEN)
+            }
             recordFirstCausal(
                 CausalEventCode.FIRST_APPEND,
                 CausalStreamCode.fromSourceStream(stream),

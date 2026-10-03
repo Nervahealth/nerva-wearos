@@ -11,8 +11,10 @@ import java.io.File
  * migrates, acknowledges, prunes, or deletes either legacy root.
  */
 internal object FreshOrdinaryRunScope {
-    const val JOURNAL_DIRECTORY = "fresh_ordinary_source_journal_v1"
-    const val CAUSAL_DIRECTORY = "fresh_ordinary_causal_flight_recorder_v1"
+    // v1 may contain the unclassified Watch68 ordinary session. The bounded
+    // Watch69 candidate never reopens it; it owns a new, versioned scope.
+    const val JOURNAL_DIRECTORY = "fresh_ordinary_source_journal_v2"
+    const val CAUSAL_DIRECTORY = "fresh_ordinary_causal_flight_recorder_v2"
 
     fun journalRoot(filesDir: File): File = File(filesDir, JOURNAL_DIRECTORY)
 

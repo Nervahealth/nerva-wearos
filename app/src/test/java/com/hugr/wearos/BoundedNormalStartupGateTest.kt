@@ -107,20 +107,22 @@ class BoundedNormalStartupGateTest {
 
         val main = sourceAt("MainActivity.kt")
         val health = sourceAt("HealthSensorService.kt")
-        val egress = sourceAt("EvidenceEgressActivity.kt")
         listOf("exact_range_readbacks", "EvidenceEgressActivation", "RetainedTimingExporter").forEach { forbidden ->
             assertFalse("ordinary main path must exclude $forbidden", main.contains(forbidden))
             assertFalse("health path must exclude $forbidden", health.contains(forbidden))
         }
-        listOf("BoundedNormalStartupGate", "WatchSourceRuntime", "HealthSensorService", "MainActivity").forEach { forbidden ->
-            assertFalse("explicit egress path must exclude $forbidden", egress.contains(forbidden))
-        }
+        assertFalse("unrecovered egress source must not be fabricated", sourceFileOrNull("EvidenceEgressActivity.kt")?.isFile == true)
     }
 
     private fun sourceFile(fileName: String): File = listOf(
         File("src/main/java/com/hugr/wearos/$fileName"),
         File("app/src/main/java/com/hugr/wearos/$fileName"),
     ).first { it.isFile }
+
+    private fun sourceFileOrNull(fileName: String): File? = listOf(
+        File("src/main/java/com/hugr/wearos/$fileName"),
+        File("app/src/main/java/com/hugr/wearos/$fileName"),
+    ).firstOrNull { it.isFile }
 
     private fun sourceAt(fileName: String): String = sourceFile(fileName).readText()
 

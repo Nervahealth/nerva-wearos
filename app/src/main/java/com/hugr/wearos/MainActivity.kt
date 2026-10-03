@@ -292,7 +292,11 @@ class MainActivity : ComponentActivity() {
         recordCausal(CausalEventCode.SERVICES_START_REQUESTED)
         startService(Intent(this, BleGattService::class.java))
         val sensorIntent = Intent(this, HealthSensorService::class.java).apply {
-            action = HealthSensorService.ACTION_START_TRACKING
+            action = HealthSensorService.ACTION_START_BOUNDED_ORDINARY_RUN
+            putExtra(
+                HealthSensorService.EXTRA_BOUNDED_RUN_DURATION_MS,
+                BoundedOrdinaryRunPolicy.SHORT_ADMISSION_DURATION_MS,
+            )
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(sensorIntent)

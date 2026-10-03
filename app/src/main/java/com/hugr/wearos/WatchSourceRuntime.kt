@@ -32,6 +32,17 @@ internal object WatchSourceRuntime {
     fun resetForTests() {
         journal = null
     }
+
+    /**
+     * Closes only the current fresh ordinary-scope journal after its terminal
+     * manifest has been delivered and acknowledged. Legacy roots are never
+     * named or opened by this runtime.
+     */
+    @Synchronized
+    fun closeFreshAfterDelivery() {
+        journal?.close()
+        journal = null
+    }
 }
 
 internal object SourcePayloadCodec {

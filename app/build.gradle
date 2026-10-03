@@ -20,8 +20,8 @@ android {
         applicationId 'com.hugr.wearos'
         minSdk 30
         targetSdk 34
-        versionCode 68
-        versionName '0.68.0-fresh-ordinary-run-isolation-candidate'
+        versionCode 69
+        versionName '0.69.0-bounded-ordinary-run-candidate'
     }
 
     buildTypes {
@@ -45,13 +45,19 @@ android {
 }
 
 dependencies {
+    // Source for the existing Watch68 egress path is unrecovered. This is a
+    // compile-only interface recovered from its admitted Watch68 APK; the
+    // exact class payload is injected as classes2.dex only at candidate
+    // packaging time and is never represented as recovered source.
+    compileOnly files('libs/egress-compile-stubs.jar')
+
     // Wear OS
     implementation 'androidx.wear:wear:1.3.0'
     implementation 'androidx.wear.tiles:tiles:1.2.0'
     implementation 'androidx.wear.watchface:watchface:1.2.0'
 
     // Samsung Health Sensor SDK
-    implementation fileTree(dir: 'libs', include: ['*.aar'])
+    implementation files('libs/samsung-health-sensor-api-1.4.1.aar')
 
     // Android Core
     implementation 'androidx.appcompat:appcompat:1.6.1'
