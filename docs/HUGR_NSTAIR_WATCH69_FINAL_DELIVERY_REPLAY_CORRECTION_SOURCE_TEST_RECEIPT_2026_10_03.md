@@ -129,7 +129,7 @@ No candidate build is included in this correction receipt.
 
 ## Preservation closeout
 
-Local source commits preserve the tested correction as Watch `31fc70c`, Phone/control `6107dd5`, and standalone control records `c276c50`. GitHub publication was attempted through the configured `Nervahealth` account for the Watch, Phone, and control branches, but Git smart-HTTP returned **403** before any branch could be claimed remotely updated. GitHub API metadata reported `ADMIN` visibility, which does not make the failed Git writes successful.
+Local source commits preserve the tested correction as Watch `31fc70c`, Phone/control `6107dd5`, and standalone control records `c276c50`. GitHub publication was attempted through the configured `Nervahealth` account for the Watch branch, but Git smart-HTTP returned **403** before any branch could be claimed remotely updated. The Phone/control pushes were not attempted after that stop. GitHub API metadata reported `ADMIN` visibility, which does not make the failed Git write successful.
 
 The fallback is a sanitized source/control snapshot containing those commits, with `debug.keystore`, credential-like filenames, private tabular/database/media evidence, and Git metadata excluded. Its SHA-256 is `e37cb9d41b3d8ad3921414f7528111aedfa7bfe12e3528ce2c3c92b95c77a60f`.
 
