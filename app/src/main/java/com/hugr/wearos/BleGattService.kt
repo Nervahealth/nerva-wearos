@@ -1402,38 +1402,22 @@ class BleGattService : Service() {
 
     private fun enqueueNewlyFinalizedManifests() {
         if (!sourceMtuReadinessGate.canConstructSourceFrames(sourceMtuLineageGeneration)) return
-        sourceJournal.drainNewlyFinalizedManifests().forEach { manifest ->
-            if (!SourceReplayWindow.includesManifest(
-                    activeSession = activeReplaySessionId,
-                    replayHighWaterRecordIndex = replayHighWaterRecordIndex,
-                    manifest = manifest,
-                )
-            ) {
-                Log.d(
-                    TAG,
-                    "Deferring source manifest ${manifest.firstRecordIndex}-${manifest.lastRecordIndex} " +
-                        "until a replay window includes it",
-                )
-                return@forEach
-            }
-            val bytes = SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(manifest))
-            if (bytes.size > maximumAttPayloadBytes()) {
-                replayActive = false
-                throw SourceJournalCorruptionException("Live segment manifest exceeds negotiated ATT payload")
-            }
-            val result = notificationQueue.enqueue(
-                stream = GattNotificationStream.DEVICE_HEALTH,
-                characteristicUuid = SOURCE_RECORD_CHARACTERISTIC_UUID,
-                payload = bytes,
-                sourceSequence = manifest.firstRecordIndex,
-                sourceTimestampMs = System.currentTimeMillis(),
-                origin = GattNotificationOrigin.REPLAY,
-                lossless = true,
-            )
-            if (result == GattEnqueueResult.CRITICAL_OVERFLOW || result == GattEnqueueResult.DROPPED_LOW_PRIORITY) {
-                throw SourceJournalCapacityException("Finalized segment manifest could not enter the transport queue")
-            }
-        }
+        if (sourceJournal.drainNewlyFinalizedManifests().isEmpty()) return
+        val activeSession = activeReplaySessionId ?: return
+        val plan = SourceReplayWindow.planFinalizedManifestDelivery(
+            activeSession = activeSession,
+            durablePhoneRecordIndex = durablePhoneRecordIndex,
+            replayHighWaterRecordIndex = replayHighWaterRecordIndex,
+            queuedManifestEndIndex = queuedReplayManifestEndIndex,
+            finalizedManifests = sourceJournal.finalizedManifests(activeSession),
+        ) ?: return
+
+        replayHighWaterRecordIndex = plan.replayHighWaterRecordIndex
+        replayBacklogCount = replayHighWaterRecordIndex - durablePhoneRecordIndex
+        replayActive = replayBacklogCount > 0L
+        // Use the normal manifest queue so every final manifest establishes the
+        // exact queued endpoint required by acknowledgement validation.
+        enqueueNextManifestForReplayWindow(activeSession, replayHighWaterRecordIndex)
     }
 
     private fun handleSourceResume(request: SourceResumeRequest) {

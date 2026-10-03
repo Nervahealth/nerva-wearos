@@ -44,6 +44,42 @@ class SourceReplayWindowTest {
         assertEquals(false, SourceReplayWindow.includesManifest(UUID.randomUUID(), 100L, withinWindow))
     }
 
+    @Test
+    fun `bounded finalization extends a stale replay window and queues the terminal manifest`() {
+        val earlyManifest = manifest(session, firstRecordIndex = 1L, lastRecordIndex = 11L)
+        val terminalManifest = manifest(session, firstRecordIndex = 12L, lastRecordIndex = 13L)
+
+        val plan = requireNotNull(
+            SourceReplayWindow.planFinalizedManifestDelivery(
+                activeSession = session,
+                durablePhoneRecordIndex = 11L,
+                replayHighWaterRecordIndex = 11L,
+                queuedManifestEndIndex = null,
+                finalizedManifests = listOf(earlyManifest, terminalManifest),
+            ),
+        )
+
+        assertEquals(13L, plan.replayHighWaterRecordIndex)
+        assertEquals(terminalManifest, plan.nextManifest)
+        assertEquals(
+            13L,
+            SourceReplayWindow.replayReadUpperBound(
+                replayHighWaterRecordIndex = plan.replayHighWaterRecordIndex,
+                queuedManifestEndIndex = plan.nextManifest?.lastRecordIndex,
+            ),
+        )
+        SourceReplayWindow.validateAcknowledgement(
+            activeSession = session,
+            durablePhoneRecordIndex = 11L,
+            replayHighWaterRecordIndex = plan.replayHighWaterRecordIndex,
+            acknowledgement = acknowledgement(session, 13L),
+        )
+        SourceReplayWindow.validateQueuedManifestAcknowledgement(
+            queuedManifestEndIndex = plan.nextManifest?.lastRecordIndex,
+            acknowledgement = acknowledgement(session, 13L),
+        )
+    }
+
     private fun acknowledgement(watchBootSessionId: UUID, cumulativeRecordIndex: Long) =
         SourceSegmentAcknowledgement(
             watchBootSessionId = watchBootSessionId,

@@ -260,6 +260,84 @@ class SourceJournalTest {
     }
 
     @Test
+    fun `final segment made after resume high water remains replayable and exactly acknowledgeable without later samples`() {
+        val root = temporaryFolder.newFolder("bounded-final-delivery")
+        val journal = journal(root, bootCount = 69) { 1_000L }
+        repeat(11) { index ->
+            journal.append(SourceStreamCode.ACCEL, 100 + index.toLong(), byteArrayOf(index.toByte()))
+        }
+        val alreadyAcknowledged = requireNotNull(journal.finalizeActiveSegment())
+        journal.drainNewlyFinalizedManifests()
+        assertTrue(
+            journal.acknowledgeCompletedSegment(
+                alreadyAcknowledged.watchBootSessionId,
+                alreadyAcknowledged.lastRecordIndex,
+                alreadyAcknowledged.sha256Hex,
+            ),
+        )
+
+        journal.append(SourceStreamCode.CARDIAC, 200, byteArrayOf(12))
+        journal.append(SourceStreamCode.CARDIAC, 201, byteArrayOf(13))
+        val finalManifest = requireNotNull(journal.finalizeActiveSegment())
+        assertEquals(13L, finalManifest.lastRecordIndex)
+        assertEquals(listOf(finalManifest), journal.drainNewlyFinalizedManifests())
+        assertEquals(
+            finalManifest,
+            journal.nextFinalizedManifest(
+                journal.watchBootSessionId,
+                alreadyAcknowledged.lastRecordIndex,
+                finalManifest.lastRecordIndex,
+            ),
+        )
+
+        val plan = requireNotNull(
+            SourceReplayWindow.planFinalizedManifestDelivery(
+                activeSession = journal.watchBootSessionId,
+                durablePhoneRecordIndex = alreadyAcknowledged.lastRecordIndex,
+                replayHighWaterRecordIndex = alreadyAcknowledged.lastRecordIndex,
+                queuedManifestEndIndex = null,
+                finalizedManifests = journal.finalizedManifests(journal.watchBootSessionId),
+            ),
+        )
+        assertEquals(finalManifest, plan.nextManifest)
+        assertEquals(finalManifest.lastRecordIndex, plan.replayHighWaterRecordIndex)
+        assertEquals(
+            listOf(12L, 13L),
+            journal.readRecordsAfter(
+                journal.watchBootSessionId,
+                alreadyAcknowledged.lastRecordIndex,
+                plan.replayHighWaterRecordIndex,
+                96,
+            ).map { it.recordIndex },
+        )
+
+        val acknowledgement = SourceSegmentAcknowledgement(
+            journal.watchBootSessionId,
+            finalManifest.lastRecordIndex,
+            finalManifest.sha256Hex,
+        )
+        SourceReplayWindow.validateAcknowledgement(
+            journal.watchBootSessionId,
+            alreadyAcknowledged.lastRecordIndex,
+            plan.replayHighWaterRecordIndex,
+            acknowledgement,
+        )
+        SourceReplayWindow.validateQueuedManifestAcknowledgement(
+            finalManifest.lastRecordIndex,
+            acknowledgement,
+        )
+        assertTrue(
+            journal.acknowledgeCompletedSegment(
+                acknowledgement.watchBootSessionId,
+                acknowledgement.cumulativeRecordIndex,
+                acknowledgement.completedSegmentSha256,
+            ),
+        )
+        assertTrue(journal.finalizedManifests().isEmpty())
+        journal.close()
+    }
+
+    @Test
     fun `delivery ledger distinguishes buffered live and replay transitions without changing canonical bytes`() {
         val root = temporaryFolder.newFolder("journal")
         var now = 1_000L

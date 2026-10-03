@@ -84,6 +84,22 @@ class OrdinaryRuntimeCandidateContractTest {
             "NormalStartupStage.BOUNDED_RUN_GATT_STOP_REQUESTED",
             "stopSelf()",
         )
+
+        val finalManifestDelivery = between(
+            gattSource,
+            "private fun enqueueNewlyFinalizedManifests()",
+            "private fun handleSourceResume",
+        )
+        assertTrue(finalManifestDelivery.contains("SourceReplayWindow.planFinalizedManifestDelivery"))
+        assertTrue(finalManifestDelivery.contains("enqueueNextManifestForReplayWindow"))
+        assertFalse(finalManifestDelivery.contains("notificationQueue.enqueue("))
+        assertInOrder(
+            finalManifestDelivery,
+            "sourceJournal.drainNewlyFinalizedManifests()",
+            "SourceReplayWindow.planFinalizedManifestDelivery",
+            "replayHighWaterRecordIndex = plan.replayHighWaterRecordIndex",
+            "enqueueNextManifestForReplayWindow",
+        )
     }
 
     @Test

@@ -3,6 +3,11 @@ package com.hugr.wearos
 import java.util.UUID
 
 internal object SourceReplayWindow {
+    data class FinalizedManifestDeliveryPlan(
+        val replayHighWaterRecordIndex: Long,
+        val nextManifest: SourceSegmentManifest?,
+    )
+
     fun includesManifest(
         activeSession: UUID?,
         replayHighWaterRecordIndex: Long,
@@ -43,6 +48,41 @@ internal object SourceReplayWindow {
             .filter { it.lastRecordIndex > durablePhoneRecordIndex }
             .sortedBy { it.firstRecordIndex }
             .firstOrNull()
+    }
+
+    /**
+     * Finalization happens after a live resume window has deliberately frozen its
+     * high-water mark. A newly sealed current-session segment is durable but lies
+     * outside that old window. Extend the active window from durable manifests and
+     * select the next normal replay manifest; never emit a manifest outside the
+     * acknowledgement endpoint machinery.
+     */
+    fun planFinalizedManifestDelivery(
+        activeSession: UUID?,
+        durablePhoneRecordIndex: Long,
+        replayHighWaterRecordIndex: Long,
+        queuedManifestEndIndex: Long?,
+        finalizedManifests: List<SourceSegmentManifest>,
+    ): FinalizedManifestDeliveryPlan? {
+        val session = activeSession ?: return null
+        val sessionManifests = finalizedManifests.filter { manifest ->
+            manifest.watchBootSessionId == session && manifest.lastRecordIndex > durablePhoneRecordIndex
+        }
+        if (sessionManifests.isEmpty()) return null
+        val expandedHighWater = maxOf(
+            replayHighWaterRecordIndex,
+            sessionManifests.maxOf { it.lastRecordIndex },
+        )
+        return FinalizedManifestDeliveryPlan(
+            replayHighWaterRecordIndex = expandedHighWater,
+            nextManifest = nextManifestToQueue(
+                activeSession = session,
+                durablePhoneRecordIndex = durablePhoneRecordIndex,
+                replayHighWaterRecordIndex = expandedHighWater,
+                queuedManifestEndIndex = queuedManifestEndIndex,
+                manifests = sessionManifests,
+            ),
+        )
     }
 
     fun replayReadUpperBound(
