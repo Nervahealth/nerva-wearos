@@ -48,6 +48,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var normalStartupMarkerStore: NormalStartupMarkerStore
     private val startupRecoveryGate = BoundedNormalStartupGate()
     private var finalizedDeliveryRecoveryOnly = false
+    private var finalizedDeliverySourceSessionId: String? = null
 
     private val foregroundPermissions = mutableListOf(
         Manifest.permission.BODY_SENSORS,
@@ -66,21 +67,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         startupBreadcrumbStore = StartupBreadcrumbStore(this)
         normalStartupMarkerStore = NormalStartupMarkerStore(this)
-        // An in-place update clears the standard GATT service's process memory,
-        // but it does not clear the fresh retained journal or this small marker.
-        // Preserve the finalized run identity until its exact Phone acknowledgement
-        // has removed the terminal manifest; do not turn this recovery launch into
-        // another bounded sensor run.
-        finalizedDeliveryRecoveryOnly = normalStartupMarkerStore.read()?.stage ==
-            NormalStartupStage.BOUNDED_RUN_FINALIZED
-        if (finalizedDeliveryRecoveryOnly) {
-            createEvidenceLayout()
-            renderFirstFrame(firstFrameCoordinator.firstFrame())
-            statusText.text = "HUGR\nFinalized delivery recovery · standard GATT only"
-            evidenceText.text = "No sensing or new source records are started. Retained finalized session awaits Phone resume, manifest equality, exact acknowledgement, and Watch completion."
-            scheduleStartupAfterFirstFrame()
-            return
-        }
         intent.getStringExtra(StartupBreadcrumbPlan.EXTRA_DIAGNOSTIC_LAUNCH_ID)
             ?.takeIf { it.isNotBlank() }
             ?.let { startupBreadcrumbRunId = it }
@@ -170,6 +156,38 @@ class MainActivity : ComponentActivity() {
             return
         }
 
+        renderFirstFrame(firstFrameCoordinator.freshScopePreparing())
+        Thread({ probeRetainedFinalizedDeliveryInBackground() }, "HUGR-RetainedFinalizedDeliveryProbe").start()
+    }
+
+    /**
+     * Opens only the isolated fresh v2 journal after first draw. Durable finalized
+     * source manifests—not the overwriteable startup marker—decide whether this
+     * launch is a GATT-only delivery recovery. The ordinary path remains blocked
+     * until the probe proves no retained finalized session is available.
+     */
+    private fun probeRetainedFinalizedDeliveryInBackground() {
+        val target = runCatching {
+            RetainedFinalizedDeliveryRecovery.select(WatchSourceRuntime.journal(applicationContext))
+        }.getOrElse { failure ->
+            runOnUiThread { completeFreshOrdinaryScopeFailure(failure) }
+            return
+        }
+        runOnUiThread {
+            if (isFinishing || isDestroyed) return@runOnUiThread
+            if (target != null) {
+                finalizedDeliveryRecoveryOnly = true
+                finalizedDeliverySourceSessionId = target.sourceSessionId.toString()
+                statusText.text = "HUGR\nFinalized delivery recovery · standard GATT only"
+                evidenceText.text = "Retained source session ${target.sourceSessionId} is finalized. No sensing or new source records are started; Phone resume must verify manifest equality and acknowledge the exact terminal hash."
+                startFinalizedDeliveryRecovery()
+                return@runOnUiThread
+            }
+            beginFreshOrdinaryScopeAfterRetainedDeliveryProbe()
+        }
+    }
+
+    private fun beginFreshOrdinaryScopeAfterRetainedDeliveryProbe() {
         startupRecoveryGate.deferFreshScope()
         recordNormalStartupMarker(NormalStartupStage.FRESH_SCOPE_DEFERRED)
         renderFirstFrame(firstFrameCoordinator.freshScopePreparing())
@@ -335,9 +353,11 @@ class MainActivity : ComponentActivity() {
      * sequence; the GATT service records terminal completion only after that ack.
      */
     private fun startFinalizedDeliveryRecovery() {
+        val sourceSessionId = finalizedDeliverySourceSessionId ?: return
         startService(
             Intent(this, BleGattService::class.java).apply {
                 putExtra(BleGattService.EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY, true)
+                putExtra(BleGattService.EXTRA_FINALIZED_DELIVERY_SOURCE_SESSION_ID, sourceSessionId)
             },
         )
         statusText.text = "HUGR\nFinalized delivery recovery · waiting for Phone resume"

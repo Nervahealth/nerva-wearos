@@ -38,18 +38,27 @@ class OrdinaryRuntimeCandidateContractTest {
     }
 
     @Test
-    fun `post-update finalized delivery recovery starts standard GATT only and preserves terminal completion marker until exact acknowledgement`() {
+    fun `post-update finalized delivery recovery selects the retained v2 source session and preserves completion until exact acknowledgement`() {
         val recovery = between(mainSource, "private fun startFinalizedDeliveryRecovery()", "private val causalUpdateReceiver")
+        val recoveryProbe = between(
+            mainSource,
+            "private fun probeRetainedFinalizedDeliveryInBackground()",
+            "private fun prepareFreshOrdinaryScopeInBackground()",
+        )
 
-        val finalizedCheck = mainSource.indexOf("NormalStartupStage.BOUNDED_RUN_FINALIZED")
         val ordinaryMarkerWrite = mainSource.indexOf("recordNormalStartupMarker(NormalStartupStage.UI_REACHED)")
-        assertTrue(finalizedCheck >= 0)
-        assertTrue(ordinaryMarkerWrite > finalizedCheck)
+        assertTrue(mainSource.contains("Thread({ probeRetainedFinalizedDeliveryInBackground() }"))
+        assertTrue(recoveryProbe.contains("WatchSourceRuntime.journal(applicationContext)"))
+        assertTrue(recoveryProbe.contains("RetainedFinalizedDeliveryRecovery.select"))
+        assertTrue(recoveryProbe.contains("startFinalizedDeliveryRecovery"))
+        assertFalse(recoveryProbe.contains("NormalStartupMarkerStore"))
+        assertTrue(ordinaryMarkerWrite >= 0)
         assertTrue(mainSource.contains("startFinalizedDeliveryRecovery()"))
 
         assertTrue(recovery.contains("startService("))
         assertTrue(recovery.contains("Intent(this, BleGattService::class.java)"))
         assertTrue(recovery.contains("BleGattService.EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY"))
+        assertTrue(recovery.contains("BleGattService.EXTRA_FINALIZED_DELIVERY_SOURCE_SESSION_ID"))
         assertFalse(recovery.contains("HealthSensorService"))
         assertFalse(recovery.contains("startForegroundService"))
         assertFalse(recovery.contains("ACTION_START_BOUNDED_ORDINARY_RUN"))
@@ -79,6 +88,8 @@ class OrdinaryRuntimeCandidateContractTest {
         )
         assertInOrder(
             closeAfterAck,
+            "finalizedDeliverySourceSessionId",
+            "sourceJournal.hasFinalizedSegments(sourceSessionId)",
             "sourceJournal.finalizedManifests().isNotEmpty()",
             "NormalStartupStage.BOUNDED_RUN_DELIVERY_ACKNOWLEDGED",
             "WatchSourceRuntime.closeFreshAfterDelivery()",

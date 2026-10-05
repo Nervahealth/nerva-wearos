@@ -58,10 +58,18 @@ class BoundedNormalStartupGateTest {
     }
 
     @Test
-    fun `normal main start prepares an isolated journal in background before permissions and services`() {
+    fun `normal main start probes retained finalization in background before any fresh scope permission or service path`() {
         val source = sourceAt("MainActivity.kt")
         val begin = source.substring(
             source.indexOf("private fun beginStartupAfterFirstFrame()"),
+            source.indexOf("private fun probeRetainedFinalizedDeliveryInBackground()"),
+        )
+        val retainedProbe = source.substring(
+            source.indexOf("private fun probeRetainedFinalizedDeliveryInBackground()"),
+            source.indexOf("private fun beginFreshOrdinaryScopeAfterRetainedDeliveryProbe()"),
+        )
+        val freshStart = source.substring(
+            source.indexOf("private fun beginFreshOrdinaryScopeAfterRetainedDeliveryProbe()"),
             source.indexOf("private fun prepareFreshOrdinaryScopeInBackground()"),
         )
         val freshPreparation = source.substring(
@@ -77,10 +85,16 @@ class BoundedNormalStartupGateTest {
             source.indexOf("private fun startAllServices()"),
         )
 
-        assertTrue(begin.contains("startupRecoveryGate.deferFreshScope()"))
         assertTrue(begin.contains("Thread({"))
-        assertTrue(begin.contains("prepareFreshOrdinaryScopeInBackground()"))
+        assertTrue(begin.contains("probeRetainedFinalizedDeliveryInBackground()"))
         assertFalse(begin.contains("WatchCausalRuntime.recorder("))
+        assertTrue(retainedProbe.contains("WatchSourceRuntime.journal(applicationContext)"))
+        assertTrue(retainedProbe.contains("RetainedFinalizedDeliveryRecovery.select"))
+        assertTrue(retainedProbe.contains("startFinalizedDeliveryRecovery()"))
+        assertFalse(retainedProbe.contains("requestForegroundPermissions()"))
+        assertFalse(retainedProbe.contains("HealthSensorService"))
+        assertTrue(freshStart.contains("startupRecoveryGate.deferFreshScope()"))
+        assertTrue(freshStart.contains("prepareFreshOrdinaryScopeInBackground()"))
         assertTrue(freshPreparation.contains("startupRecoveryGate.beginFreshScope()"))
         assertTrue(freshPreparation.contains("WatchSourceRuntime.journal(applicationContext)"))
         assertTrue(freshPreparation.contains("WatchCausalRuntime.recorder(applicationContext)"))

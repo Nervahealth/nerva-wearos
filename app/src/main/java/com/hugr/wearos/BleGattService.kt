@@ -62,6 +62,7 @@ class BleGattService : Service() {
     private val binder = LocalBinder()
     private var runtimeMode: EvidenceEgressGattRuntimeMode? = null
     private var finalizedDeliveryRecoveryOnly = false
+    private var finalizedDeliverySourceSessionId: UUID? = null
 
     private var bluetoothAdapter: BluetoothAdapter? = null
     private var gattServer: BluetoothGattServer? = null
@@ -212,6 +213,7 @@ class BleGattService : Service() {
          * record; it exists only to accept the ordinary Phone resume/replay/ack.
          */
         const val EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY = "finalized_delivery_recovery_only"
+        const val EXTRA_FINALIZED_DELIVERY_SOURCE_SESSION_ID = "finalized_delivery_source_session_id"
         private const val WATCHTOWER_V2_MARKER = 0xA2
         private const val WATCHTOWER_V3_MARKER = 0xA3
         private const val WATCHTOWER_CARDIAC_EVIDENCE_VERSION = 3
@@ -270,8 +272,18 @@ class BleGattService : Service() {
         }
         if (currentMode == null) {
             runtimeMode = requestedMode
-            finalizedDeliveryRecoveryOnly = requestedMode == EvidenceEgressGattRuntimeMode.STANDARD &&
+            val requestedFinalizedRecovery = requestedMode == EvidenceEgressGattRuntimeMode.STANDARD &&
                 intent?.getBooleanExtra(EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY, false) == true
+            val requestedSourceSessionId = intent
+                ?.getStringExtra(EXTRA_FINALIZED_DELIVERY_SOURCE_SESSION_ID)
+                ?.let { raw -> runCatching { UUID.fromString(raw) }.getOrNull() }
+            if (requestedFinalizedRecovery && requestedSourceSessionId == null) {
+                Log.e(TAG, "Refusing finalized-delivery recovery without a retained source session identity")
+                stopSelf()
+                return START_NOT_STICKY
+            }
+            finalizedDeliveryRecoveryOnly = requestedFinalizedRecovery
+            finalizedDeliverySourceSessionId = requestedSourceSessionId
             if (requestedMode == EvidenceEgressGattRuntimeMode.EGRESS_ONLY) {
                 if (!startEgressForegroundLifetime()) {
                     stopSelf()
@@ -292,6 +304,7 @@ class BleGattService : Service() {
         if (mode == EvidenceEgressGattRuntimeMode.STANDARD) {
             recordCausal(CausalEventCode.BLE_SERVICE_CREATED)
             sourceJournal = WatchSourceRuntime.journal(this)
+            if (finalizedDeliveryRecoveryOnly) requireRetainedFinalizedDeliverySession()
             initializeVibrator()
             initializeHapticNotificationChannel()
             if (!finalizedDeliveryRecoveryOnly) {
@@ -319,6 +332,15 @@ class BleGattService : Service() {
 
     private fun isStandardRuntime(): Boolean =
         runtimeMode == EvidenceEgressGattRuntimeMode.STANDARD
+
+    private fun requireRetainedFinalizedDeliverySession(): UUID {
+        val session = finalizedDeliverySourceSessionId
+            ?: throw SourceJournalCorruptionException("Finalized delivery recovery is missing its source session identity")
+        if (sourceJournal.finalizedManifests(session).isEmpty()) {
+            throw SourceJournalCorruptionException("Requested finalized delivery source session is no longer retained")
+        }
+        return session
+    }
 
     /**
      * A temporary lifetime guard for an already explicitly activated, egress-only
@@ -1488,7 +1510,11 @@ class BleGattService : Service() {
     private fun prepareSourceReplay(request: SourceResumeRequest): PreparedSourceResumePlan {
         sourceJournal.finalizeActiveSegment()
         sourceJournal.discardNewlyFinalizedManifests()
-        val session = sourceJournal.oldestFinalizedSessionId() ?: sourceJournal.watchBootSessionId
+        val session = if (finalizedDeliveryRecoveryOnly) {
+            requireRetainedFinalizedDeliverySession()
+        } else {
+            sourceJournal.oldestFinalizedSessionId() ?: sourceJournal.watchBootSessionId
+        }
         val acceptedIndex = if (request.watchBootSessionId == session) request.cumulativeRecordIndex.coerceAtLeast(0L) else 0L
         val highWater = sourceJournal.highestFinalizedRecordIndex(session)
         if (acceptedIndex > highWater) {
@@ -1665,6 +1691,17 @@ class BleGattService : Service() {
     }
 
     private fun closeBoundedFreshRuntimeAfterDeliveryIfComplete() {
+        if (finalizedDeliveryRecoveryOnly) {
+            val sourceSessionId = finalizedDeliverySourceSessionId ?: return
+            if (sourceJournal.hasFinalizedSegments(sourceSessionId)) return
+            if (sourceJournal.finalizedManifests().isNotEmpty()) return
+            val markers = NormalStartupMarkerStore(this)
+            markers.record(sourceSessionId.toString(), NormalStartupStage.BOUNDED_RUN_DELIVERY_ACKNOWLEDGED)
+            WatchSourceRuntime.closeFreshAfterDelivery()
+            markers.record(sourceSessionId.toString(), NormalStartupStage.BOUNDED_RUN_GATT_STOP_REQUESTED)
+            stopSelf()
+            return
+        }
         val marker = NormalStartupMarkerStore(this).read() ?: return
         if (marker.stage != NormalStartupStage.BOUNDED_RUN_FINALIZED) return
         if (sourceJournal.finalizedManifests().isNotEmpty()) return

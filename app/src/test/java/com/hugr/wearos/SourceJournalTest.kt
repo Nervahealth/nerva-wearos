@@ -118,6 +118,43 @@ class SourceJournalTest {
     }
 
     @Test
+    fun `retained finalized recovery selects actual source session after marker replacement and process restart`() {
+        val root = temporaryFolder.newFolder("marker-independent-retained-delivery")
+        val first = journal(root, bootCount = 71) { 1_000L }
+        first.append(SourceStreamCode.CARDIAC, 100L, byteArrayOf(1))
+        first.append(SourceStreamCode.ACCEL, 101L, byteArrayOf(2))
+        val terminalManifest = requireNotNull(first.finalizeActiveSegment())
+        first.close()
+
+        // The normal-launch marker is deliberately mutable metadata. This
+        // simulates a later ordinary-screen first draw replacing the old bounded
+        // marker; the delivery target must derive only from retained v2 files.
+        val overwrittenMarker = NormalStartupMarker(
+            runId = java.util.UUID.randomUUID().toString(),
+            stage = NormalStartupStage.FIRST_DRAW_OBSERVED,
+            recordedAtEpochMillis = 2_000L,
+        )
+        assertNotEquals(NormalStartupStage.BOUNDED_RUN_FINALIZED, overwrittenMarker.stage)
+
+        val recreated = journal(root, bootCount = 71) { 3_000L }
+        val target = requireNotNull(RetainedFinalizedDeliveryRecovery.select(recreated))
+
+        assertEquals(terminalManifest.watchBootSessionId, target.sourceSessionId)
+        assertEquals(terminalManifest, target.terminalManifest)
+        assertEquals(terminalManifest.lastRecordIndex, target.terminalManifest.lastRecordIndex)
+        assertEquals(terminalManifest.sha256Hex, target.terminalManifest.sha256Hex)
+        assertTrue(
+            recreated.acknowledgeCompletedSegment(
+                target.sourceSessionId,
+                target.terminalManifest.lastRecordIndex,
+                target.terminalManifest.sha256Hex,
+            ),
+        )
+        assertTrue(recreated.finalizedManifests().isEmpty())
+        recreated.close()
+    }
+
+    @Test
     fun `new physical boot rotates session and restarts indices without deleting old segments`() {
         val root = temporaryFolder.newFolder("journal")
         val first = journal(root, bootCount = 2) { 1_000L }
