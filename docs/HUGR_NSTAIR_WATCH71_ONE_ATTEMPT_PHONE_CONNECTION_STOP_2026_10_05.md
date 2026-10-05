@@ -55,4 +55,12 @@ Before any further physical action, a focused source/test-only investigation sho
 
 ## Preservation status
 
-This receipt is the source-owned record of the physical stop. It must be copied to the governed Phone/control records, reflected in the Master Task List, entered as a **new** private Atlas Inbox proposal without changing accepted S4, and mirrored in the Alignment Surface last. Remote GitHub publication remains blocked at the previously recorded Watch-source HTTP 403 boundary; preservation must therefore retain an updated sanitized fallback unless a later non-force remote push succeeds and is independently read back.
+This receipt is the source-owned record of the physical stop. It was copied to the governed Phone/control records, reflected in the Master Task List, entered as a **new** private Atlas Inbox proposal without changing accepted S4, and mirrored in the Alignment Surface last.
+
+The previously blocked GitHub route was restored for this closeout. Non-force publication and direct remote readback confirm:
+
+- Watch source branch `preservation/watch68-partial-source-2026-10-03` at `6a8491b6b51163815f21669b22a63df8ac35fb4f` in `Nervahealth/nerva-wearos`.
+- Phone/control-copy branch `preservation/phone-control-and-source-2026-10-03` at `6a96980848371b97d68c05fe83326be560bd1cfc` in `Nervahealth/nerva-mobile`.
+- Independent-control branch `preservation/watch69-control-records-2026-10-03` at `72c881d53bb167228232848a94351c1410137d14` in `Nervahealth/nerva-mobile`.
+
+The existing sanitized fallback is retained despite this verified publication. This remote-preservation fact does not qualify Watch69 or authorize any further device action.
