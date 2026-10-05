@@ -481,6 +481,7 @@ class BleGattService : Service() {
 
             if (bluetoothAdapter == null || !bluetoothAdapter!!.isEnabled) {
                 Log.e(TAG, "Bluetooth not available or disabled")
+                recordStandardGattReadinessFailure()
                 if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onReadinessFailure("BLUETOOTH_UNAVAILABLE")
                 return
             }
@@ -488,6 +489,7 @@ class BleGattService : Service() {
             advertiser = bluetoothAdapter!!.bluetoothLeAdvertiser
             if (advertiser == null) {
                 Log.e(TAG, "BLE advertiser not available")
+                recordStandardGattReadinessFailure()
                 if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onReadinessFailure("ADVERTISER_UNAVAILABLE")
                 return
             }
@@ -495,6 +497,7 @@ class BleGattService : Service() {
             openGattServer(bluetoothManager)
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing Bluetooth: ${e.message}", e)
+            recordStandardGattReadinessFailure()
             if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onReadinessFailure("BLUETOOTH_INITIALIZATION_FAILED")
         }
     }
@@ -505,9 +508,11 @@ class BleGattService : Service() {
         gattServer = bluetoothManager.openGattServer(this, gattServerCallback)
         if (gattServer == null) {
             Log.e(TAG, "Failed to open GATT server")
+            recordStandardGattReadinessFailure()
             if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onReadinessFailure("GATT_SERVER_UNAVAILABLE")
             return
         }
+        if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_SERVER_OPENED)
 
         // Create the HUGR service
         val service = BluetoothGattService(
@@ -656,6 +661,7 @@ class BleGattService : Service() {
             Log.i(TAG, "HUGR GATT service registered with ${service.characteristics.size} characteristics")
         } else {
             Log.e(TAG, "Failed to add HUGR service to GATT server")
+            if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_SERVICE_FAILED)
             if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onReadinessFailure("GATT_SERVICE_REGISTER_REJECTED")
         }
     }
@@ -796,9 +802,11 @@ class BleGattService : Service() {
             if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onGattServiceAdded(status)
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.i(TAG, "Service added successfully — starting advertising")
+                if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_SERVICE_READY)
                 startAdvertising()
             } else {
                 Log.e(TAG, "Failed to add service, status: $status")
+                if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_SERVICE_FAILED, arg0 = status.toLong())
             }
         }
 
@@ -1035,7 +1043,10 @@ class BleGattService : Service() {
 
     private fun startAdvertising() {
         if (isEgressOnlyRuntime() && egressAdvertiserReady) return
-        val adv = advertiser ?: return
+        val adv = advertiser ?: run {
+            recordStandardGattReadinessFailure()
+            return
+        }
 
         val settings = AdvertiseSettings.Builder()
             .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
@@ -1062,9 +1073,11 @@ class BleGattService : Service() {
             adv.startAdvertising(settings, advertisingData, scanResponse, advertiseCallback)
         } catch (e: SecurityException) {
             Log.e(TAG, "SecurityException starting advertising: ${e.message}")
+            recordStandardGattReadinessFailure()
             if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onAdvertiserStartFailed("SECURITY_EXCEPTION")
         } catch (e: Exception) {
             Log.e(TAG, "Error starting advertising: ${e.message}", e)
+            recordStandardGattReadinessFailure()
             if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onAdvertiserStartFailed("START_EXCEPTION")
         }
     }
@@ -1081,6 +1094,7 @@ class BleGattService : Service() {
     private val advertiseCallback = object : AdvertiseCallback() {
         override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
             Log.i(TAG, "BLE advertising started — UUID visible to phone")
+            if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_ADVERTISING_READY)
             if (isEgressOnlyRuntime()) {
                 egressAdvertiserReady = true
                 EvidenceEgressVolatileDiagnostics.onAdvertiserStarted()
@@ -1097,6 +1111,7 @@ class BleGattService : Service() {
                 else -> "UNKNOWN($errorCode)"
             }
             Log.e(TAG, "BLE advertising FAILED: $reason")
+            if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_ADVERTISING_FAILED, arg0 = errorCode.toLong())
             if (isEgressOnlyRuntime()) {
                 if (errorCode == ADVERTISE_FAILED_ALREADY_STARTED && egressAdvertiserReady) {
                     EvidenceEgressVolatileDiagnostics.onAdvertiserStarted()
@@ -1911,6 +1926,10 @@ class BleGattService : Service() {
             arg1 = arg1,
             reasonCode = reasonCode,
         )
+    }
+
+    private fun recordStandardGattReadinessFailure() {
+        if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_ADVERTISING_FAILED)
     }
 
     // ─── PRODUCTION RESEARCH HAPTIC POLICY v1 ───────────────────────────────────

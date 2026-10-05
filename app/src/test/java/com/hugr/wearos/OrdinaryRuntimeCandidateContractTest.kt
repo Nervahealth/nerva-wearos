@@ -110,6 +110,33 @@ class OrdinaryRuntimeCandidateContractTest {
     }
 
     @Test
+    fun `retained delivery probe fails closed without a retained target and exposes standard GATT readiness`() {
+        val recoveryProbe = between(
+            mainSource,
+            "private fun probeRetainedFinalizedDeliveryInBackground()",
+            "private fun beginFreshOrdinaryScopeAfterRetainedDeliveryProbe()",
+        )
+
+        assertTrue(recoveryProbe.contains("RETAINED_DELIVERY_TARGET_UNAVAILABLE"))
+        assertTrue(recoveryProbe.contains("Finalized delivery recovery unavailable"))
+        assertFalse(recoveryProbe.contains("beginFreshOrdinaryScopeAfterRetainedDeliveryProbe()"))
+        assertFalse(recoveryProbe.contains("requestForegroundPermissions()"))
+        assertFalse(recoveryProbe.contains("HealthSensorService"))
+
+        assertTrue(mainSource.contains("finalizedDeliveryRecoveryOnly"))
+        assertTrue(mainSource.contains("GATT_ADVERTISING_READY"))
+        assertTrue(mainSource.contains("GATT_ADVERTISING_FAILED"))
+        listOf(
+            "GATT_SERVER_OPENED",
+            "GATT_SERVICE_READY",
+            "GATT_ADVERTISING_READY",
+            "GATT_ADVERTISING_FAILED",
+        ).forEach { event ->
+            assertTrue("standard GATT readiness must be causally observable: $event", gattSource.contains(event))
+        }
+    }
+
+    @Test
     fun `bounded lifecycle quiesces then finalizes only the fresh journal`() {
         assertTrue(healthSource.contains("ACTION_START_BOUNDED_ORDINARY_RUN"))
         assertTrue(healthSource.contains("boundedRunGate.requestStop()"))

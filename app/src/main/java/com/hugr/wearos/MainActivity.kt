@@ -183,7 +183,12 @@ class MainActivity : ComponentActivity() {
                 startFinalizedDeliveryRecovery()
                 return@runOnUiThread
             }
-            beginFreshOrdinaryScopeAfterRetainedDeliveryProbe()
+            // This candidate is a delivery-recovery line, not a fresh-recording
+            // admission. If retained v2 evidence is absent, stop before the
+            // permission or health-service paths rather than starting sensing.
+            recordNormalStartupMarker(NormalStartupStage.RETAINED_DELIVERY_TARGET_UNAVAILABLE)
+            statusText.text = "HUGR\nFinalized delivery recovery unavailable"
+            evidenceText.text = "No retained unacknowledged finalized v2 session was selected. No sensing, new source records, acknowledgement, deletion, egress, or legacy/frozen-root operation was started."
         }
     }
 
@@ -366,7 +371,7 @@ class MainActivity : ComponentActivity() {
     private val causalUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             runOnUiThread {
-                if (permissionDecisionReached) renderEvidence()
+                if (permissionDecisionReached || finalizedDeliveryRecoveryOnly) renderEvidence()
             }
         }
     }
@@ -381,7 +386,7 @@ class MainActivity : ComponentActivity() {
             )
             receiverRegistered = true
         }
-        if (permissionDecisionReached) renderEvidence() else renderFirstFrame(firstFramePresentation)
+        if (permissionDecisionReached || finalizedDeliveryRecoveryOnly) renderEvidence() else renderFirstFrame(firstFramePresentation)
     }
 
     override fun onPause() {
@@ -423,7 +428,7 @@ class MainActivity : ComponentActivity() {
 
     private fun renderEvidence() {
         if (!::evidenceText.isInitialized) return
-        if (!permissionDecisionReached) {
+        if (!permissionDecisionReached && !finalizedDeliveryRecoveryOnly) {
             renderFirstFrame(firstFramePresentation)
             return
         }
@@ -439,6 +444,14 @@ class MainActivity : ComponentActivity() {
         val bleState = when {
             latest(CausalEventCode.GATT_DISCONNECTED)?.eventSequence.orZero() > latest(CausalEventCode.GATT_CONNECTED)?.eventSequence.orZero() -> "DISCONNECTED"
             latest(CausalEventCode.GATT_CONNECTED) != null -> "CONNECTED"
+            else -> "WAITING"
+        }
+        val gattReadiness = when {
+            latest(CausalEventCode.GATT_ADVERTISING_FAILED)?.eventSequence.orZero() > latest(CausalEventCode.GATT_ADVERTISING_READY)?.eventSequence.orZero() -> "ADVERTISING FAILED"
+            latest(CausalEventCode.GATT_ADVERTISING_READY) != null -> "ADVERTISING READY"
+            latest(CausalEventCode.GATT_SERVICE_FAILED)?.eventSequence.orZero() > latest(CausalEventCode.GATT_SERVICE_READY)?.eventSequence.orZero() -> "SERVICE FAILED"
+            latest(CausalEventCode.GATT_SERVICE_READY) != null -> "SERVICE READY"
+            latest(CausalEventCode.GATT_SERVER_OPENED) != null -> "SERVER OPEN"
             else -> "WAITING"
         }
         val baselineText = if (baseline == null) {
@@ -464,7 +477,7 @@ class MainActivity : ComponentActivity() {
             append('\n')
             append(baselineText).append('\n')
             append("ACQ T/C/A $acquisition\n")
-            append("BLE $bleState L${events.maxOfOrNull { it.bleLineage } ?: 0L} MTU=$mtu CCCD=$cccd\n")
+            append("BLE $bleState · $gattReadiness L${events.maxOfOrNull { it.bleLineage } ?: 0L} MTU=$mtu CCCD=$cccd\n")
             append("RESUME=${resume?.recordIndexStart ?: 0L}->${resume?.recordIndexEnd ?: 0L} ")
             append("ABORT=${abort?.reasonCode ?: 0}\n")
             append("--- LAST 20 ---\n")
