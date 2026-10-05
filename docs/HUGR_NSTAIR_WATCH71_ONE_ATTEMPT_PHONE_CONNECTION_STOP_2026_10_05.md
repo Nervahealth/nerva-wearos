@@ -24,8 +24,9 @@ The operator then reported the following bounded recovery sequence:
 3. The Watch displayed: **“Preparing a new ordinary recording scope”** and **“The retained legacy journal and frozen package remain outside this startup path.”**
 4. The operator attempted the authorized ordinary Phone57 connection, but Phone HUGR could not find or connect to the Watch despite the system Bluetooth pairing state.
 5. After that failure, the operator made an unplanned attempt to restart the Phone HUGR app; it was reported as crashed/unusable. No connection, replay, acknowledgement, Phone canonical verification, Watch completion marker, or Phone/Watch terminal delivery screen was reported.
+6. In a later operator-reported observation, an attempt to open Phone HUGR showed only a black screen. No interaction beyond this opening attempt, force-stop, data clear, reset, re-pair, or device log was reported.
 
-The Phone restart attempt is recorded as an operator-reported deviation after the initial connection failure, not as a confirmed app-process diagnosis. No blame or causal interpretation is assigned.
+The Phone restart/black-screen observations are recorded as visible operator-reported deviations after the initial connection failure, not as a confirmed app-process diagnosis or proof of data loss. No blame or causal interpretation is assigned.
 
 ## Direct interpretation
 
@@ -37,7 +38,7 @@ A system Bluetooth companion connection is not itself proof that Phone57 can dis
 
 ## Outcome and stop
 
-**STOP — PHONE57 ORDINARY HUGR DISCOVERY/CONNECTION DID NOT COMPLETE; REPORTED PHONE APP CRASH/UNUSABLE STATE AFTER FAILURE.**
+**STOP — PHONE57 ORDINARY HUGR DISCOVERY/CONNECTION DID NOT COMPLETE; REPORTED CRASH/UNUSABLE STATE FOLLOWED BY BLACK-SCREEN OPENING.**
 
 - No terminal Phone manifest equality evidence was observed.
 - No exact Phone acknowledgement was observed.
