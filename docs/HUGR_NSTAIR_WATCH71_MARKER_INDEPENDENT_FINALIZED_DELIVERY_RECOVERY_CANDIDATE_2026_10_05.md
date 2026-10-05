@@ -111,9 +111,9 @@ Stop and preserve the first screen if any of these occurs: no terminal Phone ack
 
 Before publication, each proposed GitHub branch was fetched and confirmed fast-forwardable from its hosted head. The Watch-source non-force push to `Nervahealth/nerva-wearos` branch `preservation/watch69-bounded-ordinary-run-2026-10-03` then returned **HTTP 403** (`Permission to Nervahealth/nerva-wearos.git denied to Nervahealth`). The Phone/control branches were intentionally not attempted after this first failure, so no remote-advance claim is made for any Watch71 commit.
 
-The source, Phone-control and independent-control deltas remain committed locally as:
+The candidate-source and governed-control deltas below were committed before this closeout-record amendment; the later local documentation-only commit is preserved in the final fallback patch history.
 
-| Scope | Local commit | Hosted baseline before failed push |
+| Scope | Candidate/control commit | Hosted baseline before failed push |
 |---|---|---|
 | Watch source/candidate | final `055de4704d850c31438df03b022eab90d3514808` (the failed push attempted pre-amend `eaea4ad5772e5455dcb10cbfc78e49e946ce91ba`) | `a6f77371981ab33d5b9d73571f68fca4dd798c4e` |
 | Phone control copies | `359617ca0c9a69967775ac44e2eaf9a708fa2238` | `8ae684a5ad2997cb5486942e60c27cf336fbe8f6` |
