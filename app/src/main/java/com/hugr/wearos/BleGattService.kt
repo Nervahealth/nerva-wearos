@@ -61,6 +61,7 @@ class BleGattService : Service() {
     private val TAG = "HUGR-BleGatt"
     private val binder = LocalBinder()
     private var runtimeMode: EvidenceEgressGattRuntimeMode? = null
+    private var finalizedDeliveryRecoveryOnly = false
 
     private var bluetoothAdapter: BluetoothAdapter? = null
     private var gattServer: BluetoothGattServer? = null
@@ -205,6 +206,12 @@ class BleGattService : Service() {
         val CCCD_UUID: UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
 
         const val ACTION_HAPTIC_COMMAND = "com.hugr.wearos.HAPTIC_COMMAND"
+        /**
+         * Standard-GATT-only recovery of a retained, already-finalized ordinary
+         * session. This mode never starts sensing and never appends a new source
+         * record; it exists only to accept the ordinary Phone resume/replay/ack.
+         */
+        const val EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY = "finalized_delivery_recovery_only"
         private const val WATCHTOWER_V2_MARKER = 0xA2
         private const val WATCHTOWER_V3_MARKER = 0xA3
         private const val WATCHTOWER_CARDIAC_EVIDENCE_VERSION = 3
@@ -263,6 +270,8 @@ class BleGattService : Service() {
         }
         if (currentMode == null) {
             runtimeMode = requestedMode
+            finalizedDeliveryRecoveryOnly = requestedMode == EvidenceEgressGattRuntimeMode.STANDARD &&
+                intent?.getBooleanExtra(EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY, false) == true
             if (requestedMode == EvidenceEgressGattRuntimeMode.EGRESS_ONLY) {
                 if (!startEgressForegroundLifetime()) {
                     stopSelf()
@@ -285,10 +294,19 @@ class BleGattService : Service() {
             sourceJournal = WatchSourceRuntime.journal(this)
             initializeVibrator()
             initializeHapticNotificationChannel()
-            registerSensorReceivers()
-            healthHandler.post(healthTicker)
+            if (!finalizedDeliveryRecoveryOnly) {
+                registerSensorReceivers()
+                healthHandler.post(healthTicker)
+            }
             transportHandler.post(transportTicker)
-            Log.d(TAG, "Standard BLE GATT runtime initialized")
+            Log.d(
+                TAG,
+                if (finalizedDeliveryRecoveryOnly) {
+                    "Standard BLE GATT finalized-delivery recovery initialized; no sensing or source append"
+                } else {
+                    "Standard BLE GATT runtime initialized"
+                },
+            )
         } else {
             EvidenceEgressVolatileDiagnostics.onRuntimeInitialized()
             Log.i(TAG, "Evidence Egress-only BLE GATT runtime initialized")
@@ -2245,6 +2263,11 @@ class BleGattService : Service() {
     }
 
     private fun notifyDeviceHealth() {
+        // A post-update final-delivery recovery must preserve the exact retained
+        // terminal endpoint. Device-health is normally represented as a new source
+        // record, so suppress it entirely until the existing manifest is exactly
+        // acknowledged and the GATT service closes.
+        if (finalizedDeliveryRecoveryOnly) return
         val occurredAtWatchMs = System.currentTimeMillis()
         val (batteryPercent, charging) = batteryState()
         var flags = 0

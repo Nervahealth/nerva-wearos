@@ -38,6 +38,55 @@ class OrdinaryRuntimeCandidateContractTest {
     }
 
     @Test
+    fun `post-update finalized delivery recovery starts standard GATT only and preserves terminal completion marker until exact acknowledgement`() {
+        val recovery = between(mainSource, "private fun startFinalizedDeliveryRecovery()", "private val causalUpdateReceiver")
+
+        val finalizedCheck = mainSource.indexOf("NormalStartupStage.BOUNDED_RUN_FINALIZED")
+        val ordinaryMarkerWrite = mainSource.indexOf("recordNormalStartupMarker(NormalStartupStage.UI_REACHED)")
+        assertTrue(finalizedCheck >= 0)
+        assertTrue(ordinaryMarkerWrite > finalizedCheck)
+        assertTrue(mainSource.contains("startFinalizedDeliveryRecovery()"))
+
+        assertTrue(recovery.contains("startService("))
+        assertTrue(recovery.contains("Intent(this, BleGattService::class.java)"))
+        assertTrue(recovery.contains("BleGattService.EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY"))
+        assertFalse(recovery.contains("HealthSensorService"))
+        assertFalse(recovery.contains("startForegroundService"))
+        assertFalse(recovery.contains("ACTION_START_BOUNDED_ORDINARY_RUN"))
+        assertFalse(recovery.contains("NormalStartupStage.BOUNDED_RUN_FINALIZED"))
+        assertFalse(recovery.contains("EvidenceEgress"))
+
+        val standardInitialization = between(
+            gattSource,
+            "private fun initializeRuntime(mode: EvidenceEgressGattRuntimeMode)",
+            "private fun isEgressOnlyRuntime()",
+        )
+        assertTrue(standardInitialization.contains("if (!finalizedDeliveryRecoveryOnly)"))
+        assertTrue(standardInitialization.contains("registerSensorReceivers()"))
+        assertTrue(standardInitialization.contains("healthHandler.post(healthTicker)"))
+
+        val deviceHealth = between(gattSource, "private fun notifyDeviceHealth()", "private fun notifyEda(")
+        assertInOrder(
+            deviceHealth,
+            "if (finalizedDeliveryRecoveryOnly) return",
+            "sourceJournal.append",
+        )
+
+        val closeAfterAck = between(
+            gattSource,
+            "private fun closeBoundedFreshRuntimeAfterDeliveryIfComplete()",
+            "private fun pumpReplay()",
+        )
+        assertInOrder(
+            closeAfterAck,
+            "sourceJournal.finalizedManifests().isNotEmpty()",
+            "NormalStartupStage.BOUNDED_RUN_DELIVERY_ACKNOWLEDGED",
+            "WatchSourceRuntime.closeFreshAfterDelivery()",
+            "NormalStartupStage.BOUNDED_RUN_GATT_STOP_REQUESTED",
+        )
+    }
+
+    @Test
     fun `ordinary runtime owns v2 fresh roots and excludes legacy frozen roots`() {
         assertTrue(runtimeSource.contains("FreshOrdinaryRunScope.journalRoot"))
         assertTrue(scopeSource.contains("fresh_ordinary_source_journal_v2"))

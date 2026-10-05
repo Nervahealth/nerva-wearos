@@ -47,6 +47,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var startupBreadcrumbStore: StartupBreadcrumbStore
     private lateinit var normalStartupMarkerStore: NormalStartupMarkerStore
     private val startupRecoveryGate = BoundedNormalStartupGate()
+    private var finalizedDeliveryRecoveryOnly = false
 
     private val foregroundPermissions = mutableListOf(
         Manifest.permission.BODY_SENSORS,
@@ -65,6 +66,21 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         startupBreadcrumbStore = StartupBreadcrumbStore(this)
         normalStartupMarkerStore = NormalStartupMarkerStore(this)
+        // An in-place update clears the standard GATT service's process memory,
+        // but it does not clear the fresh retained journal or this small marker.
+        // Preserve the finalized run identity until its exact Phone acknowledgement
+        // has removed the terminal manifest; do not turn this recovery launch into
+        // another bounded sensor run.
+        finalizedDeliveryRecoveryOnly = normalStartupMarkerStore.read()?.stage ==
+            NormalStartupStage.BOUNDED_RUN_FINALIZED
+        if (finalizedDeliveryRecoveryOnly) {
+            createEvidenceLayout()
+            renderFirstFrame(firstFrameCoordinator.firstFrame())
+            statusText.text = "HUGR\nFinalized delivery recovery · standard GATT only"
+            evidenceText.text = "No sensing or new source records are started. Retained finalized session awaits Phone resume, manifest equality, exact acknowledgement, and Watch completion."
+            scheduleStartupAfterFirstFrame()
+            return
+        }
         intent.getStringExtra(StartupBreadcrumbPlan.EXTRA_DIAGNOSTIC_LAUNCH_ID)
             ?.takeIf { it.isNotBlank() }
             ?.let { startupBreadcrumbRunId = it }
@@ -149,6 +165,10 @@ class MainActivity : ComponentActivity() {
 
     private fun beginStartupAfterFirstFrame() {
         if (isFinishing || isDestroyed) return
+        if (finalizedDeliveryRecoveryOnly) {
+            startFinalizedDeliveryRecovery()
+            return
+        }
 
         startupRecoveryGate.deferFreshScope()
         recordNormalStartupMarker(NormalStartupStage.FRESH_SCOPE_DEFERRED)
@@ -305,6 +325,22 @@ class MainActivity : ComponentActivity() {
         }
         statusText.text = "HUGR\nServices active · bounded resume replay"
         renderEvidence()
+    }
+
+    /**
+     * Starts only the standard GATT peripheral for a retained, already-finalized
+     * fresh run. It deliberately does not request permissions, prepare a new
+     * bounded Health service, alter the BOUNDED_RUN_FINALIZED marker, or activate
+     * any egress capability. The resumed Phone owns the normal manifest/hash/ack
+     * sequence; the GATT service records terminal completion only after that ack.
+     */
+    private fun startFinalizedDeliveryRecovery() {
+        startService(
+            Intent(this, BleGattService::class.java).apply {
+                putExtra(BleGattService.EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY, true)
+            },
+        )
+        statusText.text = "HUGR\nFinalized delivery recovery · waiting for Phone resume"
     }
 
     private val causalUpdateReceiver = object : BroadcastReceiver() {

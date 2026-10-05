@@ -69,6 +69,55 @@ class SourceJournalTest {
     }
 
     @Test
+    fun `retained terminal manifest is selected and exactly acknowledged after process-memory loss without replaying equal-endpoint data`() {
+        val root = temporaryFolder.newFolder("process-loss-terminal-delivery")
+        val first = journal(root, bootCount = 70) { 1_000L }
+        first.append(SourceStreamCode.CARDIAC, 100L, byteArrayOf(1))
+        first.append(SourceStreamCode.ACCEL, 101L, byteArrayOf(2))
+        val terminalManifest = requireNotNull(first.finalizeActiveSegment())
+        val session = first.watchBootSessionId
+        first.close()
+
+        // This is the post-update/process-recreation boundary: no in-memory
+        // SourceJournal, replay queue, or finalized-manifest signal survives.
+        val recreated = journal(root, bootCount = 70) { 2_000L }
+        assertEquals(session, recreated.watchBootSessionId)
+        assertEquals(session, recreated.oldestFinalizedSessionId())
+        assertEquals(listOf(terminalManifest), recreated.finalizedManifests(session))
+
+        val phoneDurableEndpoint = terminalManifest.lastRecordIndex
+        val replayHighWater = recreated.highestFinalizedRecordIndex(session)
+        assertEquals(phoneDurableEndpoint, replayHighWater)
+        assertEquals(
+            terminalManifest,
+            SourceReplayWindow.nextManifestToQueue(
+                activeSession = session,
+                durablePhoneRecordIndex = phoneDurableEndpoint,
+                replayHighWaterRecordIndex = replayHighWater,
+                queuedManifestEndIndex = null,
+                manifests = recreated.finalizedManifests(session),
+            ),
+        )
+        assertTrue(
+            recreated.readRecordsAfter(
+                sessionId = session,
+                recordIndexExclusive = phoneDurableEndpoint,
+                recordIndexInclusive = replayHighWater,
+                limit = 96,
+            ).isEmpty(),
+        )
+        assertTrue(
+            recreated.acknowledgeCompletedSegment(
+                session,
+                terminalManifest.lastRecordIndex,
+                terminalManifest.sha256Hex,
+            ),
+        )
+        assertTrue(recreated.finalizedManifests().isEmpty())
+        recreated.close()
+    }
+
+    @Test
     fun `new physical boot rotates session and restarts indices without deleting old segments`() {
         val root = temporaryFolder.newFolder("journal")
         val first = journal(root, bootCount = 2) { 1_000L }
