@@ -61,3 +61,8 @@ Watch58 remains exactly `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDE
 - Source reference: `app/src/main/java/com/hugr/wearos/MainActivity.kt` lines 65–93 and 145–176; `NormalStartupMarkerActivity.kt` lines 12–65.
 
 No source implementation changed and no device log, private storage, payload, verifier, or cryptographic on-device package inspection was obtained. This receipt distinguishes direct visual/operator evidence from source interpretation.
+
+
+## 6. Preservation closeout
+
+The initial Watch source observation commit `7d245edf908179bd49dd4cab5761d0b0ac88ba61` was pushed without force to `Nervahealth/nerva-wearos` branch `preservation/watch69-bounded-ordinary-run-2026-10-03` and independently read back at the same SHA. The governed-control commit `1693bc5b0d96d28f3c5a2b64185775bb2581922b` and Phone/control-copy commit `5b96412ff68fd81bb51bbed1e542c87961e1f7e4` were likewise read back from their Nervahealth preservation branches. No force push, merge to `main`, or accepted-S4 mutation occurred. The existing sanitized fallback remains retained.
