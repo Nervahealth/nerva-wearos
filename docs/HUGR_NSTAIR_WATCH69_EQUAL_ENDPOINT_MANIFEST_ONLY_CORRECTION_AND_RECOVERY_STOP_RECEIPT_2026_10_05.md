@@ -162,9 +162,9 @@ A future attempt succeeds only if it visibly captures the retained terminal mani
 
 The source correction and governed controls are remotely preserved without a force push or merge to `main`:
 
-| Repository | Preservation branch | Verified head |
+| Repository | Preservation branch | Verified correction/control commit |
 |---|---|---|
 | `Nervahealth/nerva-wearos` | `preservation/watch69-bounded-ordinary-run-2026-10-03` | `e8634487d464e1e6bc3cbdbe175cd77b1275b15b` |
 | `Nervahealth/nerva-mobile` | `preservation/watch69-control-records-2026-10-03` | `f77ef80f4ec96f91825362cb7e0ed20049e9b1b0` |
 
-Both branch heads were verified by `git ls-remote` and their hosted GitHub commit readbacks. The independently uploaded sanitized fallback remains retained as an additional copy. The private Atlas Inbox proposal is **new** and accepted S4 remains unchanged.
+Both listed commits were verified by `git ls-remote` and their hosted GitHub commit readbacks. Subsequent closeout-record commits are likewise published and read back during final closeout; the independently uploaded sanitized fallback remains retained as an additional copy. The private Atlas Inbox proposal is **new** and accepted S4 remains unchanged.
