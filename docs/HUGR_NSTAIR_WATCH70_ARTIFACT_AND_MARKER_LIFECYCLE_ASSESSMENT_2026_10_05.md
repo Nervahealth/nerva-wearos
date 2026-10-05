@@ -122,3 +122,10 @@ No diagnostic candidate is proposed. No current physical operation is authorized
 - Watch68 v1 remains **UNCLASSIFIED / NOT VERIFIED**.
 - The retained egress binary remains compatibility-only; no egress validation, activation, transfer, or verification occurred.
 - The earlier Watch70 pre-Phone stop receipt is superseded only in its narrow suggestion that a post-draw continuation delay remained an equal explanation. This assessment corrects that: with the admitted artifact, the generic screen is decided before first-draw/GATT continuation.
+
+
+## 8. Preservation closeout
+
+The initial source assessment commit `125f3329446c2e9f425c9b912cb5dc2fcf7f9d17` was pushed without force to `Nervahealth/nerva-wearos` branch `preservation/watch69-bounded-ordinary-run-2026-10-03` and independently read back with `git ls-remote` at the same SHA.
+
+The matching governed-control commit `91b7f204104a32ddc0964dc56a8905b8e4b56c47` was equivalently read back from `Nervahealth/nerva-mobile` branch `preservation/watch69-control-records-2026-10-03`; the Phone/control-copy commit `ddf88b6471378284566d6ea063b096b60a00fd48` was read back from `Nervahealth/nerva-mobile` branch `preservation/phone-control-and-source-2026-10-03`. No force push, merge to `main`, deletion, credential disclosure, or change to the accepted VIS-COUNT S4 snapshot occurred. The existing sanitized fallback remains retained.
