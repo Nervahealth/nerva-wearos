@@ -128,3 +128,17 @@ No physical step is authorised by this receipt.
 - Control branch: `preservation/watch69-control-records-2026-10-03`, pre-closeout head `683b222848cd0bd6f868880e37fe079dff1ab141`.
 
 The standing closeout sequence is pending: source-owned receipt → Master Task List → private Atlas Inbox proposal → Alignment Surface last → consistency review → coherent commits/pushes/remote readback. GitHub write confirmation will be recorded only after remote branch heads are actually resolved.
+
+
+## Remote-preservation closeout — GitHub write failure / fallback retained
+
+The authenticated `git fetch` route to `Nervahealth/nerva-wearos` succeeded and showed the Watch preservation branch was a fast-forward ancestor of local commit `e0bf0acd46bbc398dc6983cdaf4b5cb7331e8802`. The non-force push then failed explicitly:
+
+> `remote: Permission to Nervahealth/nerva-wearos.git denied to Nervahealth.`
+> `fatal: ... HTTP 403`
+
+No Watch, Phone, or independent-control branch advance is claimed. The attempted Phone/control pushes were deliberately not made after the Watch-source failure.
+
+A sanitized external fallback preserves remote-to-local commit patches and the governed source/control records at [archive](https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/KiJwefYzwpqdgIPd.gz), SHA-256 `d4e0a07617aa0758cc89ba3241978c4f0edb76c210d9ba1dabb140198cc00af8`; the [checksum sidecar](https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/oabXthxaBnejyiMq.sha256) is separately retained.
+
+The archive excludes APK binaries, signing material, credentials/tokens, Git metadata, device media, private physiological data, all legacy/frozen content, and Watch58 material. It is a durable fallback only, **not GitHub remote verification**, a device result, final acknowledgement, or Watch69 qualification. The existing prior fallback remains retained.
