@@ -142,3 +142,19 @@ No Watch, Phone, or independent-control branch advance is claimed. The attempted
 A sanitized external fallback preserves remote-to-local commit patches and the governed source/control records at [archive](https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/KiJwefYzwpqdgIPd.gz), SHA-256 `d4e0a07617aa0758cc89ba3241978c4f0edb76c210d9ba1dabb140198cc00af8`; the [checksum sidecar](https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/oabXthxaBnejyiMq.sha256) is separately retained.
 
 The archive excludes APK binaries, signing material, credentials/tokens, Git metadata, device media, private physiological data, all legacy/frozen content, and Watch58 material. It is a durable fallback only, **not GitHub remote verification**, a device result, final acknowledgement, or Watch69 qualification. The existing prior fallback remains retained.
+
+
+## Preservation-snapshot reconciliation — 2026-10-06
+
+The two cited fallback identities are **successive, valid snapshots**, not conflicting artifacts.
+
+| Snapshot | Verified archive SHA-256 | Verified source boundary | Relationship |
+|---|---|---|---|
+| Initial correction fallback | `d4e0a07617aa0758cc89ba3241978c4f0edb76c210d9ba1dabb140198cc00af8` | Watch `e0bf0acd46bbc398dc6983cdaf4b5cb7331e8802`; Phone `4b5cbdb5f6bc50199b4a55d2ed4f319953cbc72e`; Control `1ee4924798f79a811d66b3068b260ead069e84bc` | Preserves the source corrections and initial governed records. |
+| Final preservation fallback | `3c0321f4b1a681c55e17f838008529eddf6e359660b48104c0c59ac7671118a7` | Watch `d0b96a9ec81a1d8465629d18cae3c67d94c2948c`; Phone `2ba153ec99909213ecc7fe26e98beb5eb6f5835d`; Control `8ee3909a4851d61c4dc5fee123e55c793876e537` | Preserves the initial correction commits **plus** the three fallback-preservation documentation commits. |
+
+`e0bf0acd46bbc398dc6983cdaf4b5cb7331e8802` is the direct parent of `d0b96a9ec81a1d8465629d18cae3c67d94c2948c`. The initial archive’s embedded commit map and patch subjects stop at the first row; the final archive’s embedded commit map and patch subjects include both rows for all three repositories. Both sidecars and archive byte hashes have been verified locally.
+
+The **authoritative final local preservation point for this recovery-boundary correction** is therefore the final row and archive `3c0321f4b1a681c55e17f838008529eddf6e359660b48104c0c59ac7671118a7`. The earlier `d4e0…` archive remains retained as the valid intermediate snapshot; it is not superseded as evidence, only as the complete preservation point.
+
+Remote GitHub heads remain unchanged because the known non-force Watch-source push failed with HTTP 403 and no repeat was attempted. This reconciliation creates no device, delivery, acknowledgement, or qualification claim: Watch69 remains **NOT QUALIFIED**, Watch68 v1 remains **UNCLASSIFIED / NOT VERIFIED**, and Watch58 remains exactly `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
