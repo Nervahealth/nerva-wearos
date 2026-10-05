@@ -125,3 +125,8 @@ The next action requires **separate physical authority** and is deliberately lim
 5. **Immediate stop:** any changed package/signer/update surface, permission prompt, egress/readback/export surface, sensing indication, new bounded-run start, changed offer/control, connection/write/manifest/hash failure, stale pre-final `ACK 1–11` at the 15-minute bound, missing Watch completion marker, unexpected prompt/crash/freeze, or any need for a retry.
 
 A connection, live value, `Device health #…`, installer success, source-record count, service start, or `BOUNDED_RUN_FINALIZED` alone is not success. If the four terminal criteria are not all observed, preserve the first final screen/marker and stop; do not restart the physical staircase.
+
+
+## 8. Preservation closeout
+
+The source commit `ae55f5bd4657e0c23dd03fd3095c16feb05a71c6` is remotely verified by non-force push and `git ls-remote` on `Nervahealth/nerva-wearos` branch `preservation/watch69-bounded-ordinary-run-2026-10-03`. Matching control commit `fd7bcf14f3569c4f442597785dc04aa8289e487d` and Phone/control-copy commit `1c9d25894416d15037d844765f850032cec386d1` are remotely verified on their respective `Nervahealth/nerva-mobile` preservation branches. No merge to `main` occurred. The prior sanitized Watch69 fallback remains retained; the separately uploaded Watch70 APK and SHA-256 sidecar remain an additional artifact copy.
