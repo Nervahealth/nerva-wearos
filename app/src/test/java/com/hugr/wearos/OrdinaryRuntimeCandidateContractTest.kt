@@ -84,6 +84,20 @@ class OrdinaryRuntimeCandidateContractTest {
             "NormalStartupStage.BOUNDED_RUN_GATT_STOP_REQUESTED",
             "stopSelf()",
         )
+        assertTrue(closeAfterAck.contains("if (sourceJournal.finalizedManifests().isNotEmpty()) return"))
+
+        val acknowledgement = between(
+            gattSource,
+            "private fun handleSourceAcknowledgement",
+            "private fun closeBoundedFreshRuntimeAfterDeliveryIfComplete",
+        )
+        assertInOrder(
+            acknowledgement,
+            "SourceReplayWindow.validateAcknowledgement",
+            "SourceReplayWindow.validateQueuedManifestAcknowledgement",
+            "sourceJournal.acknowledgeCompletedSegment",
+            "closeBoundedFreshRuntimeAfterDeliveryIfComplete",
+        )
 
         val finalManifestDelivery = between(
             gattSource,
@@ -100,6 +114,14 @@ class OrdinaryRuntimeCandidateContractTest {
             "replayHighWaterRecordIndex = plan.replayHighWaterRecordIndex",
             "enqueueNextManifestForReplayWindow",
         )
+        val replayQueue = between(
+            gattSource,
+            "private fun enqueueNextManifestForReplayWindow",
+            "private fun handleSourceAcknowledgement",
+        )
+        assertTrue(replayQueue.contains("SourceReplayWindow.nextManifestToQueue"))
+        assertTrue(replayQueue.contains("sourceJournal.finalizedManifests(session)"))
+        assertFalse(replayQueue.contains("sourceJournal.nextFinalizedManifest("))
     }
 
     @Test

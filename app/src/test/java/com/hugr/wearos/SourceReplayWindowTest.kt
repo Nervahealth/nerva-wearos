@@ -80,6 +80,84 @@ class SourceReplayWindowTest {
         )
     }
 
+    @Test
+    fun `terminal manifest remains queueable when Phone already has every terminal record`() {
+        val terminalManifest = manifest(session, firstRecordIndex = 1L, lastRecordIndex = 13L)
+
+        val plan = requireNotNull(
+            SourceReplayWindow.planFinalizedManifestDelivery(
+                activeSession = session,
+                durablePhoneRecordIndex = terminalManifest.lastRecordIndex,
+                replayHighWaterRecordIndex = terminalManifest.lastRecordIndex,
+                queuedManifestEndIndex = null,
+                finalizedManifests = listOf(terminalManifest),
+            ),
+        )
+
+        assertEquals(terminalManifest.lastRecordIndex, plan.replayHighWaterRecordIndex)
+        assertEquals(terminalManifest, plan.nextManifest)
+        assertEquals(
+            terminalManifest,
+            SourceReplayWindow.nextManifestToQueue(
+                activeSession = session,
+                durablePhoneRecordIndex = terminalManifest.lastRecordIndex,
+                replayHighWaterRecordIndex = terminalManifest.lastRecordIndex,
+                queuedManifestEndIndex = null,
+                manifests = listOf(terminalManifest),
+            ),
+        )
+        SourceReplayWindow.validateAcknowledgement(
+            activeSession = session,
+            durablePhoneRecordIndex = terminalManifest.lastRecordIndex,
+            replayHighWaterRecordIndex = terminalManifest.lastRecordIndex,
+            acknowledgement = acknowledgement(session, terminalManifest.lastRecordIndex),
+        )
+        SourceReplayWindow.validateQueuedManifestAcknowledgement(
+            queuedManifestEndIndex = terminalManifest.lastRecordIndex,
+            acknowledgement = acknowledgement(session, terminalManifest.lastRecordIndex),
+        )
+    }
+
+    @Test
+    fun `equal-endpoint terminal manifest is not queued twice and rejects mismatched acknowledgement`() {
+        val terminalManifest = manifest(session, firstRecordIndex = 1L, lastRecordIndex = 13L)
+
+        assertEquals(
+            terminalManifest,
+            SourceReplayWindow.nextManifestToQueue(
+                activeSession = session,
+                durablePhoneRecordIndex = terminalManifest.lastRecordIndex,
+                replayHighWaterRecordIndex = terminalManifest.lastRecordIndex,
+                queuedManifestEndIndex = null,
+                manifests = listOf(terminalManifest),
+            ),
+        )
+        assertEquals(
+            null,
+            SourceReplayWindow.nextManifestToQueue(
+                activeSession = session,
+                durablePhoneRecordIndex = terminalManifest.lastRecordIndex,
+                replayHighWaterRecordIndex = terminalManifest.lastRecordIndex,
+                queuedManifestEndIndex = terminalManifest.lastRecordIndex,
+                manifests = listOf(terminalManifest),
+            ),
+        )
+        assertThrows(SourceJournalCorruptionException::class.java) {
+            SourceReplayWindow.validateAcknowledgement(
+                activeSession = session,
+                durablePhoneRecordIndex = terminalManifest.lastRecordIndex,
+                replayHighWaterRecordIndex = terminalManifest.lastRecordIndex,
+                acknowledgement = acknowledgement(UUID.randomUUID(), terminalManifest.lastRecordIndex),
+            )
+        }
+        assertThrows(SourceJournalCorruptionException::class.java) {
+            SourceReplayWindow.validateQueuedManifestAcknowledgement(
+                queuedManifestEndIndex = terminalManifest.lastRecordIndex,
+                acknowledgement = acknowledgement(session, terminalManifest.lastRecordIndex - 1L),
+            )
+        }
+    }
+
     private fun acknowledgement(watchBootSessionId: UUID, cumulativeRecordIndex: Long) =
         SourceSegmentAcknowledgement(
             watchBootSessionId = watchBootSessionId,

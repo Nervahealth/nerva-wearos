@@ -42,12 +42,21 @@ internal object SourceReplayWindow {
         queuedManifestEndIndex: Long?,
         manifests: List<SourceSegmentManifest>,
     ): SourceSegmentManifest? {
-        if (queuedManifestEndIndex != null && queuedManifestEndIndex > durablePhoneRecordIndex) return null
-        return manifests.asSequence()
+        // The Phone may have durably appended every record in a final segment
+        // before it has received that segment's manifest. In that manifest-only
+        // case, the endpoint equals its resume index and must still be queued
+        // exactly once for hash verification and acknowledgement.
+        if (queuedManifestEndIndex != null && queuedManifestEndIndex >= durablePhoneRecordIndex) return null
+        val inWindow = manifests.asSequence()
             .filter { includesManifest(activeSession, replayHighWaterRecordIndex, it) }
-            .filter { it.lastRecordIndex > durablePhoneRecordIndex }
+            .filter { it.lastRecordIndex >= durablePhoneRecordIndex }
             .sortedBy { it.firstRecordIndex }
-            .firstOrNull()
+            .toList()
+        // Ordinary replay must prefer records the Phone does not yet have. Only
+        // if no later retained manifest exists may it queue the equality-only
+        // terminal manifest for hash verification and exact acknowledgement.
+        return inWindow.firstOrNull { it.lastRecordIndex > durablePhoneRecordIndex }
+            ?: inWindow.firstOrNull { it.lastRecordIndex == durablePhoneRecordIndex }
     }
 
     /**
@@ -66,7 +75,7 @@ internal object SourceReplayWindow {
     ): FinalizedManifestDeliveryPlan? {
         val session = activeSession ?: return null
         val sessionManifests = finalizedManifests.filter { manifest ->
-            manifest.watchBootSessionId == session && manifest.lastRecordIndex > durablePhoneRecordIndex
+            manifest.watchBootSessionId == session && manifest.lastRecordIndex >= durablePhoneRecordIndex
         }
         if (sessionManifests.isEmpty()) return null
         val expandedHighWater = maxOf(

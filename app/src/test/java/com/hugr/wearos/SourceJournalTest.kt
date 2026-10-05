@@ -184,6 +184,48 @@ class SourceJournalTest {
     }
 
     @Test
+    fun `retained terminal manifest stays exact-acknowledgeable after Phone has every record`() {
+        val root = temporaryFolder.newFolder("manifest-only-resume")
+        val journal = journal(root, bootCount = 70) { 1_000L }
+        journal.append(SourceStreamCode.CARDIAC, 100, byteArrayOf(1))
+        journal.append(SourceStreamCode.ACCEL, 101, byteArrayOf(2))
+        val terminalManifest = requireNotNull(journal.finalizeActiveSegment())
+
+        assertTrue(
+            journal.readRecordsAfter(
+                sessionId = terminalManifest.watchBootSessionId,
+                recordIndexExclusive = terminalManifest.lastRecordIndex,
+                recordIndexInclusive = terminalManifest.lastRecordIndex,
+                limit = 96,
+            ).isEmpty(),
+        )
+        assertFalse(
+            journal.acknowledgeCompletedSegment(
+                terminalManifest.watchBootSessionId,
+                terminalManifest.lastRecordIndex,
+                "0".repeat(64),
+            ),
+        )
+        assertEquals(listOf(terminalManifest), journal.finalizedManifests())
+        assertTrue(
+            journal.acknowledgeCompletedSegment(
+                terminalManifest.watchBootSessionId,
+                terminalManifest.lastRecordIndex,
+                terminalManifest.sha256Hex,
+            ),
+        )
+        assertTrue(journal.finalizedManifests().isEmpty())
+        assertFalse(
+            journal.acknowledgeCompletedSegment(
+                terminalManifest.watchBootSessionId,
+                terminalManifest.lastRecordIndex,
+                terminalManifest.sha256Hex,
+            ),
+        )
+        journal.close()
+    }
+
+    @Test
     fun `acknowledging a later segment cannot delete an earlier segment without its own hash equality`() {
         val root = temporaryFolder.newFolder("journal")
         val journal = journal(root, bootCount = 7) { 1_000L }

@@ -1583,10 +1583,12 @@ class BleGattService : Service() {
     private fun enqueueNextManifestForReplayWindow(session: UUID, highWaterRecordIndex: Long) {
         if (!sourceMtuReadinessGate.canConstructSourceFrames(sourceMtuLineageGeneration)) return
         if (queuedReplayManifestEndIndex != null) return
-        val manifest = sourceJournal.nextFinalizedManifest(
-            sessionId = session,
-            recordIndexExclusive = durablePhoneRecordIndex,
-            recordIndexInclusive = highWaterRecordIndex,
+        val manifest = SourceReplayWindow.nextManifestToQueue(
+            activeSession = session,
+            durablePhoneRecordIndex = durablePhoneRecordIndex,
+            replayHighWaterRecordIndex = highWaterRecordIndex,
+            queuedManifestEndIndex = queuedReplayManifestEndIndex,
+            manifests = sourceJournal.finalizedManifests(session),
         ) ?: return
         val bytes = SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(manifest))
         if (bytes.size > maximumAttPayloadBytes()) {
