@@ -61,3 +61,22 @@ It must remain prohibited from new sensing/recording, egress, acknowledgement, v
 ## 5. Preservation closeout
 
 This source-owned record is copied to the governed Phone/control documentation locations, then summarized in the Master Task List, proposed to the private Atlas Inbox without changing accepted S4, and mirrored last to the Alignment Surface. GitHub preservation is completed only after a no-force push and independent remote-head readback; that result is recorded in the closeout addendum.
+
+
+## 6. Verified GitHub preservation closeout
+
+The installation-only record and governed copies are **remotely preserved** on the existing non-main preservation branches. No force update or merge to `main` occurred.
+
+| Scope | Local preservation commit | Verified GitHub mirror commit / remote head | Verified identical tree |
+|---|---|---|---|
+| Watch source record | `61b1be90b304c295a470fe28ddd1813e25f9478f` | `Nervahealth/nerva-wearos` `preservation/watch68-partial-source-2026-10-03` → `221b887346d94a14050a656253509f006e194f4d` | `ed765d7f067ebad7617e26cf1fab4f7db75d1edd` |
+| Phone/control copy | `3deda0082af76c196b91d9ba03bf49185e840421` | `Nervahealth/nerva-mobile` `preservation/phone-control-and-source-2026-10-03` → `ab918e2478c4638e76a7c1d4571408a824b87974` | `25a69eaaf1bae5ff9a2906b5397472dad3fdbdc3` |
+| Independent control record | `54c597ba807000ab5de8f041944864144635df91` | `Nervahealth/nerva-mobile` `preservation/watch69-control-records-2026-10-03` → `3f6c20c334c27cd4409982f9351b098677c53efe` | `c216c976ae2248f9a48aee9786b71a470a765a9a` |
+
+The normal Git smart-HTTP transfer failed locally while creating its pack; GitHub access was nevertheless verified with the scoped repository-write credential. To avoid another uncontrolled transfer retry, the already-validated local commit trees were mirrored through GitHub's Git database API as non-force, parented successor commits. Independent GitHub commit/ref readback confirms that each remote tree exactly equals its named local preservation commit tree. The local commits remain retained as the full source-history record; the different remote commit IDs reflect the intentional mirror route, not different files.
+
+Earlier sanitized preservation fallbacks remain retained. This closeout proves remote record preservation only; it does not change the installation-only result or establish any runtime, delivery, acknowledgement, completion, sensor, or qualification fact.
+
+### Atlas synchronization limitation
+
+A new private Atlas Inbox preservation proposal was attempted after remote verification and was rejected by the currently authenticated portal session with `You do not have required permission (10002)`. No existing proposal, accepted S4 snapshot, or portal truth state was changed. The earlier Watch72 / Phone58 installation-only proposal remains the relevant **new** intake record; this denied addendum is recorded here and in governed controls rather than retried.
