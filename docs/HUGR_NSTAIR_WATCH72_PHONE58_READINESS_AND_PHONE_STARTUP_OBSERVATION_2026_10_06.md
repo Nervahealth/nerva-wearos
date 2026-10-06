@@ -49,3 +49,15 @@ Before any connection attempt, the smallest remaining identity fact is Android s
 - **Watch68 v1 remains UNCLASSIFIED / NOT VERIFIED.**
 - **Watch58 remains exactly:** `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
 - Accepted VIS-COUNT S4 remains unchanged. Atlas permission repair is outside this device observation and is not retried here.
+
+## 7. Preservation closeout — readiness record mirror verified
+
+The initial readiness-observation records were committed locally and mirrored without force through the verified GitHub Git-database route. Direct post-update ref/tree readback verified the following content-identical preservation pairs:
+
+| Scope | Local commit | GitHub preservation mirror commit | Verified tree |
+|---|---|---|---|
+| Watch source record | `dd4b6a37344bddb143ee71e541e57963415ac5e8` | `Nervahealth/nerva-wearos` `preservation/watch68-partial-source-2026-10-03` → `56d6dcff8309f9a7b3f4e5fa353ddd3437918793` | `bcc9ebc5340baf54079cfab7063976121308ac0e` |
+| Phone/control copy | `09be2be670ba4c3b86178db5945119c2c98562dc` | `Nervahealth/nerva-mobile` `preservation/phone-control-and-source-2026-10-03` → `960ad471bd2b328fd0d42ba62e06cabe2aff4901` | `3882354a4f29634dc73fd461c434a0f0fd6a5969` |
+| Independent governed controls | `a5677c6845dcb2b07e7dc7ae58750be641c6b4d0` | `Nervahealth/nerva-mobile` `preservation/watch69-control-records-2026-10-03` → `2c75570ac16cbed2ed0d0f4b19975a9c71a24d77` | `a656df0e69e92440b8acbde119e62cf178065de9` |
+
+The mirror commits are successor commits on the existing non-main preservation refs; different commit IDs are intentional and the verified equal tree is the preservation criterion. No force update or `main` update occurred. This closeout preserves the observation only; it does not establish connection, delivery, acknowledgement, completion, or qualification.
