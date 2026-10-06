@@ -113,3 +113,10 @@ The ordinary Phone update succeeded, but the operator’s original file-selectio
 No runtime step is authorized by this reconciliation. The proposed bounded pair observation is: confirm Phone58’s version in system App info; launch Watch72 normal Main HUGR once and wait at most 90 seconds for either `Finalized delivery recovery unavailable`, `SERVICE FAILED`, `ADVERTISING FAILED`, or `ADVERTISING READY`; launch Phone58 only after the Watch result and do not press its connection control. Any stop state ends the observation. Only **Watch `ADVERTISING READY` plus a non-black Phone58 first surface** would justify seeking a separate authority for Phone scan/connect/service-discovery and later delivery. No new sensing, recording, egress, acknowledgement, verifier, legacy/frozen-root, Watch58, or Watch68 operation is part of this proposed gate.
 
 The Watch69 five-minute run remains **NOT QUALIFIED**. Watch58 remains exactly `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
+
+
+### Reconciliation preservation verification
+
+The baseline-reconciliation record above was committed locally as Watch `65c764a0ac46ac9b7b3e9f5acca7089199b08751`, Phone `b2da7ba126a508b7613c4fbd6eb6cf01bb0b30be`, and control `810c9ced2d53605f568413f42c2c5dfbb04c72df`. Its trees were independently read back from the existing non-main GitHub preservation refs as Watch `4f9cf1d997949566b66a2be35e12584482d8d4a6`, Phone `a192fa61003301508a4dfef638511b5aa7cdf266`, and control `588cc3d8b00f0b79b0dbf3159d104b6e9d87ef07`, respectively. The verified equal tree IDs are Watch `ed6fd3f0fde23fd08c4a8e1117338db5a63a26b3`, Phone `576c6aecd2c9ab73e16622da574430aab8fa62ba`, and control `fe01a74eca5d4899b50f875b042291a6b26a1671`.
+
+This was a non-force Git database mirror update to the existing preservation branches; no `main` ref changed and no candidate, artifact, device, accepted S4, or Atlas state changed. The branch/tree identity evidence preserves the reconciliation without creating a separate development track.
