@@ -61,3 +61,16 @@ That correction needs its own explicit authority. It must also address the Phone
 ## 6. Control and preservation status
 
 This receipt is source-owned. The Master Task List is updated before the Shared Alignment Control Surface; alignment is updated last. Atlas synchronization is intentionally not retried because the known portal permission repair is separate from device work. GitHub preservation will be verified after the closeout commits; no claim of remote preservation is made until that readback succeeds.
+
+
+## 7. Verified remote preservation
+
+The governed local commits are preserved as non-force GitHub tree-identical mirrors. The GitHub mirror commits are expected to have distinct IDs because they retain the branch's remote parent, while their read-back tree IDs exactly equal the local commit trees.
+
+| Scope | Local commit | Verified GitHub mirror commit | Verified shared tree |
+|---|---|---|---|
+| Watch source/receipt | `48b189d78a658e7d72fae1b5c86cc9c9095f9174` | `b7adf090eb39f2a104fe370fb73df7ea987049bc` | `cf0026ef2dce7b7b96cd9199480dcea2465ab920` |
+| Phone controls/receipt | `8ec19c8def45282d45ce1870308e907e088273f5` | `aea9f0db38baef258f2a30e51ebf360dc7801aeb` | `67c618dfb52aa9fbb473d90a6a02f442de97d6b5` |
+| Control repository | `73888bb796a4f990d70494249b2fb50aed022ff2` | `7d90b21477c7450361e5988cba1d41051bb9ef58` | `0a0cb18458e4bbe576746e49996d618e663bede4` |
+
+GitHub access is therefore working for these preservation branches. No force-push or merge to `main` occurred.
