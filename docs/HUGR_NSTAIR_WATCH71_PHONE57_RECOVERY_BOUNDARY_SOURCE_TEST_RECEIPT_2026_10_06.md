@@ -158,3 +158,23 @@ The two cited fallback identities are **successive, valid snapshots**, not confl
 The **authoritative final local preservation point for this recovery-boundary correction** is therefore the final row and archive `3c0321f4b1a681c55e17f838008529eddf6e359660b48104c0c59ac7671118a7`. The earlier `d4e0…` archive remains retained as the valid intermediate snapshot; it is not superseded as evidence, only as the complete preservation point.
 
 Remote GitHub heads remain unchanged because the known non-force Watch-source push failed with HTTP 403 and no repeat was attempted. This reconciliation creates no device, delivery, acknowledgement, or qualification claim: Watch69 remains **NOT QUALIFIED**, Watch68 v1 remains **UNCLASSIFIED / NOT VERIFIED**, and Watch58 remains exactly `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
+
+## Addendum — GitHub publication restored and independently read back — 2026-10-06
+
+The earlier HTTP 403 is retained as a historical observation. Following fresh GitHub device authorization for the existing `Nervahealth` account, the account was verified with `repo` scope and **ADMIN** permission on both `Nervahealth/nerva-wearos` and `Nervahealth/nerva-mobile`.
+
+The already committed preservation branches were first fetched and proved fast-forward-safe, then published **without force** and independently compared with `git ls-remote`:
+
+| Preservation record | Repository and branch | Verified published commit |
+|---|---|---|
+| Watch source | `Nervahealth/nerva-wearos` / `preservation/watch68-partial-source-2026-10-03` | `0b36e176c44241826df37f558a2b1584952eddd5` |
+| Phone source and control copy | `Nervahealth/nerva-mobile` / `preservation/phone-control-and-source-2026-10-03` | `0f224922ce2dddf6896ad37a50a3360b01febd0b` |
+| Independent governed controls | `Nervahealth/nerva-mobile` / `preservation/watch69-control-records-2026-10-03` | `94ae18bfb1cd47a6f582fc0d4b5eef074e44600a` |
+
+Each published commit descends from the previously reconciled final-fallback boundary: Watch `d0b96a9ec81a1d8465629d18cae3c67d94c2948c`, Phone `2ba153ec99909213ecc7fe26e98beb5eb6f5835d`, and Control `8ee3909a4851d61c4dc5fee123e55c793876e537`. The verified final fallback archive (`3c0321f4b1a681c55e17f838008529eddf6e359660b48104c0c59ac7671118a7`) and the earlier valid intermediate archive remain retained as independent snapshots; neither is deleted, replaced, or recast as GitHub evidence.
+
+This addendum changes only the preservation availability statement. It does **not** create a build or device result, alter the accepted S4 snapshot, prove Phone57 connectivity, deliver or acknowledge retained data, qualify Watch69, classify Watch68 v1, or change Watch58, which remains exactly `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
+
+### Private Atlas Inbox synchronization boundary
+
+The private VIS-COUNT Atlas Inbox was not altered. A direct authenticated sandbox-browser navigation to the private `/vis-count` Inbox route returned `ERR_SSL_PROTOCOL_ERROR` before the workspace could load. Therefore no new proposal, status change, accepted-S4 mutation, or silent truth update is claimed. The existing Inbox proposals remain as recorded; accepted S4 remains unchanged.
