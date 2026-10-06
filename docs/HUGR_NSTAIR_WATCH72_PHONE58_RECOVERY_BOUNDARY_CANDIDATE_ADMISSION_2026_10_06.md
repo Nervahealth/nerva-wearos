@@ -74,3 +74,13 @@ That later observation must stop before any new recording, egress, acknowledgeme
 ## 7. Governing status
 
 This is an **artifact admission**, not a delivery success, an installation admission, or a physical recovery result. Alignment and Master records must preserve the distinction.
+
+## Preservation closeout — GitHub remote verification
+
+The candidate-admission commits were non-force pushed through the verified scoped GitHub credential and independently read back from the named preservation branches on 2026-10-06:
+
+- Watch source: `Nervahealth/nerva-wearos` / `preservation/watch68-partial-source-2026-10-03` → `6202405b8d4d467f05f5fdd8b5b8b8f268472586`.
+- Phone source: `Nervahealth/nerva-mobile` / `preservation/phone-control-and-source-2026-10-03` → `4945d518ca0e3b91b52b40d98e2cea6554897df3`.
+- Governed controls: `Nervahealth/nerva-mobile` / `preservation/watch69-control-records-2026-10-03` → `f478ae25734849ab2d40309a8ac76e72e859a33c`.
+
+This proves remote preservation of the candidate admission records at those commits. It does not alter accepted S4, install either artifact, or establish a device, delivery, acknowledgement, completion, or qualification result. Earlier sanitized fallback snapshots remain retained as supplemental preservation; they are no longer the sole remote-preservation route.
