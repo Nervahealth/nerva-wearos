@@ -10,10 +10,66 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.FileOutputStream
+import java.security.MessageDigest
 
 class SourceJournalTest {
     @get:Rule
     val temporaryFolder = TemporaryFolder()
+
+    @Test
+    fun `process restart and equal-endpoint manifest require verified Phone-equivalent bytes before exact ACK`() {
+        val root = temporaryFolder.newFolder("bounded-recovery-end-to-end")
+        val original = journal(root, bootCount = 73) { 1_000L }
+        original.append(SourceStreamCode.CARDIAC, 10L, byteArrayOf(1, 2, 3))
+        original.append(SourceStreamCode.ACCEL, 11L, byteArrayOf(4, 5, 6))
+        val final = requireNotNull(original.finalizeActiveSegment())
+        val session = final.watchBootSessionId
+        original.close()
+
+        val reopened = journal(root, bootCount = 73) { 2_000L }
+        val selected = requireNotNull(RetainedFinalizedDeliveryRecovery.select(reopened))
+        assertEquals(session, selected.sourceSessionId)
+        val durablePhoneRecords = reopened.readRecordsAfter(session, 0L, final.lastRecordIndex, 96)
+        val canonicalPhoneHash = MessageDigest.getInstance("SHA-256")
+            .digest(durablePhoneRecords.flatMap { it.canonicalBytes().asIterable() }.toByteArray())
+            .joinToString("") { "%02x".format(it) }
+        assertEquals(final.sha256Hex, canonicalPhoneHash)
+
+        // Phone resumes with all records durable but without the final manifest.
+        val highWater = reopened.highestFinalizedRecordIndex(session)
+        val queued = requireNotNull(SourceReplayWindow.nextManifestToQueue(
+            session, final.lastRecordIndex, highWater, null, reopened.finalizedManifests(session),
+        ))
+        assertEquals(final, SourceReplayProtocol.decodeManifestFrame(
+            SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(queued)),
+        ).manifest)
+        assertTrue(reopened.readRecordsAfter(session, final.lastRecordIndex, highWater, 96).isEmpty())
+
+        val failedAttempt = FinalizedDeliveryLifetime(10L).apply { start(100L) }
+        assertFalse(failedAttempt.permitsDelivery(110L))
+        assertEquals(listOf(final), reopened.finalizedManifests(session))
+        val resumedAttempt = FinalizedDeliveryLifetime().apply { start(200L) }
+        assertTrue(resumedAttempt.permitsDelivery(201L))
+        val ack = SourceReplayProtocol.decodeSegmentAcknowledgement(
+            SourceReplayProtocol.encodeSegmentAcknowledgement(
+                SourceSegmentAcknowledgement(session, final.lastRecordIndex, canonicalPhoneHash),
+            ),
+        )
+        assertThrows(SourceJournalCorruptionException::class.java) {
+            SourceReplayWindow.validateAcknowledgement(session, final.lastRecordIndex, highWater, ack.copy(watchBootSessionId = java.util.UUID.randomUUID()))
+        }
+        assertThrows(SourceJournalCorruptionException::class.java) {
+            SourceReplayWindow.validateQueuedManifestAcknowledgement(final.lastRecordIndex, ack.copy(cumulativeRecordIndex = final.lastRecordIndex + 1L))
+        }
+        assertFalse(reopened.acknowledgeCompletedSegment(session, final.lastRecordIndex, "0".repeat(64)))
+        assertEquals(listOf(final), reopened.finalizedManifests(session))
+        SourceReplayWindow.validateAcknowledgement(session, final.lastRecordIndex, highWater, ack)
+        SourceReplayWindow.validateQueuedManifestAcknowledgement(final.lastRecordIndex, ack)
+        assertTrue(reopened.acknowledgeCompletedSegment(ack.watchBootSessionId, ack.cumulativeRecordIndex, ack.completedSegmentSha256))
+        assertFalse(reopened.acknowledgeCompletedSegment(ack.watchBootSessionId, ack.cumulativeRecordIndex, ack.completedSegmentSha256))
+        assertTrue(reopened.finalizedManifests().isEmpty())
+        reopened.close()
+    }
 
     @Test
     fun `canonical records round trip with stable identity and bytes`() {

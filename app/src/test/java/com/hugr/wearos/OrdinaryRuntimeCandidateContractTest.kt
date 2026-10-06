@@ -55,12 +55,12 @@ class OrdinaryRuntimeCandidateContractTest {
         assertTrue(ordinaryMarkerWrite >= 0)
         assertTrue(mainSource.contains("startFinalizedDeliveryRecovery()"))
 
-        assertTrue(recovery.contains("startService("))
+        assertTrue(recovery.contains("startForegroundService("))
         assertTrue(recovery.contains("Intent(this, BleGattService::class.java)"))
         assertTrue(recovery.contains("BleGattService.EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY"))
         assertTrue(recovery.contains("BleGattService.EXTRA_FINALIZED_DELIVERY_SOURCE_SESSION_ID"))
         assertFalse(recovery.contains("HealthSensorService"))
-        assertFalse(recovery.contains("startForegroundService"))
+        assertFalse(recovery.contains("startService("))
         assertFalse(recovery.contains("ACTION_START_BOUNDED_ORDINARY_RUN"))
         assertFalse(recovery.contains("NormalStartupStage.BOUNDED_RUN_FINALIZED"))
         assertFalse(recovery.contains("EvidenceEgress"))
@@ -95,6 +95,24 @@ class OrdinaryRuntimeCandidateContractTest {
             "WatchSourceRuntime.closeFreshAfterDelivery()",
             "NormalStartupStage.BOUNDED_RUN_GATT_STOP_REQUESTED",
         )
+    }
+
+    @Test
+    fun `retained source GATT alone owns bounded connected-device lifetime and rejects timeout or disconnect without ACK`() {
+        val start = between(gattSource, "override fun onStartCommand(", "private fun initializeRuntime(")
+        assertInOrder(start, "finalizedDeliveryRecoveryOnly = requestedFinalizedRecovery", "startFinalizedRecoveryForegroundLifetime()", "initializeRuntime(requestedMode)")
+        val foreground = between(gattSource, "private fun startFinalizedRecoveryForegroundLifetime()", "private fun initializeVibrator()")
+        assertTrue(foreground.contains("ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE"))
+        assertTrue(foreground.contains("FinalizedDeliveryLifetime.MAX_DURATION_MS"))
+        assertFalse(foreground.contains("EvidenceEgressVolatileDiagnostics"))
+        assertFalse(foreground.contains("sourceJournal.acknowledgeCompletedSegment"))
+        val callback = between(gattSource, "override fun onConnectionStateChange(", "override fun onMtuChanged(")
+        assertTrue(callback.contains("stopFinalizedRecoveryWithoutAcknowledgement(\"PHONE_DISCONNECTED\")"))
+        assertTrue(gattSource.contains("stopFinalizedRecoveryWithoutAcknowledgement(\"DEADLINE\")"))
+        val ack = between(gattSource, "private fun handleSourceAcknowledgement(", "private fun pumpReplay()")
+        assertInOrder(ack, "finalizedRecoveryLifetime.permitsDelivery", "SourceReplayWindow.validateAcknowledgement", "SourceReplayWindow.validateQueuedManifestAcknowledgement", "sourceJournal.acknowledgeCompletedSegment", "NormalStartupStage.BOUNDED_RUN_DELIVERY_ACKNOWLEDGED")
+        assertFalse(foreground.contains("HealthSensorService"))
+        assertTrue(manifestSource.contains("android:foregroundServiceType=\"connectedDevice\""))
     }
 
     @Test

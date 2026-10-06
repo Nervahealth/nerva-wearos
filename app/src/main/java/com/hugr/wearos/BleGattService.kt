@@ -69,6 +69,15 @@ class BleGattService : Service() {
     private var advertiser: BluetoothLeAdvertiser? = null
     private var egressForegroundActive = false
     private var egressAdvertiserReady = false
+    private var finalizedRecoveryForegroundActive = false
+    private val finalizedRecoveryLifetime = FinalizedDeliveryLifetime()
+    private val finalizedRecoveryDeadline = Runnable {
+        if (finalizedDeliveryRecoveryOnly &&
+            !finalizedRecoveryLifetime.permitsDelivery(SystemClock.elapsedRealtime())
+        ) {
+            stopFinalizedRecoveryWithoutAcknowledgement("DEADLINE")
+        }
+    }
     private var connectedDevice: BluetoothDevice? = null
     private val notificationSubscriptions = mutableMapOf<String, MutableSet<UUID>>()
     private var notificationCompletionBlocked = false
@@ -224,6 +233,8 @@ class BleGattService : Service() {
         private const val EGRESS_FOREGROUND_CHANNEL_ID = "hugr_evidence_egress_v1"
         private const val EGRESS_FOREGROUND_CHANNEL_NAME = "HUGR Evidence Egress"
         private const val EGRESS_FOREGROUND_NOTIFICATION_ID = 4_001
+        private const val RECOVERY_FOREGROUND_CHANNEL_ID = "hugr_finalized_source_delivery_v1"
+        private const val RECOVERY_FOREGROUND_NOTIFICATION_ID = 4_002
         private const val DETAIL_OK = 0
         private const val DETAIL_DUPLICATE_REPLAY = 10
         private const val DETAIL_UNSUPPORTED_POLICY = 11
@@ -289,8 +300,20 @@ class BleGattService : Service() {
                     stopSelf()
                     return START_NOT_STICKY
                 }
+            } else if (requestedFinalizedRecovery) {
+                if (!startFinalizedRecoveryForegroundLifetime()) {
+                    stopSelf()
+                    return START_NOT_STICKY
+                }
             }
-            initializeRuntime(requestedMode)
+            if (requestedFinalizedRecovery) {
+                runCatching { initializeRuntime(requestedMode) }.onFailure { failure ->
+                    Log.e(TAG, "Retained source delivery could not initialize", failure)
+                    stopFinalizedRecoveryWithoutAcknowledgement("INITIALIZATION_FAILED")
+                }
+            } else {
+                initializeRuntime(requestedMode)
+            }
         } else if (currentMode == EvidenceEgressGattRuntimeMode.EGRESS_ONLY) {
             EvidenceEgressVolatileDiagnostics.onRuntimeReused(
                 foregroundActive = egressForegroundActive,
@@ -394,6 +417,62 @@ class BleGattService : Service() {
         egressForegroundActive = false
     }
 
+    /** Only the already-finalized fresh-v2 session receives this connected-device lifetime. */
+    private fun startFinalizedRecoveryForegroundLifetime(): Boolean = try {
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.createNotificationChannel(
+            NotificationChannel(
+                RECOVERY_FOREGROUND_CHANNEL_ID,
+                "HUGR retained source delivery",
+                NotificationManager.IMPORTANCE_LOW,
+            ).apply {
+                description = "Temporary ordinary source delivery; no sensing or new recording"
+                setSound(null, null)
+                enableVibration(false)
+                setShowBadge(false)
+                lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+            },
+        )
+        val notification = NotificationCompat.Builder(this, RECOVERY_FOREGROUND_CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.stat_sys_data_bluetooth)
+            .setContentTitle("HUGR retained recording delivery")
+            .setContentText("Waiting for one ordinary Phone resume; no sensing")
+            .setOngoing(true)
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .build()
+        startForeground(
+            RECOVERY_FOREGROUND_NOTIFICATION_ID,
+            notification,
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE,
+        )
+        finalizedRecoveryForegroundActive = true
+        finalizedRecoveryLifetime.start(SystemClock.elapsedRealtime())
+        transportHandler.postDelayed(finalizedRecoveryDeadline, FinalizedDeliveryLifetime.MAX_DURATION_MS)
+        true
+    } catch (failure: Exception) {
+        Log.e(TAG, "Standard retained delivery foreground promotion rejected", failure)
+        finalizedRecoveryLifetime.stop()
+        false
+    }
+
+    private fun stopFinalizedRecoveryWithoutAcknowledgement(reason: String) {
+        if (!finalizedDeliveryRecoveryOnly) return
+        finalizedRecoveryLifetime.stop()
+        notificationCompletionBlocked = true
+        Log.w(TAG, "Retained source delivery stopped without acknowledgement: $reason")
+        broadcastStatus("RETAINED DELIVERY STOPPED: $reason; source preserved")
+        stopSelf()
+    }
+
+    private fun stopFinalizedRecoveryForegroundLifetime() {
+        finalizedRecoveryLifetime.stop()
+        transportHandler.removeCallbacks(finalizedRecoveryDeadline)
+        if (finalizedRecoveryForegroundActive) {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            finalizedRecoveryForegroundActive = false
+        }
+    }
+
     private fun initializeVibrator() {
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vm = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
@@ -449,6 +528,7 @@ class BleGattService : Service() {
         if (isStandardRuntime()) recordCausal(CausalEventCode.BLE_SERVICE_DESTROYED)
         if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onRuntimeDestroyed()
         if (isEgressOnlyRuntime()) stopEgressForegroundLifetime()
+        if (finalizedDeliveryRecoveryOnly) stopFinalizedRecoveryForegroundLifetime()
         super.onDestroy()
         Log.d(TAG, "BleGattService destroyed: mode=$runtimeMode")
         vibrator?.cancel()
@@ -663,6 +743,7 @@ class BleGattService : Service() {
             Log.e(TAG, "Failed to add HUGR service to GATT server")
             if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_SERVICE_FAILED)
             if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onReadinessFailure("GATT_SERVICE_REGISTER_REJECTED")
+            if (finalizedDeliveryRecoveryOnly) stopFinalizedRecoveryWithoutAcknowledgement("GATT_SERVICE_REGISTER_REJECTED")
         }
     }
 
@@ -687,6 +768,12 @@ class BleGattService : Service() {
                         connectedDevice = device
                         negotiatedMtu = 23
                         Log.i(TAG, "Evidence Egress-only phone connected: ${device?.address}")
+                        return
+                    }
+                    if (finalizedDeliveryRecoveryOnly &&
+                        !finalizedRecoveryLifetime.permitsDelivery(SystemClock.elapsedRealtime())
+                    ) {
+                        stopFinalizedRecoveryWithoutAcknowledgement("DEADLINE_BEFORE_CONNECTION")
                         return
                     }
                     val lineage = causalLineageState.onConnected()
@@ -733,6 +820,7 @@ class BleGattService : Service() {
                         startAdvertising()
                         return
                     }
+                    if (finalizedDeliveryRecoveryOnly) finalizedRecoveryLifetime.stop()
                     val disconnect = causalLineageState.onDisconnected(status)
                     sourceMtuLineageGeneration = sourceMtuReadinessGate.onDisconnected()
                     sourceResumePreparationGeneration.set(-1L)
@@ -765,8 +853,13 @@ class BleGattService : Service() {
                     }
                     Log.i(TAG, "Phone disconnected: ${device?.address}")
                     broadcastStatus("BLE: Phone DISCONNECTED")
-                    // Resume advertising so phone can reconnect
-                    startAdvertising()
+                    if (finalizedDeliveryRecoveryOnly) {
+                        // One bounded recovery attempt: a fresh explicit launch is required
+                        // before any further connection; the durable segment is not deleted.
+                        stopFinalizedRecoveryWithoutAcknowledgement("PHONE_DISCONNECTED")
+                    } else {
+                        startAdvertising()
+                    }
                 }
             }
         }
@@ -800,6 +893,9 @@ class BleGattService : Service() {
 
         override fun onServiceAdded(status: Int, service: BluetoothGattService?) {
             if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onGattServiceAdded(status)
+            if (finalizedDeliveryRecoveryOnly &&
+                !finalizedRecoveryLifetime.permitsDelivery(SystemClock.elapsedRealtime())
+            ) return
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.i(TAG, "Service added successfully — starting advertising")
                 if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_SERVICE_READY)
@@ -807,6 +903,7 @@ class BleGattService : Service() {
             } else {
                 Log.e(TAG, "Failed to add service, status: $status")
                 if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_SERVICE_FAILED, arg0 = status.toLong())
+                if (finalizedDeliveryRecoveryOnly) stopFinalizedRecoveryWithoutAcknowledgement("GATT_SERVICE_FAILED")
             }
         }
 
@@ -1093,6 +1190,12 @@ class BleGattService : Service() {
 
     private val advertiseCallback = object : AdvertiseCallback() {
         override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
+            if (finalizedDeliveryRecoveryOnly &&
+                !finalizedRecoveryLifetime.permitsDelivery(SystemClock.elapsedRealtime())
+            ) {
+                stopAdvertising()
+                return
+            }
             Log.i(TAG, "BLE advertising started — UUID visible to phone")
             if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_ADVERTISING_READY)
             if (isEgressOnlyRuntime()) {
@@ -1112,6 +1215,7 @@ class BleGattService : Service() {
             }
             Log.e(TAG, "BLE advertising FAILED: $reason")
             if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_ADVERTISING_FAILED, arg0 = errorCode.toLong())
+            if (finalizedDeliveryRecoveryOnly) stopFinalizedRecoveryWithoutAcknowledgement("ADVERTISING_FAILED")
             if (isEgressOnlyRuntime()) {
                 if (errorCode == ADVERTISE_FAILED_ALREADY_STARTED && egressAdvertiserReady) {
                     EvidenceEgressVolatileDiagnostics.onAdvertiserStarted()
@@ -1318,6 +1422,7 @@ class BleGattService : Service() {
     private fun maximumAttPayloadBytes(): Int = (negotiatedMtu - ATT_PROTOCOL_OVERHEAD_BYTES).coerceAtLeast(20)
 
     private fun abortTransportLineage(reason: String) {
+        if (finalizedDeliveryRecoveryOnly) finalizedRecoveryLifetime.stop()
         val stalledDevice = connectedDevice
         val reasonCode = CausalReasonCode.fromAbortReason(reason).code
         causalLineageState.markAbort(reasonCode)
@@ -1346,6 +1451,7 @@ class BleGattService : Service() {
             runCatching { gattServer?.cancelConnection(stalledDevice) }
                 .onFailure { Log.e(TAG, "Failed to cancel stalled GATT connection after $reason", it) }
         }
+        if (finalizedDeliveryRecoveryOnly) stopFinalizedRecoveryWithoutAcknowledgement(reason)
     }
 
     private fun queueStreamFor(stream: SourceStreamCode): GattNotificationStream = when (stream) {
@@ -1476,6 +1582,12 @@ class BleGattService : Service() {
     }
 
     private fun handleSourceResume(request: SourceResumeRequest) {
+        if (finalizedDeliveryRecoveryOnly &&
+            !finalizedRecoveryLifetime.permitsDelivery(SystemClock.elapsedRealtime())
+        ) {
+            stopFinalizedRecoveryWithoutAcknowledgement("RESUME_AFTER_DEADLINE_OR_DISCONNECT")
+            throw SourceJournalCorruptionException("Retained delivery attempt is no longer active")
+        }
         recordCausal(
             CausalEventCode.RESUME_RECEIVED,
             recordIndexStart = request.cumulativeRecordIndex.coerceAtLeast(0L),
@@ -1672,7 +1784,14 @@ class BleGattService : Service() {
         }
     }
 
-    private fun handleSourceAcknowledgement(acknowledgement: SourceSegmentAcknowledgement) {
+    private fun handleSourceAcknowledgement(acknowledgement: SourceSegmentAcknowledgement) =
+        synchronized(finalizedRecoveryLifetime) {
+        if (finalizedDeliveryRecoveryOnly &&
+            !finalizedRecoveryLifetime.permitsDelivery(SystemClock.elapsedRealtime())
+        ) {
+            stopFinalizedRecoveryWithoutAcknowledgement("ACK_AFTER_DEADLINE_OR_DISCONNECT")
+            throw SourceJournalCorruptionException("Retained delivery attempt is no longer active")
+        }
         val activeSession = SourceReplayWindow.validateAcknowledgement(
             activeSession = activeReplaySessionId,
             durablePhoneRecordIndex = durablePhoneRecordIndex,
@@ -1714,6 +1833,8 @@ class BleGattService : Service() {
             markers.record(sourceSessionId.toString(), NormalStartupStage.BOUNDED_RUN_DELIVERY_ACKNOWLEDGED)
             WatchSourceRuntime.closeFreshAfterDelivery()
             markers.record(sourceSessionId.toString(), NormalStartupStage.BOUNDED_RUN_GATT_STOP_REQUESTED)
+            finalizedRecoveryLifetime.stop()
+            transportHandler.removeCallbacks(finalizedRecoveryDeadline)
             stopSelf()
             return
         }
@@ -1930,6 +2051,7 @@ class BleGattService : Service() {
 
     private fun recordStandardGattReadinessFailure() {
         if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_ADVERTISING_FAILED)
+        if (finalizedDeliveryRecoveryOnly) stopFinalizedRecoveryWithoutAcknowledgement("GATT_READINESS_FAILED")
     }
 
     // ─── PRODUCTION RESEARCH HAPTIC POLICY v1 ───────────────────────────────────

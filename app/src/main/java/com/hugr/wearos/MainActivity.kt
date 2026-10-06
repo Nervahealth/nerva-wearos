@@ -359,7 +359,7 @@ class MainActivity : ComponentActivity() {
      */
     private fun startFinalizedDeliveryRecovery() {
         val sourceSessionId = finalizedDeliverySourceSessionId ?: return
-        startService(
+        startForegroundService(
             Intent(this, BleGattService::class.java).apply {
                 putExtra(BleGattService.EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY, true)
                 putExtra(BleGattService.EXTRA_FINALIZED_DELIVERY_SOURCE_SESSION_ID, sourceSessionId)

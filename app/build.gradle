@@ -20,8 +20,8 @@ android {
         applicationId 'com.hugr.wearos'
         minSdk 30
         targetSdk 34
-        versionCode 72
-        versionName '0.72.0-recovery-boundary-diagnostic-candidate'
+        versionCode 73
+        versionName '0.73.0-finalized-delivery-lifetime-candidate'
     }
 
     buildTypes {
