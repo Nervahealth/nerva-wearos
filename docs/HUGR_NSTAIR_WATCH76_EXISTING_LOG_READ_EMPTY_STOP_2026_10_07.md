@@ -1,0 +1,16 @@
+# Watch76 existing Logcat read — EMPTY / STOP
+
+**2026-10-07 CEST · source-owned bounded physical diagnostic receipt.** Governing authority: one user-approved *log-only* Z Fold8 ↔ Watch76 ADB pass, described in `HUGR_NSTAIR_WATCH76_RESUME_8184_DIAGNOSTIC_DECISION_2026_10_07.md`. The preceding Watch76–Phone59 HUGR recovery remained STOP after the ~19:19 `TRANSPORT_ABORT` / `BLE_SERVICE_DESTROYED`; this diagnostic did **not** repeat it.
+
+## Directly established
+
+- Operator reports that Bugjaeger was already on the personal Fold8 from an Honor clone. Watch system ADB and Wireless debugging were enabled; operator reported **paired**, then **connected**. No HUGR action was requested or reported during these steps.
+- The operator supplied a ~22:18–22:19 CEST Fold photo (`IMG_20261007_221852.webp`, SHA-256 `352c89b5174f82810c5e006e4e86ee03e86cffe225431db520e4835d6cd53db4`, 51,484 bytes; private image **not copied into Git**). It visibly shows Bugjaeger shell `Connected to SM-L320`, shell prompt `fresh8bs:/ $`, **two visible entries** of `logcat -d -b main -v threadtime 'HUGR-BleGatt:E' '*:S'`, each returning to shell prompts with **no matching output lines displayed**. The operator did not explain why the command is displayed twice; do not infer an extra HUGR attempt or assign fault. No exception class, message, stack trace or time-stamped `Source resume preparation failed` entry is visible. No shell error is visible either.
+- This is a **negative/empty filtered existing-main-buffer Logcat read**, not proof that the historical Watch exception never happened. Android Logcat is circular; the old entry may have expired. Other uninspected buffers or a filter mismatch are also possible, but the authorized pass did not include broad/iterated log searches or a new HUGR attempt. **Actual failing substep remains UNKNOWN.** The synthetic index-8184 later-ACK-before-older-manifest mechanism remains conditional, not a physical diagnosis.
+- The assistant explicitly instructed **no more commands/HUGR use** and requested Watch system **Wireless debugging OFF** and **ADB debugging OFF**; remove only the identifiable Fold debug trust when convenient. **Cleanup result is pending operator report** at this receipt version; never mark it complete by inference.
+
+## Scope and next decision
+
+The authorized existing-log read is **STOPPED — EMPTY**. Do not retry Watch76↔Phone59 BLE, run another shell command, broaden to a bugreport/private file pull, clear logs, pair/unpair a Bluetooth companion, launch HUGR, start recording or egress under this gate. With no captured exception, the next engineering move is source/test-only consideration of the exact 8184 custody and ordering hypotheses, without relaxing the high-water guard on trust or claiming a physical root cause. A later live capture or recovery test would require its own specific authority after confirming a capture plan, not this exhausted retrospective read. Honor remains the HUGR Phone59 companion; the Fold was used only as an ADB diagnostic host.
+
+Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`. No accepted VIS-COUNT S4 edit, frozen/legacy storage access, source-data transfer or recording extension is implied.
