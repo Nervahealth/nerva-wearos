@@ -43,12 +43,16 @@ internal data class FinalizedRecoverySnapshot(
  * A persisted causal history is never interpreted as a live readiness lease.
  * No source journal, BLE, sensing, egress or frozen-root access occurs here.
  */
-internal class FinalizedRecoveryReadinessStore(private val leaseMs: Long = 2_500L) {
-    init { require(leaseMs > 0L) }
+internal class FinalizedRecoveryReadinessStore(
+    private val leaseMs: Long = 2_500L,
+    private val maxDurationMs: Long = FinalizedDeliveryLifetime.MAX_DURATION_MS,
+) {
+    init { require(leaseMs > 0L && maxDurationMs > 0L) }
     private var attempt: UUID? = null
     private var service: UUID? = null
     private var foreground = false
     private var advertised = false
+    private var foregroundStartedAtMs: Long? = null
     private var lastHeartbeatMs: Long? = null
     private var stopped: FinalizedRecoveryStopReason? = null
 
@@ -57,6 +61,7 @@ internal class FinalizedRecoveryReadinessStore(private val leaseMs: Long = 2_500
         service = null
         foreground = false
         advertised = false
+        foregroundStartedAtMs = null
         lastHeartbeatMs = null
         stopped = null
     }
@@ -70,26 +75,28 @@ internal class FinalizedRecoveryReadinessStore(private val leaseMs: Long = 2_500
         service = serviceId
         foreground = false
         advertised = false
+        foregroundStartedAtMs = null
         lastHeartbeatMs = null
         return true
     }
 
     @Synchronized fun foreground(id: UUID, serviceId: UUID, nowMs: Long): Boolean {
-        if (!current(id, serviceId)) return false
+        if (!current(id, serviceId) || foregroundStartedAtMs != null) return false
         foreground = true
+        foregroundStartedAtMs = nowMs
         lastHeartbeatMs = nowMs
         return true
     }
 
     @Synchronized fun advertising(id: UUID, serviceId: UUID, nowMs: Long): Boolean {
-        if (!current(id, serviceId)) return false
+        if (!current(id, serviceId) || deadlineExceeded(nowMs)) return false
         advertised = true
         lastHeartbeatMs = nowMs
         return true
     }
 
     @Synchronized fun heartbeat(id: UUID, serviceId: UUID, nowMs: Long): Boolean {
-        if (!current(id, serviceId) || !foreground) return false
+        if (!current(id, serviceId) || !foreground || deadlineExceeded(nowMs)) return false
         lastHeartbeatMs = nowMs
         return true
     }
@@ -116,6 +123,9 @@ internal class FinalizedRecoveryReadinessStore(private val leaseMs: Long = 2_500
         if (id == null || id != attempt) return FinalizedRecoverySnapshot(FinalizedRecoveryDisplay.NOT_CONFIRMED)
         stopped?.let { return FinalizedRecoverySnapshot(FinalizedRecoveryDisplay.STOPPED, it) }
         if (service == null) return FinalizedRecoverySnapshot(FinalizedRecoveryDisplay.PREPARING)
+        if (deadlineExceeded(nowMs)) {
+            return FinalizedRecoverySnapshot(FinalizedRecoveryDisplay.NOT_CONFIRMED, FinalizedRecoveryStopReason.DEADLINE)
+        }
         val heartbeat = lastHeartbeatMs ?: return FinalizedRecoverySnapshot(FinalizedRecoveryDisplay.PREPARING)
         if (nowMs < heartbeat || nowMs - heartbeat > leaseMs) {
             return FinalizedRecoverySnapshot(FinalizedRecoveryDisplay.NOT_CONFIRMED)
@@ -123,6 +133,11 @@ internal class FinalizedRecoveryReadinessStore(private val leaseMs: Long = 2_500
         return FinalizedRecoverySnapshot(
             if (foreground && advertised) FinalizedRecoveryDisplay.READY else FinalizedRecoveryDisplay.PREPARING,
         )
+    }
+
+    private fun deadlineExceeded(nowMs: Long): Boolean {
+        val started = foregroundStartedAtMs ?: return false
+        return nowMs < started || nowMs - started >= maxDurationMs
     }
 
     private fun current(id: UUID, serviceId: UUID) = attempt == id && service == serviceId && stopped == null

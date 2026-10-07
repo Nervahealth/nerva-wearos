@@ -45,6 +45,45 @@ class FinalizedRecoveryReadinessTest {
         assertEquals(FinalizedRecoveryDisplay.NOT_CONFIRMED, FinalizedRecoveryReadinessStore().snapshot(attempt, 2_102L).display)
     }
 
+    @Test fun `delayed deadline callback cannot leave a heartbeating old attempt ready`() {
+        val status = FinalizedRecoveryReadinessStore(leaseMs = 2_000L, maxDurationMs = 60_000L)
+        val attempt = UUID.randomUUID()
+        val service = UUID.randomUUID()
+        status.request(attempt)
+        status.enter(attempt, service)
+        status.foreground(attempt, service, 1_000L)
+        status.advertising(attempt, service, 1_001L)
+        assertTrue(status.heartbeat(attempt, service, 60_999L))
+        assertEquals(FinalizedRecoveryDisplay.READY, status.snapshot(attempt, 60_999L).display)
+        assertFalse(status.heartbeat(attempt, service, 61_000L))
+        val expired = status.snapshot(attempt, 61_000L)
+        assertEquals(FinalizedRecoveryDisplay.NOT_CONFIRMED, expired.display)
+        assertEquals(FinalizedRecoveryStopReason.DEADLINE, expired.reason)
+        assertFalse(status.advertising(attempt, service, 61_001L))
+        assertEquals(FinalizedRecoveryDisplay.NOT_CONFIRMED, status.snapshot(attempt, 120_000L).display)
+        assertTrue(status.stop(attempt, service, FinalizedRecoveryStopReason.DEADLINE))
+        assertEquals(FinalizedRecoveryDisplay.STOPPED, status.snapshot(attempt, 120_001L).display)
+        assertEquals(FinalizedRecoveryStopReason.DEADLINE, status.snapshot(attempt, 120_001L).reason)
+    }
+
+    @Test fun `a paused UI must expire without heartbeat extending the original foreground time`() {
+        val status = FinalizedRecoveryReadinessStore(leaseMs = 2_000L, maxDurationMs = 10_000L)
+        val attempt = UUID.randomUUID()
+        val service = UUID.randomUUID()
+        status.request(attempt)
+        status.enter(attempt, service)
+        status.foreground(attempt, service, 400L)
+        status.advertising(attempt, service, 401L)
+        assertEquals(FinalizedRecoveryDisplay.READY, status.snapshot(attempt, 402L).display)
+        status.heartbeat(attempt, service, 10_400L)
+        val lateResume = status.snapshot(attempt, 10_400L)
+        assertEquals(FinalizedRecoveryDisplay.NOT_CONFIRMED, lateResume.display)
+        assertEquals(FinalizedRecoveryStopReason.DEADLINE, lateResume.reason)
+        assertEquals(FinalizedRecoveryDisplay.NOT_CONFIRMED, status.snapshot(attempt, 399L).display)
+        assertEquals(FinalizedRecoveryStopReason.DEADLINE, status.snapshot(attempt, 399L).reason)
+        assertEquals(FinalizedRecoveryDisplay.NOT_CONFIRMED, FinalizedRecoveryReadinessStore().snapshot(attempt, 10_400L).display)
+    }
+
     @Test fun `first explicit stop reason is retained before destruction and never mislabels Android cause`() {
         val status = FinalizedRecoveryReadinessStore()
         val attempt = UUID.randomUUID()
@@ -152,6 +191,21 @@ class FinalizedRecoveryReadinessTest {
         val recoveryBranch = render.substringAfter("val gattReadiness = if (finalizedDeliveryRecoveryOnly) {")
             .substringBefore("} else when {")
         assertFalse(recoveryBranch.contains("latest(CausalEventCode.GATT_ADVERTISING_READY)"))
+        val heartbeat = gatt.substringAfter("private val finalizedRecoveryHeartbeat")
+            .substringBefore("private val finalizedRecoveryDeadline")
+        assertTrue(heartbeat.contains("finalizedRecoveryLifetime.permitsDelivery"))
+        assertTrue(heartbeat.indexOf("finalizedRecoveryLifetime.permitsDelivery") <
+            heartbeat.indexOf("FinalizedRecoveryReadiness.heartbeat"))
+        assertTrue(heartbeat.contains("stopFinalizedRecoveryWithoutAcknowledgement(\"DEADLINE\")"))
+        assertTrue(gatt.contains("finalizedRecoveryLifetime.start(recoveryStartedAtMs)"))
+        assertTrue(gatt.contains("FinalizedRecoveryReadiness.foreground(attempt, causalComponentInstanceId, recoveryStartedAtMs)"))
+        assertTrue(gatt.contains("stopFinalizedRecoveryWithoutAcknowledgement(\"DEADLINE_BEFORE_CONNECTION\")"))
+        assertTrue(gatt.contains("stopFinalizedRecoveryWithoutAcknowledgement(\"RESUME_AFTER_DEADLINE_OR_DISCONNECT\")"))
+        assertTrue(gatt.contains("stopFinalizedRecoveryWithoutAcknowledgement(\"ACK_AFTER_DEADLINE_OR_DISCONNECT\")"))
+        assertTrue(render.contains("recoverySnapshot?.reason == FinalizedRecoveryStopReason.DEADLINE"))
+        assertTrue(render.contains("RECOVERY DEADLINE EXPIRED · do not connect"))
+        assertTrue(main.contains("private val readinessRefresh"))
+        assertTrue(main.contains("if (finalizedDeliveryRecoveryOnly) renderEvidence()"))
     }
 
     private fun source(name: String) = listOf(

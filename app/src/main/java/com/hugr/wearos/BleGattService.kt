@@ -79,7 +79,12 @@ class BleGattService : Service() {
             if (!finalizedDeliveryRecoveryOnly || !finalizedRecoveryForegroundActive ||
                 finalizedRecoveryStopReason != null
             ) return
-            FinalizedRecoveryReadiness.heartbeat(attempt, causalComponentInstanceId, SystemClock.elapsedRealtime())
+            val nowMs = SystemClock.elapsedRealtime()
+            if (!finalizedRecoveryLifetime.permitsDelivery(nowMs)) {
+                stopFinalizedRecoveryWithoutAcknowledgement("DEADLINE")
+                return
+            }
+            FinalizedRecoveryReadiness.heartbeat(attempt, causalComponentInstanceId, nowMs)
             transportHandler.postDelayed(this, 1_000L)
         }
     }
@@ -476,9 +481,10 @@ class BleGattService : Service() {
             ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE,
         )
         finalizedRecoveryForegroundActive = true
-        finalizedRecoveryLifetime.start(SystemClock.elapsedRealtime())
+        val recoveryStartedAtMs = SystemClock.elapsedRealtime()
+        finalizedRecoveryLifetime.start(recoveryStartedAtMs)
         finalizedDeliveryRecoveryAttemptId?.let { attempt ->
-            FinalizedRecoveryReadiness.foreground(attempt, causalComponentInstanceId, SystemClock.elapsedRealtime())
+            FinalizedRecoveryReadiness.foreground(attempt, causalComponentInstanceId, recoveryStartedAtMs)
         }
         transportHandler.post(finalizedRecoveryHeartbeat)
         transportHandler.postDelayed(finalizedRecoveryDeadline, FinalizedDeliveryLifetime.MAX_DURATION_MS)

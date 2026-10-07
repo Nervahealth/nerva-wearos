@@ -492,6 +492,10 @@ class MainActivity : ComponentActivity() {
                     "HUGR\nExact delivery ACK accepted · service stopped"
                 } else "HUGR\nRETAINED DELIVERY STOPPED · $reason"
                 FinalizedRecoveryDisplay.PREPARING -> "HUGR\nRetained delivery PREPARING · do not connect"
+                FinalizedRecoveryDisplay.NOT_CONFIRMED -> if (
+                    recoverySnapshot?.reason == FinalizedRecoveryStopReason.DEADLINE
+                ) "HUGR\nRECOVERY DEADLINE EXPIRED · do not connect"
+                else "HUGR\nRecovery readiness NOT CONFIRMED · do not connect"
                 else -> "HUGR\nRecovery readiness NOT CONFIRMED · do not connect"
             }
         }
