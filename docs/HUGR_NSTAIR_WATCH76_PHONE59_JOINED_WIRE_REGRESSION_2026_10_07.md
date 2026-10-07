@@ -23,3 +23,15 @@ This is **synthetic cross-language wire interoperability with a simulated Phone 
 **Candidate unchanged:** the one already admitted Watch76 `com.hugr.wearos`, versionCode 76, SHA-256 `c95d6b01a273dbbefdabfb68c6b0f69f52f7e48bf21d9b73a135c0595a815956`, signer continuation `fc91d265…c1706`, paired with unchanged installed Phone59. No replacement APK/build is needed merely for added *test-only* coverage. Watch76 is **not reported installed**. The shortest prospective path remains separate explicit installation-only Watch75→Watch76 authority, then a **separately authorized one-shot** fresh Watch76 Main HUGR white current READY → one Phone59 Connect within the same 15-minute service window. Stop on first failure/deadline without retry, sensing, new recording, egress, pairing/reset or legacy/frozen access. Qualification still requires the actual retained source-session full canonical manifest chain, Phone native durable full equality/exact ACK, attributable Watch ACK and matching `BOUNDED_RUN_DELIVERY_ACKNOWLEDGED`; truncated UI ACK or synthetic success alone cannot qualify it.
 
 **Status:** Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`. Accepted private VIS-COUNT S4 unchanged; known-denied Atlas `10002` not retried. GitHub preservation for this new test/receipt commit must be confirmed by non-force remote head/tree readback, not local commits alone.
+
+## Source-preservation readback checkpoint
+
+After the bounded test/receipt/control commits, `scripts/hugr_preserve_mirrors.py --apply` chose the already-authorized repository-write login after testing both repositories, published **one commit per branch non-force**, and independently read back exact GitHub branch heads and matching source trees:
+
+| Branch role | Local source commit | GitHub mirror commit | Identical tree |
+|---|---|---|---|
+| Watch | `1b58d18ad57b0d9131067502fe04cd2184a5464f` | `ee563d173b1758dcd4a3c93c756f1db640277a6f` | `4959ec2b6c6247db20c5a5a9adc4bfa0c3610185` |
+| Phone | `5c31092ceb1ff0f1dfebe24779351718c6ec3ec1` | `5a6233ddba6b01d6a655adc87d18953febbe8c41` | `987ac60bc7531dafdd0e2882c78f969c76889f44` |
+| Controlled records | `34fd384b118f88be77912d6a0905a9246ea8db2b` | `9a62295c26f1058ee3103b1244e87cc887371626` | `18fed849af0b1180a260e35bca512eafc24a6381` |
+
+These IDs are an independently checked **first checkpoint**, not a claim that this subsequent addendum has itself already been published. The final closeout commit containing this checkpoint must be mirrored and verified after committing. The task-injected GitHub App still lacks Wear OS selected-repository scope in the last read-only check; this controlled workspace used the previously authorized repository-write credential, without printing or modifying it. No main merge or force update occurred.
