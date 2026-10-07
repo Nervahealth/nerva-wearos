@@ -72,6 +72,93 @@ class SourceJournalTest {
     }
 
     @Test
+    fun `three finalized segments advance in order after restart with all records already durable on Phone`() {
+        val root = temporaryFolder.newFolder("complete-retained-multi-segment")
+        val original = journal(root, bootCount = 69) { 1_000L }
+        original.append(SourceStreamCode.CARDIAC, 100L, byteArrayOf(1))
+        original.append(SourceStreamCode.ACCEL, 101L, byteArrayOf(2))
+        val main = requireNotNull(original.finalizeActiveSegment())
+        original.append(SourceStreamCode.DEVICE_HEALTH, 102L, byteArrayOf(3))
+        original.append(SourceStreamCode.DEVICE_HEALTH, 103L, byteArrayOf(4))
+        val health = requireNotNull(original.finalizeActiveSegment())
+        original.append(SourceStreamCode.ACCEL, 104L, byteArrayOf(5))
+        val terminal = requireNotNull(original.finalizeActiveSegment())
+        val session = original.watchBootSessionId
+        original.close()
+
+        val reopened = journal(root, bootCount = 69) { 2_000L }
+        val phoneDurableIndex = terminal.lastRecordIndex
+        val highWater = reopened.highestFinalizedRecordIndex(session)
+        assertEquals(listOf(main, health, terminal), reopened.finalizedManifests(session))
+        assertEquals(phoneDurableIndex, highWater)
+        val survivingRecords = reopened.readRecordsAfter(session, 0L, highWater, 96)
+        assertEquals(5, survivingRecords.size)
+
+        for (expected in listOf(main, health, terminal)) {
+            val pending = reopened.finalizedManifests(session)
+            val queued = requireNotNull(SourceReplayWindow.nextManifestToQueue(
+                session, phoneDurableIndex, highWater, null, pending,
+            ))
+            assertEquals(expected, queued)
+            val segmentRecords = survivingRecords.filter { it.recordIndex in queued.firstRecordIndex..queued.lastRecordIndex }
+            val phoneHash = MessageDigest.getInstance("SHA-256")
+                .digest(segmentRecords.flatMap { it.canonicalBytes().asIterable() }.toByteArray())
+                .joinToString("") { "%02x".format(it) }
+            assertEquals(expected.sha256Hex, phoneHash)
+            assertEquals(expected.recordCount, segmentRecords.size.toLong())
+            val ack = SourceSegmentAcknowledgement(session, expected.lastRecordIndex, phoneHash)
+            SourceReplayWindow.validateAcknowledgement(session, phoneDurableIndex, highWater, ack, queued.lastRecordIndex)
+            SourceReplayWindow.validateQueuedManifestAcknowledgement(queued.lastRecordIndex, ack)
+            assertFalse(reopened.acknowledgeCompletedSegment(session, expected.lastRecordIndex, "0".repeat(64)))
+            assertTrue(reopened.acknowledgeCompletedSegment(session, ack.cumulativeRecordIndex, ack.completedSegmentSha256))
+            assertFalse(reopened.acknowledgeCompletedSegment(session, ack.cumulativeRecordIndex, ack.completedSegmentSha256))
+            assertEquals(phoneDurableIndex, maxOf(phoneDurableIndex, ack.cumulativeRecordIndex))
+        }
+        assertTrue(reopened.finalizedManifests().isEmpty())
+        assertEquals(null, SourceReplayWindow.nextManifestToQueue(session, phoneDurableIndex, highWater, null, reopened.finalizedManifests(session)))
+        reopened.close()
+    }
+
+    @Test
+    fun `misnamed finalized hash fails closed without losing or delivering the preserved bytes`() {
+        val root = temporaryFolder.newFolder("corrupt-retained-target")
+        val first = journal(root, bootCount = 69) { 1_000L }
+        first.append(SourceStreamCode.CARDIAC, 100L, byteArrayOf(1, 2))
+        val manifest = requireNotNull(first.finalizeActiveSegment())
+        first.close()
+        val source = root.listFiles().orEmpty().single { it.name.startsWith("segment_") }
+        val before = source.readBytes()
+        val renamed = java.io.File(root, source.name.replace(manifest.sha256Hex, "0".repeat(64)))
+        assertTrue(source.renameTo(renamed))
+        val recovered = journal(root, bootCount = 69) { 2_000L }
+        assertFalse(recovered.preflight().eligible)
+        assertEquals(null, RetainedFinalizedDeliveryRecovery.select(recovered))
+        assertArrayEquals(before, renamed.readBytes())
+        recovered.close()
+    }
+
+    @Test
+    fun `multiple retained fresh source sessions require explicit source selection not filesystem age`() {
+        val root = temporaryFolder.newFolder("multi-session-target")
+        val first = journal(root, bootCount = 69) { 1_000L }
+        first.append(SourceStreamCode.CARDIAC, 100L, byteArrayOf(1))
+        requireNotNull(first.finalizeActiveSegment())
+        val firstSession = first.watchBootSessionId
+        first.close()
+        val second = journal(root, bootCount = 70) { 2_000L }
+        second.append(SourceStreamCode.ACCEL, 200L, byteArrayOf(2))
+        requireNotNull(second.finalizeActiveSegment())
+        val secondSession = second.watchBootSessionId
+        second.close()
+        val reopened = journal(root, bootCount = 70) { 3_000L }
+        assertTrue(reopened.preflight().eligible)
+        assertEquals(setOf(firstSession, secondSession), reopened.finalizedManifests().map { it.watchBootSessionId }.toSet())
+        assertEquals(null, RetainedFinalizedDeliveryRecovery.select(reopened))
+        assertEquals(2, reopened.finalizedManifests().size)
+        reopened.close()
+    }
+
+    @Test
     fun `canonical records round trip with stable identity and bytes`() {
         val session = java.util.UUID.randomUUID()
         val record = WatchSourceRecord(

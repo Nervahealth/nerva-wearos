@@ -392,6 +392,9 @@ class BleGattService : Service() {
         runtimeMode == EvidenceEgressGattRuntimeMode.STANDARD
 
     private fun requireRetainedFinalizedDeliverySession(): UUID {
+        if (!sourceJournal.preflight().eligible) {
+            throw SourceJournalCorruptionException("Retained finalized journal is not integrity eligible")
+        }
         val session = finalizedDeliverySourceSessionId
             ?: throw SourceJournalCorruptionException("Finalized delivery recovery is missing its source session identity")
         if (sourceJournal.finalizedManifests(session).isEmpty()) {
@@ -1861,11 +1864,18 @@ class BleGattService : Service() {
             durablePhoneRecordIndex = durablePhoneRecordIndex,
             replayHighWaterRecordIndex = replayHighWaterRecordIndex,
             acknowledgement = acknowledgement,
+            queuedManifestEndIndex = queuedReplayManifestEndIndex,
         )
+        if (finalizedDeliveryRecoveryOnly && activeSession != finalizedDeliverySourceSessionId) {
+            throw SourceJournalCorruptionException("Recovery ACK crossed the selected retained source session")
+        }
         SourceReplayWindow.validateQueuedManifestAcknowledgement(
             queuedManifestEndIndex = queuedReplayManifestEndIndex,
             acknowledgement = acknowledgement,
         )
+        val acceptedManifest = sourceJournal.finalizedManifests(activeSession)
+            .firstOrNull { it.lastRecordIndex == acknowledgement.cumulativeRecordIndex }
+            ?: throw SourceJournalCorruptionException("Queued acknowledgement has no retained finalized manifest")
         if (!sourceJournal.acknowledgeCompletedSegment(
                 acknowledgement.watchBootSessionId,
                 acknowledgement.cumulativeRecordIndex,
@@ -1874,15 +1884,25 @@ class BleGattService : Service() {
         ) {
             throw SourceJournalCorruptionException("Acknowledgement endpoint/hash did not match a finalized segment")
         }
-        durablePhoneRecordIndex = acknowledgement.cumulativeRecordIndex
+        recordCausal(
+            CausalEventCode.SOURCE_SEGMENT_ACK_ACCEPTED,
+            recordIndexStart = acceptedManifest.firstRecordIndex,
+            recordIndexEnd = acceptedManifest.lastRecordIndex,
+            arg0 = replayHighWaterRecordIndex,
+        )
+        // An older unacknowledged manifest can be verified after the Phone has
+        // already stored later records. Never regress the durable resume index
+        // or resend data merely because its manifest ACK arrived later.
+        durablePhoneRecordIndex = maxOf(durablePhoneRecordIndex, acknowledgement.cumulativeRecordIndex)
         queuedReplayManifestEndIndex = null
         lastReplayQueuedRecordIndex = maxOf(lastReplayQueuedRecordIndex, durablePhoneRecordIndex)
         replayBacklogCount = replayHighWaterRecordIndex - durablePhoneRecordIndex
         replayActive = replayBacklogCount > 0
         broadcastStatus(if (replayActive) "REPLAYING: $replayBacklogCount remain" else "CAUGHT UP: source journal acknowledged")
-        if (replayActive) {
-            enqueueNextManifestForReplayWindow(activeSession, replayHighWaterRecordIndex)
-        }
+        // A durable contiguous Phone endpoint does not mean older manifests
+        // were acknowledged. Always offer the next retained manifest, even
+        // when no data records need replaying in this window.
+        enqueueNextManifestForReplayWindow(activeSession, replayHighWaterRecordIndex)
         pumpReplay()
         advanceReplaySessionIfReady()
         closeBoundedFreshRuntimeAfterDeliveryIfComplete()
@@ -1892,7 +1912,8 @@ class BleGattService : Service() {
         if (finalizedDeliveryRecoveryOnly) {
             val sourceSessionId = finalizedDeliverySourceSessionId ?: return
             if (sourceJournal.hasFinalizedSegments(sourceSessionId)) return
-            if (sourceJournal.finalizedManifests().isNotEmpty()) return
+            // This attempt is scoped to exactly one retained source session.
+            // Other fresh-v2 sessions stay untouched for their own authorization.
             val markers = NormalStartupMarkerStore(this)
             markers.record(sourceSessionId.toString(), NormalStartupStage.BOUNDED_RUN_DELIVERY_ACKNOWLEDGED)
             WatchSourceRuntime.closeFreshAfterDelivery()
@@ -1943,6 +1964,7 @@ class BleGattService : Service() {
     }
 
     private fun advanceReplaySessionIfReady() {
+        if (finalizedDeliveryRecoveryOnly) return // Never traverse another retained source session.
         val completedSession = activeReplaySessionId ?: return
         if (completedSession == sourceJournal.watchBootSessionId) return
         if (durablePhoneRecordIndex < replayHighWaterRecordIndex) return

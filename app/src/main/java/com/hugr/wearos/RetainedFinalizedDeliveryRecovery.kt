@@ -14,6 +14,14 @@ internal data class RetainedFinalizedDeliveryTarget(
 
 internal object RetainedFinalizedDeliveryRecovery {
     fun select(journal: SourceJournal): RetainedFinalizedDeliveryTarget? {
+        // A recorded capacity/integrity anomaly (including a misnamed or
+        // corrupted finalized segment) cannot be promoted to a GATT offer.
+        // This recovery-only candidate's no-target branch never starts sensing.
+        if (!journal.preflight().eligible) return null
+        // Filesystem mtimes do not establish the user's intended source session.
+        // With more than one unacknowledged session, require an explicit future
+        // selection decision rather than silently choosing one or crossing over.
+        if (journal.finalizedManifests().map { it.watchBootSessionId }.distinct().size > 1) return null
         val sourceSessionId = journal.oldestFinalizedSessionId() ?: return null
         val terminalManifest = journal.finalizedManifests(sourceSessionId)
             .maxByOrNull { manifest -> manifest.lastRecordIndex }

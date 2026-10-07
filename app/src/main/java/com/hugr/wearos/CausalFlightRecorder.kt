@@ -100,7 +100,8 @@ internal enum class CausalEventCode(val wireCode: Int) {
     GATT_SERVICE_FAILED(83),
     GATT_ADVERTISING_READY(84),
     GATT_ADVERTISING_FAILED(85),
-    FINALIZED_RECOVERY_STOP_REQUESTED(86);
+    FINALIZED_RECOVERY_STOP_REQUESTED(86),
+    SOURCE_SEGMENT_ACK_ACCEPTED(87);
 
     companion object {
         fun fromWireCode(code: Int): CausalEventCode =

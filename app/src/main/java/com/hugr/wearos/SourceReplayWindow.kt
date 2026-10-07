@@ -20,14 +20,22 @@ internal object SourceReplayWindow {
         durablePhoneRecordIndex: Long,
         replayHighWaterRecordIndex: Long,
         acknowledgement: SourceSegmentAcknowledgement,
+        queuedManifestEndIndex: Long? = null,
     ): UUID {
         val session = activeSession
             ?: throw SourceJournalCorruptionException("Acknowledgement arrived without an active replay session")
         if (acknowledgement.watchBootSessionId != session) {
             throw SourceJournalCorruptionException("Acknowledgement watch session mismatch")
         }
-        if (acknowledgement.cumulativeRecordIndex < durablePhoneRecordIndex) {
-            throw SourceJournalCorruptionException("Acknowledgement moved backwards")
+        // The Phone's resume index proves durable *records*, not which older
+        // segment manifests have been verified and acknowledged. A historical
+        // manifest may end before that index. It is admissible only when it is
+        // the exact currently queued endpoint, and the journal must still
+        // check its full hash/session before removing that segment.
+        if (acknowledgement.cumulativeRecordIndex < durablePhoneRecordIndex &&
+            queuedManifestEndIndex != acknowledgement.cumulativeRecordIndex
+        ) {
+            throw SourceJournalCorruptionException("Acknowledgement moved backwards without queued older manifest")
         }
         if (acknowledgement.cumulativeRecordIndex > replayHighWaterRecordIndex) {
             throw SourceJournalCorruptionException("Acknowledgement exceeds frozen replay high-water index")
@@ -46,17 +54,15 @@ internal object SourceReplayWindow {
         // before it has received that segment's manifest. In that manifest-only
         // case, the endpoint equals its resume index and must still be queued
         // exactly once for hash verification and acknowledgement.
-        if (queuedManifestEndIndex != null && queuedManifestEndIndex >= durablePhoneRecordIndex) return null
+        if (queuedManifestEndIndex != null) return null
         val inWindow = manifests.asSequence()
             .filter { includesManifest(activeSession, replayHighWaterRecordIndex, it) }
-            .filter { it.lastRecordIndex >= durablePhoneRecordIndex }
             .sortedBy { it.firstRecordIndex }
             .toList()
-        // Ordinary replay must prefer records the Phone does not yet have. Only
-        // if no later retained manifest exists may it queue the equality-only
-        // terminal manifest for hash verification and exact acknowledgement.
-        return inWindow.firstOrNull { it.lastRecordIndex > durablePhoneRecordIndex }
-            ?: inWindow.firstOrNull { it.lastRecordIndex == durablePhoneRecordIndex }
+        // The durable record high-water cannot stand in for a manifest-ACK
+        // ledger. Queue the oldest unacknowledged segment even when its bytes
+        // are already present on the Phone, then advance after its exact ACK.
+        return inWindow.firstOrNull()
     }
 
     /**
@@ -75,7 +81,7 @@ internal object SourceReplayWindow {
     ): FinalizedManifestDeliveryPlan? {
         val session = activeSession ?: return null
         val sessionManifests = finalizedManifests.filter { manifest ->
-            manifest.watchBootSessionId == session && manifest.lastRecordIndex >= durablePhoneRecordIndex
+            manifest.watchBootSessionId == session
         }
         if (sessionManifests.isEmpty()) return null
         val expandedHighWater = maxOf(

@@ -90,7 +90,6 @@ class OrdinaryRuntimeCandidateContractTest {
             closeAfterAck,
             "finalizedDeliverySourceSessionId",
             "sourceJournal.hasFinalizedSegments(sourceSessionId)",
-            "sourceJournal.finalizedManifests().isNotEmpty()",
             "NormalStartupStage.BOUNDED_RUN_DELIVERY_ACKNOWLEDGED",
             "WatchSourceRuntime.closeFreshAfterDelivery()",
             "NormalStartupStage.BOUNDED_RUN_GATT_STOP_REQUESTED",

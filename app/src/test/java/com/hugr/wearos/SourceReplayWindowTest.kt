@@ -45,7 +45,7 @@ class SourceReplayWindowTest {
     }
 
     @Test
-    fun `bounded finalization extends a stale replay window and queues the terminal manifest`() {
+    fun `bounded finalization extends a stale replay window but verifies older manifest first`() {
         val earlyManifest = manifest(session, firstRecordIndex = 1L, lastRecordIndex = 11L)
         val terminalManifest = manifest(session, firstRecordIndex = 12L, lastRecordIndex = 13L)
 
@@ -60,9 +60,9 @@ class SourceReplayWindowTest {
         )
 
         assertEquals(13L, plan.replayHighWaterRecordIndex)
-        assertEquals(terminalManifest, plan.nextManifest)
+        assertEquals(earlyManifest, plan.nextManifest)
         assertEquals(
-            13L,
+            11L,
             SourceReplayWindow.replayReadUpperBound(
                 replayHighWaterRecordIndex = plan.replayHighWaterRecordIndex,
                 queuedManifestEndIndex = plan.nextManifest?.lastRecordIndex,
@@ -72,11 +72,12 @@ class SourceReplayWindowTest {
             activeSession = session,
             durablePhoneRecordIndex = 11L,
             replayHighWaterRecordIndex = plan.replayHighWaterRecordIndex,
-            acknowledgement = acknowledgement(session, 13L),
+            acknowledgement = acknowledgement(session, 11L),
+            queuedManifestEndIndex = 11L,
         )
         SourceReplayWindow.validateQueuedManifestAcknowledgement(
             queuedManifestEndIndex = plan.nextManifest?.lastRecordIndex,
-            acknowledgement = acknowledgement(session, 13L),
+            acknowledgement = acknowledgement(session, 11L),
         )
     }
 
@@ -155,6 +156,50 @@ class SourceReplayWindowTest {
                 queuedManifestEndIndex = terminalManifest.lastRecordIndex,
                 acknowledgement = acknowledgement(session, terminalManifest.lastRecordIndex - 1L),
             )
+        }
+    }
+
+    @Test
+    fun `all retained segments are verified in order even when Phone already stores later records`() {
+        val main = manifest(session, 1L, 8182L)
+        val health = manifest(session, 8183L, 8184L)
+        var pending = listOf(main, health)
+        val durablePhoneIndex = 8184L
+        val highWater = health.lastRecordIndex
+
+        val first = requireNotNull(SourceReplayWindow.nextManifestToQueue(
+            session, durablePhoneIndex, highWater, null, pending,
+        ))
+        assertEquals(main, first)
+        assertEquals(null, SourceReplayWindow.nextManifestToQueue(
+            session, durablePhoneIndex, highWater, first.lastRecordIndex, pending,
+        ))
+        SourceReplayWindow.validateAcknowledgement(session, durablePhoneIndex, highWater,
+            acknowledgement(session, main.lastRecordIndex), first.lastRecordIndex)
+        SourceReplayWindow.validateQueuedManifestAcknowledgement(first.lastRecordIndex,
+            acknowledgement(session, main.lastRecordIndex))
+        pending = pending - first // Only exact journal ACK removes the first segment.
+        val second = requireNotNull(SourceReplayWindow.nextManifestToQueue(
+            session, durablePhoneIndex, highWater, null, pending,
+        ))
+        assertEquals(health, second)
+        SourceReplayWindow.validateAcknowledgement(session, durablePhoneIndex, highWater,
+            acknowledgement(session, health.lastRecordIndex), second.lastRecordIndex)
+        pending = pending - second
+        assertEquals(true, pending.isEmpty())
+        assertEquals(null, SourceReplayWindow.nextManifestToQueue(
+            session, durablePhoneIndex, highWater, null, pending,
+        ))
+    }
+
+    @Test
+    fun `backwards acknowledgement is never admitted without exactly queued older unacknowledged manifest`() {
+        val old = acknowledgement(session, 8182L)
+        assertThrows(SourceJournalCorruptionException::class.java) {
+            SourceReplayWindow.validateAcknowledgement(session, 8184L, 8184L, old, null)
+        }
+        assertThrows(SourceJournalCorruptionException::class.java) {
+            SourceReplayWindow.validateAcknowledgement(session, 8184L, 8184L, old, 8184L)
         }
     }
 

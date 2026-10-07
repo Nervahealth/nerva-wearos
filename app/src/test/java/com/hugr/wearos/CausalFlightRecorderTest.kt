@@ -11,6 +11,35 @@ import java.util.UUID
 
 class CausalFlightRecorderTest {
     @Test
+    fun `accepted segment ACK has distinct durable evidence from source-notification completion`() {
+        val root = tempDir()
+        val session = UUID.randomUUID()
+        val process = UUID.randomUUID()
+        val recorder = recorder(root, session, process, { 100L }, { 200L })
+        recorder.record(
+            code = CausalEventCode.SOURCE_NOTIFICATION_COMPLETED,
+            component = CausalComponentCode.BLE,
+            componentInstanceId = UUID.randomUUID(),
+            recordIndexStart = 8183L,
+            recordIndexEnd = 8184L,
+        )
+        recorder.record(
+            code = CausalEventCode.SOURCE_SEGMENT_ACK_ACCEPTED,
+            component = CausalComponentCode.BLE,
+            componentInstanceId = UUID.randomUUID(),
+            recordIndexStart = 8183L,
+            recordIndexEnd = 8184L,
+            arg0 = 8184L,
+        )
+        assertEquals(87, CausalEventCode.SOURCE_SEGMENT_ACK_ACCEPTED.wireCode)
+        assertEquals(CausalEventCode.SOURCE_SEGMENT_ACK_ACCEPTED, CausalEventCode.fromWireCode(87))
+        assertEquals(listOf(CausalEventCode.SOURCE_NOTIFICATION_COMPLETED, CausalEventCode.SOURCE_SEGMENT_ACK_ACCEPTED),
+            recorder.events().map { it.code })
+        assertEquals(8183L, recorder.events().last().recordIndexStart)
+        assertEquals(8184L, recorder.events().last().recordIndexEnd)
+    }
+
+    @Test
     fun `build 48 snapshot mapping rejects latest index beyond frozen replay high water`() {
         val root = tempDir()
         val recorder = recorder(root, UUID.randomUUID(), UUID.randomUUID(), { 1L }, { 2L })

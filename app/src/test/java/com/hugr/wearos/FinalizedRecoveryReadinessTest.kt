@@ -208,6 +208,38 @@ class FinalizedRecoveryReadinessTest {
         assertTrue(main.contains("if (finalizedDeliveryRecoveryOnly) renderEvidence()"))
     }
 
+    @Test fun `retained replay never extends acquisition or crosses a different source session`() {
+        val gatt = source("BleGattService.kt")
+        val health = gatt.substringAfter("private fun notifyDeviceHealth()")
+            .substringBefore("private fun notifyEda(")
+        assertTrue(health.indexOf("if (finalizedDeliveryRecoveryOnly) return") < health.indexOf("sourceJournal.append("))
+        val initialize = gatt.substringAfter("private fun initializeRuntime(")
+            .substringBefore("private fun isEgressOnlyRuntime()")
+        assertTrue(initialize.contains("if (!finalizedDeliveryRecoveryOnly) {"))
+        assertTrue(initialize.contains("registerSensorReceivers()"))
+        val advance = gatt.substringAfter("private fun advanceReplaySessionIfReady()")
+            .substringBefore("private fun sourceFrameRecords(")
+        assertTrue(advance.contains("if (finalizedDeliveryRecoveryOnly) return"))
+        val complete = gatt.substringAfter("private fun closeBoundedFreshRuntimeAfterDeliveryIfComplete()")
+            .substringBefore("private fun pumpReplay()")
+        assertTrue(complete.contains("sourceJournal.hasFinalizedSegments(sourceSessionId)"))
+        assertFalse(complete.substringBefore("val marker = NormalStartupMarkerStore(this).read()")
+            .contains("sourceJournal.finalizedManifests().isNotEmpty()"))
+        val ack = gatt.substringAfter("private fun handleSourceAcknowledgement(")
+            .substringBefore("private fun closeBoundedFreshRuntimeAfterDeliveryIfComplete()")
+        assertTrue(ack.indexOf("sourceJournal.acknowledgeCompletedSegment(") <
+            ack.indexOf("CausalEventCode.SOURCE_SEGMENT_ACK_ACCEPTED"))
+        assertTrue(ack.indexOf("CausalEventCode.SOURCE_SEGMENT_ACK_ACCEPTED") <
+            ack.indexOf("closeBoundedFreshRuntimeAfterDeliveryIfComplete()"))
+        assertTrue(ack.contains("maxOf(durablePhoneRecordIndex, acknowledgement.cumulativeRecordIndex)"))
+        assertTrue(ack.contains("activeSession != finalizedDeliverySourceSessionId"))
+        assertTrue(ack.indexOf("replayActive = replayBacklogCount > 0") <
+            ack.indexOf("enqueueNextManifestForReplayWindow(activeSession, replayHighWaterRecordIndex)"))
+        assertFalse(ack.substringAfter("replayActive = replayBacklogCount > 0")
+            .substringBefore("enqueueNextManifestForReplayWindow(activeSession, replayHighWaterRecordIndex)")
+            .contains("if (replayActive) {"))
+    }
+
     private fun source(name: String) = listOf(
         File("src/main/java/com/hugr/wearos/$name"),
         File("app/src/main/java/com/hugr/wearos/$name"),

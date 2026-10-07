@@ -92,6 +92,7 @@ class Build49ManifestWindowRedTest {
         manifestCount: Int,
     ) {
         private val sourceCharacteristic = UUID.fromString("0000fef8-0000-1000-8000-00805f9b34fb")
+        private val frozenHighWater = manifestCount.toLong()
         private val manifests = (1L..manifestCount.toLong()).map { index ->
             SourceSegmentManifest(
                 segmentId = "segment-$index",
@@ -103,7 +104,7 @@ class Build49ManifestWindowRedTest {
                 sha256Hex = "ab".repeat(32),
                 streamRanges = emptyMap(),
             )
-        }
+        }.toMutableList()
         private val triggered = mutableListOf<Pair<GattNotificationStream, Long>>()
         private val queue = GattNotificationQueue(
             maxDepth = 256,
@@ -130,7 +131,7 @@ class Build49ManifestWindowRedTest {
             val pendingBeforeData = queue.snapshot().pendingReplayFrames
             val firstReplayDataPageAdmitted = pumpFirstReplayDataPage()
             return SafeProgressResult(
-                manifestCount = manifests.size,
+                manifestCount = frozenHighWater.toInt(),
                 queueCapacity = 256,
                 firstManifestEnqueueFailure = firstManifestEnqueueFailure,
                 criticalOverflowCount = queue.snapshot().criticalOverflowCount,
@@ -156,7 +157,7 @@ class Build49ManifestWindowRedTest {
             val manifest = SourceReplayWindow.nextManifestToQueue(
                 activeSession = session,
                 durablePhoneRecordIndex = durablePhoneRecordIndex,
-                replayHighWaterRecordIndex = manifests.size.toLong(),
+                replayHighWaterRecordIndex = frozenHighWater,
                 queuedManifestEndIndex = queuedManifestEndIndex,
                 manifests = manifests,
             ) ?: return
@@ -180,7 +181,7 @@ class Build49ManifestWindowRedTest {
         fun pumpFirstReplayDataPage(): Boolean {
             if (queue.snapshot().pendingReplayFrames >= 4) return false
             val upperBound = SourceReplayWindow.replayReadUpperBound(
-                replayHighWaterRecordIndex = manifests.size.toLong(),
+                replayHighWaterRecordIndex = frozenHighWater,
                 queuedManifestEndIndex = queuedManifestEndIndex,
             ) ?: return false
             if (lastReplayQueuedRecordIndex >= upperBound) return false
@@ -218,13 +219,14 @@ class Build49ManifestWindowRedTest {
             SourceReplayWindow.validateAcknowledgement(
                 activeSession = session,
                 durablePhoneRecordIndex = durablePhoneRecordIndex,
-                replayHighWaterRecordIndex = manifests.size.toLong(),
+                replayHighWaterRecordIndex = frozenHighWater,
                 acknowledgement = acknowledgement,
             )
             SourceReplayWindow.validateQueuedManifestAcknowledgement(
                 queuedManifestEndIndex = queuedManifestEndIndex,
                 acknowledgement = acknowledgement,
             )
+            assertTrue(manifests.removeIf { it.lastRecordIndex == endpoint })
             durablePhoneRecordIndex = endpoint
             queuedManifestEndIndex = null
             lastReplayQueuedRecordIndex = maxOf(lastReplayQueuedRecordIndex, endpoint)
