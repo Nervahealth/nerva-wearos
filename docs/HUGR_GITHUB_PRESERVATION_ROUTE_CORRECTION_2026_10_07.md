@@ -19,3 +19,15 @@ The previous GitHub mirror script operated on one local HEAD commit and inherite
 **Before remote readback:** current local Watch head `068ca72666ff93fa1c06876cb1849dc8398cce8a`, Phone `6d6fe718cd7d7a2365002bbd673cd5fc8d65708e`, control `67d23323fb25f128c2d2ecb53b81b803be70711d` preceded this receipt. The Watch76 source/control fallback was uploaded and read back with SHA-256 `5c4305ab64fc69fbfda2cbaa7357aa11947a1fe3ce83ab36787b610e359fd51b`. **These are not yet this correction's remote GitHub readback.** The exact remote result, or a specific stop, must be added after running the preflight/apply procedure and reflected in Master then Alignment last.
 
 Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`. Accepted VIS-COUNT S4 unchanged; denied Atlas `10002` not retried. No claim about scientific qualification follows from source preservation.
+
+## Final GitHub preservation result — independent readback after 13-commit catch-up
+
+The new mirror tool selected **`existing_repo_write_login`** after its *both-repository* actual-write probe (the injected GitHub App credential still fails Wear OS writes). It replayed **13/13 missing local commits on each of the three established branches**, using no force and no main merge. Every remote tree was checked against its local commit after each non-force ref update; an independent later GET read the final branch heads/commit trees. At this first post-catch-up checkpoint:
+
+| Controlled source | Local committed head | GitHub mirror head | Exactly matching tree |
+|---|---|---|---|
+| `Nervahealth/nerva-wearos` `preservation/watch68-partial-source-2026-10-03` | `2e3e44a8beda32fec626668d924fcceba916135b` | `e95bd49e5f5c8bcd49ee1ea32593f550c48c3c36` | `8935afcfe238f7e49b249e1b8b2eaa8144ce2c4d` |
+| `Nervahealth/nerva-mobile` `preservation/phone-control-and-source-2026-10-03` | `e7893f2ebe02fc8b8cfe9cb5c31f45a3f5f16c69` | `db733b73848626ef55cd60b992acfc957e823f59` | `6e7412d4ceb92cddefed03ecfd3efebc89759d59` |
+| `Nervahealth/nerva-mobile` `preservation/watch69-control-records-2026-10-03` | `65d9c010186e91552609847b882f6a5b1c61c2f8` | `09257f9968515066b9da177b8b47f0963f44aef6` | `3b634e37a09f324582ef0c7bb0b7db103be1f4d6` |
+
+This is **actual GitHub source preservation** of Watch76, Phone deterministic tests and all prior source/control receipts since the previous verified mirror, not merely the earlier uploaded fallback. Because this result paragraph and the final Master/Alignment updates constitute a *new* local commit, the final readback after those closeout commits must be recorded separately. Branch titles are lineage labels, not a Watch68 qualification statement; no intentional new fork, force update or main change occurred. The project standing instruction is live, but an independent future sandbox will still need its GitHub App to have Wear OS write access or an already authorized repo-write login; neither should be assumed silently.
