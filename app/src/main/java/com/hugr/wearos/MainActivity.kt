@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -49,6 +50,15 @@ class MainActivity : ComponentActivity() {
     private val startupRecoveryGate = BoundedNormalStartupGate()
     private var finalizedDeliveryRecoveryOnly = false
     private var finalizedDeliverySourceSessionId: String? = null
+    private var finalizedRecoveryAttemptId: UUID? = null
+    private var readinessRefreshActive = false
+    private val readinessRefresh = object : Runnable {
+        override fun run() {
+            if (!readinessRefreshActive || isFinishing || isDestroyed) return
+            if (finalizedDeliveryRecoveryOnly) renderEvidence()
+            evidenceText.postDelayed(this, 1_000L)
+        }
+    }
 
     private val foregroundPermissions = mutableListOf(
         Manifest.permission.BODY_SENSORS,
@@ -359,13 +369,34 @@ class MainActivity : ComponentActivity() {
      */
     private fun startFinalizedDeliveryRecovery() {
         val sourceSessionId = finalizedDeliverySourceSessionId ?: return
-        startForegroundService(
-            Intent(this, BleGattService::class.java).apply {
-                putExtra(BleGattService.EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY, true)
-                putExtra(BleGattService.EXTRA_FINALIZED_DELIVERY_SOURCE_SESSION_ID, sourceSessionId)
-            },
-        )
-        statusText.text = "HUGR\nFinalized delivery recovery · waiting for Phone resume"
+        val attemptId = UUID.randomUUID()
+        finalizedRecoveryAttemptId = attemptId
+        FinalizedRecoveryReadiness.request(attemptId)
+        try {
+            startForegroundService(
+                Intent(this, BleGattService::class.java).apply {
+                    putExtra(BleGattService.EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY, true)
+                    putExtra(BleGattService.EXTRA_FINALIZED_DELIVERY_SOURCE_SESSION_ID, sourceSessionId)
+                    putExtra(BleGattService.EXTRA_FINALIZED_RECOVERY_ATTEMPT_ID, attemptId.toString())
+                },
+            )
+        } catch (failure: Exception) {
+            FinalizedRecoveryReadiness.rejectRequest(attemptId)
+            recordCausal(
+                CausalEventCode.FINALIZED_RECOVERY_STOP_REQUESTED,
+                reasonCode = FinalizedRecoveryStopReason.SERVICE_START_REJECTED.code,
+            )
+            renderEvidence()
+            return
+        }
+        statusText.text = "HUGR\nRetained delivery PREPARING · do not connect Phone yet"
+        startReadinessRefresh()
+    }
+
+    private fun startReadinessRefresh() {
+        if (readinessRefreshActive) return
+        readinessRefreshActive = true
+        evidenceText.post(readinessRefresh)
     }
 
     private val causalUpdateReceiver = object : BroadcastReceiver() {
@@ -386,10 +417,13 @@ class MainActivity : ComponentActivity() {
             )
             receiverRegistered = true
         }
+        if (finalizedDeliveryRecoveryOnly) startReadinessRefresh()
         if (permissionDecisionReached || finalizedDeliveryRecoveryOnly) renderEvidence() else renderFirstFrame(firstFramePresentation)
     }
 
     override fun onPause() {
+        readinessRefreshActive = false
+        if (::evidenceText.isInitialized) evidenceText.removeCallbacks(readinessRefresh)
         if (receiverRegistered) {
             runCatching { unregisterReceiver(causalUpdateReceiver) }
             receiverRegistered = false
@@ -441,12 +475,39 @@ class MainActivity : ComponentActivity() {
         val appends = events.filter { it.code == CausalEventCode.FIRST_APPEND }.mapNotNull { it.stream }.toSet()
         val integrity = recorder.integrity().name
         val failureClass = WatchCausalRuntime.failureClass()
+        val recoverySnapshot = if (finalizedDeliveryRecoveryOnly) {
+            FinalizedRecoveryReadiness.snapshot(finalizedRecoveryAttemptId, SystemClock.elapsedRealtime())
+        } else null
+        val recoveryDisplay = if (finalizedDeliveryRecoveryOnly &&
+            integrity != CausalRecorderIntegrity.OK.name &&
+            recoverySnapshot?.display != FinalizedRecoveryDisplay.STOPPED
+        ) {
+            FinalizedRecoveryDisplay.NOT_CONFIRMED
+        } else recoverySnapshot?.display
+        if (finalizedDeliveryRecoveryOnly) {
+            val reason = recoverySnapshot?.reason?.name ?: "UNKNOWN"
+            statusText.text = when (recoveryDisplay) {
+                FinalizedRecoveryDisplay.READY -> "HUGR\nCURRENT RECOVERY ADVERTISING READY"
+                FinalizedRecoveryDisplay.STOPPED -> if (recoverySnapshot?.reason == FinalizedRecoveryStopReason.EXACT_ACK_COMPLETED) {
+                    "HUGR\nExact delivery ACK accepted · service stopped"
+                } else "HUGR\nRETAINED DELIVERY STOPPED · $reason"
+                FinalizedRecoveryDisplay.PREPARING -> "HUGR\nRetained delivery PREPARING · do not connect"
+                else -> "HUGR\nRecovery readiness NOT CONFIRMED · do not connect"
+            }
+        }
         val bleState = when {
             latest(CausalEventCode.GATT_DISCONNECTED)?.eventSequence.orZero() > latest(CausalEventCode.GATT_CONNECTED)?.eventSequence.orZero() -> "DISCONNECTED"
             latest(CausalEventCode.GATT_CONNECTED) != null -> "CONNECTED"
             else -> "WAITING"
         }
-        val gattReadiness = when {
+        val gattReadiness = if (finalizedDeliveryRecoveryOnly) {
+            when (recoveryDisplay) {
+                FinalizedRecoveryDisplay.READY -> "CURRENT ADVERTISING READY"
+                FinalizedRecoveryDisplay.STOPPED -> "STOPPED ${recoverySnapshot?.reason?.name ?: "UNKNOWN"}"
+                FinalizedRecoveryDisplay.PREPARING -> "PREPARING"
+                else -> "NOT CONFIRMED"
+            }
+        } else when {
             latest(CausalEventCode.GATT_ADVERTISING_FAILED)?.eventSequence.orZero() > latest(CausalEventCode.GATT_ADVERTISING_READY)?.eventSequence.orZero() -> "ADVERTISING FAILED"
             latest(CausalEventCode.GATT_ADVERTISING_READY) != null -> "ADVERTISING READY"
             latest(CausalEventCode.GATT_SERVICE_FAILED)?.eventSequence.orZero() > latest(CausalEventCode.GATT_SERVICE_READY)?.eventSequence.orZero() -> "SERVICE FAILED"
@@ -477,10 +538,15 @@ class MainActivity : ComponentActivity() {
             append('\n')
             append(baselineText).append('\n')
             append("ACQ T/C/A $acquisition\n")
-            append("BLE $bleState · $gattReadiness L${events.maxOfOrNull { it.bleLineage } ?: 0L} MTU=$mtu CCCD=$cccd\n")
-            append("RESUME=${resume?.recordIndexStart ?: 0L}->${resume?.recordIndexEnd ?: 0L} ")
-            append("ABORT=${abort?.reasonCode ?: 0}\n")
-            append("--- LAST 20 ---\n")
+            if (finalizedDeliveryRecoveryOnly) {
+                append("CURRENT RECOVERY $gattReadiness (attempt ${finalizedRecoveryAttemptId?.toString()?.take(8) ?: "none"})\n")
+                append("Historical connection, MTU, resume and ACK entries below are NOT current readiness.\n")
+            } else {
+                append("BLE $bleState · $gattReadiness L${events.maxOfOrNull { it.bleLineage } ?: 0L} MTU=$mtu CCCD=$cccd\n")
+                append("RESUME=${resume?.recordIndexStart ?: 0L}->${resume?.recordIndexEnd ?: 0L} ")
+                append("ABORT=${abort?.reasonCode ?: 0}\n")
+            }
+            append(if (finalizedDeliveryRecoveryOnly) "--- HISTORY — NOT LIVE READINESS ---\n" else "--- LAST 20 ---\n")
             CausalFlightFormatter.format(events, 20).forEach { append(it).append('\n') }
         }
         scrollView.post { scrollView.fullScroll(ScrollView.FOCUS_DOWN) }

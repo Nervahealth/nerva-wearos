@@ -63,6 +63,8 @@ class BleGattService : Service() {
     private var runtimeMode: EvidenceEgressGattRuntimeMode? = null
     private var finalizedDeliveryRecoveryOnly = false
     private var finalizedDeliverySourceSessionId: UUID? = null
+    private var finalizedDeliveryRecoveryAttemptId: UUID? = null
+    @Volatile private var finalizedRecoveryStopReason: FinalizedRecoveryStopReason? = null
 
     private var bluetoothAdapter: BluetoothAdapter? = null
     private var gattServer: BluetoothGattServer? = null
@@ -71,6 +73,16 @@ class BleGattService : Service() {
     private var egressAdvertiserReady = false
     private var finalizedRecoveryForegroundActive = false
     private val finalizedRecoveryLifetime = FinalizedDeliveryLifetime()
+    private val finalizedRecoveryHeartbeat = object : Runnable {
+        override fun run() {
+            val attempt = finalizedDeliveryRecoveryAttemptId ?: return
+            if (!finalizedDeliveryRecoveryOnly || !finalizedRecoveryForegroundActive ||
+                finalizedRecoveryStopReason != null
+            ) return
+            FinalizedRecoveryReadiness.heartbeat(attempt, causalComponentInstanceId, SystemClock.elapsedRealtime())
+            transportHandler.postDelayed(this, 1_000L)
+        }
+    }
     private val finalizedRecoveryDeadline = Runnable {
         if (finalizedDeliveryRecoveryOnly &&
             !finalizedRecoveryLifetime.permitsDelivery(SystemClock.elapsedRealtime())
@@ -223,6 +235,7 @@ class BleGattService : Service() {
          */
         const val EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY = "finalized_delivery_recovery_only"
         const val EXTRA_FINALIZED_DELIVERY_SOURCE_SESSION_ID = "finalized_delivery_source_session_id"
+        const val EXTRA_FINALIZED_RECOVERY_ATTEMPT_ID = "finalized_delivery_attempt_id"
         private const val WATCHTOWER_V2_MARKER = 0xA2
         private const val WATCHTOWER_V3_MARKER = 0xA3
         private const val WATCHTOWER_CARDIAC_EVIDENCE_VERSION = 3
@@ -288,13 +301,24 @@ class BleGattService : Service() {
             val requestedSourceSessionId = intent
                 ?.getStringExtra(EXTRA_FINALIZED_DELIVERY_SOURCE_SESSION_ID)
                 ?.let { raw -> runCatching { UUID.fromString(raw) }.getOrNull() }
-            if (requestedFinalizedRecovery && requestedSourceSessionId == null) {
-                Log.e(TAG, "Refusing finalized-delivery recovery without a retained source session identity")
+            val requestedAttemptId = intent?.getStringExtra(EXTRA_FINALIZED_RECOVERY_ATTEMPT_ID)
+                ?.let { raw -> runCatching { UUID.fromString(raw) }.getOrNull() }
+            finalizedDeliveryRecoveryOnly = requestedFinalizedRecovery
+            finalizedDeliverySourceSessionId = requestedSourceSessionId
+            finalizedDeliveryRecoveryAttemptId = requestedAttemptId
+            if (requestedFinalizedRecovery && requestedAttemptId != null &&
+                !FinalizedRecoveryReadiness.enter(requestedAttemptId, causalComponentInstanceId)
+            ) {
+                markFinalizedRecoveryStop(FinalizedRecoveryStopReason.ATTEMPT_REUSED)
                 stopSelf()
                 return START_NOT_STICKY
             }
-            finalizedDeliveryRecoveryOnly = requestedFinalizedRecovery
-            finalizedDeliverySourceSessionId = requestedSourceSessionId
+            if (requestedFinalizedRecovery && (requestedSourceSessionId == null || requestedAttemptId == null)) {
+                Log.e(TAG, "Refusing finalized-delivery recovery without valid source and attempt identities")
+                markFinalizedRecoveryStop(FinalizedRecoveryStopReason.INVALID_SOURCE_ID)
+                stopSelf()
+                return START_NOT_STICKY
+            }
             if (requestedMode == EvidenceEgressGattRuntimeMode.EGRESS_ONLY) {
                 if (!startEgressForegroundLifetime()) {
                     stopSelf()
@@ -302,6 +326,7 @@ class BleGattService : Service() {
                 }
             } else if (requestedFinalizedRecovery) {
                 if (!startFinalizedRecoveryForegroundLifetime()) {
+                    markFinalizedRecoveryStop(FinalizedRecoveryStopReason.FOREGROUND_PROMOTION_FAILED)
                     stopSelf()
                     return START_NOT_STICKY
                 }
@@ -319,6 +344,11 @@ class BleGattService : Service() {
                 foregroundActive = egressForegroundActive,
                 advertiserReady = egressAdvertiserReady,
             )
+        } else if (finalizedDeliveryRecoveryOnly &&
+            intent?.getBooleanExtra(EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY, false) == true
+        ) {
+            // Reopening the launcher is not authority for another delivery attempt.
+            stopFinalizedRecoveryWithoutAcknowledgement("ATTEMPT_REUSED")
         }
         return START_NOT_STICKY
     }
@@ -447,6 +477,10 @@ class BleGattService : Service() {
         )
         finalizedRecoveryForegroundActive = true
         finalizedRecoveryLifetime.start(SystemClock.elapsedRealtime())
+        finalizedDeliveryRecoveryAttemptId?.let { attempt ->
+            FinalizedRecoveryReadiness.foreground(attempt, causalComponentInstanceId, SystemClock.elapsedRealtime())
+        }
+        transportHandler.post(finalizedRecoveryHeartbeat)
         transportHandler.postDelayed(finalizedRecoveryDeadline, FinalizedDeliveryLifetime.MAX_DURATION_MS)
         true
     } catch (failure: Exception) {
@@ -457,6 +491,7 @@ class BleGattService : Service() {
 
     private fun stopFinalizedRecoveryWithoutAcknowledgement(reason: String) {
         if (!finalizedDeliveryRecoveryOnly) return
+        markFinalizedRecoveryStop(FinalizedRecoveryStopReason.fromStopLabel(reason))
         finalizedRecoveryLifetime.stop()
         notificationCompletionBlocked = true
         Log.w(TAG, "Retained source delivery stopped without acknowledgement: $reason")
@@ -464,8 +499,20 @@ class BleGattService : Service() {
         stopSelf()
     }
 
+    private fun markFinalizedRecoveryStop(reason: FinalizedRecoveryStopReason) {
+        synchronized(this) {
+            if (finalizedRecoveryStopReason != null) return
+            finalizedRecoveryStopReason = reason
+            finalizedDeliveryRecoveryAttemptId?.let { attempt ->
+                FinalizedRecoveryReadiness.stop(attempt, causalComponentInstanceId, reason)
+            }
+            recordCausal(CausalEventCode.FINALIZED_RECOVERY_STOP_REQUESTED, reasonCode = reason.code)
+        }
+    }
+
     private fun stopFinalizedRecoveryForegroundLifetime() {
         finalizedRecoveryLifetime.stop()
+        transportHandler.removeCallbacks(finalizedRecoveryHeartbeat)
         transportHandler.removeCallbacks(finalizedRecoveryDeadline)
         if (finalizedRecoveryForegroundActive) {
             stopForeground(STOP_FOREGROUND_REMOVE)
@@ -525,7 +572,14 @@ class BleGattService : Service() {
     }
 
     override fun onDestroy() {
-        if (isStandardRuntime()) recordCausal(CausalEventCode.BLE_SERVICE_DESTROYED)
+        if (finalizedDeliveryRecoveryOnly) {
+            val reason = finalizedDeliveryRecoveryAttemptId?.let { attempt ->
+                FinalizedRecoveryReadiness.destroyed(attempt, causalComponentInstanceId)
+            } ?: finalizedRecoveryStopReason ?: FinalizedRecoveryStopReason.UNEXPLAINED_DESTROY
+            recordCausal(CausalEventCode.BLE_SERVICE_DESTROYED, reasonCode = reason.code)
+        } else if (isStandardRuntime()) {
+            recordCausal(CausalEventCode.BLE_SERVICE_DESTROYED)
+        }
         if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onRuntimeDestroyed()
         if (isEgressOnlyRuntime()) stopEgressForegroundLifetime()
         if (finalizedDeliveryRecoveryOnly) stopFinalizedRecoveryForegroundLifetime()
@@ -1193,11 +1247,15 @@ class BleGattService : Service() {
             if (finalizedDeliveryRecoveryOnly &&
                 !finalizedRecoveryLifetime.permitsDelivery(SystemClock.elapsedRealtime())
             ) {
+                stopFinalizedRecoveryWithoutAcknowledgement("DEADLINE")
                 stopAdvertising()
                 return
             }
             Log.i(TAG, "BLE advertising started — UUID visible to phone")
             if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_ADVERTISING_READY)
+            if (finalizedDeliveryRecoveryOnly) finalizedDeliveryRecoveryAttemptId?.let { attempt ->
+                FinalizedRecoveryReadiness.advertising(attempt, causalComponentInstanceId, SystemClock.elapsedRealtime())
+            }
             if (isEgressOnlyRuntime()) {
                 egressAdvertiserReady = true
                 EvidenceEgressVolatileDiagnostics.onAdvertiserStarted()
@@ -1833,6 +1891,7 @@ class BleGattService : Service() {
             markers.record(sourceSessionId.toString(), NormalStartupStage.BOUNDED_RUN_DELIVERY_ACKNOWLEDGED)
             WatchSourceRuntime.closeFreshAfterDelivery()
             markers.record(sourceSessionId.toString(), NormalStartupStage.BOUNDED_RUN_GATT_STOP_REQUESTED)
+            markFinalizedRecoveryStop(FinalizedRecoveryStopReason.EXACT_ACK_COMPLETED)
             finalizedRecoveryLifetime.stop()
             transportHandler.removeCallbacks(finalizedRecoveryDeadline)
             stopSelf()
