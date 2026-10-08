@@ -1,10 +1,15 @@
 # Phone60 — proposed physical readback gate
 
-**BLOCKED: first Phone60 APK was REJECTED; no installable candidate exists yet. Prepared gate only, not executed or authorized by the engineering instruction.** Watch77 stays unchanged. This gate reads the existing ordinary session on Honor offline; it does not need a Bluetooth reconnect and must not start another recording.
+**Replacement artifact ADMITTED; NOT INSTALLED. Gate prepared only; installation and passive launch remain separate explicit authorizations.** Watch77 stays unchanged. This gate reads the existing ordinary session on Honor offline; it does not need a Bluetooth reconnect and must not start another recording.
 
 ## A. Separately authorize installation only
 
-Use only the Phone60 APK named in the completed source-owned admission receipt, once its package/version/signer/SHA and uploaded-byte readback are admitted.
+Use only **HUGR_Phone60p_2.0.60_saved-source-evidence_REPLACEMENT.apk** from the [sole admitted APK link](https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/dWYzDgHluvRgCpvm.apk). Package`health.hugr.app`, version2.0.60-saved-source-evidence-candidate/code60; SHA-256`10c135f734a7e07ca144b9ffef630a19f1cebf395b6c7581d78cbd96b7d1c98f`. Signer matches Phone59; uploaded full bytes read back. **The earlier Phone60 APK is rejected and must not be installed.**
+
+Proposed authority:
+
+> Authorize the admitted replacement Phone60 installation only on Honor: ordinary in-place HUGR update, preserve existing app/data, no uninstall or clearing, confirm Settings version, stop without opening either HUGR launcher. Watch77 unchanged.
+
 
 1. On **Honor**, install it as an ordinary in-place **HUGR update**. Keep the existing app/data. No uninstall, clear, downgrade or reset.
 2. Stop at installer result; **do not press Open**. Stop on any unexpected package/signature warning or request to uninstall/clear; no retry.

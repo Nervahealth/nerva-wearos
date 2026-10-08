@@ -1,6 +1,6 @@
 # Phone60 — passive selected-session evidence and truthful delivery status
 
-**2026-10-08 23:04 CEST. CURRENT STATUS: SOURCE/NATIVE TESTS PASS; first APK REJECTED; upload packaging CORRECTED/TESTED; no replacement build or installable candidate yet.** Source-owned receipt. Watch77 remains unchanged. No device action or actual Phone private-data readback has occurred in this engineering scope.
+**2026-10-08 23:58 CEST. CURRENT STATUS: REPLACEMENT Phone60 APK ARTIFACT ADMISSION GREEN; NOT INSTALLED. First APK remains REJECTED / DO NOT INSTALL.** Source-owned receipt. Watch77 remains unchanged. No device action or actual Phone private-data readback has occurred in this engineering scope.
 
 ## 1. Current authority and objective
 
@@ -105,3 +105,40 @@ Neil authorizes **one replacement Phone60 build and admission only**. Reuse the 
 ## 13. Authorized replacement submitted — 23:22 CEST
 
 Exactly one replacement preview APK build `0c2651df-ffe8-488e-a4d0-a40897d32c25` submitted from corrected stage commit `be1453c2a54ded9261e29de336776234ba827881` with existing frozen managed credentials. Runtime SHA manifest `fc717be1a0c856310c6de83ab7778784903cc43eedc3d54516d974b0ebabb10b`; all118 actual EAS upload runtime files were full-byte equal to controlled source, including native module, prior to submission. Canonical runtime source commit `8fbdf41b9d7a1f5e888c3b5c8a158ce6dc535860`; later receipt/control-only descendants do not change runtime. Build IN PROGRESS, **not finished or admitted**. Watch77/installed Phone59 untouched; no device or private-data access. Rejected predecessor remains immutable/quarantined. Wait only on this ID, then required full artifact admission; no third automatic build.
+
+## 14. Sole replacement Phone60 artifact admission GREEN — 23:58 CEST
+
+Explicit23:20 build/admission-only authority was executed with exactly one replacement build. Managed preview `0c2651df-ffe8-488e-a4d0-a40897d32c25` finished at`2026-10-08T21:46:16.659Z` from corrected exact-runtime stage commit`be1453c2a54ded9261e29de336776234ba827881`; no third build or device action. The stage's actual EAS upload included all118 runtime files with exact full-byte identity, including the existing native writer and passive reader/manifest.
+
+### Sole admitted artifact
+
+- Filename: **HUGR_Phone60p_2.0.60_saved-source-evidence_REPLACEMENT.apk**.
+- Package`health.hugr.app`; code**60**; version**2.0.60-saved-source-evidence-candidate**; minSDK26/targetSDK36.
+- Size**151,933,130 bytes**.
+- APK SHA-256`10c135f734a7e07ca144b9ffef630a19f1cebf395b6c7581d78cbd96b7d1c98f`.
+- Signer SHA-256`a1780089becaf58563daa5dfa16c5626928a13ce56a7dc232732e64a8df4e811`, exactly Phone59 lineage. No new account/project/signing identity.
+- [Sole admitted Phone60 APK](https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/dWYzDgHluvRgCpvm.apk) · [Exact SHA-256 sidecar](https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/HAttVLgRnHBTiFxU.sha256).
+
+The first151,851,054-byte Phone60 artifact SHA`5d173ef15a8ee7aa9478d59ee98d406abb8e8d3a405ced19814df51311f74fe4` is **REJECTED / DO NOT INSTALL**, immutable/quarantined and not an equivalent or download option. Only the replacement link/identity above is admitted.
+
+### Direct artifact checks
+
+- Package/version/SDK, exact signer, ZIP CRC/integrity and supported build-tools4KiB/page alignment PASS.
+- **39,226 class definitions, no duplicates**; exactly one existing`HUGRSourceJournalModule`, passive`HUGRSavedSourceEvidenceActivity` and normal`MainApplication`. The reader extends native Android Activity, not ReactActivity.
+- Finished merged APK manifest confirms labelled information-icon launcher **HUGR Saved Source Evidence**, isolated`:sourceEvidence` process/singleTask/taskAffinity, standard MAIN/LAUNCHER filter. Info icon is framework resource`0x0108009b`=public`drawable/ic_dialog_info`, independently resolved in Android platform resources. No additional standalone app installation is needed after an eventual ordinary update.
+- Compiled MainApplication DEX **onCreate** and **onConfigurationChanged** invoke process guard and branch to immediate return before React/Expo lifecycle initialization. Native snapshot cleanup helper and exact selected session embedded; honest current-live/segment-event UI strings present in compiled HermesUTF16 storage.
+- Admission tooling initially hit AAPT1 framework-icon resolution, HermesUTF16 and DEX modified-UTF8 decoding issues. Corrected **admission helper only** to use successful AAPT2 badging and correct encoding handling. APK/build/production source bytes were not changed or rebuilt; checks remained exact and were completed.
+- APK uploaded and independently downloaded from CDN; **full151,933,130-byte SHA equals local admitted artifact**. Uploaded125-byte sidecar matches local bytes exactly. No private data/diagnostic report/source store was uploaded.
+- Production Phone BLE/Connect/retry/ingestion/native journal writer/recovery/gap logic/sync/ACK wire remain byte-identical to Phone59 preserved baseline; Watch77 production source/APK remains unchanged (APK SHAec074c30aab34540934458d3e7375f226fd60a643a735dc65f78041b782e5c90).
+
+### Validation and limits
+
+Final Phone deterministic**108 total:106 pass,2 existing fixture-dependent skips,zero failures**. Native core/Android SQLite adapter+pending/gaps**29/29 pass**. Joined Watch→Phone→Watch regression passes allfive phases with simulated persistence. Scoped status typecheck passes; broad archival repository type errors remain, not globally clean. Actual Honor snapshot/report, real data custody, stream completeness/quality and Watch69 qualification remain unobserved. APK admission is not hardware/runtime qualification.
+
+### Exact next physical boundary, not execution authority
+
+`HUGR_NSTAIR_PHONE60_PHYSICAL_READBACK_GATE_2026_10_08.md` now names this sole artifact. **Installation remains separately authorized**: Honor ordinary in-place Phone59→Phone60 update, preserve app/data/no uninstall or clear, stop at installer result then Settings version check without Open. Watch77 unchanged/unopened. Later **separate passive readback authorization** can open the information-icon HUGR Saved Source Evidence only, one report/60-second cap, no normal Main/Watch launch/Connect/Bluetooth repair/new recording/private-data transfer/N1. The reader is offline; current grey system Bluetooth listing is not a readback prerequisite. Private report sharing/upload remains separately authorized.
+
+Source-owned receipt/copies → Master → no known-denied Atlas retry/acceptedS4 mutation → Alignment last → bounded commits → non-force both-repository preflight/mirror → independent exact head/tree readback must complete before declaring final preservation. Prior source/test/submission snapshots remain historical.
+
+Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
