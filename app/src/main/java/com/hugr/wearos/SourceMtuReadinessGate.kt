@@ -7,14 +7,16 @@ internal data class PreparedSourceResumePlan(
     val acceptedRecordIndex: Long,
     val replayHighWaterRecordIndex: Long,
     val replayBacklogCount: Long,
+    val historicalSessionBound: Long = replayHighWaterRecordIndex,
 ) {
     init {
         require(acceptedRecordIndex >= 0L) { "acceptedRecordIndex cannot be negative" }
-        require(replayHighWaterRecordIndex >= acceptedRecordIndex) {
-            "replayHighWaterRecordIndex cannot precede acceptedRecordIndex"
+        require(replayHighWaterRecordIndex >= 0L && historicalSessionBound < Long.MAX_VALUE &&
+            historicalSessionBound >= maxOf(acceptedRecordIndex, replayHighWaterRecordIndex)) {
+            "cursor and retained endpoints must fit the justified historical session bound"
         }
-        require(replayBacklogCount == replayHighWaterRecordIndex - acceptedRecordIndex) {
-            "replayBacklogCount must match the frozen replay window"
+        require(replayBacklogCount in 0L..(replayHighWaterRecordIndex - acceptedRecordIndex).coerceAtLeast(0L)) {
+            "replayBacklogCount must count only retained records after the durable cursor"
         }
     }
 }

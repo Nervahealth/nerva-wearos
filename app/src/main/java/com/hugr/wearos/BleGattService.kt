@@ -1641,7 +1641,7 @@ class BleGattService : Service() {
         ) ?: return
 
         replayHighWaterRecordIndex = plan.replayHighWaterRecordIndex
-        replayBacklogCount = replayHighWaterRecordIndex - durablePhoneRecordIndex
+        replayBacklogCount = sourceJournal.countRecordsAfter(requireNotNull(activeReplaySessionId), durablePhoneRecordIndex, replayHighWaterRecordIndex)
         replayActive = replayBacklogCount > 0L
         // Use the normal manifest queue so every final manifest establishes the
         // exact queued endpoint required by acknowledgement validation.
@@ -1709,17 +1709,8 @@ class BleGattService : Service() {
         } else {
             sourceJournal.oldestFinalizedSessionId() ?: sourceJournal.watchBootSessionId
         }
-        val acceptedIndex = if (request.watchBootSessionId == session) request.cumulativeRecordIndex.coerceAtLeast(0L) else 0L
-        val highWater = sourceJournal.highestFinalizedRecordIndex(session)
-        if (acceptedIndex > highWater) {
-            throw SourceJournalCorruptionException("Phone resume index exceeds watch journal")
-        }
-        return PreparedSourceResumePlan(
-            watchBootSessionId = session,
-            acceptedRecordIndex = acceptedIndex,
-            replayHighWaterRecordIndex = highWater,
-            replayBacklogCount = highWater - acceptedIndex,
-        )
+        val acceptedIndex = if (request.watchBootSessionId == session) request.cumulativeRecordIndex else 0L
+        return HistoricalSourceResumeBounds.prepare(sourceJournal, FreshOrdinaryRunScope.journalRoot(filesDir), session, acceptedIndex)
     }
 
     private fun applyPreparedSourceReplay(generation: Long, plan: PreparedSourceResumePlan) {
@@ -1790,15 +1781,12 @@ class BleGattService : Service() {
     }
 
     private fun beginSourceReplaySession(session: UUID, acceptedIndex: Long) {
-        val highestRecordIndex = sourceJournal.highestFinalizedRecordIndex(session)
-        if (acceptedIndex > highestRecordIndex) {
-            throw SourceJournalCorruptionException("Phone resume index exceeds watch journal")
-        }
+        val plan = HistoricalSourceResumeBounds.prepare(sourceJournal, FreshOrdinaryRunScope.journalRoot(filesDir), session, acceptedIndex)
         activeReplaySessionId = session
         durablePhoneRecordIndex = acceptedIndex
         lastReplayQueuedRecordIndex = acceptedIndex
-        replayHighWaterRecordIndex = highestRecordIndex
-        replayBacklogCount = replayHighWaterRecordIndex - durablePhoneRecordIndex
+        replayHighWaterRecordIndex = plan.replayHighWaterRecordIndex
+        replayBacklogCount = sourceJournal.countRecordsAfter(requireNotNull(activeReplaySessionId), durablePhoneRecordIndex, replayHighWaterRecordIndex)
         replayActive = replayBacklogCount > 0
         queuedReplayManifestEndIndex = null
         recordCausal(
@@ -1896,7 +1884,7 @@ class BleGattService : Service() {
         durablePhoneRecordIndex = maxOf(durablePhoneRecordIndex, acknowledgement.cumulativeRecordIndex)
         queuedReplayManifestEndIndex = null
         lastReplayQueuedRecordIndex = maxOf(lastReplayQueuedRecordIndex, durablePhoneRecordIndex)
-        replayBacklogCount = replayHighWaterRecordIndex - durablePhoneRecordIndex
+        replayBacklogCount = sourceJournal.countRecordsAfter(requireNotNull(activeReplaySessionId), durablePhoneRecordIndex, replayHighWaterRecordIndex)
         replayActive = replayBacklogCount > 0
         broadcastStatus(if (replayActive) "REPLAYING: $replayBacklogCount remain" else "CAUGHT UP: source journal acknowledged")
         // A durable contiguous Phone endpoint does not mean older manifests
@@ -1952,7 +1940,7 @@ class BleGattService : Service() {
             REPLAY_PAGE_RECORDS,
         )
         if (page.isEmpty()) {
-            replayBacklogCount = replayHighWaterRecordIndex - durablePhoneRecordIndex
+            replayBacklogCount = sourceJournal.countRecordsAfter(requireNotNull(activeReplaySessionId), durablePhoneRecordIndex, replayHighWaterRecordIndex)
             if (replayBacklogCount == 0L) {
                 replayActive = false
                 broadcastStatus("CAUGHT UP: no source replay backlog")

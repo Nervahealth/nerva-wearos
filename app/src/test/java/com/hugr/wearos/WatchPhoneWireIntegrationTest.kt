@@ -20,13 +20,13 @@ class WatchPhoneWireIntegrationTest {
         return File(raw!!).canonicalFile.also { assertTrue(it.isDirectory) }
     }
 
-    private fun journal(dir: File): SourceJournal = SourceJournal(
+    private fun journal(dir: File, maxBytes: Long = 10_000): SourceJournal = SourceJournal(
         rootDir = dir,
         bootCount = 69,
         availableBytes = { Long.MAX_VALUE },
         nowWallMs = { 1_000L },
         requiredFreeBytes = 1,
-        maxSegmentBytes = 10_000,
+        maxSegmentBytes = maxBytes,
     )
 
     private fun b64(bytes: ByteArray): String = Base64.getEncoder().encodeToString(bytes)
@@ -78,6 +78,100 @@ class WatchPhoneWireIntegrationTest {
         assertEquals(1, replayFrame.size) // two health source records in a valid GATT frame
         lines += "data=${b64(replayFrame.single())}"
         File(workspace, "watch_wire.tsv").writeText(lines.joinToString("\n", postfix = "\n"))
+    }
+
+    @Test
+    fun historicalProducer() {
+        val workspace = root()
+        if (System.getenv("HUGR_WIRE_PHASE") != "historical-produce") return
+        val store = File(workspace, "historical_journal").apply { assertTrue(mkdirs()) }
+        val source = journal(store, 1_048_576)
+        val manifests = mutableListOf<SourceSegmentManifest>()
+        for (endpoint in listOf(3000, 6000, 8182)) {
+            while (source.latestRecordIndex() < endpoint) {
+                val n = source.latestRecordIndex().toInt() + 1
+                source.append(SourceStreamCode.ACCEL, n.toLong(), SourcePayloadCodec.accel(n, n, n, "REALTIME", 1, true))
+            }
+            source.finalizeActiveSegment()
+        }
+        // maxSegmentBytes may auto-rotate: preserve every actual manifest, not a fabricated range.
+        manifests.addAll(source.finalizedManifests(source.watchBootSessionId))
+        val healthPayload = SourcePayloadCodec.deviceHealth(
+            batteryPercent = 80, flags = 0, activeSensorMask = 0, sdkStatus = 0,
+            buildVersionCode = 69, totalSourceRecords = 8182, flushCount = 0,
+            transportCompletedCount = 0, transportFailedCount = 0,
+            transportTimeoutCount = 0, transportCoalescedAccelCount = 0,
+            negotiatedMtu = 517, replayBacklogCount = 0, dataLoss = false,
+            dataLossStreamCode = 0, dataLossFirstSequence = 0,
+            dataLossLastSequence = 0, dataLossReasonCode = 0,
+        )
+        repeat(2) { source.append(SourceStreamCode.DEVICE_HEALTH, 9000L + it, healthPayload) }
+        val later = requireNotNull(source.finalizeActiveSegment())
+        assertEquals(212L, later.byteCount)
+        val records = source.readRecordsAfter(source.watchBootSessionId, 0, 8184, 8184)
+        assertEquals(8184, records.size)
+        assertTrue(source.acknowledgeCompletedSegment(source.watchBootSessionId, 8184, later.sha256Hex))
+        val session = source.watchBootSessionId
+        source.close()
+        val resumed = journal(store)
+        val plan = HistoricalSourceResumeBounds.prepare(resumed, store, session, 8184)
+        assertEquals(8182L, plan.replayHighWaterRecordIndex)
+        assertEquals(8184L, plan.historicalSessionBound)
+        assertEquals(0L, plan.replayBacklogCount)
+        val lines = mutableListOf("session=$session", "durable=8184", "highWater=8182", "count=${manifests.size}")
+        manifests.forEachIndexed { i, m -> lines += "manifest${i + 1}=${b64(SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(m)))}" }
+        records.forEachIndexed { i, r -> lines += "record${i + 1}=${b64(r.canonicalBytes())}" }
+        File(workspace, "historical_wire.tsv").writeText(lines.joinToString("\n", postfix = "\n"))
+        resumed.close()
+    }
+
+    @Test
+    fun historicalVerifier() {
+        val workspace = root()
+        if (System.getenv("HUGR_WIRE_PHASE") != "historical-verify") return
+        val input = parse(File(workspace, "historical_wire.tsv"))
+        val phone = parse(File(workspace, "historical_acks.tsv"))
+        val store = File(workspace, "historical_journal")
+        var source = journal(store)
+        val session = source.watchBootSessionId
+        val plan = HistoricalSourceResumeBounds.prepare(source, store, session, 8184)
+        val count = input.getValue("count").toInt()
+        assertEquals(count, phone.getValue("count").toInt())
+        val lifetime = FinalizedDeliveryLifetime()
+        lifetime.start(1000L)
+        var cursor = plan.acceptedRecordIndex
+        repeat(count) { i ->
+            assertTrue(lifetime.permitsDelivery(1001L))
+            val pending = source.finalizedManifests(session)
+            assertEquals(count - i, pending.size)
+            val manifest = requireNotNull(SourceReplayWindow.nextManifestToQueue(session, cursor, plan.replayHighWaterRecordIndex, null, pending))
+            assertTrue(source.readRecordsAfter(session, cursor, manifest.lastRecordIndex, 256).isEmpty())
+            val ack = SourceReplayProtocol.decodeSegmentAcknowledgement(Base64.getDecoder().decode(phone.getValue("ack${i + 1}")))
+            SourceReplayWindow.validateAcknowledgement(session, cursor, plan.replayHighWaterRecordIndex, ack, manifest.lastRecordIndex)
+            SourceReplayWindow.validateQueuedManifestAcknowledgement(manifest.lastRecordIndex, ack)
+            assertFalse(source.acknowledgeCompletedSegment(session, ack.cumulativeRecordIndex, "0".repeat(64)))
+            assertFalse(source.acknowledgeCompletedSegment(java.util.UUID.randomUUID(), ack.cumulativeRecordIndex, ack.completedSegmentSha256))
+            assertFalse(source.acknowledgeCompletedSegment(session, ack.cumulativeRecordIndex - 1L, ack.completedSegmentSha256))
+            assertTrue(source.acknowledgeCompletedSegment(session, ack.cumulativeRecordIndex, ack.completedSegmentSha256))
+            cursor = maxOf(cursor, ack.cumulativeRecordIndex)
+            assertEquals(8184L, cursor)
+            assertEquals(0L, source.countRecordsAfter(session, cursor, plan.replayHighWaterRecordIndex))
+            assertFalse(source.acknowledgeCompletedSegment(session, ack.cumulativeRecordIndex, ack.completedSegmentSha256))
+            assertEquals(count - i - 1, source.finalizedManifests(session).size)
+            source.close()
+            source = journal(store) // lose process-memory state after each exact ACK
+            assertEquals(session, source.watchBootSessionId)
+            if (i < count - 1) {
+                val restartedPlan = HistoricalSourceResumeBounds.prepare(source, store, session, cursor)
+                assertEquals(8184L, restartedPlan.historicalSessionBound)
+                assertEquals(0L, restartedPlan.replayBacklogCount)
+                assertTrue(source.hasFinalizedSegments(session))
+            }
+        }
+        assertFalse(source.hasFinalizedSegments(session))
+        assertEquals(null, SourceReplayWindow.nextManifestToQueue(session, cursor, plan.replayHighWaterRecordIndex, null, source.finalizedManifests(session)))
+        assertEquals(8184, parse(File(workspace, "historical_wire.tsv")).keys.count { it.startsWith("record") })
+        source.close()
     }
 
     @Test

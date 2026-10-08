@@ -12,7 +12,7 @@ import java.io.File
  * Conditional reconstruction, NOT a physical Watch76 diagnosis: Phone showed a
  * morning 8183-8184 ACK, but Watch acceptance of that ACK was not observed.
  * If a later segment were deleted by exact Watch ACK while an earlier segment
- * remained, the current source's high-water-before-resume guard would reject
+ * remained, the previous source's high-water-before-resume guard rejected
  * the Phone's durable 8184 index. This test preserves that diagnostic fact.
  */
 class SourceResumeIndex8184ScenarioTest {
@@ -53,13 +53,11 @@ class SourceResumeIndex8184ScenarioTest {
         assertEquals(listOf(main), resumed.finalizedManifests(session))
         assertEquals(8182L, resumed.highestFinalizedRecordIndex(session))
         assertEquals(8182L, resumed.latestRecordIndex())
-        // Existing BleGattService.prepareSourceReplay checks acceptedIndex >
-        // highestFinalizedRecordIndex and throws before queueing this older
-        // manifest. Its exact guard is also source-contract checked below.
         assertTrue(8184L > resumed.highestFinalizedRecordIndex(session))
-        val service = File("src/main/java/com/hugr/wearos/BleGattService.kt").readText()
-        assertTrue(service.contains("if (acceptedIndex > highWater)"))
-        assertTrue(service.contains("Phone resume index exceeds watch journal"))
+        val plan = HistoricalSourceResumeBounds.prepare(resumed, root, session, 8184L)
+        assertEquals(8184L, plan.historicalSessionBound)
+        assertEquals(8182L, plan.replayHighWaterRecordIndex)
+        assertEquals(0L, plan.replayBacklogCount)
         assertEquals(main, SourceReplayWindow.nextManifestToQueue(
             session, 8184L, 8182L, null, resumed.finalizedManifests(session),
         ))

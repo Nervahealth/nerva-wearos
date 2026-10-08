@@ -46,11 +46,14 @@ def main() -> int:
     run('watch_produce', watch, gradle + ['--tests', f'{test}.producer'], 'produce')
     if not (out / 'watch_wire.tsv').is_file():
         raise RuntimeError('Watch producer did not emit synthetic wire fixture')
+    run('watch_historical_produce', watch, gradle + ['--tests', f'{test}.historicalProducer'], 'historical-produce')
     run('phone_ingest', phone, ['node', '--experimental-strip-types', '--experimental-specifier-resolution=node',
                                '--test', 'tests/watchPhoneWireIntegration.test.ts'], 'phone')
     if not (out / 'phone_acks.tsv').is_file():
         raise RuntimeError('Phone test did not emit ACKs')
     run('watch_verify', watch, gradle + ['--tests', f'{test}.verifier'], 'verify')
+    run('watch_historical_verify', watch, gradle + ['--tests', f'{test}.historicalVerifier'], 'historical-verify')
+    print('PASS: historical Phone cursor 8184, retained 8182; three manifest-only exact ACKs with no new records.')
     print('PASS: three manifests in order; two manifest-only ACKs; final data after durable append;')
     print('      full-hash, full-session 59-byte Phone ACKs accepted and all Watch segments cleared.')
     print('SIMULATED ONLY: Phone durable-store model; Android native SQLite, physical BLE service,')
