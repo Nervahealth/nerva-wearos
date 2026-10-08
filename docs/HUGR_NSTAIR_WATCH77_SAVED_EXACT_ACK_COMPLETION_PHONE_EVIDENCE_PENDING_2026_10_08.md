@@ -90,3 +90,13 @@ Source-owned receipt → identical Phone/canonical/controlled copies → Watch77
 - Watch69 **NOT QUALIFIED**.
 - Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**.
 - Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
+
+## 8. Later system-Bluetooth observation — 2026-10-08 19:39 CEST
+
+Neil reports looking on the Phone and finding the Watch again “seperated from blue tooth”; he does not know when this occurred and wonders whether it relates to obtaining the new Phone. Preserve this as an operator-reported later connection-status observation with unknown transition time, **not established unpairing**, Bluetooth-radio OFF, companion reassignment or a causal diagnosis. No exact Settings wording or screenshot was supplied here. Ask whether the Watch remained listed but disconnected or disappeared/required pairing; no setting changes or HUGR reopening are requested to answer.
+
+The saved attempt report already contains GATT_CONNECTED, MTU_CHANGED, SOURCE_CCCD_ENABLED and RESUME_RECEIVED at approximately 18:11:42, followed by app-recorded EXACT_ACK_COMPLETED at approximately 18:11:46. Therefore an actual HUGR BLE link existed during that exchange, independently of the Phone's stale Connected label. This does not prove continuous connection throughout the twenty-minute observation or the Samsung system companion connection's state. A later Settings status cannot time or negate the earlier recorded exchange.
+
+Ordinary recovery completion closes HUGR's GATT server; cessation of that application link is distinct from losing the system pairing/bond or the companion connection. Do not attribute a true unpairing to normal HUGR shutdown, and do not assert that the new Fold caused the system status. Intermittent connectivity remains a separate operational concern; it does not yet explain every earlier failure or this attempt's reported completion. The Watch76 source-resume high-water exception was independently captured and corrected, rather than inferred from Bluetooth settings.
+
+NEXT unchanged: resolve the smallest source-only route to existing Phone canonical evidence without another BLE attempt; source corrections/device/private transfer remain separately authorized. No reconnect, pairing change/reset, reinstall, retry, new recording or build follows from this observation. Accepted private S4 remains unchanged; known-denied Atlas access not retried. Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
