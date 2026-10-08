@@ -1,6 +1,6 @@
 # Phone60 — proposed physical readback gate
 
-**Prepared, not executed or authorized by the engineering instruction.** Watch77 stays unchanged. This gate reads the existing ordinary session on Honor offline; it does not need a Bluetooth reconnect and must not start another recording.
+**BLOCKED: first Phone60 APK was REJECTED; no installable candidate exists yet. Prepared gate only, not executed or authorized by the engineering instruction.** Watch77 stays unchanged. This gate reads the existing ordinary session on Honor offline; it does not need a Bluetooth reconnect and must not start another recording.
 
 ## A. Separately authorize installation only
 
