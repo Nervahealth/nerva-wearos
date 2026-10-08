@@ -1,0 +1,94 @@
+# Watch77 — durable diagnostics and historical-resume repair: source/test/build admission
+
+**Date:** 2026-10-08. **Scope:** implementation, tests, signer-continuous greater-version candidate build and admission. No installation, app launch, retry, transfer, ACK or device action performed by this task. Installed pair remains operator-reported Watch76–Phone59; this receipt does not change its physical status.
+
+## 1. Controlling request and objective
+
+User: “ok lets build the APK witht this durable capture do research if nesecary”. This adds minimal app-owned durable failure capture to the already-tested captured high-water correction. The target remains delivery of the existing finalized fresh-v2 recording, not a new recording or diagnostic platform. Email/SMS transmission is **not automatic** and has not been implemented. No recipient or external service is configured.
+
+Preceding source receipts:
+- `HUGR_NSTAIR_WATCH76_CAPTURED_RESUME_HIGH_WATER_EXCEPTION_2026_10_08.md` — actual captured exception, rather than another hypothesis or radio diagnosis.
+- `HUGR_NSTAIR_WATCH76_HISTORICAL_RESUME_BOUND_CORRECTION_SOURCE_TEST_2026_10_08.md` — tested cursor/bound correction; this candidate incorporates it.
+
+## 2. What is now saved without live ADB
+
+New `SavedDiagnosticReport.kt`, `WatchDiagnosticRuntime.kt` and isolated `SavedDiagnosticActivity.kt` provide app-owned operational reports in `hugr_operational_diagnostics_v1`, separate from source/legacy/frozen journals.
+
+The report includes package/version, process/attempt/source-session identifiers, wall and monotonic timestamps, failed stage/outcome, BLE lineage/MTU, available Phone cursor C, retained endpoint R, historical issuance bound H, queued endpoint, a cached 16-event coded tail, exception classes and bounded code-location stack frames/cause chain. Unknown values remain explicitly unknown. It does not copy exception messages, sensor/source payloads, generic Logcat, file paths, Bluetooth addresses, contact details or credentials. C/R/H fields are operational assertions, not proof of deleted bytes or Phone custody.
+
+Capture points cover startup selection/service start, foreground promotion, service initialization, resume preparation/historical-bound validation/application, source-control rejection, replay reads, recovery stops and service destruction. Best-effort uncaught Java/Kotlin exception capture delegates to Android's previous handler; it does not suppress process termination. Caught failure capture runs before abort/shutdown. The original exception remains the primary report while terminal outcomes are annotated into the **same attempt report**, rather than displacing it with generic stop reports.
+
+Persistence uses a temporary file, file-descriptor sync and rename, with a SHA-256 trailer verified before display/share. Up to eight published reports, each at most 24 KiB of report body plus the checksum trailer. Oversized traces are explicitly truncated. Only this new diagnostic root is rotated and excluded from Android cloud backup/device transfer; the existing source backup policy is not rewritten. Persistence is best effort: storage failure is logged and does not replace the original failure. This is not a guarantee against sudden power loss, native fatal crashes, process kill or ANR before a hook can run.
+
+**HUGR Saved Diagnostics** is a distinct launcher. It reads only saved reports, with stable manual scrolling (no forced-scroll-to-tail loop), and never opens source journals or starts sensors/GATT/recovery. “Share this diagnostic” offers an explicit Android `text/plain` FileProvider share for the selected, integrity-checked report. The provider grants only that diagnostic URI and exposes only the diagnostic directory. Whether a compatible email/share app exists on this particular Watch is **not hardware-verified**. If none exists, the report remains available in the viewer and can be recorded legibly without keeping wireless debugging alive. There is no claimed automatic Watch→Phone report transport, email delivery or SMS delivery.
+
+## 3. Retained recording and protocol invariants
+
+The protected `SourceJournal.kt` remains byte-identical to the source admitted before this durable-capture change. `SourceReplayWindow.kt`, `RetainedFinalizedDeliveryRecovery.kt`, `HistoricalSourceResumeBounds.kt`, `SourceMtuReadinessGate.kt`, `FinalizedDeliveryLifetime.kt` and `FinalizedRecoveryReadiness.kt` are unchanged by the diagnostic delta. The GATT changes add failure capture/context only; exact ACK and replay semantics are not replaced.
+
+Both replay entry points retain the earlier correction: Phone durable cursor C, currently retained replay endpoint R and validated historical issuance H are separate. C>R is admitted only through existing strict selected-session contiguous BUFFERED issuance evidence and exact canonical retained anchors. Unsupported/missing/corrupt evidence fails closed. Issuance does not invent historical ACK or deleted-byte provenance. The physical Watch's actual ledger remains uninspected.
+
+Manifest replay stays ordered, including older manifests behind an already-durable Phone cursor. Phone durable append and full canonical range/count/byte/full-hash equality precede its actual 59-byte session/endpoint/hash ACK. Watch exact validation and per-ACK removal/advancement remain. Recovery is selected-session-only, deadline/disconnect bounded and no-new-sensing/no-new-source-append; the retained source identity is not replaced with a historical bounded-run UUID. Completion requires accepted exact ACK and no remaining selected-session finalized manifests.
+
+Frozen/legacy operations and egress remain outside ordinary recovery. The unavailable Exact Range Readback launcher remains disabled. The compatibility DEX is reused unchanged and not newly runtime-qualified.
+
+## 4. Validation and corrections before admission
+
+Independent read-only review identified three concrete defects in the initial diagnostic draft: worst-case trace budget could prevent saving, generic stop/destroy reports could rotate away the actual exception, and reports could enter normal backup/transfer. All three were corrected before the admitted build, with regression coverage. The report viewer was also changed to a single outer scroll to avoid a zero-height text pane on the round display.
+
+Final validation:
+- Watch Gradle `assembleDebug testDebugUnitTest`: **BUILD SUCCESSFUL**. 191 tests total; **187 passed, 4 fixture-dependent skips, 0 failures/errors**.
+- Joined Watch→Phone→Watch regression: all five phases **PASS**, exercising the four Watch fixture-dependent cases with supplied fixtures.
+- Historical case: **C=8184, R=8182**, three ordered manifest-only exact ACKs; restart after every accepted ACK; no new records; all selected synthetic manifests removed only after exact acceptance.
+- Current-cursor case: already-stored Phone records; two manifest-only ACKs; final new data durably ingested; third full manifest equality and actual 59-byte Phone ACK accepted by Watch.
+- Phone deterministic suite: 88 total; **86 passed, 2 fixture-dependent skips, 0 failures**. Those fixture-dependent cases are exercised in the joined regression.
+- Diagnostic tests cover store recreation/readback, integrity rejection, isolated rotation, explicit truncation/limits, primary-exception preservation, privacy omissions, backup exclusions, viewer isolation and capture-before-abort.
+
+These are JVM/Node/source contracts with a **simulated Phone durable-store model**. They do not prove Android native SQLite durability, physical BLE, service survival, on-device report persistence/view/share, actual historical ledger fitness or recording custody. No globally clean Phone TypeScript claim is made; Phone production code/version/APK is unchanged.
+
+## 5. Sole admitted artifact
+
+| Field | Verified value |
+|---|---|
+| File | `HUGR_Watch77w_0.77.0_durable-diagnostics-historical-resume-candidate.apk` |
+| Package | `com.hugr.wearos` |
+| Version code | `77` (greater than installed predecessor 76) |
+| Version name | `0.77.0-durable-diagnostics-historical-resume-candidate` |
+| Size | 12,844,805 bytes |
+| APK SHA-256 | `ec074c30aab34540934458d3e7375f226fd60a643a735dc65f78041b782e5c90` |
+| Signer SHA-256 | `fc91d26565d61b0a1c67db4dd0d358c8377c65b2fcb1ede00283b6c7b90c1706` — exact admitted Watch76 continuity |
+| Unchanged compatibility DEX SHA-256 | `a2477754c9e4b10a9d91584ca2281b4190a9b0776411fec19970dd47f96ab784` |
+| ZIP/alignment/signature | PASS; aapt2 package/version/manifest verified |
+| DEX audit | 8,132 class descriptors, no duplicate classes; report and recovery classes present |
+
+[Download the sole Watch77 APK](https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/dogCtbPvJnQEunFP.apk). [SHA-256 sidecar](https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/JoCvpiOCdQpQcTuq.sha256). Both uploaded files were downloaded and compared byte-identically against their local originals. The unaugmented Gradle base in build outputs is **not** an alternative admitted APK.
+
+Local artifact: `/home/ubuntu/HUGR_WATCH77_DURABLE_DIAGNOSTICS_2026_10_08/artifacts/HUGR_Watch77w_0.77.0_durable-diagnostics-historical-resume-candidate.apk`.
+
+## 6. Short next-device procedure — review only, not authority
+
+### Gate A: separate installation-only authorization
+
+1. Select only the sole Watch77 APK above with the existing Wear Installer 2 route.
+2. Proceed only for an ordinary in-place HUGR update. Stop for uninstall, data-clear/reset, downgrade, different package/signer or any unexpected warning; no retry.
+3. Stop at installer result; **do not Open**. Check Settings app-list version `0.77.0 ... durable-diagnostics-historical-resume-candidate` and report whether either Watch/Phone HUGR was opened. Phone59 needs no update.
+
+### Gate B: separately authorized one-shot retained delivery
+
+1. Open normal **Main HUGR** once on Watch77; no Watch controls/new recording. Start timing at Watch recovery service start (using launcher time as a conservative earlier limit if service time is unavailable).
+2. Only when the current white heading says **CURRENT RECOVERY ADVERTISING READY**, promptly open normal **Phone59 HUGR** on Honor and press **Connect Galaxy Watch once**.
+3. Stop at the first failure/terminal result or 15 minutes from Watch service start, whichever is first. No relaunch/reconnect/retry, sensing control, pairing/reset, egress or legacy/frozen action.
+4. Capture Phone final delivery/equality status and complete source-session/range/count/bytes/full digest evidence where available, and Watch exact-accepted ACK progression plus matching `BOUNDED_RUN_DELIVERY_ACKNOWLEDGED` source-session/stage/time. An old ACK 8183–8184, partial digest, live values or Connected alone is insufficient.
+5. If stopped, preserve the first visible status. Under a **separately explicit passive saved-report observation**, open **HUGR Saved Diagnostics**, not Main HUGR; record the latest matching attempt report from header through `END REPORT`, including any truncation label. Do not press Share unless that distinct external-sharing action is authorized. This passive viewer does not start another recovery. No live ADB/icon hunt is a prerequisite for retrieving app-caught errors now.
+
+Success remains actual retained final canonical equality, attributable exact Watch ACK and completion for the same source session. Underlying Phone native evidence may still be required separately for independent custody verification; do not infer it from the UI alone.
+
+## 7. Preservation and sovereign states
+
+Source-owned receipt → identical Phone/canonical-control/controlled-repository copies → Master → private Atlas impact handling → Alignment last → consistency → bounded commits → controlled non-force GitHub mirror and exact remote tree readback. Accepted private VIS-COUNT S4 remains unchanged; known-denied Atlas access is not retried or repaired as a prerequisite. Locally recorded impact is the new diagnostic capability and candidate readiness, **not** a recording qualification.
+
+Signing credentials, keys, private device media and physiological records are excluded from commits. The packaging recipe uses the existing signing route and unchanged compatibility payload. Remote publication results are recorded separately after commit to avoid a self-referential head claim.
+
+- Watch69: **NOT QUALIFIED**.
+- Watch68 v1: **UNCLASSIFIED / NOT VERIFIED**.
+- Watch58: `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.

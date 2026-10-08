@@ -75,6 +75,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WatchDiagnosticRuntime.begin(this, null, null)
         startupBreadcrumbStore = StartupBreadcrumbStore(this)
         normalStartupMarkerStore = NormalStartupMarkerStore(this)
         intent.getStringExtra(StartupBreadcrumbPlan.EXTRA_DIAGNOSTIC_LAUNCH_ID)
@@ -180,6 +181,7 @@ class MainActivity : ComponentActivity() {
         val target = runCatching {
             RetainedFinalizedDeliveryRecovery.select(WatchSourceRuntime.journal(applicationContext))
         }.getOrElse { failure ->
+            WatchDiagnosticRuntime.capture(this, DiagnosticStage.STARTUP_SELECTION, failure = failure)
             runOnUiThread { completeFreshOrdinaryScopeFailure(failure) }
             return
         }
@@ -381,6 +383,7 @@ class MainActivity : ComponentActivity() {
                 },
             )
         } catch (failure: Exception) {
+            WatchDiagnosticRuntime.capture(this, DiagnosticStage.SERVICE_START, failure = failure)
             FinalizedRecoveryReadiness.rejectRequest(attemptId)
             recordCausal(
                 CausalEventCode.FINALIZED_RECOVERY_STOP_REQUESTED,
@@ -553,7 +556,8 @@ class MainActivity : ComponentActivity() {
             append(if (finalizedDeliveryRecoveryOnly) "--- HISTORY — NOT LIVE READINESS ---\n" else "--- LAST 20 ---\n")
             CausalFlightFormatter.format(events, 20).forEach { append(it).append('\n') }
         }
-        scrollView.post { scrollView.fullScroll(ScrollView.FOCUS_DOWN) }
+        // Keep manual scroll position stable; saved-report viewer never auto-scrolls.
+        if (WatchDiagnosticRuntime.lastSaveFailed) statusText.append("\nDIAGNOSTIC SAVE FAILED")
     }
 
     private fun Long?.orZero(): Long = this ?: 0L

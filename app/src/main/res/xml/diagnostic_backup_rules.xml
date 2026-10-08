@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <exclude domain="file" path="hugr_operational_diagnostics_v1/" />
+</full-backup-content>

@@ -150,6 +150,8 @@ class BleGattService : Service() {
     private var replayActive = false
     private var activeReplaySessionId: UUID? = null
     private var queuedReplayManifestEndIndex: Long? = null
+    private var diagnosticHistoricalBound: Long? = null
+    @Volatile private var diagnosticResumeStage = DiagnosticStage.RESUME_PREPARE
     private val sourceMtuReadinessGate = SourceMtuReadinessGate()
     @Volatile private var sourceMtuLineageGeneration = -1L
     private val replayStartLineageGuard = ReplayStartLineageGuard()
@@ -311,6 +313,7 @@ class BleGattService : Service() {
             finalizedDeliveryRecoveryOnly = requestedFinalizedRecovery
             finalizedDeliverySourceSessionId = requestedSourceSessionId
             finalizedDeliveryRecoveryAttemptId = requestedAttemptId
+            if (requestedFinalizedRecovery) WatchDiagnosticRuntime.begin(this, requestedAttemptId, requestedSourceSessionId)
             if (requestedFinalizedRecovery && requestedAttemptId != null &&
                 !FinalizedRecoveryReadiness.enter(requestedAttemptId, causalComponentInstanceId)
             ) {
@@ -338,6 +341,7 @@ class BleGattService : Service() {
             }
             if (requestedFinalizedRecovery) {
                 runCatching { initializeRuntime(requestedMode) }.onFailure { failure ->
+                    saveDiagnostic(DiagnosticStage.SERVICE_INITIALIZATION, failure = failure)
                     Log.e(TAG, "Retained source delivery could not initialize", failure)
                     stopFinalizedRecoveryWithoutAcknowledgement("INITIALIZATION_FAILED")
                 }
@@ -493,6 +497,7 @@ class BleGattService : Service() {
         transportHandler.postDelayed(finalizedRecoveryDeadline, FinalizedDeliveryLifetime.MAX_DURATION_MS)
         true
     } catch (failure: Exception) {
+        saveDiagnostic(DiagnosticStage.FOREGROUND_PROMOTION, failure = failure)
         Log.e(TAG, "Standard retained delivery foreground promotion rejected", failure)
         finalizedRecoveryLifetime.stop()
         false
@@ -512,6 +517,8 @@ class BleGattService : Service() {
         synchronized(this) {
             if (finalizedRecoveryStopReason != null) return
             finalizedRecoveryStopReason = reason
+            val outcome = runCatching { DiagnosticOutcome.valueOf(reason.name) }.getOrDefault(DiagnosticOutcome.OTHER_STOP)
+            saveDiagnostic(DiagnosticStage.RECOVERY_STOP, outcome)
             finalizedDeliveryRecoveryAttemptId?.let { attempt ->
                 FinalizedRecoveryReadiness.stop(attempt, causalComponentInstanceId, reason)
             }
@@ -585,6 +592,7 @@ class BleGattService : Service() {
             val reason = finalizedDeliveryRecoveryAttemptId?.let { attempt ->
                 FinalizedRecoveryReadiness.destroyed(attempt, causalComponentInstanceId)
             } ?: finalizedRecoveryStopReason ?: FinalizedRecoveryStopReason.UNEXPLAINED_DESTROY
+            saveDiagnostic(DiagnosticStage.SERVICE_DESTROY, runCatching { DiagnosticOutcome.valueOf(reason.name) }.getOrDefault(DiagnosticOutcome.OTHER_STOP))
             recordCausal(CausalEventCode.BLE_SERVICE_DESTROYED, reasonCode = reason.code)
         } else if (isStandardRuntime()) {
             recordCausal(CausalEventCode.BLE_SERVICE_DESTROYED)
@@ -1087,6 +1095,7 @@ class BleGattService : Service() {
                         else -> throw SourceJournalCorruptionException("Unknown source-control message")
                     }
                 } catch (error: Exception) {
+                    saveDiagnostic(DiagnosticStage.SOURCE_CONTROL, failure = error)
                     writeResponseStatus = BluetoothGatt.GATT_FAILURE
                     Log.e(TAG, "Build 45 source-control rejection: ${error.message}", error)
                     broadcastStatus("SOURCE CONTROL REJECTED: ${error.javaClass.simpleName}")
@@ -1685,6 +1694,7 @@ class BleGattService : Service() {
                 if (generation != sourceMtuLineageGeneration || pendingSourceResumeRequest != request) return@post
                 result.fold(
                     onSuccess = { plan ->
+                        diagnosticResumeStage = DiagnosticStage.RESUME_APPLY
                         runCatching { applyPreparedSourceReplay(generation, plan) }
                             .onFailure(::failSourceResumePreparation)
                     },
@@ -1696,12 +1706,14 @@ class BleGattService : Service() {
     }
 
     private fun failSourceResumePreparation(error: Throwable) {
+        saveDiagnostic(diagnosticResumeStage, failure = error)
         Log.e(TAG, "Source resume preparation failed: ${error.message}", error)
         broadcastStatus("SOURCE CONTROL REJECTED: ${error.javaClass.simpleName}")
         abortTransportLineage("source_resume_prepare_failed")
     }
 
     private fun prepareSourceReplay(request: SourceResumeRequest): PreparedSourceResumePlan {
+        diagnosticResumeStage = DiagnosticStage.RESUME_PREPARE
         sourceJournal.finalizeActiveSegment()
         sourceJournal.discardNewlyFinalizedManifests()
         val session = if (finalizedDeliveryRecoveryOnly) {
@@ -1710,7 +1722,12 @@ class BleGattService : Service() {
             sourceJournal.oldestFinalizedSessionId() ?: sourceJournal.watchBootSessionId
         }
         val acceptedIndex = if (request.watchBootSessionId == session) request.cumulativeRecordIndex else 0L
-        return HistoricalSourceResumeBounds.prepare(sourceJournal, FreshOrdinaryRunScope.journalRoot(filesDir), session, acceptedIndex)
+        WatchDiagnosticRuntime.update(finalizedDeliveryRecoveryAttemptId, session, causalLineageState.currentLineage(),
+            acceptedIndex, sourceJournal.highestFinalizedRecordIndex(session), null, negotiatedMtu, queuedReplayManifestEndIndex)
+        diagnosticResumeStage = DiagnosticStage.HISTORICAL_BOUND_VALIDATION
+        return HistoricalSourceResumeBounds.prepare(sourceJournal, FreshOrdinaryRunScope.journalRoot(filesDir), session, acceptedIndex).also {
+            diagnosticHistoricalBound = it.historicalSessionBound
+        }
     }
 
     private fun applyPreparedSourceReplay(generation: Long, plan: PreparedSourceResumePlan) {
@@ -1724,6 +1741,7 @@ class BleGattService : Service() {
                 "Source resume arrived outside the active BLE lineage",
             )
         }
+        diagnosticHistoricalBound = plan.historicalSessionBound
         activeReplaySessionId = plan.watchBootSessionId
         durablePhoneRecordIndex = plan.acceptedRecordIndex
         lastReplayQueuedRecordIndex = plan.acceptedRecordIndex
@@ -1933,12 +1951,13 @@ class BleGattService : Service() {
             queuedManifestEndIndex = queuedReplayManifestEndIndex,
         ) ?: return
         if (lastReplayQueuedRecordIndex >= replayReadUpperBound) return
-        val page = sourceJournal.readRecordsAfter(
-            activeSession,
-            lastReplayQueuedRecordIndex,
-            replayReadUpperBound,
-            REPLAY_PAGE_RECORDS,
-        )
+        val page = try {
+            sourceJournal.readRecordsAfter(activeSession, lastReplayQueuedRecordIndex, replayReadUpperBound, REPLAY_PAGE_RECORDS)
+        } catch (failure: Exception) {
+            saveDiagnostic(DiagnosticStage.REPLAY_READ, failure = failure)
+            abortTransportLineage("source_replay_read_failed")
+            return
+        }
         if (page.isEmpty()) {
             replayBacklogCount = sourceJournal.countRecordsAfter(requireNotNull(activeReplaySessionId), durablePhoneRecordIndex, replayHighWaterRecordIndex)
             if (replayBacklogCount == 0L) {
@@ -2121,7 +2140,17 @@ class BleGattService : Service() {
             arg0 = arg0,
             arg1 = arg1,
             reasonCode = reasonCode,
-        )
+        )?.let { WatchDiagnosticRuntime.event(it) }
+    }
+
+    private fun saveDiagnostic(stage: DiagnosticStage, outcome: DiagnosticOutcome = DiagnosticOutcome.EXCEPTION, failure: Throwable? = null) {
+        // No extra journal open/read, no payload/exception-message serialization, no network.
+        if (stage != diagnosticResumeStage || diagnosticResumeStage != DiagnosticStage.HISTORICAL_BOUND_VALIDATION) {
+            WatchDiagnosticRuntime.update(finalizedDeliveryRecoveryAttemptId, finalizedDeliverySourceSessionId ?: activeReplaySessionId,
+                causalLineageState.currentLineage(), pendingSourceResumeRequest?.cumulativeRecordIndex ?: durablePhoneRecordIndex,
+                replayHighWaterRecordIndex.takeIf { it > 0 }, diagnosticHistoricalBound, negotiatedMtu, queuedReplayManifestEndIndex)
+        }
+        WatchDiagnosticRuntime.capture(this, stage, outcome, failure)
     }
 
     private fun recordStandardGattReadinessFailure() {
