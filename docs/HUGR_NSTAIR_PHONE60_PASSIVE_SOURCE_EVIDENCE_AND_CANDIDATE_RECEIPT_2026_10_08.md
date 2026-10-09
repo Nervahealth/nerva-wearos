@@ -142,3 +142,9 @@ Final Phone deterministic**108 total:106 pass,2 existing fixture-dependent skips
 Source-owned receipt/copies → Master → no known-denied Atlas retry/acceptedS4 mutation → Alignment last → bounded commits → non-force both-repository preflight/mirror → independent exact head/tree readback must complete before declaring final preservation. Prior source/test/submission snapshots remain historical.
 
 Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
+
+## 15. Honor installation-only authority — 2026-10-09 08:49 CEST
+
+Neil explicitly authorizes **Phone60 installation-only on Honor now, keeping Watch untouched**. Sole admitted replacement artifact/package/version/signer remains section14; full local checksum rechecked successfully before instructions. Ordinary in-place Phone59→Phone60 update preserving app/data; no uninstall, clearing, downgrade or reset. Stop at installer result; do not Open either normal Main HUGR or HUGR Saved Source Evidence. Settings app-list version check only. STOP without retry on unexpected package/signature warning or request to uninstall/clear/reset. No Watch action, Bluetooth/companion/host change, Connect, passive private-source readback, private transfer, new recording or N1 authority. Installation has **not yet been operator-confirmed**; do not mark installed based on this approval. Request installer result, visible version, whether any HUGR launcher opened and warnings. Subsequent passive readback remains separate authority. No build or production-source change. Standing source-owned receipt/copies→Master→no acceptedS4 change or known-deniedAtlas retry→Alignment last→bounded commits/non-force GitHub exact-tree readback applies automatically.
+
+Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
