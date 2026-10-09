@@ -1,0 +1,16 @@
+# VIS-COUNT Inbox proposal — linked recording and live-observation milestones
+
+**2026-10-09. PREPARED / NOT SUBMITTED.** Private Inbox proposal only. Accepted `VC-S4-2026-09-26-LIVE-INTAKE` and prior snapshots must remain immutable. Known-denied Atlas access was not retried, and no live Atlas update is claimed.
+
+## Proposed payload
+
+- **sourceType:** file
+- **sourceLabel:** Founder-endorsed live-observation objective and source-grounded implementation plan, 2026-10-09
+- **sourceLocator:** `docs/HUGR_NSTAIR_LIVE_OBSERVATION_AND_SAMSUNG_HOST_PLAN_2026_10_09.md` on `preservation/phone-control-and-source-2026-10-03`, Nervahealth/nerva-mobile
+- **affectedItemIds:** `VCI-ROOT`, `VCI-004`, `VCI-005`, `VCI-007`, `VCI-008`, `VCI-022`, `VCI-026`, `VCI-028`, `VCI-030`, `VCI-041`
+- **proposedChange:** Keep two explicitly linked milestones in the existing plan: (1) trustworthy bounded recording with a persistent Phone per-run report and no routine Watch filming; (2) low-rate, source-linked live Watch→Phone→scientific-memory→Watchtower observation and on-demand, scoped read-only Manus access during Book One N1. Phone60 is admitted/not installed and supplies a single-session passive offline canonical readback plus truthful segment status, not a persistent general run report, live dashboard bridge or observer. Current frontier remains separately authorized Honor installation then offline readback of existing custody. Source inspection finds the current scientific-memory uploader consumes a separate shadow/health ledger, not the canonical run/manifest chain. Reuse it with durable reporting/upload boundaries, explicit clock/quality/lineage unknowns, advancing live dashboard windows, bounded pagination and versioned shadow-engine/configuration outputs. Preserve LIVE_ISSUED versus RETROSPECTIVE_REPLAY and freeze finalists before untouched N2. Recording and deterministic monitoring must work without Manus. Longer recording does not require the full portal/AI stack, but a live-observation rehearsal is required before claiming the Book One operational objective. Samsung/Fold is a reasonable future host after current Honor custody is resolved and a preservation-safe host admission is separately approved; no transfer/reset/clone continuity is assumed. This update is a plan, not implemented or deployed capability, evidence qualification, device action, private-data transfer, observer activation or foreground Suki/haptic authority.
+- **conflictNote:** Do not let a retrospective manually shared report replace or indefinitely park the live-observation/time-saving objective. Do not promote source-tested components to end-to-end operational status. Keep acquisition health, Bluetooth liveness, native Phone custody and portal receipt separate. Phone60's display is not durable report history. No current source session, physiological payload, credential or private media is included in this payload. Known-denied Atlas prevents submission now; reconcile only through the ordinary authorized proposal workflow when available, never by editing accepted S4.
+
+## Sovereign evidence state
+
+Watch69 **NOT QUALIFIED**. Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**. Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
