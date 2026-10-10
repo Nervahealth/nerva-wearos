@@ -38,3 +38,7 @@ Minimal durable native Phone custody report, truthful Phone ACK intent/result fa
 ## Installation-only observation addendum — 2026-10-10 23:19 CEST
 
 **PREPARED / NOT SUBMITTED; accepted S4 unchanged, denied Atlas not retried.** Both Watch78/Phone61 updates and Settings checks are operator-reported completed by the usual route; explicit authority is installation-only with preserved app/data and no opening. No-launch/warning observations await a short separate confirmation. Next remains distinct fresh-five-minute/one durable Phone result/fresh-process offline recheck authorization, not a repeat installation or historical reconstruction prerequisite. No runtime/private-data/N1 action or physical qualification is claimed.
+
+## One fresh physical run authority — 2026-10-10 23:27 CEST
+
+**PREPARED / NOT SUBMITTED; accepted S4 unchanged, denied Atlas not retried.** Installed Watch78/HonorPhone61 no-launch/no-warning boundary confirmed. One prepared fresh-five-minute/one durable Phone result/conditional fresh-process offline recheck authorized, not yet observed. No qualification/report invented; no private transfer/observer/N1. Keep duration ladder/live bridge next after physical acceptance, not a prerequisite for this bounded rehearsal.

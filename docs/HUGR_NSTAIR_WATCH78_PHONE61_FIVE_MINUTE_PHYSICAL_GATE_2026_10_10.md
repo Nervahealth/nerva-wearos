@@ -1,6 +1,6 @@
 # Watch78 / Phone61 — one fresh five-minute test
 
-**Installation-only is authorized and both updates/Settings checks are operator-reported as completed. Do not repeat installation. No-launch and no-warning observations await a short confirmation. Sections B/C remain prepared for review only: no fresh recording, Connect or offline read is authorized yet.**
+**AUTHORIZED — 23:27 CEST. Both updates/Settings checks and neither Main nor information launch/no warnings are operator-confirmed. Proceed once with sections B/C: fresh five-minute run and conditional successful-report offline recheck. No result observed yet. No reinstall. Local report only; no Share/export/private report upload, retry or N1.**
 
 ## A. Installation-only gate — authorized; updates/Settings checks reported complete
 
@@ -10,7 +10,7 @@
 
 No app launch or run follows automatically from installation.
 
-## B. Single fresh run — later, separately authorized
+## B. Single fresh run — authorized once at 23:27 CEST
 
 1. Wear Watch normally; Honor nearby, charged sufficiently for the bounded attempt. Use the existing companion connection; no pairing/reset or Bluetooth troubleshooting within the attempt. If connection/setup is ambiguous, stop before starting and report it.
 2. Open normal **Main HUGR on Watch once**. Press **Start fresh 5 minutes** once. Do not press **Explicit retained v2 delivery**, **Serve current fresh receipt only**, or keep-awake. New actual source/run identities are created; Watch69/history is not selected.
@@ -21,7 +21,7 @@ No app launch or run follows automatically from installation.
 
 **STOP:** first failed readiness/admission/source/receipt/custody, black screen/crash, disconnect, unexpected prompt/state, PARTIAL/FAILED or deadline. Preserve the first visible code/result and ask for the next bounded action; no retry/new run/receipt-only/retained-history action. Source collection still has its automatic five-minute admission cap and bounded service lifetime; stopping observation does not by itself prove finalization. Saved Diagnostics opening or any private report transfer requires specific later authority.
 
-## C. Same report after process restart — included only if explicitly authorized
+## C. Same report after process restart — authorized only after COMPLETE_VERIFIED
 
 After terminal COMPLETE_VERIFIED, close Main using **Honor Settings → Apps → HUGR → Force stop**. This ends process memory without deleting app data; **not Clear storage/cache and not uninstall**. Leave Watch and Bluetooth untouched. Then open only **HUGR Saved Source Evidence**, the separate information “i” launcher, once. Stop at first report/failure or60 seconds without a report; no retry/Main/Connect.
 
@@ -54,6 +54,10 @@ Signer/package/ZIP/native bridge/class/source-stage/CDN full-byte checks passed.
 
 A separate subsequent authorization must explicitly include the single fresh run and fresh-process offline recheck in sections B/C; this installation template does not grant them.
 
-## Current next boundary — 23:19 CEST
+## Historical next boundary — 23:19 CEST
 
 Both updates/Settings checks are reported complete. Confirm from memory that neither device Main HUGR nor either information launcher opened and whether warnings/deviations occurred; no further device touch needed. Then obtain distinct sections B/C fresh-five-minute and offline-recheck authority. No retry installation or launch follows from this record.
+
+## Current execution boundary — 23:27 CEST
+
+Neil has now confirmed no launcher opened/no warnings and authorized the prepared five-minute physical recording and resulting durable Phone report. Execute sections B/C once within their limits, locally. No fresh result is known and Manus cannot display a report it has not observed. Report start time and minimal terminal/offline result codes; no raw physiological report upload or Share/export is included. At failure, stop and preserve first visible code without further launcher/reconnect/diagnostic action.
