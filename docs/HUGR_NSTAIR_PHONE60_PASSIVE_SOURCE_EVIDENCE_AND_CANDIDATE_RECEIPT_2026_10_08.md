@@ -1,6 +1,6 @@
 # Phone60 — passive selected-session evidence and truthful delivery status
 
-**2026-10-08 23:58 CEST. CURRENT STATUS: REPLACEMENT Phone60 APK ARTIFACT ADMISSION GREEN; NOT INSTALLED. First APK remains REJECTED / DO NOT INSTALL.** Source-owned receipt. Watch77 remains unchanged. No device action or actual Phone private-data readback has occurred in this engineering scope.
+**2026-10-10 08:12 CEST. CURRENT STATUS: replacement Phone60 installation/update and Settings version OPERATOR-CONFIRMED on the authorized Honor route; post-update launcher/no-warning confirmations still pending.** Artifact admission GREEN; first APK remains REJECTED / DO NOT INSTALL. Watch77 remains outside this gate. No passive Phone private-data readback has been authorized or observed. Earlier dated NOT INSTALLED statements below remain historical snapshots, superseded for current installation status by section16.
 
 ## 1. Current authority and objective
 
@@ -146,5 +146,13 @@ Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 `
 ## 15. Honor installation-only authority — 2026-10-09 08:49 CEST
 
 Neil explicitly authorizes **Phone60 installation-only on Honor now, keeping Watch untouched**. Sole admitted replacement artifact/package/version/signer remains section14; full local checksum rechecked successfully before instructions. Ordinary in-place Phone59→Phone60 update preserving app/data; no uninstall, clearing, downgrade or reset. Stop at installer result; do not Open either normal Main HUGR or HUGR Saved Source Evidence. Settings app-list version check only. STOP without retry on unexpected package/signature warning or request to uninstall/clear/reset. No Watch action, Bluetooth/companion/host change, Connect, passive private-source readback, private transfer, new recording or N1 authority. Installation has **not yet been operator-confirmed**; do not mark installed based on this approval. Request installer result, visible version, whether any HUGR launcher opened and warnings. Subsequent passive readback remains separate authority. No build or production-source change. Standing source-owned receipt/copies→Master→no acceptedS4 change or known-deniedAtlas retry→Alignment last→bounded commits/non-force GitHub exact-tree readback applies automatically.
+
+Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
+
+## 16. Operator-confirmed installation and Settings version — 2026-10-10 08:12 CEST
+
+Neil reports “instazlled updated confirmed Settings → Apps → HUGR: confirm 2.0.60-saved-source-evidence-candidate,” in response to the authorized Honor installation-only instructions. Record successful installation/update and visible exact version as **operator-confirmed**, not direct package extraction, device-byte hash readback or runtime/custody verification. No repeat installation or build is indicated. This message does not explicitly confirm whether any HUGR launcher opened after the update or whether warnings/deviations occurred; ask for those facts without requesting device interaction. Do not silently record them as no/none or infer private source/data integrity from installer success.
+
+Current frontier is installation confirmed; passive readback remains **NOT AUTHORIZED / NOT OBSERVED**. After the missing no-launch/deviation facts are resolved, seek separate authority for one offline Honor HUGR Saved Source Evidence local read, to first report/failure or60 seconds, no retry/Main HUGR/Watch launch/Connect/Bluetooth or host change/sensing/recording/Share/export/private-data upload/N1. Watch77 untouched by this task; no new Watch action is requested. Only non-sensitive outcome/code may be reported under a later local-only readback gate; report/media transfer still requires explicit authority. Preserve the observed installation fact through receipt copies, Master, Alignment last and controlled non-force GitHub exact-tree readback; accepted S4 remains immutable and known-denied Atlas access is not retried.
 
 Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.

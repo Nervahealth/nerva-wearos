@@ -1,6 +1,6 @@
 # Phone60 — proposed physical readback gate
 
-**Replacement artifact ADMITTED; NOT INSTALLED. Gate prepared only; installation and passive launch remain separate explicit authorizations.** Watch77 stays unchanged. This gate reads the existing ordinary session on Honor offline; it does not need a Bluetooth reconnect and must not start another recording.
+**2026-10-10 08:12 CEST: replacement Phone60 installation/update and exact Settings version OPERATOR-CONFIRMED on the authorized Honor route. Post-update launcher/no-warning facts still pending; do not check by opening an app. Passive readback remains NOT AUTHORIZED / NOT OBSERVED.** Watch77 stays outside this gate. The proposed next gate reads the existing ordinary session on Honor offline; it does not need a Bluetooth reconnect and must not start another recording. Prior installation instructions remain reference only, not an instruction to reinstall.
 
 ## A. Separately authorize installation only
 
