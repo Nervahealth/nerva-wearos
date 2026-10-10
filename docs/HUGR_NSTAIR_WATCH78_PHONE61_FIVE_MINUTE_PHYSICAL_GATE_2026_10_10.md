@@ -1,6 +1,6 @@
 # Watch78 / Phone61 — one fresh five-minute test
 
-**Prepared for review only. Current authority is build/admission and procedure preparation—not installation, launch, recording or offline read. Phone61 artifact admission is pending. Do not act on these steps until the exact pair is admitted and its device gate authorized.**
+**Prepared for review only. Current authority is build/admission and procedure preparation—not installation, launch, recording or offline read. The exact compatible pair is now artifact-admitted, not installed or physically tested. Do not act until its separate device gate is authorized.**
 
 ## A. Installation-only gate — later, separately authorized
 
@@ -40,3 +40,16 @@ Read locally through END REPORT. Report the result/code initially; **no Share/ex
 Record → controlled finalization → exact ordinary delivery → Watch-origin acceptance/completion → durable Phone result → fresh-process offline canonical recheck. Hardware must earn this; build/JVM/Robolectric success does not. After physical complete-lifecycle acceptance, the next milestones are duration ladder and the existing live-observation/Watchtower bridge, not a new historical recovery loop or full observer-stack prerequisite. No N1 execution is included.
 
 Watch69 **NOT QUALIFIED**. Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**. Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`. Existing/frozen data and packages remain preserved; egress and host transfer are out of scope.
+
+## Sole admitted artifacts — 21:09 CEST
+
+- **Phone 61**: [sole APK](https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/lRbAZuUPQpcqdhfU.apk); `HUGR_Phone61p_2.0.61_compatible-fresh-run-report-candidate.apk`; 152005786 bytes; full SHA-256 `61b9a674fea6b705563fcf80157390ae8d6b7fac36f696e8ad041c960cbd2c5c`.
+- **Watch 78**: [sole APK](https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/eRNzBQjVhOJGNNJE.apk); `HUGR_Watch78w_0.78.0_compatible-fresh-run-receipt-candidate.apk`; 12918533 bytes; full SHA-256 `6b1f95cfabb4cad962af047cdb4a72feead3a53b76f70a248736fa15e4e970e8`.
+
+Signer/package/ZIP/native bridge/class/source-stage/CDN full-byte checks passed. Admission details: `HUGR_NSTAIR_WATCH78_PHONE61_COMPATIBLE_BUILD_ADMISSION_2026_10_10.md`.
+
+## Next authorization template — installation only
+
+> Authorize installation-only of the sole admitted Phone61 on Honor first, then Watch78 through Wear Installer 2, ordinary in-place updates preserving all app data. No uninstall/clear/reset, no HUGR launcher opening. Confirm both versions in Settings and stop.
+
+A separate subsequent authorization must explicitly include the single fresh run and fresh-process offline recheck in sections B/C; this installation template does not grant them.
