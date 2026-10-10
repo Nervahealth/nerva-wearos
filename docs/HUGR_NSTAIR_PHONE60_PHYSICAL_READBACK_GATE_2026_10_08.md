@@ -1,6 +1,6 @@
 # Phone60 — proposed physical readback gate
 
-**2026-10-10 12:31 CEST: replacement Phone60 installation-only boundary OPERATOR-CONFIRMED on Honor: exact Settings version, neither Phone launcher opened, Watch untouched, no warning/unusual behavior. Passive readback remains NOT AUTHORIZED / NOT OBSERVED.** The proposed next gate reads the existing ordinary session on Honor offline; it does not need a Bluetooth reconnect and must not start another recording. Prior installation instructions remain reference only, not an instruction to reinstall.
+**2026-10-10 13:11 CEST: ONE offline local Phone60 Saved Source Evidence readback on Honor AUTHORIZED / RESULT NOT YET OBSERVED.** Installation-only boundary previously operator-confirmed with exact version, no launcher opened/Watch action/warning. Current authority leaves Watch and Bluetooth untouched, forbids Main HUGR/Connect/new recording/private report upload and ends at first report/failure or60 seconds without report, no retry. Prior installation instructions remain reference only, not an instruction to reinstall. Source-owned authority: Phone60 receipt section18.
 
 ## A. Separately authorize installation only
 
@@ -17,7 +17,7 @@ Proposed authority:
 
 ## B. Separately authorize passive existing-session readback
 
-After installation is confirmed, proposed authority is:
+Installation is confirmed; Neil explicitly approved the following one-shot scope at13:11 CEST (including separate information-icon launcher and untouched Watch/Bluetooth). This is current readback authority, not authority for another later attempt:
 
 > Authorize one offline passive Phone60 readback on Honor: open **HUGR Saved Source Evidence** once and read its local report. No normal Main HUGR/Watch launch, Connect/reconnect, sensing, new recording, pairing/reset, legacy/frozen access, Share/export/private-data transfer or N1 execution. Stop at the first report or failure, or 60 seconds without a report; no retry.
 
