@@ -1,8 +1,8 @@
 # Watch78 / Phone61 — one fresh five-minute test
 
-**Prepared for review only. Current authority is build/admission and procedure preparation—not installation, launch, recording or offline read. The exact compatible pair is now artifact-admitted, not installed or physically tested. Do not act until its separate device gate is authorized.**
+**Installation-only is authorized and both updates/Settings checks are operator-reported as completed. Do not repeat installation. No-launch and no-warning observations await a short confirmation. Sections B/C remain prepared for review only: no fresh recording, Connect or offline read is authorized yet.**
 
-## A. Installation-only gate — later, separately authorized
+## A. Installation-only gate — authorized; updates/Settings checks reported complete
 
 1. **Honor first:** select only the admitted Phone61 APK, ordinary HUGR in-place update. Preserve app/data; no uninstall or Clear storage/cache. At installer success, choose Done, **not Open**. Settings → Apps → HUGR must show **2.0.61-compatible-fresh-run-report-candidate**.
 2. **Watch second:** use the established Wear Installer 2 route with only the admitted Watch78 APK. Ordinary HUGR in-place update, same app/data. Stop at installer success without Open. Watch Settings app list must show **0.78.0-compatible-fresh-run-receipt-candidate**.
@@ -48,8 +48,12 @@ Watch69 **NOT QUALIFIED**. Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**. Watch58 `
 
 Signer/package/ZIP/native bridge/class/source-stage/CDN full-byte checks passed. Admission details: `HUGR_NSTAIR_WATCH78_PHONE61_COMPATIBLE_BUILD_ADMISSION_2026_10_10.md`.
 
-## Next authorization template — installation only
+## Installation-only authority — received 23:19 CEST
 
 > Authorize installation-only of the sole admitted Phone61 on Honor first, then Watch78 through Wear Installer 2, ordinary in-place updates preserving all app data. No uninstall/clear/reset, no HUGR launcher opening. Confirm both versions in Settings and stop.
 
 A separate subsequent authorization must explicitly include the single fresh run and fresh-process offline recheck in sections B/C; this installation template does not grant them.
+
+## Current next boundary — 23:19 CEST
+
+Both updates/Settings checks are reported complete. Confirm from memory that neither device Main HUGR nor either information launcher opened and whether warnings/deviations occurred; no further device touch needed. Then obtain distinct sections B/C fresh-five-minute and offline-recheck authority. No retry installation or launch follows from this record.
