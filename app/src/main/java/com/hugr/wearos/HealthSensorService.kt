@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
+import android.os.SystemClock
 import android.util.Log
 import com.samsung.android.service.health.tracking.ConnectionListener
 import com.samsung.android.service.health.tracking.HealthTracker
@@ -78,6 +79,8 @@ class HealthSensorService : Service() {
     private val journalLifecycleLock = Any()
     private val boundedRunGate = BoundedOrdinaryRunGate()
     private var boundedRunStop: Runnable? = null
+    @Volatile private var freshSession: FreshRunSession? = null
+    @Volatile private var stopped = true
     private var sampleMarkerRecorded = false
     private val causalComponentInstanceId = UUID.randomUUID()
     private val causalFirstEventGate = FirstCausalEventGate()
@@ -104,58 +107,31 @@ class HealthSensorService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        recordCausal(CausalEventCode.HEALTH_SERVICE_CREATED)
+        // onCreate is passive; only the explicit fresh onStart may admit sensing.
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.HEALTH_ON_START_ENTER)
-        recordCausal(
-            CausalEventCode.HEALTH_START_COMMAND,
-            arg0 = when (intent?.action) {
-                ACTION_START_TRACKING -> 1L
-                ACTION_STOP_TRACKING -> 2L
-                ACTION_START_BOUNDED_ORDINARY_RUN -> 3L
-                else -> 0L
-            },
-            arg1 = startId.toLong(),
-        )
         when (intent?.action) {
-            ACTION_START_BOUNDED_ORDINARY_RUN -> startBoundedOrdinaryRun(
-                intent.getLongExtra(EXTRA_BOUNDED_RUN_DURATION_MS, -1L),
-            )
-            ACTION_START_TRACKING -> {
-                startForegroundWithNotification()
-                if (!initializeSourceJournal()) return START_STICKY
-                acquireWakeLock()
-                registerScreenReceiver()
-                startJournalSyncTimer()
-                startFlushTimer()
-                connectAndStartTracking()
+            FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES -> {
+                freshSession = FreshRunRuntime.session
+                if (freshSession == null || stopped == false) { stopSelf(); return START_NOT_STICKY }
+                stopped = false
+                startBoundedOrdinaryRun(BoundedOrdinaryRunPolicy.SHORT_ADMISSION_DURATION_MS)
             }
             ACTION_STOP_TRACKING -> {
-                cancelBoundedRunStop()
-                stopTrackingAndDisconnect()
-                stopFlushTimer()
-                stopJournalSyncTimer()
-                unregisterScreenReceiver()
-                releaseWakeLock()
-                stopForeground(STOP_FOREGROUND_REMOVE)
+                freshSession?.fail("USER_STOPPED")
+                finalizeBoundedOrdinaryRun()
                 stopSelf()
             }
-            else -> {
-                startForegroundWithNotification()
-                if (!initializeSourceJournal()) return START_STICKY
-                acquireWakeLock()
-                registerScreenReceiver()
-                startJournalSyncTimer()
-                startFlushTimer()
-                connectAndStartTracking()
-            }
+            else -> { stopSelf(); return START_NOT_STICKY }
         }
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     override fun onDestroy() {
+        stopped = true
+        freshSession?.quiesce()
+        if (boundedRunGate.state() != BoundedOrdinaryRunGate.State.FINALIZED) freshSession?.let { runCatching { it.fail("HEALTH_INTERRUPTED") } }
         cancelBoundedRunStop()
         recordCausal(CausalEventCode.HEALTH_SERVICE_DESTROYED)
         stopTrackingAndDisconnect()
@@ -173,9 +149,23 @@ class HealthSensorService : Service() {
             stopSelf()
             return
         }
-        startForegroundWithNotification()
-        if (!initializeSourceJournal()) {
+        try {
+            startForegroundWithNotification()
+        } catch (failure: Exception) {
+            freshSession?.let { runCatching { it.fail("HEALTH_FOREGROUND_FAILED") } }
+            WatchDiagnosticRuntime.capture(this, DiagnosticStage.SERVICE_START, failure = failure)
+            NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.BOUNDED_RUN_FINALIZATION_FAILED)
+            stopped = true
             boundedRunGate.requestStop()
+            stopSelf()
+            return
+        }
+        if (freshSession?.begin() != true) { stopped = true; stopSelf(); return }
+        if (!initializeSourceJournal()) {
+            freshSession?.fail("JOURNAL_PREFLIGHT_FAILED")
+            stopped = true
+            boundedRunGate.requestStop()
+            freshSession?.let { runCatching { it.fail("FINALIZATION_FAILED") } }
             boundedRunGate.markFinalizationFailed()
             NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.BOUNDED_RUN_FINALIZATION_FAILED)
             stopForeground(STOP_FOREGROUND_REMOVE)
@@ -189,12 +179,14 @@ class HealthSensorService : Service() {
         startFlushTimer()
         connectAndStartTracking()
         boundedRunStop = Runnable { finalizeBoundedOrdinaryRun() }.also {
-            controlHandler.postDelayed(it, durationMs)
+            controlHandler.postDelayed(it, freshSession?.remainingRecordingMs() ?: durationMs)
         }
     }
 
     private fun finalizeBoundedOrdinaryRun() {
         if (!boundedRunGate.requestStop()) return
+        stopped = true
+        freshSession?.quiesce()
         NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.BOUNDED_RUN_STOP_REQUESTED)
         cancelBoundedRunStop()
         // Stop producer callbacks before taking the lifecycle lock. A callback that
@@ -207,9 +199,8 @@ class HealthSensorService : Service() {
         val finalizationSucceeded = try {
             synchronized(journalLifecycleLock) {
                 val journal = requireNotNull(sourceJournal) { "Source journal not initialized" }
-                journal.forceSync()
-                journal.finalizeActiveSegment()
-                journal.forceSync()
+                if (freshSession != null) freshSession!!.finalizeRecording()
+                else { journal.forceSync(); journal.finalizeActiveSegment(); journal.forceSync() }
             }
             true
         } catch (error: Exception) {
@@ -280,7 +271,7 @@ class HealthSensorService : Service() {
             PowerManager.PARTIAL_WAKE_LOCK,
             "HUGR::SensorWakeLock"
         ).apply {
-            acquire(10 * 60 * 60 * 1000L) // 10 hours max (safety timeout)
+            acquire(FreshRunSession.MAX_LIFETIME_MS) // 10 hours max (safety timeout)
         }
         Log.i(TAG, "Wake lock acquired")
         sendStatus("Wake lock acquired")
@@ -299,6 +290,7 @@ class HealthSensorService : Service() {
     // ─── Samsung SDK Connection ────────────────────────────────────────────────
 
     private fun connectAndStartTracking() {
+        if (stopped || freshSession?.acceptsSamples() != true) return
         if (isConnected) {
             recordCausal(CausalEventCode.SDK_ALREADY_CONNECTED)
             sendStatus("Already connected, starting trackers...")
@@ -313,6 +305,7 @@ class HealthSensorService : Service() {
             Log.i(TAG, "Connecting to Health Tracking Service...")
         } catch (e: Exception) {
             recordCausal(CausalEventCode.SDK_CONNECTION_FAILED, arg0 = 1L)
+            freshSession?.let { runCatching { it.fail("SDK_CONNECTION_FAILED") } }; haltTrackingAfterSourceLoss()
             sendStatus("ERROR connecting: ${e.message}")
             Log.e(TAG, "Failed to connect: ${e.message}", e)
         }
@@ -320,6 +313,8 @@ class HealthSensorService : Service() {
 
     private val connectionListener = object : ConnectionListener {
         override fun onConnectionSuccess() {
+            synchronized(journalLifecycleLock) {
+            if (stopped || freshSession?.acceptsSamples() != true) { healthTrackingService?.disconnectService(); return }
             recordCausal(CausalEventCode.SDK_CONNECTED)
             Log.i(TAG, "Health Tracking Service connected")
             sendStatus("=== SDK CONNECTED ===")
@@ -327,9 +322,12 @@ class HealthSensorService : Service() {
             sdkStatus = 1
             sendDeviceHealthMetadata()
             startAllTrackers()
+            }
         }
 
         override fun onConnectionEnded() {
+            if (stopped) return
+            freshSession?.let { runCatching { it.fail("SDK_CONNECTION_ENDED") } }; haltTrackingAfterSourceLoss()
             recordCausal(CausalEventCode.SDK_CONNECTION_ENDED)
             Log.i(TAG, "Health Tracking Service connection ended")
             sendStatus("SDK connection ENDED")
@@ -342,6 +340,7 @@ class HealthSensorService : Service() {
 
         override fun onConnectionFailed(error: HealthTrackerException?) {
             recordCausal(CausalEventCode.SDK_CONNECTION_FAILED, arg0 = 2L)
+            freshSession?.let { runCatching { it.fail("SDK_CONNECTION_FAILED") } }; haltTrackingAfterSourceLoss()
             Log.e(TAG, "Connection failed: ${error?.message}")
             sendStatus("SDK FAILED: ${error?.message}")
             isConnected = false
@@ -353,10 +352,30 @@ class HealthSensorService : Service() {
     }
 
     private fun startAllTrackers() {
+        if (stopped || freshSession?.acceptsSamples() != true) return
         val service = healthTrackingService ?: return
 
         val supportedTypes = service.trackingCapability.supportHealthTrackerTypes
+        var supportedSourceMask = 16 // DEVICE_HEALTH is existing canonical stream 5.
+        if (HealthTrackerType.HEART_RATE_CONTINUOUS in supportedTypes) supportedSourceMask = supportedSourceMask or 1
+        if (HealthTrackerType.EDA_CONTINUOUS in supportedTypes) supportedSourceMask = supportedSourceMask or 2
+        if (HealthTrackerType.ACCELEROMETER_CONTINUOUS in supportedTypes) supportedSourceMask = supportedSourceMask or 4
+        if (HealthTrackerType.SKIN_TEMPERATURE_CONTINUOUS in supportedTypes) supportedSourceMask = supportedSourceMask or 8
+
         sendStatus("Supported: ${supportedTypes.size} types: ${supportedTypes.joinToString(", ") { it.name }}")
+        // SDK capability is known before a listener can call back. DEVICE_HEALTH was
+        // admitted before SDK connection; each actual listener joins started only
+        // after its registration succeeds. PPG remains live-only, not canonical.
+        freshSession?.scope(supportedSourceMask, 16)
+        var edaStarted = false
+        var accelStarted = false
+        var skinTempStarted = false
+        var cardiacStarted = false
+        fun publishStartedScope() = freshSession?.scope(
+            supportedSourceMask,
+            16 or (if (cardiacStarted) 1 else 0) or (if (edaStarted) 2 else 0) or
+                (if (accelStarted) 4 else 0) or (if (skinTempStarted) 8 else 0),
+        )
 
         // EDA tracker — independent try/catch
         recordTracker(CausalEventCode.TRACKER_START_ATTEMPT, CausalStreamCode.EDA)
@@ -364,6 +383,8 @@ class HealthSensorService : Service() {
             if (supportedTypes.contains(HealthTrackerType.EDA_CONTINUOUS)) {
                 edaTracker = service.getHealthTracker(HealthTrackerType.EDA_CONTINUOUS)
                 edaTracker?.setEventListener(edaListener)
+                edaStarted = true
+                publishStartedScope()
                 activeSensorMask = activeSensorMask or 0x01
                 recordTracker(CausalEventCode.TRACKER_STARTED, CausalStreamCode.EDA)
                 sendStatus("EDA tracker STARTED")
@@ -406,6 +427,8 @@ class HealthSensorService : Service() {
             if (supportedTypes.contains(HealthTrackerType.ACCELEROMETER_CONTINUOUS)) {
                 accelerometerTracker = service.getHealthTracker(HealthTrackerType.ACCELEROMETER_CONTINUOUS)
                 accelerometerTracker?.setEventListener(accelerometerListener)
+                accelStarted = true
+                publishStartedScope()
                 activeSensorMask = activeSensorMask or 0x08
                 recordTracker(CausalEventCode.TRACKER_STARTED, CausalStreamCode.ACCEL)
                 sendStatus("Accel tracker STARTED")
@@ -425,6 +448,8 @@ class HealthSensorService : Service() {
             if (supportedTypes.contains(HealthTrackerType.SKIN_TEMPERATURE_CONTINUOUS)) {
                 skinTempTracker = service.getHealthTracker(HealthTrackerType.SKIN_TEMPERATURE_CONTINUOUS)
                 skinTempTracker?.setEventListener(skinTempListener)
+                skinTempStarted = true
+                publishStartedScope()
                 activeSensorMask = activeSensorMask or 0x10
                 recordTracker(CausalEventCode.TRACKER_STARTED, CausalStreamCode.SKIN_TEMP)
                 sendStatus("Skin Temp tracker STARTED (continuous)")
@@ -446,6 +471,8 @@ class HealthSensorService : Service() {
             if (supportedTypes.contains(HealthTrackerType.HEART_RATE_CONTINUOUS)) {
                 hrTracker = service.getHealthTracker(HealthTrackerType.HEART_RATE_CONTINUOUS)
                 hrTracker?.setEventListener(cardiacEvidenceListener)
+                cardiacStarted = true
+                publishStartedScope()
                 activeSensorMask = activeSensorMask or 0x02
                 recordTracker(CausalEventCode.TRACKER_STARTED, CausalStreamCode.CARDIAC)
                 sendStatus("HR evidence tracker STARTED")
@@ -460,6 +487,7 @@ class HealthSensorService : Service() {
         }
 
         sendDeviceHealthMetadata()
+        publishStartedScope()
         sendStatus("=== TRACKER INIT COMPLETE ===")
     }
 
@@ -467,6 +495,7 @@ class HealthSensorService : Service() {
 
     private val edaListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            if (stopped || freshSession?.acceptsSamples() != true) return
             recordFirstCausal(CausalEventCode.FIRST_CALLBACK, CausalStreamCode.EDA, arg0 = dataPoints.size.toLong())
             val batchSize = dataPoints.size
             val deliveryMode = if (isScreenOn) "REALTIME" else "FLUSH"
@@ -499,6 +528,7 @@ class HealthSensorService : Service() {
 
     private val ppgListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            if (stopped || freshSession?.acceptsSamples() != true) return
             recordFirstCausal(CausalEventCode.FIRST_CALLBACK, CausalStreamCode.PPG, arg0 = dataPoints.size.toLong())
             val batchSize = dataPoints.size
             val deliveryMode = if (isScreenOn) "REALTIME" else "FLUSH"
@@ -519,7 +549,8 @@ class HealthSensorService : Service() {
                     putExtra("batchSize", batchSize)
                     putExtra("screenOn", isScreenOn)
                 }
-                sendBroadcast(intent)
+                val run = freshSession ?: return
+                synchronized(run) { if (!run.acceptsSamples() || stopped) return; sendBroadcast(intent) }
             }
             // Log summary (not every point — 25 Hz would flood the log)
             if (dataPoints.isNotEmpty()) {
@@ -536,6 +567,7 @@ class HealthSensorService : Service() {
 
     private val cardiacEvidenceListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            if (stopped || freshSession?.acceptsSamples() != true) return
             if (dataPoints.isEmpty()) return
             recordFirstCausal(CausalEventCode.FIRST_CALLBACK, CausalStreamCode.CARDIAC, arg0 = dataPoints.size.toLong())
             cardiacCallbackId = (cardiacCallbackId + 1) and 0x7FFF_FFFF
@@ -605,6 +637,7 @@ class HealthSensorService : Service() {
     // Skin Temperature listener (Clusters 33, 43, 48 — circadian, disambiguation, sports)
     private val skinTempListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            if (stopped || freshSession?.acceptsSamples() != true) return
             recordFirstCausal(CausalEventCode.FIRST_CALLBACK, CausalStreamCode.SKIN_TEMP, arg0 = dataPoints.size.toLong())
             val batchSize = dataPoints.size
             val deliveryMode = if (isScreenOn) "REALTIME" else "FLUSH"
@@ -651,6 +684,7 @@ class HealthSensorService : Service() {
 
     private val accelerometerListener = object : HealthTracker.TrackerEventListener {
         override fun onDataReceived(dataPoints: MutableList<DataPoint>) {
+            if (stopped || freshSession?.acceptsSamples() != true) return
             recordFirstCausal(CausalEventCode.FIRST_CALLBACK, CausalStreamCode.ACCEL, arg0 = dataPoints.size.toLong())
             val batchSize = dataPoints.size
             val deliveryMode = if (isScreenOn) "REALTIME" else "FLUSH"
@@ -688,6 +722,8 @@ class HealthSensorService : Service() {
     // ─── Cleanup ───────────────────────────────────────────────────────────────
 
     private fun stopTrackingAndDisconnect() {
+        stopped = true
+        synchronized(journalLifecycleLock) {
         try {
             edaTracker?.unsetEventListener()
             ppgTracker?.unsetEventListener()
@@ -712,6 +748,7 @@ class HealthSensorService : Service() {
         sdkStatus = 2
         activeSensorMask = 0
         sendDeviceHealthMetadata()
+        }
     }
 
     private fun sendStatus(message: String) {
@@ -724,6 +761,7 @@ class HealthSensorService : Service() {
     }
 
     private fun sendDeviceHealthMetadata() {
+        if (stopped || freshSession?.acceptsSamples() != true) return
         val intent = Intent(ACTION_DEVICE_HEALTH_UPDATE).apply {
             setPackage(packageName)
             putExtra("sdkConnected", isConnected)
@@ -778,7 +816,8 @@ class HealthSensorService : Service() {
             val record = synchronized(journalLifecycleLock) {
                 if (!boundedRunGate.acceptsSamples()) return null
                 requireNotNull(sourceJournal) { "Source journal not initialized" }
-                    .append(stream, sourceTimestampMs, payload)
+                val run = freshSession ?: return null
+                run.append(stream, sourceTimestampMs, payload) ?: return null
             }
             if (!sampleMarkerRecorded) {
                 sampleMarkerRecorded = true
@@ -834,7 +873,7 @@ class HealthSensorService : Service() {
             scheduleAtFixedRate(object : TimerTask() {
                 override fun run() {
                     try {
-                        sourceJournal?.forceSync()
+                        freshSession?.forceSync()
                     } catch (error: Exception) {
                         if (!sourceDataLoss) {
                             recordCausal(CausalEventCode.JOURNAL_SYNC_FAILED, reasonCode = 5)
@@ -853,7 +892,7 @@ class HealthSensorService : Service() {
     private fun stopJournalSyncTimer() {
         journalSyncTimer?.cancel()
         journalSyncTimer = null
-        runCatching { sourceJournal?.forceSync() }
+        runCatching { freshSession?.forceSync() }
     }
 
     private fun recordTracker(
@@ -861,6 +900,9 @@ class HealthSensorService : Service() {
         stream: CausalStreamCode,
         arg0: Long = 0L,
     ) {
+        if (code == CausalEventCode.CALLBACK_ERROR || code == CausalEventCode.TRACKER_START_FAILED) {
+            freshSession?.let { runCatching { it.fail("SENSOR_FAILED") } }; haltTrackingAfterSourceLoss()
+        }
         recordCausal(code, stream = stream, arg0 = arg0)
     }
 
@@ -884,6 +926,7 @@ class HealthSensorService : Service() {
         arg1: Long = 0L,
         reasonCode: Int = CausalReasonCode.NONE.code,
     ) {
+        if (freshSession != null || stopped) return
         WatchCausalRuntime.record(
             this,
             code,
@@ -899,6 +942,9 @@ class HealthSensorService : Service() {
     }
 
     private fun haltTrackingAfterSourceLoss() {
+        stopped = true
+        freshSession?.quiesce()
+        freshSession?.let { runCatching { it.fail("SOURCE_IO") } }
         controlHandler.post {
             stopTrackingAndDisconnect()
             stopFlushTimer()
@@ -916,7 +962,7 @@ class HealthSensorService : Service() {
         flushTimer = Timer("HUGR-Flush", true)
         flushTimer?.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                if (!isScreenOn) {
+                if (!stopped && freshSession?.acceptsSamples() == true && !isScreenOn) {
                     // Only flush when screen is off (when SDK batches data)
                     try {
                         edaTracker?.flush()

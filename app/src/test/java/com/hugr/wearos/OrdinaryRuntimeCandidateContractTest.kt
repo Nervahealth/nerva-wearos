@@ -29,12 +29,55 @@ class OrdinaryRuntimeCandidateContractTest {
     @Test
     fun `ordinary launcher starts standard GATT and bounded health service only`() {
         val normalStartup = between(mainSource, "private fun startAllServices()", "private val causalUpdateReceiver")
-        assertTrue(normalStartup.contains("startService(Intent(this, BleGattService::class.java))"))
-        assertTrue(normalStartup.contains("HealthSensorService.ACTION_START_BOUNDED_ORDINARY_RUN"))
-        assertTrue(normalStartup.contains("BoundedOrdinaryRunPolicy.SHORT_ADMISSION_DURATION_MS"))
-        assertTrue(normalStartup.contains("startForegroundService(sensorIntent)"))
+        assertTrue(normalStartup.contains("if (!freshRequested) return"))
+        assertTrue(normalStartup.contains("FreshRunRuntime.admit(applicationContext)"))
+        assertTrue(normalStartup.contains("FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES"))
+        assertTrue(normalStartup.contains("startForegroundService(Intent(this, BleGattService::class.java)"))
+        val freshGattStart = gattSource.substringAfter("if (freshAction == FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES").substringBefore("if (intent == null || freshMode)")
+        assertTrue(freshGattStart.contains("startFreshForeground()"))
+        assertTrue(freshGattStart.contains("startForegroundService(Intent(this, HealthSensorService::class.java)"))
+        assertTrue(freshGattStart.contains("FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES"))
+        assertTrue(healthSource.contains("startBoundedOrdinaryRun(BoundedOrdinaryRunPolicy.SHORT_ADMISSION_DURATION_MS)"))
         assertFalse(normalStartup.contains("ACTION_START_EGRESS_ONLY"))
         assertFalse(normalStartup.contains("EvidenceEgressActivation"))
+    }
+
+    @Test
+    fun `fresh lifecycle rejects sticky and duplicate starts declares health before SDK and excludes PPG from canonical scope`() {
+        val start = between(healthSource, "override fun onStartCommand", "override fun onDestroy")
+        assertTrue(start.contains("intent?.action"))
+        assertTrue(start.contains("freshSession == null || stopped == false"))
+        assertTrue(start.contains("else -> { stopSelf(); return START_NOT_STICKY }"))
+        assertTrue(start.contains("return START_NOT_STICKY"))
+        val bounded = between(healthSource, "private fun startBoundedOrdinaryRun", "private fun finalizeBoundedOrdinaryRun")
+        val foregroundFailure = bounded.substringAfter("startForegroundWithNotification()").substringBefore("if (freshSession?.begin()")
+        assertInOrder(foregroundFailure, "it.fail(\"HEALTH_FOREGROUND_FAILED\")", "WatchDiagnosticRuntime.capture(this, DiagnosticStage.SERVICE_START", "boundedRunGate.requestStop()", "stopSelf()")
+        val trackers = between(healthSource, "private fun startAllTrackers", "// ─── Sensor Listeners")
+        assertInOrder(trackers, "var supportedSourceMask = 16", "freshSession?.scope(supportedSourceMask, 16)", "setEventListener(edaListener)", "edaStarted = true")
+        assertInOrder(trackers.substringAfter("setEventListener(edaListener)"), "edaStarted = true", "publishStartedScope()")
+        assertTrue(trackers.contains("setEventListener(ppgListener)"))
+        assertFalse(trackers.substringAfter("var supportedSourceMask = 16").substringBefore("sendStatus(\"=== TRACKER INIT COMPLETE").contains("PPG_CONTINUOUS in supportedTypes) supportedSourceMask"))
+        val runtime = sourceAt("FreshRunRuntime.kt")
+        assertTrue(runtime.contains("supportedMask = 16"))
+        assertTrue(runtime.contains("startedMask = 16"))
+        assertTrue(runtime.contains("check(boot >= 0)"))
+    }
+
+    @Test
+    fun `fresh delivery metadata serializes with finalization and retained path cannot start while fresh is active`() {
+        val trigger = between(gattSource, "private fun handleNotificationTriggered", "private fun handleNotificationCompleted")
+        val completion = between(gattSource, "private fun handleNotificationCompleted", "private fun handleNotificationFailed")
+        listOf(trigger, completion).forEach { branch ->
+            assertTrue(branch.contains("if (freshMode)"))
+            assertTrue(branch.contains("synchronized(run)"))
+            assertTrue(branch.contains("run.acceptsSamples()"))
+            assertTrue(branch.contains("sourceJournal.recordDelivery"))
+        }
+        val retainedButton = between(mainSource, "text = \"Explicit retained v2 delivery\"", "layout.addView(Switch")
+        assertTrue(retainedButton.contains("FreshRunRuntime.session != null"))
+        assertTrue(retainedButton.contains("FreshRunRuntime.receiptOnly"))
+        val retainedProbe = between(mainSource, "private fun probeRetainedFinalizedDeliveryInBackground()", "private fun beginFreshOrdinaryScopeAfterRetainedDeliveryProbe()")
+        assertFalse(retainedProbe.contains("FreshRunRuntime.admit"))
     }
 
     @Test

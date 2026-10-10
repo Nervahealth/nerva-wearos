@@ -676,6 +676,7 @@ internal object WatchCausalRuntime {
         arg1: Long = 0L,
         reasonCode: Int = CausalReasonCode.NONE.code,
     ): CausalFlightEvent? {
+        if (FreshRunRuntime.session != null || FreshRunRuntime.receiptOnly) return null
         val activeRecorder = runCatching { recorder(context) }.getOrNull() ?: return null
         return try {
             activeRecorder.record(

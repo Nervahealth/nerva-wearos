@@ -60,6 +60,22 @@ class BleGattService : Service() {
 
     private val TAG = "HUGR-BleGatt"
     private val binder = LocalBinder()
+    private var freshMode = false
+    private var freshReceiptOnly = false
+    private var freshConfirmed = false
+    private var freshConnectedOnce = false
+    private var freshStartedAt = 0L
+    private val freshPager = FreshRunReceiptPager { FreshRunRuntime.current(this) }
+    private val freshDeadline = object : Runnable {
+        override fun run() {
+            if (!freshMode) return
+            val session = FreshRunRuntime.session
+            val expired = if (freshReceiptOnly) SystemClock.elapsedRealtime() - freshStartedAt >= FreshRunSession.RECEIPT_ONLY_MS
+                else session?.permitsDelivery() != true
+            if (expired) { stopFresh("DELIVERY_DEADLINE"); return }
+            transportHandler.postDelayed(this, 500L)
+        }
+    }
     private var runtimeMode: EvidenceEgressGattRuntimeMode? = null
     private var finalizedDeliveryRecoveryOnly = false
     private var finalizedDeliverySourceSessionId: UUID? = null
@@ -215,6 +231,7 @@ class BleGattService : Service() {
     }
 
     companion object {
+        val RUN_RECEIPT_CHARACTERISTIC_UUID: UUID = UUID.fromString("99999999-9999-4999-8999-999999999999")
         val HUGR_SERVICE_UUID: UUID = UUID.fromString("12345678-1234-5678-1234-567812345678")
         val EDA_CHARACTERISTIC_UUID: UUID = UUID.fromString("11111111-1111-1111-1111-111111111111")
         val PPG_CHARACTERISTIC_UUID: UUID = UUID.fromString("44444444-4444-4444-4444-444444444444")
@@ -284,6 +301,32 @@ class BleGattService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val freshAction = intent?.action
+        if (freshAction == FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES || freshAction == FreshRunRuntime.ACTION_SERVE_FRESH_RECEIPT_ONLY) {
+            if (runtimeMode != null || freshMode) return START_NOT_STICKY
+            freshMode = true
+            freshReceiptOnly = freshAction == FreshRunRuntime.ACTION_SERVE_FRESH_RECEIPT_ONLY
+            freshStartedAt = SystemClock.elapsedRealtime()
+            try {
+                if (freshReceiptOnly) FreshRunRuntime.openReceiptOnly(this)
+                else requireNotNull(FreshRunRuntime.session)
+                if (!startFreshForeground()) error("Foreground failed")
+                runtimeMode = EvidenceEgressGattRuntimeMode.STANDARD
+                if (!freshReceiptOnly) {
+                    sourceJournal = requireNotNull(FreshRunRuntime.session).journal
+                    // GATT owns delivery before starting Health, and survives its finalization.
+                    registerSensorReceivers()
+                    transportHandler.post(transportTicker)
+                    startForegroundService(Intent(this, HealthSensorService::class.java).apply { action = FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES })
+                    healthHandler.post(healthTicker)
+                }
+                transportHandler.post(freshDeadline)
+                initializeBluetooth()
+            } catch (_: Exception) { stopFresh("SERVICE_START_FAILED") }
+            return START_NOT_STICKY
+        }
+        if (intent == null || freshMode) { if (runtimeMode == null) stopSelf(); return START_NOT_STICKY }
+
         if (EvidenceEgressGattStartPolicy.isExplicitEgressStop(intent?.action)) {
             if (isEgressOnlyRuntime()) {
                 EvidenceEgressVolatileDiagnostics.onForegroundStopped()
@@ -360,6 +403,25 @@ class BleGattService : Service() {
             stopFinalizedRecoveryWithoutAcknowledgement("ATTEMPT_REUSED")
         }
         return START_NOT_STICKY
+    }
+
+    private fun startFreshForeground(): Boolean = try {
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.createNotificationChannel(NotificationChannel("hugr_fresh_v3", "HUGR fresh recording delivery", NotificationManager.IMPORTANCE_LOW))
+        val notification = NotificationCompat.Builder(this, "hugr_fresh_v3")
+            .setSmallIcon(android.R.drawable.stat_sys_data_bluetooth).setContentTitle("HUGR fresh run")
+            .setContentText(if (freshReceiptOnly) "Current receipt only · no sensing" else "Five-minute recording and bounded delivery")
+            .setOngoing(true).build()
+        startForeground(4003, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
+        true
+    } catch (_: Exception) { false }
+
+    private fun stopFresh(code: String) {
+        if (!freshMode) return
+        FreshRunRuntime.session?.let { runCatching { it.fail(code) } }
+        stopService(Intent(this, HealthSensorService::class.java))
+        notificationCompletionBlocked = true
+        stopSelf()
     }
 
     private fun initializeRuntime(mode: EvidenceEgressGattRuntimeMode) {
@@ -588,6 +650,14 @@ class BleGattService : Service() {
     }
 
     override fun onDestroy() {
+        if (freshMode) {
+            transportHandler.removeCallbacks(freshDeadline)
+            stopService(Intent(this, HealthSensorService::class.java))
+            // COMPLETED receipt is immutable and already durable, C1 never manufactures completion.
+            FreshRunRuntime.end()
+            stopForeground(STOP_FOREGROUND_REMOVE)
+        }
+
         if (finalizedDeliveryRecoveryOnly) {
             val reason = finalizedDeliveryRecoveryAttemptId?.let { attempt ->
                 FinalizedRecoveryReadiness.destroyed(attempt, causalComponentInstanceId)
@@ -663,7 +733,7 @@ class BleGattService : Service() {
             if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onReadinessFailure("GATT_SERVER_UNAVAILABLE")
             return
         }
-        if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_SERVER_OPENED)
+        if (isStandardRuntime() && !freshReceiptOnly) recordCausal(CausalEventCode.GATT_SERVER_OPENED)
 
         // Create the HUGR service
         val service = BluetoothGattService(
@@ -675,6 +745,15 @@ class BleGattService : Service() {
             addEgressCharacteristics(service)
             registerGattService(service)
             return
+        }
+
+        if (freshMode) {
+            service.addCharacteristic(BluetoothGattCharacteristic(
+                RUN_RECEIPT_CHARACTERISTIC_UUID,
+                BluetoothGattCharacteristic.PROPERTY_READ or BluetoothGattCharacteristic.PROPERTY_WRITE,
+                BluetoothGattCharacteristic.PERMISSION_READ or BluetoothGattCharacteristic.PERMISSION_WRITE,
+            ))
+            if (freshReceiptOnly) { registerGattService(service); return }
         }
 
         // EDA Characteristic (NOTIFY + READ)
@@ -812,6 +891,7 @@ class BleGattService : Service() {
             Log.i(TAG, "HUGR GATT service registered with ${service.characteristics.size} characteristics")
         } else {
             Log.e(TAG, "Failed to add HUGR service to GATT server")
+            if (freshMode) stopFresh("GATT_SERVICE_FAILED")
             if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_SERVICE_FAILED)
             if (isEgressOnlyRuntime()) EvidenceEgressVolatileDiagnostics.onReadinessFailure("GATT_SERVICE_REGISTER_REJECTED")
             if (finalizedDeliveryRecoveryOnly) stopFinalizedRecoveryWithoutAcknowledgement("GATT_SERVICE_REGISTER_REJECTED")
@@ -830,6 +910,19 @@ class BleGattService : Service() {
     private val gattServerCallback = object : BluetoothGattServerCallback() {
 
         override fun onConnectionStateChange(device: BluetoothDevice?, status: Int, newState: Int) {
+            if (freshMode) {
+                freshPager.reset()
+                if (newState == BluetoothProfile.STATE_CONNECTED) {
+                    if (freshConnectedOnce) { stopFresh("CONNECTION_REUSED"); return }
+                    freshConnectedOnce = true
+                    connectedDevice = device
+                    if (freshReceiptOnly) return
+                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                    connectedDevice = null
+                    stopFresh("PHONE_DISCONNECTED")
+                    return
+                }
+            }
             when (newState) {
                 BluetoothProfile.STATE_CONNECTED -> {
                     if (isEgressOnlyRuntime()) {
@@ -939,6 +1032,8 @@ class BleGattService : Service() {
             val activeDevice = connectedDevice
             if (device == null || activeDevice == null || device.address != activeDevice.address) return
             negotiatedMtu = mtu.coerceAtLeast(23)
+            if (freshMode && negotiatedMtu < 46) { stopFresh("RECEIPT_MTU_UNSAFE"); return }
+            if (freshReceiptOnly) return
             if (isEgressOnlyRuntime()) {
                 EvidenceEgressVolatileDiagnostics.onMtuChanged(negotiatedMtu)
                 Log.i(TAG, "Evidence Egress-only negotiated GATT MTU=$negotiatedMtu")
@@ -973,6 +1068,7 @@ class BleGattService : Service() {
                 startAdvertising()
             } else {
                 Log.e(TAG, "Failed to add service, status: $status")
+                if (freshMode) stopFresh("GATT_SERVICE_FAILED")
                 if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_SERVICE_FAILED, arg0 = status.toLong())
                 if (finalizedDeliveryRecoveryOnly) stopFinalizedRecoveryWithoutAcknowledgement("GATT_SERVICE_FAILED")
             }
@@ -984,6 +1080,13 @@ class BleGattService : Service() {
             offset: Int,
             characteristic: BluetoothGattCharacteristic?
         ) {
+            if (characteristic?.uuid == RUN_RECEIPT_CHARACTERISTIC_UUID) {
+                val validDevice = device != null && connectedDevice?.address == device.address
+                val frame = if (validDevice && offset == 0) runCatching { freshPager.frame(negotiatedMtu) }.getOrNull() else null
+                gattServer?.sendResponse(device, requestId, if (frame != null) BluetoothGatt.GATT_SUCCESS else BluetoothGatt.GATT_FAILURE, offset, frame ?: byteArrayOf())
+                return
+            }
+            if (freshReceiptOnly) { gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset, byteArrayOf()); return }
             Log.d(TAG, "Read request for ${characteristic?.uuid}")
             val isEgressRead = characteristic?.uuid in setOf(
                 EGRESS_OFFER_CHARACTERISTIC_UUID,
@@ -1042,9 +1145,34 @@ class BleGattService : Service() {
             offset: Int,
             value: ByteArray?
         ) {
+            if (characteristic?.uuid == RUN_RECEIPT_CHARACTERISTIC_UUID) {
+                var confirm = false
+                val accepted = runCatching {
+                    require(freshMode && device != null && connectedDevice?.address == device.address && !preparedWrite && offset == 0 && responseNeeded)
+                    val bytes = requireNotNull(value); require(bytes.size in 1..104 && bytes.all { it.toInt() in 32..126 })
+                    val raw = bytes.toString(Charsets.US_ASCII)
+                    if (raw.startsWith("R1:")) freshPager.request(raw)
+                    else { require(freshPager.confirms(raw)); confirm = true }
+                }.isSuccess
+                gattServer?.sendResponse(device, requestId, if (accepted) BluetoothGatt.GATT_SUCCESS else BluetoothGatt.GATT_FAILURE, offset, byteArrayOf())
+                if (accepted && confirm) {
+                    freshConfirmed = true
+                    // Delay shutdown until the synchronous ATT response has had a delivery opportunity.
+                    transportHandler.postDelayed({ stopSelf() }, 500L)
+                }
+                return
+            }
+            if (freshReceiptOnly) { if (responseNeeded) gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset, byteArrayOf()); return }
+            if (freshMode && (preparedWrite || offset != 0 || !responseNeeded)) {
+                if (responseNeeded) gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset, byteArrayOf()); return
+            }
             Log.d(TAG, "Write request for ${characteristic?.uuid}, ${value?.size} bytes")
             var writeResponseStatus = BluetoothGatt.GATT_SUCCESS
 
+            if (freshMode && characteristic?.uuid != SOURCE_CONTROL_CHARACTERISTIC_UUID) {
+                if (responseNeeded) gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset, byteArrayOf())
+                return
+            }
             // Handle haptic command writes
             if (characteristic?.uuid == HAPTIC_CHARACTERISTIC_UUID && value != null) {
                 Log.i(TAG, "Haptic command received: ${value.size} bytes")
@@ -1095,6 +1223,7 @@ class BleGattService : Service() {
                         else -> throw SourceJournalCorruptionException("Unknown source-control message")
                     }
                 } catch (error: Exception) {
+                    if (freshMode && runCatching { FreshRunRuntime.current(this@BleGattService) }.isFailure) stopFresh("RECEIPT_IO")
                     saveDiagnostic(DiagnosticStage.SOURCE_CONTROL, failure = error)
                     writeResponseStatus = BluetoothGatt.GATT_FAILURE
                     Log.e(TAG, "Build 45 source-control rejection: ${error.message}", error)
@@ -1415,6 +1544,7 @@ class BleGattService : Service() {
 
     private val healthMetadataReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+            if (freshMode && FreshRunRuntime.session?.acceptsSamples() != true) return
             if (intent == null) return
             healthSdkConnected = intent.getBooleanExtra("sdkConnected", healthSdkConnected)
             healthSdkStatus = intent.getIntExtra("sdkStatus", healthSdkStatus)
@@ -1498,6 +1628,7 @@ class BleGattService : Service() {
     private fun maximumAttPayloadBytes(): Int = (negotiatedMtu - ATT_PROTOCOL_OVERHEAD_BYTES).coerceAtLeast(20)
 
     private fun abortTransportLineage(reason: String) {
+        if (freshMode) { stopFresh("TRANSPORT_FAILED"); return }
         if (finalizedDeliveryRecoveryOnly) finalizedRecoveryLifetime.stop()
         val stalledDevice = connectedDevice
         val reasonCode = CausalReasonCode.fromAbortReason(reason).code
@@ -1638,6 +1769,7 @@ class BleGattService : Service() {
     }
 
     private fun enqueueNewlyFinalizedManifests() {
+        if (freshMode) FreshRunRuntime.session?.captureManifests()
         if (!sourceMtuReadinessGate.canConstructSourceFrames(sourceMtuLineageGeneration)) return
         if (sourceJournal.drainNewlyFinalizedManifests().isEmpty()) return
         val activeSession = activeReplaySessionId ?: return
@@ -1713,6 +1845,22 @@ class BleGattService : Service() {
     }
 
     private fun prepareSourceReplay(request: SourceResumeRequest): PreparedSourceResumePlan {
+        if (freshMode) {
+            val run = requireNotNull(FreshRunRuntime.session)
+            synchronized(run) {
+                require(run.permitsDelivery())
+                val source = run.journal.watchBootSessionId
+                require(request.watchBootSessionId == source && request.cumulativeRecordIndex >= 0)
+                run.journal.forceSync()
+                run.journal.finalizeActiveSegment()
+                run.captureManifests()
+                val latest = run.journal.latestRecordIndex()
+                require(request.cumulativeRecordIndex <= latest)
+                return PreparedSourceResumePlan(source, request.cumulativeRecordIndex, latest,
+                    run.journal.countRecordsAfter(source, request.cumulativeRecordIndex, latest), latest)
+            }
+        }
+
         diagnosticResumeStage = DiagnosticStage.RESUME_PREPARE
         sourceJournal.finalizeActiveSegment()
         sourceJournal.discardNewlyFinalizedManifests()
@@ -1799,6 +1947,7 @@ class BleGattService : Service() {
     }
 
     private fun beginSourceReplaySession(session: UUID, acceptedIndex: Long) {
+        check(!freshMode) { "Fresh runtime cannot select historical source roots" }
         val plan = HistoricalSourceResumeBounds.prepare(sourceJournal, FreshOrdinaryRunScope.journalRoot(filesDir), session, acceptedIndex)
         activeReplaySessionId = session
         durablePhoneRecordIndex = acceptedIndex
@@ -1825,6 +1974,7 @@ class BleGattService : Service() {
     }
 
     private fun enqueueNextManifestForReplayWindow(session: UUID, highWaterRecordIndex: Long) {
+        if (freshMode) FreshRunRuntime.session?.captureManifests()
         if (!sourceMtuReadinessGate.canConstructSourceFrames(sourceMtuLineageGeneration)) return
         if (queuedReplayManifestEndIndex != null) return
         val manifest = SourceReplayWindow.nextManifestToQueue(
@@ -1859,6 +2009,8 @@ class BleGattService : Service() {
 
     private fun handleSourceAcknowledgement(acknowledgement: SourceSegmentAcknowledgement) =
         synchronized(finalizedRecoveryLifetime) {
+        if (freshMode) require(FreshRunRuntime.session?.permitsDelivery() == true)
+
         if (finalizedDeliveryRecoveryOnly &&
             !finalizedRecoveryLifetime.permitsDelivery(SystemClock.elapsedRealtime())
         ) {
@@ -1882,12 +2034,11 @@ class BleGattService : Service() {
         val acceptedManifest = sourceJournal.finalizedManifests(activeSession)
             .firstOrNull { it.lastRecordIndex == acknowledgement.cumulativeRecordIndex }
             ?: throw SourceJournalCorruptionException("Queued acknowledgement has no retained finalized manifest")
-        if (!sourceJournal.acknowledgeCompletedSegment(
-                acknowledgement.watchBootSessionId,
-                acknowledgement.cumulativeRecordIndex,
-                acknowledgement.completedSegmentSha256,
-            )
-        ) {
+        val accepted = if (freshMode) requireNotNull(FreshRunRuntime.session).acceptAck(acknowledgement, queuedReplayManifestEndIndex)
+        else sourceJournal.acknowledgeCompletedSegment(
+            acknowledgement.watchBootSessionId, acknowledgement.cumulativeRecordIndex, acknowledgement.completedSegmentSha256,
+        )
+        if (!accepted) {
             throw SourceJournalCorruptionException("Acknowledgement endpoint/hash did not match a finalized segment")
         }
         recordCausal(
@@ -1915,6 +2066,8 @@ class BleGattService : Service() {
     }
 
     private fun closeBoundedFreshRuntimeAfterDeliveryIfComplete() {
+        if (freshMode) return // Durable terminal receipt awaits exact Phone report-durable C1; index equality is not completion.
+
         if (finalizedDeliveryRecoveryOnly) {
             val sourceSessionId = finalizedDeliverySourceSessionId ?: return
             if (sourceJournal.hasFinalizedSegments(sourceSessionId)) return
@@ -1971,7 +2124,7 @@ class BleGattService : Service() {
     }
 
     private fun advanceReplaySessionIfReady() {
-        if (finalizedDeliveryRecoveryOnly) return // Never traverse another retained source session.
+        if (freshMode || finalizedDeliveryRecoveryOnly) return // Never traverse another retained source session.
         val completedSession = activeReplaySessionId ?: return
         if (completedSession == sourceJournal.watchBootSessionId) return
         if (durablePhoneRecordIndex < replayHighWaterRecordIndex) return
@@ -2003,12 +2156,11 @@ class BleGattService : Service() {
             transportHandler.post { abortTransportLineage("source_trigger_decode_failed") }
             return
         }
-        if (records.isNotEmpty()) {
-            sourceJournal.recordDelivery(
-                records,
-                if (item.origin == GattNotificationOrigin.REPLAY) SourceDeliveryState.REPLAY_SENT else SourceDeliveryState.LIVE_SENT,
-            )
-        }
+        if (records.isEmpty()) return
+        val state = if (item.origin == GattNotificationOrigin.REPLAY) SourceDeliveryState.REPLAY_SENT else SourceDeliveryState.LIVE_SENT
+        if (freshMode) {
+            FreshRunRuntime.session?.let { run -> synchronized(run) { if (run.acceptsSamples()) sourceJournal.recordDelivery(records, state) } }
+        } else sourceJournal.recordDelivery(records, state)
     }
 
     private fun handleNotificationCompleted(item: GattNotification, gattStatus: Int) {
@@ -2021,10 +2173,10 @@ class BleGattService : Service() {
             return
         }
         if (records.isNotEmpty()) {
-            sourceJournal.recordDelivery(
-                records,
-                if (item.origin == GattNotificationOrigin.REPLAY) SourceDeliveryState.REPLAY_CONFIRMED else SourceDeliveryState.LIVE_CONFIRMED,
-            )
+            val state = if (item.origin == GattNotificationOrigin.REPLAY) SourceDeliveryState.REPLAY_CONFIRMED else SourceDeliveryState.LIVE_CONFIRMED
+            if (freshMode) {
+                FreshRunRuntime.session?.let { run -> synchronized(run) { if (run.acceptsSamples()) sourceJournal.recordDelivery(records, state) } }
+            } else sourceJournal.recordDelivery(records, state)
         }
         if (item.origin == GattNotificationOrigin.REPLAY) {
             pumpReplay()
@@ -2128,6 +2280,7 @@ class BleGattService : Service() {
         arg1: Long = 0L,
         reasonCode: Int = CausalReasonCode.NONE.code,
     ) {
+        if (freshMode) return
         WatchCausalRuntime.record(
             this,
             code,
@@ -2154,6 +2307,7 @@ class BleGattService : Service() {
     }
 
     private fun recordStandardGattReadinessFailure() {
+        if (freshMode) { stopFresh("GATT_READINESS_FAILED"); return }
         if (isStandardRuntime()) recordCausal(CausalEventCode.GATT_ADVERTISING_FAILED)
         if (finalizedDeliveryRecoveryOnly) stopFinalizedRecoveryWithoutAcknowledgement("GATT_READINESS_FAILED")
     }
@@ -2545,6 +2699,7 @@ class BleGattService : Service() {
     }
 
     private fun notifyDeviceHealth() {
+        if (freshMode && (freshReceiptOnly || FreshRunRuntime.session?.acceptsSamples() != true)) return
         // A post-update final-delivery recovery must preserve the exact retained
         // terminal endpoint. Device-health is normally represented as a new source
         // record, so suppress it entirely until the existing manifest is exactly
@@ -2619,7 +2774,8 @@ class BleGattService : Service() {
             dataLossReasonCode = healthSourceDataLossReasonCode,
         )
         try {
-            val record = sourceJournal.append(SourceStreamCode.DEVICE_HEALTH, occurredAtWatchMs, payload)
+            val record = if (freshMode) FreshRunRuntime.session?.append(SourceStreamCode.DEVICE_HEALTH, occurredAtWatchMs, payload) ?: return
+                else sourceJournal.append(SourceStreamCode.DEVICE_HEALTH, occurredAtWatchMs, payload)
             if (connectedDevice != null) queueLiveSourceRecord(record)
         } catch (error: Exception) {
             healthSourceDataLoss = true
@@ -2654,6 +2810,7 @@ class BleGattService : Service() {
         batchSize: Int,
         screenOn: Boolean
     ) {
+        if (freshMode && FreshRunRuntime.session?.acceptsSamples() != true) return
         val char = ppgCharacteristic ?: return
         val sequence = nextSensorSequence("PPG")
         val buffer = ByteBuffer.allocate(29).order(ByteOrder.LITTLE_ENDIAN)

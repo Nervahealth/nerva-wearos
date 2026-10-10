@@ -12,6 +12,8 @@ internal object WatchSourceRuntime {
 
     @Synchronized
     fun journal(context: Context): SourceJournal {
+        FreshRunRuntime.session?.let { return it.journal }
+        check(!FreshRunRuntime.receiptOnly) { "Receipt-only mode cannot open source journal" }
         journal?.let { return it }
         val applicationContext = context.applicationContext
         val root = FreshOrdinaryRunScope.journalRoot(applicationContext.filesDir)

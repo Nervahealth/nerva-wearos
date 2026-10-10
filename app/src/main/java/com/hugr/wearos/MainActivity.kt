@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.ViewTreeObserver
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.Switch
@@ -51,11 +52,13 @@ class MainActivity : ComponentActivity() {
     private var finalizedDeliveryRecoveryOnly = false
     private var finalizedDeliverySourceSessionId: String? = null
     private var finalizedRecoveryAttemptId: UUID? = null
+    private var freshRequested = false
+    private var freshUi = true
     private var readinessRefreshActive = false
     private val readinessRefresh = object : Runnable {
         override fun run() {
             if (!readinessRefreshActive || isFinishing || isDestroyed) return
-            if (finalizedDeliveryRecoveryOnly) renderEvidence()
+            if (freshUi || finalizedDeliveryRecoveryOnly) renderEvidence()
             evidenceText.postDelayed(this, 1_000L)
         }
     }
@@ -103,6 +106,35 @@ class MainActivity : ComponentActivity() {
             setTextColor(Color.WHITE)
         }
         layout.addView(statusText)
+        layout.addView(Button(this).apply {
+            text = "Start fresh 5 minutes"
+            setOnClickListener {
+                if (freshRequested || FreshRunRuntime.session != null || FreshRunRuntime.receiptOnly) return@setOnClickListener
+                freshRequested = true
+                beginFreshOrdinaryScopeAfterRetainedDeliveryProbe()
+            }
+        })
+        layout.addView(Button(this).apply {
+            text = "Serve current fresh receipt only"
+            setOnClickListener {
+                if (freshRequested || FreshRunRuntime.session != null || FreshRunRuntime.receiptOnly) return@setOnClickListener
+                try {
+                    startForegroundService(Intent(this@MainActivity, BleGattService::class.java).apply {
+                        action = FreshRunRuntime.ACTION_SERVE_FRESH_RECEIPT_ONLY
+                    })
+                    statusText.text = "HUGR\nReceipt-only service requested · no sensing"
+                    startReadinessRefresh()
+                } catch (_: Exception) { statusText.text = "HUGR\nReceipt-only start failed" }
+            }
+        })
+        layout.addView(Button(this).apply {
+            text = "Explicit retained v2 delivery"
+            setOnClickListener {
+                if (freshRequested || FreshRunRuntime.session != null || FreshRunRuntime.receiptOnly) return@setOnClickListener
+                freshUi = false
+                Thread({ probeRetainedFinalizedDeliveryInBackground() }, "HUGR-ExplicitRetainedProbe").start()
+            }
+        })
 
         layout.addView(Switch(this).apply {
             text = "TEST ONLY: keep screen awake"
@@ -167,8 +199,9 @@ class MainActivity : ComponentActivity() {
             return
         }
 
-        renderFirstFrame(firstFrameCoordinator.freshScopePreparing())
-        Thread({ probeRetainedFinalizedDeliveryInBackground() }, "HUGR-RetainedFinalizedDeliveryProbe").start()
+        statusText.text = "HUGR\nReady · deliberate fresh action required"
+        evidenceText.text = "Opening is passive. New per-run v3 recording or current fresh receipt only are explicit actions. Existing source roots are not opened."
+        startReadinessRefresh()
     }
 
     /**
@@ -215,27 +248,6 @@ class MainActivity : ComponentActivity() {
         startupRecoveryGate.beginFreshScope()
         recordNormalStartupMarker(NormalStartupStage.FRESH_SCOPE_PREPARING)
         recordStartupBreadcrumb(StartupBreadcrumbStage.RECORDER_INITIALIZATION_ENTER)
-        val journal = runCatching { WatchSourceRuntime.journal(applicationContext) }.getOrElse { failure ->
-            recordStartupBreadcrumb(StartupBreadcrumbStage.RECORDER_INITIALIZATION_FAILURE)
-            recordNormalStartupMarker(NormalStartupStage.FRESH_SCOPE_FAILED)
-            completeFreshOrdinaryScopeFailure(failure)
-            return
-        }
-        if (!journal.preflight().eligible) {
-            recordNormalStartupMarker(NormalStartupStage.FRESH_SCOPE_FAILED)
-            completeFreshOrdinaryScopeFailure(
-                SourceJournalCorruptionException("Fresh ordinary source journal is not eligible for startup"),
-            )
-            return
-        }
-        runCatching { WatchCausalRuntime.recorder(applicationContext) }.getOrElse { failure ->
-            recordStartupBreadcrumb(StartupBreadcrumbStage.RECORDER_INITIALIZATION_FAILURE)
-            recordNormalStartupMarker(NormalStartupStage.FRESH_SCOPE_FAILED)
-            completeFreshOrdinaryScopeFailure(failure)
-            return
-        }
-        recordCausal(CausalEventCode.ACTIVITY_CREATED)
-
         startupRecoveryGate.markFreshScopeReady()
         recordNormalStartupMarker(NormalStartupStage.FRESH_SCOPE_READY)
         runOnUiThread {
@@ -333,6 +345,7 @@ class MainActivity : ComponentActivity() {
 
     private fun onPermissionDenied() {
         permissionDecisionReached = false
+        freshRequested = false
         recordNormalStartupMarker(NormalStartupStage.PERMISSION_DENIED)
         renderFirstFrame(firstFrameCoordinator.permissionUnavailable())
     }
@@ -343,23 +356,27 @@ class MainActivity : ComponentActivity() {
             renderFirstFrame(firstFrameCoordinator.recoveryFailed())
             return
         }
-        recordNormalStartupMarker(NormalStartupStage.SERVICE_START_REQUESTED)
-        recordCausal(CausalEventCode.SERVICES_START_REQUESTED)
-        startService(Intent(this, BleGattService::class.java))
-        val sensorIntent = Intent(this, HealthSensorService::class.java).apply {
-            action = HealthSensorService.ACTION_START_BOUNDED_ORDINARY_RUN
-            putExtra(
-                HealthSensorService.EXTRA_BOUNDED_RUN_DURATION_MS,
-                BoundedOrdinaryRunPolicy.SHORT_ADMISSION_DURATION_MS,
-            )
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(sensorIntent)
-        } else {
-            startService(sensorIntent)
-        }
-        statusText.text = "HUGR\nServices active · bounded resume replay"
-        renderEvidence()
+        if (!freshRequested) return
+        Thread({
+            try {
+                FreshRunRuntime.admit(applicationContext)
+                runOnUiThread {
+                    try {
+                        startForegroundService(Intent(this, BleGattService::class.java).apply {
+                            action = FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES
+                        })
+                        statusText.text = "HUGR\nFresh 5-minute recording requested"
+                        startReadinessRefresh()
+                    } catch (_: Exception) {
+                        FreshRunRuntime.session?.fail("SERVICE_START_FAILED")
+                        FreshRunRuntime.end()
+                        statusText.text = "HUGR\nFresh service start failed"
+                    }
+                }
+            } catch (_: Exception) {
+                runOnUiThread { freshRequested = false; statusText.text = "HUGR\nFresh admission failed · no sensing" }
+            }
+        }, "HUGR-ExplicitFreshAdmission").start()
     }
 
     /**
@@ -452,6 +469,7 @@ class MainActivity : ComponentActivity() {
         arg1: Long = 0L,
         reasonCode: Int = CausalReasonCode.NONE.code,
     ) {
+        if (freshUi) return
         WatchCausalRuntime.record(
             this,
             code,
@@ -465,6 +483,17 @@ class MainActivity : ComponentActivity() {
 
     private fun renderEvidence() {
         if (!::evidenceText.isInitialized) return
+        if (freshUi) {
+            val result = runCatching { FreshRunRuntime.current(this) }
+            val receipt = result.getOrNull()
+            if (result.isFailure) {
+                statusText.text = "HUGR\nFresh receipt unavailable / interrupted IO · no completion"
+            } else if (receipt != null) {
+                statusText.text = "HUGR\nFresh ${receipt.phase.name} · ${receipt.failure}"
+                evidenceText.text = "Source ${receipt.sourceId}\nRun ${receipt.runId}\nRequested 5 minutes; supported/started ${receipt.supportedMask}/${receipt.startedMask}\nManifests ${receipt.manifests.size}; exact accepted ACKs ${receipt.acks.size}\nReceipt revision ${receipt.revision}. Phone durable report confirmation is separate. PPG live-only; no canonical PPG in this receipt."
+            }
+            return
+        }
         if (!permissionDecisionReached && !finalizedDeliveryRecoveryOnly) {
             renderFirstFrame(firstFramePresentation)
             return

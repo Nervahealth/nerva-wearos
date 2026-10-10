@@ -205,7 +205,7 @@ class FinalizedRecoveryReadinessTest {
         assertTrue(render.contains("recoverySnapshot?.reason == FinalizedRecoveryStopReason.DEADLINE"))
         assertTrue(render.contains("RECOVERY DEADLINE EXPIRED · do not connect"))
         assertTrue(main.contains("private val readinessRefresh"))
-        assertTrue(main.contains("if (finalizedDeliveryRecoveryOnly) renderEvidence()"))
+        assertTrue(main.contains("if (freshUi || finalizedDeliveryRecoveryOnly) renderEvidence()"))
     }
 
     @Test fun `retained replay never extends acquisition or crosses a different source session`() {
@@ -219,7 +219,7 @@ class FinalizedRecoveryReadinessTest {
         assertTrue(initialize.contains("registerSensorReceivers()"))
         val advance = gatt.substringAfter("private fun advanceReplaySessionIfReady()")
             .substringBefore("private fun sourceFrameRecords(")
-        assertTrue(advance.contains("if (finalizedDeliveryRecoveryOnly) return"))
+        assertTrue(advance.contains("if (freshMode || finalizedDeliveryRecoveryOnly) return"))
         val complete = gatt.substringAfter("private fun closeBoundedFreshRuntimeAfterDeliveryIfComplete()")
             .substringBefore("private fun pumpReplay()")
         assertTrue(complete.contains("sourceJournal.hasFinalizedSegments(sourceSessionId)"))

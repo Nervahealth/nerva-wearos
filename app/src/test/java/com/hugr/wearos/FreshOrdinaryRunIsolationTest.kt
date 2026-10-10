@@ -66,9 +66,14 @@ class FreshOrdinaryRunIsolationTest {
         )
 
         assertTrue(main.contains("Thread({ prepareFreshOrdinaryScopeInBackground() }"))
-        assertTrue(freshPreparation.contains("WatchSourceRuntime.journal(applicationContext)"))
-        assertTrue(freshPreparation.contains("journal.preflight().eligible"))
-        assertTrue(freshPreparation.contains("WatchCausalRuntime.recorder(applicationContext)"))
+        assertFalse(freshPreparation.contains("WatchSourceRuntime.journal("))
+        assertFalse(freshPreparation.contains("WatchCausalRuntime.recorder("))
+        assertTrue(main.contains("if (!freshRequested) return"))
+        assertTrue(main.contains("FreshRunRuntime.admit(applicationContext)"))
+        val freshRuntime = sourceAt("FreshRunRuntime.kt")
+        assertTrue(freshRuntime.contains("noBackupFilesDir"))
+        assertTrue(freshRuntime.contains("fresh_ordinary_runs_v3"))
+        assertFalse(freshRuntime.contains("FreshOrdinaryRunScope"))
         assertTrue(freshPreparation.contains("requestForegroundPermissions()"))
         listOf(
             "Build46BaselineStore",
