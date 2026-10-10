@@ -14,3 +14,9 @@
 ## Sovereign evidence state
 
 Watch69 **NOT QUALIFIED**. Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**. Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
+
+## Custody correction / instrument route addendum — 2026-10-10
+
+**PREPARED / NOT SUBMITTED. Accepted S4 unchanged; known-denied Atlas access not retried.** Source locator: `docs/HUGR_NSTAIR_PHONE_CUSTODY_PRODUCTION_CHAIN_CORRECTION_2026_10_10.md`, controlled Phone branch.
+
+Proposed change for the existing recording/Phone/Watchtower milestone items only: Phone60 is installed and produced local selected accepted-source missing STOP. A production duplicate-after-missing custody flaw is now reproduced and corrected/tested; source patch is not installed and does not prove hardware loss cause. Source-test metadata-only reader keeps missing-byte STOP and admits only a stable exact-zero rollback sidecar with original fingerprint preservation.42/42 native tests and110pass/2existing skips Node tests; five joined-wire phases pass, all synthetic. Preserve Watch69 NOT QUALIFIED, end repeated historical reconstruction as default prerequisite, prepare minimal durable-run-report completion and one useful combined greater-version Phone candidate; optional old-session metadata read is not a gate on all future rehearsal. Fresh run acceptance remains record→controlled finalization→exact verified delivery→durable Phone report→offline read after restart. Keep live Watchtower/Manus observation milestone visible, not a prerequisite for short-run acceptance. No runtime, build, device, observer, private transfer or qualification action authorized by this proposal. Do not place private physiological/report/media data or database fingerprints in the Atlas.
