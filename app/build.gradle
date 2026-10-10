@@ -20,8 +20,8 @@ android {
         applicationId 'com.hugr.wearos'
         minSdk 30
         targetSdk 34
-        versionCode 77
-        versionName '0.77.0-durable-diagnostics-historical-resume-candidate'
+        versionCode 78
+        versionName '0.78.0-compatible-fresh-run-receipt-candidate'
     }
 
     buildTypes {

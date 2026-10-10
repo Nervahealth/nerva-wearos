@@ -1,0 +1,21 @@
+# Watch78 / Phone61 compatible instrument — build and artifact admission
+
+## Current state — 2026-10-10 20:33 CEST
+
+**BUILD/ADMISSION AUTHORIZED; artifacts not yet admitted.** Neil20:32: “Proceed with building the compatible Watch78 / Phone61 artifact and prepare the physical test run.” This authorizes one compatible pair build, exact artifact admission and physical-procedure preparation only. No installation, launch, Connect, sensing, actual source-store operation, private report transfer or N1 execution is performed or inferred.
+
+Validated complete integration baseline: Watch `ab0b2945d537d17a5d916ee1b20d2cac0d3fccda`, Phone `d9363e971163a8bffae992e008e1f7518490ea04`, controls `adb1fbf5e15a9a47231343d7dc4a8836bf109409`, independently exact-tree preserved. Full six-phase joined synthetic acceptance PASS; full Watch209total205pass4fixture skips, native94/94, Phone142total139pass3fixture skips, zero failures/errors. Source-owned detailed closure: `HUGR_NSTAIR_COMPATIBLE_FRESH_FIVE_MINUTE_SOURCE_TEST_CLOSURE_2026_10_10.md`. Installed Watch77/HonorPhone60 remain unchanged.
+
+## Candidate identities and custody
+
+- Watch package `com.hugr.wearos`, code78, version `0.78.0-compatible-fresh-run-receipt-candidate`. Reuse existing Watch signing identity, required SHA-256 `fc91d26565d61b0a1c67db4dd0d358c8377c65b2fcb1ede00283b6c7b90c1706`. Preserve admitted compatibility DEX full SHA-256 `a2477754c9e4b10a9d91584ca2281b4190a9b0776411fec19970dd47f96ab784`; its ordinary isolation remains as source-tested, not runtime egress validation. Dedicated secret-free `scripts/package_watch78.py` adapts the existing Watch77 recipe.
+- Phone package `health.hugr.app`, code61, version `2.0.61-compatible-fresh-run-report-candidate`. Reuse existing @neilhugr/hugr-mobile managed project `d0c3af97-5a78-4ba1-bc8b-8a21f169ce44` and frozen preview credentials; required signer SHA-256 `a1780089becaf58563daa5dfa16c5626928a13ce56a7dc232732e64a8df4e811`. Dedicated `scripts/stage_phone61.py` requires native writer, report, receipt parser/bridge and passive reader in the exact committed archive; anchored root Android exclusion prevents nested-module omission. `scripts/admit_phone61.py` checks compiled native classes and receipt/UI inclusion as well as package/signer/ZIP/manifest isolation.
+- Only candidate versions and dedicated packaging/admission helpers changed after validated integration; no new production behavior or signing identity. Updated identity contract passes; Phone suite remains142total139pass3fixture skips, zero failures.
+
+## Required artifact admission
+
+Full package/version/SDK, existing signer continuity, ZIP/alignment, unique class definitions, Watch protected-source/compatibility DEX identity, ordinary GATT receipt class/UUID and explicit fresh-start inclusion; Phone compiled existing native writer/report/parser/bridge, registered receipt methods, passive native launcher process guard and saved-run UI. Verify source stage/archive full bytes, download/build origin, checksum sidecar, upload and independent CDN full-byte hash readback. A failed required check stops admission; no intermediate/bad artifact is offered as installable. Existing protected SourceJournal SHA remains `24d369f82440781b5846f5b609f459df7a5d7cb49bd794726ff7f15cc50d0361`.
+
+No artifacts admitted at this checkpoint. Physical test preparation follows the already source-tested one-result workflow; actual run remains separately authorized after exact artifact admission and installation-only gates. Historical metadata readback is optional, not a prerequisite. After physical record→controlled finalization→exact delivery/Watch acceptance→durable Phone report→fresh-process offline custody success, move to duration ladder and existing live-observation bridge; no full observer-stack prerequisite.
+
+Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`. Legacy/frozen/Watch69 bytes remain untouched. No egress, host migration, pairing/reset, private report transfer or N1 execution. Standing source receipt→Master→affected prepared private proposal only→Alignment last→bounded commit/non-force GitHub exact-tree readback remains automatic. Accepted S4 unchanged; denied Atlas not retried.
