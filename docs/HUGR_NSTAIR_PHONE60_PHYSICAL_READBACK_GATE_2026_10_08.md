@@ -1,6 +1,6 @@
 # Phone60 — proposed physical readback gate
 
-**2026-10-10 08:12 CEST: replacement Phone60 installation/update and exact Settings version OPERATOR-CONFIRMED on the authorized Honor route. Post-update launcher/no-warning facts still pending; do not check by opening an app. Passive readback remains NOT AUTHORIZED / NOT OBSERVED.** Watch77 stays outside this gate. The proposed next gate reads the existing ordinary session on Honor offline; it does not need a Bluetooth reconnect and must not start another recording. Prior installation instructions remain reference only, not an instruction to reinstall.
+**2026-10-10 12:31 CEST: replacement Phone60 installation-only boundary OPERATOR-CONFIRMED on Honor: exact Settings version, neither Phone launcher opened, Watch untouched, no warning/unusual behavior. Passive readback remains NOT AUTHORIZED / NOT OBSERVED.** The proposed next gate reads the existing ordinary session on Honor offline; it does not need a Bluetooth reconnect and must not start another recording. Prior installation instructions remain reference only, not an instruction to reinstall.
 
 ## A. Separately authorize installation only
 
@@ -25,6 +25,7 @@ After installation is confirmed, proposed authority is:
 2. Allow up to **60 seconds** for its one-shot report (worker has a 45-second budget).
 3. Read header through **END REPORT** locally. Check target actual source session `3c9e99e9-9430-480e-9b5a-ae00990b6b22`, outcome/code, before/after source hashes, selected counts/missing ranges, each manifest's range/count/bytes/full expected/actual SHA/stream ranges, and historical `verified` versus recomputation. Per-stream counts are canonical rows, not individual beats. Do not Share/export or upload screenshots/video containing private data under this gate; external evidence transfer remains separate.
 4. **STOP** on any prompt, blank/crash, no report at 60 seconds, source-change/corruption/budget/cleanup failure. Keep the first status; do not relaunch/reconnect/clear/repair.
+5. Initially report only the non-sensitive **outcome and code**. Do not upload the report or media under this local-only gate. More detailed evidence review/transfer remains a distinct authorization if needed.
 
 ## Interpretation
 
