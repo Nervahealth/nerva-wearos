@@ -1,6 +1,6 @@
 # Phone60 — proposed physical readback gate
 
-**2026-10-10 13:11 CEST: ONE offline local Phone60 Saved Source Evidence readback on Honor AUTHORIZED / RESULT NOT YET OBSERVED.** Installation-only boundary previously operator-confirmed with exact version, no launcher opened/Watch action/warning. Current authority leaves Watch and Bluetooth untouched, forbids Main HUGR/Connect/new recording/private report upload and ends at first report/failure or60 seconds without report, no retry. Prior installation instructions remain reference only, not an instruction to reinstall. Source-owned authority: Phone60 receipt section18.
+**2026-10-10 13:38 CEST. CURRENT STATUS: Phone60 passive readback terminal STOP / SELECTED_ACCEPTED_SOURCE_MISSING observed in supplied Phone screenshot. No retry or new device action.** Installed Phone60 preserved; Watch77 unchanged by this task. Detailed sanitized evidence and limits: `HUGR_NSTAIR_PHONE60_SELECTED_SOURCE_MISSING_STOP_2026_10_10.md`. Previous readback authority is consumed if this was its one launch; launch-count/timing and the earlier Watch photo chronology remain unconfirmed. Do not assume another launch is available.
 
 ## A. Separately authorize installation only
 
@@ -37,3 +37,7 @@ Installation is confirmed; Neil explicitly approved the following one-shot scope
 **Stale current sensor/beat indicators are separate from these saved records.** Recovery intentionally produces no current sensor stream. This readback determines what is actually stored; it does not claim nothing was lost or that all streams exist.
 
 Watch69 **NOT QUALIFIED**. Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**. Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
+
+## 2026-10-10 13:38 CEST — terminal readback evidence
+
+Supplied correct Phone report shows STOP / SELECTED_ACCEPTED_SOURCE_MISSING with selected accepted file absent before/after, database present/unchanged and zero-byte rollback sidecar present. No canonical recomputation or selected metadata query ran; no loss/deletion/cause/qualification inference. Bounded static trace found no obvious relative root/name/UUID mismatch between reader and writer. Preserve Honor/Phone60 and Watch77; no reopening/reconnect/reinstall/host change/new recording. Source/test-only selected custody-boundary proposal in the named receipt requires separate authority; no automatic correction/build/device read/private upload. Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.

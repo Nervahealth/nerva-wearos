@@ -1,0 +1,35 @@
+# Phone60 offline readback — selected accepted-source missing STOP
+
+**2026-10-10 13:38 CEST. Physical report screenshot observed; bounded static source trace only. No source correction, test/build, device action/retry/reconnect, private database access or new recording performed.**
+
+## Authority and supplied observation
+
+Neil authorized one offline local Phone60 HUGR Saved Source Evidence readback on Honor at13:11, first report/failure or60 seconds without report, no retry; Watch and Bluetooth untouched; no Main/Connect/sensing/new recording/pairing/reset/legacy-frozen/Share/export/private-report upload/N1. Phone60 installation/version and no-launch/no-deviation boundary were already operator-confirmed.
+
+At13:20 Neil supplied a Watch Saved Diagnostics photo. Visible events match historical Watch report timestamps from8 October18:11, not evidence of a new connection. Whether he newly opened that Watch viewer or supplied an old image remains unconfirmed; the assistant requested clarification and no further taps. Do not retroactively assert untouched Watch during this readback or infer new recording/connection.
+
+At13:38 Neil voluntarily supplied `Screenshot_20261010_133415_health_hugr_app_HUGRSavedSourceEvidenceActivity.jpg` (SHA-256 `1ece5a309939b6bb46a0caf3f38327c5c6abb94c70762df0afa12824ce2f6682`). The supplied image was read directly, not reopened. Original image remains outside GitHub/source repositories. This receipt retains only sanitized operational findings; do not copy private database fingerprints or physiological/media bytes into GitHub. Receipt/use of this supplied screenshot is not blanket authorization to request more private uploads or to perform another device/database read. Report header/selected session is above the supplied crop; do not claim a complete independent header capture. No elapsed launch duration, exact number of Phone launches or deviation confirmation is inferred from the screenshot.
+
+## Visible result
+
+The correct Phone evidence-report screen visibly says **outcome=STOP**, **code=SELECTED_ACCEPTED_SOURCE_MISSING**, and ends with **END REPORT**. Selected accepted-source presence is NO in both before and after observations. Database presence is YES with identical visible before/after size and full hash. WAL and SHM are absent; a zero-byte rollback-journal sidecar is present; pending append and pending temporary file are absent. ACK history and Watch completion are explicitly unknown in this snapshot. No canonical-row/manifests recomputation fields are shown.
+
+This establishes the reader did not find its exact selected accepted-file path in this operation. It does **not** establish that all recording bytes were deleted, that the APK update lost data, that any database rows belong to this session, that Bluetooth caused it, or that another session/path may be used as a substitute. The visible unchanged database fingerprints support non-mutation of that file across this reader's before/after measurements, not a complete temporal custody history or complete storage verification.
+
+## Bounded static source findings
+
+Reader `HUGRSavedSourceEvidenceActivity.kt` chooses Application `filesDir/build45_phone_source_journal/accepted_<TARGET_SOURCE_SESSION>.bin` and database `build45_source_journal.db`. Target remains the previously bound actual session in `PhoneCanonicalEvidenceCore.kt`, not the historical bounded-run UUID.
+
+Production `HUGRSourceJournalModule.kt` writes through `context.applicationContext`, the same relative filesDir root/name convention and database name. Parsed canonical UUID comes from little-endian Java long halves; Watch wire serialization and Phone TypeScript decoding agree on that representation. No obvious static root/name/UUID mismatch was found. This does not prove actual runtime absolute-path equivalence, device/user/profile identity, prior binary existence or custody continuity. Synthetic reader fixtures created data directly under Application context; they did not establish actual Honor/Expo persistence.
+
+Reader's rejection order: missing accepted file first, missing database next, pending marker next, rollback-journal presence next, WAL/SHM-pair consistency next. Consequently **this STOP happened before copying/querying selected database metadata or recomputing canonical bytes**. The existing database's presence alone cannot tell whether this selected session has records/manifests/resume metadata. The zero-byte journal was not the emitted cause; current code would separately reject its mere presence if the accepted-file guard passed. Do not delete/repair/checkpoint that sidecar or weaken rollback safety based on size alone.
+
+Phone native equality verification reads the exact selected accepted file and range bytes before returning true; ingestion issues ACK only after that result. Earlier Watch app-reported EXACT_ACK_COMPLETED and this missing-file observation therefore expose an unresolved custody/evidence-boundary discrepancy. The prior Phone UI/synthetic tests and Watch app assertion must not be treated as proof that the selected Phone bytes are still present now. Source native writer is preserved unchanged; no demonstrated causal source defect yet warrants an automatic new build.
+
+## Stop and next smallest decision
+
+**Readback terminal STOP; no relaunch/reconnect/reinstall/new recording or host change.** Keep Honor app/data, installed Phone60 and Watch77; preserve all frozen boundaries. No further upload requested. No broad telemetry/audit or diagnostic build follows automatically.
+
+A focused next source/test-only custody-boundary investigation should determine how to expose selected-session metadata (record/manifests/resume presence and stored byte-offset extent) from a bounded, integrity-checked **copy** even when its accepted file is absent, while keeping final canonical result STOP. Scope only the previously selected actual session; never enumerate/open foreign accepted files or query/render foreign sessions. Prove original database/sidecars are untouched, preserve rollback/WAL safety, do not construct the production journal or run recovery, and do not infer bytes from metadata. Consider the zero-byte rollback sidecar as a separately tested safety/usability boundary, not an invitation to repair original storage. Establish actual writer-versus-reader runtime storage identity if existing non-mutating evidence can do so. A future device-private metadata read, corrective implementation/tests or candidate build needs explicit bounded authority; none is authorized by this screenshot. Bring back the smallest necessary evidence-access/correction decision rather than repeat this same stopped reader.
+
+Source-owned receipt/copies → Phone60 admission/gate pointers → Master → acceptedS4 unchanged/known-deniedAtlas not retried → Alignment last → bounded documentation commits → controlled non-force GitHub mirror and independent exact-tree readback. No raw report/media/database fingerprints in GitHub. Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
