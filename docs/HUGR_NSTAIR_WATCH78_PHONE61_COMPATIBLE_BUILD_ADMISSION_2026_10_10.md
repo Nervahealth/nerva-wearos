@@ -76,3 +76,7 @@ No production source/build change. Watch69 NOT QUALIFIED; Watch68 v1 UNCLASSIFIE
 ## Fresh-start STOP — 2026-10-11 10:13 CEST
 
 Neil reports receipt unavailable after Start fresh5minutes and tray return/crash on another press. Photo shows unavailable/interruptedIO/no completion, not exact Android failure. Source-owned `HUGR_NSTAIR_WATCH78_FRESH_START_STOP_2026_10_11.md` distinguishes generic receipt rendering failure and swallowed admission exception from unproved root cause. Phone launch/Connect, permission path and STARTED are unreported; clarify from memory. No more physical actions or correction/build authorized. Preserve potential attempted-run bytes; no loss/never-started/finalization claim. Saved Diagnostics for this attempt needs explicit later authority. Complete instrument and later duration/live-observation milestones remain controlling; historical Watch69 is not prerequisite.
+
+## Focused startup correction — 2026-10-11 12:09 authority
+
+Neil confirms STARTED never appeared and Phone was not opened. Focused source/test correction and one passive local Saved Diagnostics read authorized; no APK build, installation or retry. See `HUGR_NSTAIR_WATCH78_FRESH_START_SOURCE_CORRECTION_2026_10_11.md` for the completed evidence-bound result. The admitted/installed Watch78 and Phone61 remain unchanged; source fixes are not device-tested. Historical physical gate stays STOP; passing synthetic tests do not reopen it. No passive diagnostic result is yet supplied.

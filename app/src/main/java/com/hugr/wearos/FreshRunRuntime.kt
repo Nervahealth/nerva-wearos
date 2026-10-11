@@ -8,6 +8,7 @@ import android.system.Os
 import android.system.OsConstants
 import java.io.File
 import java.util.UUID
+import java.nio.file.Files
 
 internal object FreshRunRuntime {
     const val DIRECTORY = "fresh_ordinary_runs_v3"
@@ -17,7 +18,17 @@ internal object FreshRunRuntime {
         private set
     @Volatile var receiptOnly = false
         private set
-    private fun store(context: Context) = FreshRunReceiptStore(File(context.noBackupFilesDir, DIRECTORY), syncDirectory = { dir ->
+    /** Context's OS-owned app anchor can include Android user-zero aliases. Resolve ONLY
+     * that anchor; never canonicalize a selected run, journal, gate or receipt child. */
+    internal fun receiptRoot(context: Context): File = receiptRootAtTrustedAnchor(context.noBackupFilesDir)
+    internal fun receiptRootAtTrustedAnchor(anchor: File): File {
+        require(!Files.isSymbolicLink(anchor.toPath())) { "Symbolic no-backup directory" }
+        require(!Files.isSymbolicLink(requireNotNull(anchor.parentFile).toPath())) { "Symbolic app directory" }
+        val resolved = anchor.canonicalFile
+        require(resolved.isDirectory) { "No-backup directory unavailable" }
+        return File(resolved, DIRECTORY)
+    }
+    private fun store(context: Context) = FreshRunReceiptStore(receiptRoot(context), syncDirectory = { dir ->
         val fd = Os.open(dir.absolutePath, OsConstants.O_RDONLY, 0)
         try { check(OsConstants.S_ISDIR(Os.fstat(fd).st_mode)); Os.fsync(fd) } finally { Os.close(fd) }
     })
@@ -58,7 +69,8 @@ internal object FreshRunRuntime {
         receiptOnly = true
         return receipt
     }
-    fun current(context: Context): FreshRunReceipt? = session?.snapshot() ?: store(context).current()
+    // Run from the UI's worker: serialize selection reads with admission/publication.
+    @Synchronized fun current(context: Context): FreshRunReceipt? = session?.snapshot() ?: store(context).current()
     @Synchronized fun end() {
         val active = session
         active?.quiesce()

@@ -55,6 +55,18 @@ class MainActivity : ComponentActivity() {
     private var freshRequested = false
     private var freshUi = true
     private var readinessRefreshActive = false
+    private var freshReadPending = false
+    private var freshTerminalFailure = false
+    private var freshAdmissionScheduled = false
+    private val freshActionButtons = mutableListOf<Button>()
+    private fun freshActionBlocked(): Boolean = freshTerminalFailure || freshReadPending || freshRequested ||
+        FreshRunRuntime.session != null || FreshRunRuntime.receiptOnly
+    private fun latchFreshFailure(message: String) {
+        if (freshTerminalFailure) return
+        freshTerminalFailure = true
+        freshActionButtons.forEach { it.isEnabled = false }
+        statusText.text = "HUGR\n$message · STOP · no retry"
+    }
     private val readinessRefresh = object : Runnable {
         override fun run() {
             if (!readinessRefreshActive || isFinishing || isDestroyed) return
@@ -108,29 +120,38 @@ class MainActivity : ComponentActivity() {
         layout.addView(statusText)
         layout.addView(Button(this).apply {
             text = "Start fresh 5 minutes"
+            freshActionButtons += this
             setOnClickListener {
-                if (freshRequested || FreshRunRuntime.session != null || FreshRunRuntime.receiptOnly) return@setOnClickListener
+                if (freshActionBlocked()) return@setOnClickListener
                 freshRequested = true
+                WatchDiagnosticRuntime.begin(this@MainActivity, null, null)
                 beginFreshOrdinaryScopeAfterRetainedDeliveryProbe()
             }
         })
         layout.addView(Button(this).apply {
             text = "Serve current fresh receipt only"
+            freshActionButtons += this
             setOnClickListener {
-                if (freshRequested || FreshRunRuntime.session != null || FreshRunRuntime.receiptOnly) return@setOnClickListener
+                if (freshActionBlocked()) return@setOnClickListener
+                freshRequested = true
                 try {
                     startForegroundService(Intent(this@MainActivity, BleGattService::class.java).apply {
                         action = FreshRunRuntime.ACTION_SERVE_FRESH_RECEIPT_ONLY
                     })
                     statusText.text = "HUGR\nReceipt-only service requested · no sensing"
                     startReadinessRefresh()
-                } catch (_: Exception) { statusText.text = "HUGR\nReceipt-only start failed" }
+                } catch (failure: Exception) {
+                    WatchDiagnosticRuntime.capture(this@MainActivity, DiagnosticStage.SERVICE_START, failure = failure)
+                    latchFreshFailure("Receipt-only start failed")
+                }
             }
         })
         layout.addView(Button(this).apply {
             text = "Explicit retained v2 delivery"
+            freshActionButtons += this
             setOnClickListener {
-                if (freshRequested || FreshRunRuntime.session != null || FreshRunRuntime.receiptOnly) return@setOnClickListener
+                if (freshActionBlocked()) return@setOnClickListener
+                freshRequested = true
                 freshUi = false
                 Thread({ probeRetainedFinalizedDeliveryInBackground() }, "HUGR-ExplicitRetainedProbe").start()
             }
@@ -268,6 +289,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun renderFirstFrame(presentation: FirstFramePresentation) {
+        if (freshTerminalFailure) return
         firstFramePresentation = presentation
         statusText.text = "HUGR\n${presentation.headline}"
         evidenceText.text = buildString {
@@ -345,9 +367,9 @@ class MainActivity : ComponentActivity() {
 
     private fun onPermissionDenied() {
         permissionDecisionReached = false
-        freshRequested = false
         recordNormalStartupMarker(NormalStartupStage.PERMISSION_DENIED)
         renderFirstFrame(firstFrameCoordinator.permissionUnavailable())
+        latchFreshFailure("Fresh permission denied")
     }
 
     private fun startAllServices() {
@@ -357,24 +379,35 @@ class MainActivity : ComponentActivity() {
             return
         }
         if (!freshRequested) return
+        if (freshTerminalFailure || freshAdmissionScheduled) return
+        freshAdmissionScheduled = true
         Thread({
             try {
+                if (isFinishing || isDestroyed) return@Thread
                 FreshRunRuntime.admit(applicationContext)
                 runOnUiThread {
+                    if (isFinishing || isDestroyed) {
+                        FreshRunRuntime.end()
+                        return@runOnUiThread
+                    }
                     try {
                         startForegroundService(Intent(this, BleGattService::class.java).apply {
                             action = FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES
                         })
                         statusText.text = "HUGR\nFresh 5-minute recording requested"
                         startReadinessRefresh()
-                    } catch (_: Exception) {
-                        FreshRunRuntime.session?.fail("SERVICE_START_FAILED")
+                    } catch (failure: Exception) {
+                        WatchDiagnosticRuntime.capture(this, DiagnosticStage.SERVICE_START, failure = failure)
+                        runCatching { FreshRunRuntime.session?.fail("SERVICE_START_FAILED") }
                         FreshRunRuntime.end()
-                        statusText.text = "HUGR\nFresh service start failed"
+                        latchFreshFailure("Fresh service start failed")
                     }
                 }
-            } catch (_: Exception) {
-                runOnUiThread { freshRequested = false; statusText.text = "HUGR\nFresh admission failed · no sensing" }
+            } catch (failure: Exception) {
+                WatchDiagnosticRuntime.capture(this, DiagnosticStage.STARTUP_SELECTION, failure = failure)
+                runOnUiThread {
+                    if (!isFinishing && !isDestroyed) latchFreshFailure("Fresh admission failed · no sensing")
+                }
             }
         }, "HUGR-ExplicitFreshAdmission").start()
     }
@@ -437,7 +470,7 @@ class MainActivity : ComponentActivity() {
             )
             receiverRegistered = true
         }
-        if (finalizedDeliveryRecoveryOnly) startReadinessRefresh()
+        if (freshUi || finalizedDeliveryRecoveryOnly) startReadinessRefresh()
         if (permissionDecisionReached || finalizedDeliveryRecoveryOnly) renderEvidence() else renderFirstFrame(firstFramePresentation)
     }
 
@@ -484,14 +517,28 @@ class MainActivity : ComponentActivity() {
     private fun renderEvidence() {
         if (!::evidenceText.isInitialized) return
         if (freshUi) {
-            val result = runCatching { FreshRunRuntime.current(this) }
-            val receipt = result.getOrNull()
-            if (result.isFailure) {
-                statusText.text = "HUGR\nFresh receipt unavailable / interrupted IO · no completion"
-            } else if (receipt != null) {
-                statusText.text = "HUGR\nFresh ${receipt.phase.name} · ${receipt.failure}"
-                evidenceText.text = "Source ${receipt.sourceId}\nRun ${receipt.runId}\nRequested 5 minutes; supported/started ${receipt.supportedMask}/${receipt.startedMask}\nManifests ${receipt.manifests.size}; exact accepted ACKs ${receipt.acks.size}\nReceipt revision ${receipt.revision}. Phone durable report confirmation is separate. PPG live-only; no canonical PPG in this receipt."
-            }
+            if (freshTerminalFailure || freshReadPending) return
+            freshReadPending = true
+            freshActionButtons.forEach { it.isEnabled = false }
+            Thread({
+                val result = runCatching { FreshRunRuntime.current(applicationContext) }
+                result.exceptionOrNull()?.let { failure ->
+                    WatchDiagnosticRuntime.capture(this, DiagnosticStage.STARTUP_SELECTION, failure = failure)
+                    FreshRunRuntime.session?.quiesce()
+                }
+                runOnUiThread {
+                    freshReadPending = false
+                    if (isFinishing || isDestroyed || freshTerminalFailure) return@runOnUiThread
+                    val receipt = result.getOrNull()
+                    freshActionButtons.forEach { it.isEnabled = !freshActionBlocked() }
+                    if (result.isFailure) {
+                        latchFreshFailure("Fresh receipt unavailable / interrupted IO · no completion")
+                    } else if (receipt != null) {
+                        statusText.text = "HUGR\nFresh ${receipt.phase.name} · ${receipt.failure}"
+                        evidenceText.text = "Source ${receipt.sourceId}\nRun ${receipt.runId}\nRequested 5 minutes; supported/started ${receipt.supportedMask}/${receipt.startedMask}\nManifests ${receipt.manifests.size}; exact accepted ACKs ${receipt.acks.size}\nReceipt revision ${receipt.revision}. Phone durable report confirmation is separate. PPG live-only; no canonical PPG in this receipt."
+                    }
+                }
+            }, "HUGR-FreshReceiptRead").start()
             return
         }
         if (!permissionDecisionReached && !finalizedDeliveryRecoveryOnly) {

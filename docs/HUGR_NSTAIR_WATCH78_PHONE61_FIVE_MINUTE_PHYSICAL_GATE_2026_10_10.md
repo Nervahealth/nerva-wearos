@@ -65,3 +65,7 @@ Neil has now confirmed no launcher opened/no warnings and authorized the prepare
 ## Physical observation frontier — 2026-10-11
 
 Startup failed as reported; no terminal Phone result/offline acceptance exists. Do not repeat sections B/C. Further focused correction or passive diagnostics requires explicit authority. Clarify actions from memory rather than reopening devices.
+
+## Focused startup correction — 2026-10-11 12:09 authority
+
+Neil confirms STARTED never appeared and Phone was not opened. Focused source/test correction and one passive local Saved Diagnostics read authorized; no APK build, installation or retry. See `HUGR_NSTAIR_WATCH78_FRESH_START_SOURCE_CORRECTION_2026_10_11.md` for the completed evidence-bound result. The admitted/installed Watch78 and Phone61 remain unchanged; source fixes are not device-tested. Historical physical gate stays STOP; passing synthetic tests do not reopen it. No passive diagnostic result is yet supplied.

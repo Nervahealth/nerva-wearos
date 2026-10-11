@@ -31,3 +31,7 @@ No implementation correction, APK build/admission, installation, new run, physic
 Raw photo remains private in the supplied upload location and is not copied to GitHub. Preserve this sanitized observation and bounded source interpretation only, then Master, affected proposal only if authorized, Alignment last, bounded coherent commits and non-force GitHub head/exact-tree readback. Accepted S4 remains unchanged; do not retry denied Atlas access.
 
 Watch69 **NOT QUALIFIED**. Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**. Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`. Legacy/frozen/previous Watch69 source bytes are not accessed or changed. No private physiological values, credential or signing material is included.
+
+## Focused startup correction — 2026-10-11 12:09 authority
+
+Neil confirms STARTED never appeared and Phone was not opened. Focused source/test correction and one passive local Saved Diagnostics read authorized; no APK build, installation or retry. See `HUGR_NSTAIR_WATCH78_FRESH_START_SOURCE_CORRECTION_2026_10_11.md` for the completed evidence-bound result. The admitted/installed Watch78 and Phone61 remain unchanged; source fixes are not device-tested. Historical physical gate stays STOP; passing synthetic tests do not reopen it. No passive diagnostic result is yet supplied.
