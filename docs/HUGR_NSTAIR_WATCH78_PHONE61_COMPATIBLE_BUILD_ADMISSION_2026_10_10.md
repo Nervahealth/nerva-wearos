@@ -1,8 +1,8 @@
 # Watch78 / Phone61 compatible instrument — build and artifact admission
 
-## Current state — 2026-10-10 23:27 CEST
+## Current state — 2026-10-11 10:13 CEST
 
-**COMPATIBLE PAIR INSTALLED / SETTINGS CHECKED / UNOPENED, OPERATOR-CONFIRMED. SINGLE PREPARED FRESH RUN AUTHORIZED; NO RUN RESULT YET.** Neil20:32: “Proceed with building the compatible Watch78 / Phone61 artifact and prepare the physical test run.” This authorizes one compatible pair build, exact artifact admission and physical-procedure preparation only. No installation, launch, Connect, sensing, actual source-store operation, private report transfer or N1 execution is performed or inferred.
+**INSTALLED PAIR; FRESH PHYSICAL ATTEMPT STOPPED AT STARTUP. NO COMPLETE RECORDING / DURABLE PHONE RESULT ESTABLISHED.** Neil20:32: “Proceed with building the compatible Watch78 / Phone61 artifact and prepare the physical test run.” This authorizes one compatible pair build, exact artifact admission and physical-procedure preparation only. No installation, launch, Connect, sensing, actual source-store operation, private report transfer or N1 execution is performed or inferred.
 
 Validated complete integration baseline: Watch `ab0b2945d537d17a5d916ee1b20d2cac0d3fccda`, Phone `d9363e971163a8bffae992e008e1f7518490ea04`, controls `adb1fbf5e15a9a47231343d7dc4a8836bf109409`, independently exact-tree preserved. Full six-phase joined synthetic acceptance PASS; full Watch209total205pass4fixture skips, native94/94, Phone142total139pass3fixture skips, zero failures/errors. Source-owned detailed closure: `HUGR_NSTAIR_COMPATIBLE_FRESH_FIVE_MINUTE_SOURCE_TEST_CLOSURE_2026_10_10.md`. Installed predecessor at the source/build checkpoint was Watch77/HonorPhone60; later installation observation is below.
 
@@ -72,3 +72,7 @@ Neil: “Proceed with the prepared five-minute physical recording run using Watc
 Keep normal permission boundaries and STOP/no-retry rules in the prepared gate. No retained-v2/receipt-only controls, new additional run, pairing/reset/host switch, haptics/observer/egress, legacy/frozen operation or N1 execution. Watch-origin source-session exact accepted ACKs and COMPLETED receipt must accompany native canonical custody; Phone write success never substitutes. Offline recheck is conditional on terminal COMPLETE_VERIFIED, not a failure retry. Saved Diagnostics after a failure requires specific later authority; this run does not include private diagnostic transfer.
 
 No production source/build change. Watch69 NOT QUALIFIED; Watch68 v1 UNCLASSIFIED / NOT VERIFIED; Watch58 TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED. Duration ladder and existing live-observation bridge follow earned physical short-run acceptance under later authority; optional historical recovery not prerequisite.
+
+## Fresh-start STOP — 2026-10-11 10:13 CEST
+
+Neil reports receipt unavailable after Start fresh5minutes and tray return/crash on another press. Photo shows unavailable/interruptedIO/no completion, not exact Android failure. Source-owned `HUGR_NSTAIR_WATCH78_FRESH_START_STOP_2026_10_11.md` distinguishes generic receipt rendering failure and swallowed admission exception from unproved root cause. Phone launch/Connect, permission path and STARTED are unreported; clarify from memory. No more physical actions or correction/build authorized. Preserve potential attempted-run bytes; no loss/never-started/finalization claim. Saved Diagnostics for this attempt needs explicit later authority. Complete instrument and later duration/live-observation milestones remain controlling; historical Watch69 is not prerequisite.

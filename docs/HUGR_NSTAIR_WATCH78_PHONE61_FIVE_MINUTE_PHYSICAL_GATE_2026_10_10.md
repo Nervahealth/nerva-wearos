@@ -1,6 +1,6 @@
 # Watch78 / Phone61 — one fresh five-minute test
 
-**AUTHORIZED — 23:27 CEST. Both updates/Settings checks and neither Main nor information launch/no warnings are operator-confirmed. Proceed once with sections B/C: fresh five-minute run and conditional successful-report offline recheck. No result observed yet. No reinstall. Local report only; no Share/export/private report upload, retry or N1.**
+**STOP — 2026-10-11 10:13 CEST. Receipt unavailable reported after Start; another press returned to tray or crashed. Sections B/C are historical procedure, NOT authority for another attempt. No restart/Connect/diagnostics/reinstall/data clear. See `HUGR_NSTAIR_WATCH78_FRESH_START_STOP_2026_10_11.md`.**
 
 ## A. Installation-only gate — authorized; updates/Settings checks reported complete
 
@@ -61,3 +61,7 @@ Both updates/Settings checks are reported complete. Confirm from memory that nei
 ## Current execution boundary — 23:27 CEST
 
 Neil has now confirmed no launcher opened/no warnings and authorized the prepared five-minute physical recording and resulting durable Phone report. Execute sections B/C once within their limits, locally. No fresh result is known and Manus cannot display a report it has not observed. Report start time and minimal terminal/offline result codes; no raw physiological report upload or Share/export is included. At failure, stop and preserve first visible code without further launcher/reconnect/diagnostic action.
+
+## Physical observation frontier — 2026-10-11
+
+Startup failed as reported; no terminal Phone result/offline acceptance exists. Do not repeat sections B/C. Further focused correction or passive diagnostics requires explicit authority. Clarify actions from memory rather than reopening devices.
