@@ -15,9 +15,8 @@ import java.util.concurrent.TimeUnit
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
-import org.junit.Assert.assertNull
+import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -37,12 +36,13 @@ import org.robolectric.shadows.ShadowSystemClock
  *
  * The PackageManager assertions read Robolectric's manifest-derived ActivityInfo, while the
  * activities and their views are real production activities. Robolectric does not implement
- * Android's ActivityTaskManager task-selection algorithm. [ManifestNewTaskRestorationModel] is
- * therefore an explicitly named, minimal in-test model of NEW_TASK affinity restoration: it
- * derives its key from the actual declared ActivityInfo.taskAffinity, restores only that key's
- * top activity, and creates the selected production activity through an ActivityController when
- * there is no matching top. It is deliberately not a framework shadow and never claims a real
- * Android taskId or physical Wear launcher result.
+ * Android's ActivityTaskManager task-selection algorithm. [ManifestDocumentLaunchPolicyModel]
+ * is therefore an explicitly named, minimal policy simulation: it reads the declared affinity
+ * and documentLaunchMode, creates a fresh synthetic document task for `always`, and otherwise
+ * restores the matching affinity top. It creates selected production activities through an
+ * ActivityController, but is deliberately not a framework shadow. In particular, it makes no
+ * claim about a real ATM taskId, physical Wear launcher behavior, hardware, or proof that a
+ * stale on-device task is bypassed.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34], shadows = [FreshRunDirectoryLinuxShadow::class])
@@ -71,11 +71,12 @@ class WatchLauncherTaskIsolationTest {
     }
 
     /**
-     * This is intentionally red until the parent applies only the two explicit affinities.
-     * ActivityInfo is retrieved from the PackageManager, not by parsing the source manifest.
+     * This is intentionally red until both launcher declarations retain their distinct
+     * affinities and declare documentLaunchMode="always". ActivityInfo is retrieved from the
+     * PackageManager, not by parsing the source manifest.
      */
     @Test
-    fun `merged manifest gives Main and Saved Diagnostics distinct standard launcher affinities`() {
+    fun `merged manifest gives Main and Saved Diagnostics standard distinct document always launcher declarations`() {
         val packageManager = app.packageManager
         val main = activityInfo(packageManager, MAIN_COMPONENT)
         val saved = activityInfo(packageManager, SAVED_COMPONENT)
@@ -85,58 +86,79 @@ class WatchLauncherTaskIsolationTest {
         assertEquals("com.hugr.wearos.main", main.taskAffinity)
         assertEquals("com.hugr.wearos.diagnostics", saved.taskAffinity)
         assertNotEquals("The two launcher activities must not select one affinity key", main.taskAffinity, saved.taskAffinity)
+        assertEquals(
+            "Main documentLaunchMode=always must request Android's NEW_DOCUMENT plus MULTIPLE_TASK policy",
+            ActivityInfo.DOCUMENT_LAUNCH_ALWAYS,
+            main.documentLaunchMode,
+        )
+        assertEquals(
+            "Saved Diagnostics documentLaunchMode=always must request Android's NEW_DOCUMENT plus MULTIPLE_TASK policy",
+            ActivityInfo.DOCUMENT_LAUNCH_ALWAYS,
+            saved.documentLaunchMode,
+        )
 
         assertEquals(MAIN_COMPONENT, resolveLauncher(packageManager, MAIN_COMPONENT).component)
         assertEquals(SAVED_COMPONENT, resolveLauncher(packageManager, SAVED_COMPONENT).component)
     }
 
     @Test
-    fun `manifest driven NEW_TASK model returns the intended launcher after Home without touching pending admission or saved report`() {
+    fun `document always model keeps every icon launch on its selected screen through both Home sequences and configuration recreation`() {
         withFixture(FixturePhase.PENDING_STARTED) { fixture ->
-            val model = ManifestNewTaskRestorationModel(app.packageManager)
+            val model = ManifestDocumentLaunchPolicyModel(app.packageManager)
             val before = fixture.snapshot()
 
-            // Information/Saved is the existing top; after Home, the blue Main icon must select
-            // Main's own declared-affinity task rather than restore this Saved top.
-            val savedFirst = model.launchFromLauncher(SAVED_COMPONENT)
-            assertSavedDiagnosticsScreen(savedFirst)
-            assertNoPassiveDispatch(savedFirst)
+            // Exact forward icon sequence: blue Main -> Diagnostics -> Home -> blue Main.
+            val blueMainFirst = model.launchFromLauncher(MAIN_COMPONENT)
+            assertMainScreen(blueMainFirst)
+            awaitMainReceiptRead(blueMainFirst)
+            assertDocumentSyntheticLaunch(blueMainFirst)
+
+            val diagnosticsFirst = model.launchFromLauncher(SAVED_COMPONENT)
+            assertSavedDiagnosticsScreen(diagnosticsFirst)
+            assertDocumentSyntheticLaunch(diagnosticsFirst)
+            assertDistinctSyntheticTasks(blueMainFirst, diagnosticsFirst)
+
             model.goHome()
 
-            val mainFirst = model.launchFromLauncher(MAIN_COMPONENT)
-            assertMainScreen(mainFirst)
-            awaitMainReceiptRead(mainFirst)
-            assertNoPassiveDispatch(mainFirst)
-            assertNotEquals(mainFirst.key, savedFirst.key)
-            assertEquals(setOf(mainFirst.key, savedFirst.key), model.taskKeys())
+            val blueMainSecond = model.launchFromLauncher(MAIN_COMPONENT)
+            assertMainScreen(blueMainSecond)
+            awaitMainReceiptRead(blueMainSecond)
+            assertDocumentSyntheticLaunch(blueMainSecond)
+            assertDistinctSyntheticTasks(blueMainFirst, blueMainSecond)
 
-            // Reverse the launcher order twice. These are warm foreground restorations of the
-            // task tops created above, not clear-task, singleTask, or task-id based behavior.
-            model.goHome()
-            val savedWarm = model.launchFromLauncher(SAVED_COMPONENT)
-            assertSame(savedFirst.activity, savedWarm.activity)
-            assertSavedDiagnosticsScreen(savedWarm)
-            assertNoPassiveDispatch(savedWarm)
+            // Exact reverse sequence: Diagnostics -> blue Main -> Home -> Diagnostics.
             model.goHome()
 
-            val mainWarm = model.launchFromLauncher(MAIN_COMPONENT)
-            assertSame(mainFirst.activity, mainWarm.activity)
-            assertMainScreen(mainWarm)
-            awaitMainReceiptRead(mainWarm)
-            assertNoPassiveDispatch(mainWarm)
+            val diagnosticsSecond = model.launchFromLauncher(SAVED_COMPONENT)
+            assertSavedDiagnosticsScreen(diagnosticsSecond)
+            assertDocumentSyntheticLaunch(diagnosticsSecond)
+            assertDistinctSyntheticTasks(diagnosticsFirst, diagnosticsSecond)
 
-            // Configuration recreation is an actual ActivityController lifecycle path. The
-            // restored top after its next Home/re-entry remains the recreated Main screen.
-            mainWarm.recreateForConfiguration()
-            assertMainScreen(mainWarm)
-            awaitMainReceiptRead(mainWarm)
-            val recreatedMain = mainWarm.activity
+            val blueMainThird = model.launchFromLauncher(MAIN_COMPONENT)
+            assertMainScreen(blueMainThird)
+            awaitMainReceiptRead(blueMainThird)
+            assertDocumentSyntheticLaunch(blueMainThird)
+            assertDistinctSyntheticTasks(blueMainSecond, blueMainThird)
+
+            // This is an actual ActivityController configuration lifecycle, not a model-only
+            // state change. A later icon launch must still create a new selected Diagnostics UI.
+            val blueMainBeforeConfiguration = blueMainThird.activity
+            blueMainThird.recreateForConfiguration()
+            assertMainScreen(blueMainThird)
+            awaitMainReceiptRead(blueMainThird)
+            assertNotSame(
+                "ActivityController configuration recreation must replace the active MainActivity instance",
+                blueMainBeforeConfiguration,
+                blueMainThird.activity,
+            )
+
             model.goHome()
-            val mainAfterReentry = model.launchFromLauncher(MAIN_COMPONENT)
-            assertSame(recreatedMain, mainAfterReentry.activity)
-            assertMainScreen(mainAfterReentry)
-            awaitMainReceiptRead(mainAfterReentry)
-            assertNoPassiveDispatch(mainAfterReentry)
+
+            val diagnosticsThird = model.launchFromLauncher(SAVED_COMPONENT)
+            assertSavedDiagnosticsScreen(diagnosticsThird)
+            assertDocumentSyntheticLaunch(diagnosticsThird)
+            assertDistinctSyntheticTasks(diagnosticsSecond, diagnosticsThird)
+            assertEquals("Each of the six icon launches must have its own synthetic document task", 6, model.taskKeys().size)
 
             fixture.assertUnchanged(before)
             model.destroyAll()
@@ -145,28 +167,114 @@ class WatchLauncherTaskIsolationTest {
     }
 
     @Test
-    fun `same passive launcher route preserves actual finalized unacknowledged receipt journal and report`() {
+    fun `document always passive route preserves actual finalized unacknowledged receipt journal and report`() {
         withFixture(FixturePhase.FINALIZED_UNACKNOWLEDGED) { fixture ->
-            val model = ManifestNewTaskRestorationModel(app.packageManager)
+            val model = ManifestDocumentLaunchPolicyModel(app.packageManager)
             val before = fixture.snapshot()
 
-            val main = model.launchFromLauncher(MAIN_COMPONENT)
-            assertMainScreen(main)
-            awaitMainReceiptRead(main)
-            assertNoPassiveDispatch(main)
+            val mainFirst = model.launchFromLauncher(MAIN_COMPONENT)
+            assertMainScreen(mainFirst)
+            awaitMainReceiptRead(mainFirst)
+            assertDocumentSyntheticLaunch(mainFirst)
+
+            val savedFirst = model.launchFromLauncher(SAVED_COMPONENT)
+            assertSavedDiagnosticsScreen(savedFirst)
+            assertDocumentSyntheticLaunch(savedFirst)
+            assertDistinctSyntheticTasks(mainFirst, savedFirst)
             model.goHome()
 
-            val saved = model.launchFromLauncher(SAVED_COMPONENT)
-            assertSavedDiagnosticsScreen(saved)
-            assertNoPassiveDispatch(saved)
-            assertNotEquals(main.key, saved.key)
+            val mainSecond = model.launchFromLauncher(MAIN_COMPONENT)
+            assertMainScreen(mainSecond)
+            awaitMainReceiptRead(mainSecond)
+            assertDocumentSyntheticLaunch(mainSecond)
+            assertDistinctSyntheticTasks(mainFirst, mainSecond)
             model.goHome()
 
-            val mainWarm = model.launchFromLauncher(MAIN_COMPONENT)
-            assertSame(main.activity, mainWarm.activity)
-            assertMainScreen(mainWarm)
-            awaitMainReceiptRead(mainWarm)
-            assertNoPassiveDispatch(mainWarm)
+            val savedSecond = model.launchFromLauncher(SAVED_COMPONENT)
+            assertSavedDiagnosticsScreen(savedSecond)
+            assertDocumentSyntheticLaunch(savedSecond)
+            assertDistinctSyntheticTasks(savedFirst, savedSecond)
+            assertEquals(4, model.taskKeys().size)
+
+            fixture.assertUnchanged(before)
+            model.destroyAll()
+            fixture.assertUnchanged(before)
+        }
+    }
+
+    @Test
+    fun `document always policy bypasses retained pre-update shared tasks without removing them`() {
+        withFixture(FixturePhase.PENDING_STARTED) { fixture ->
+            val before = fixture.snapshot()
+
+            listOf(
+                MAIN_COMPONENT to SAVED_COMPONENT,
+                SAVED_COMPONENT to MAIN_COMPONENT,
+            ).forEach { (baseRequested, oppositeTop) ->
+                val model = ManifestDocumentLaunchPolicyModel(app.packageManager)
+                val seeded = model.seedPreUpdateSharedTask(baseRequested, oppositeTop)
+
+                assertEquals(baseRequested, seeded.baseRequested)
+                assertEquals(oppositeTop, seeded.top.component)
+                assertEquals(LEGACY_SHARED_AFFINITY, seeded.key.declaredAffinity)
+                assertEquals(null, seeded.key.documentInstance)
+                if (oppositeTop == MAIN_COMPONENT) {
+                    assertMainScreen(seeded.top)
+                    awaitMainReceiptRead(seeded.top)
+                } else {
+                    assertSavedDiagnosticsScreen(seeded.top)
+                }
+
+                val corrected = model.launchFromLauncher(baseRequested)
+                assertEquals("The corrected document launch must create its requested component", baseRequested, corrected.component)
+                if (baseRequested == MAIN_COMPONENT) {
+                    assertMainScreen(corrected)
+                    awaitMainReceiptRead(corrected)
+                } else {
+                    assertSavedDiagnosticsScreen(corrected)
+                }
+                assertDocumentSyntheticLaunch(corrected)
+                assertDistinctSyntheticTasks(seeded.top, corrected)
+
+                // The seed is an in-memory pre-update base/top example only. Keeping it proves
+                // this policy simulation does not clear, reuse, or destroy that retained task.
+                assertTrue("Corrected launch must leave the retained pre-update task present", model.containsTask(seeded.key))
+                val retainedTop = requireNotNull(model.topFor(seeded.key))
+                assertSame("Corrected launch must not replace the retained opposite top", seeded.top.activity, retainedTop.activity)
+                assertEquals(oppositeTop, retainedTop.component)
+
+                model.goHome()
+                fixture.assertUnchanged(before)
+                // Explicit test teardown is separate from the simulated launch policy above.
+                model.destroyAll()
+                fixture.assertUnchanged(before)
+            }
+        }
+    }
+
+    @Test
+    fun `synthetic non-document policy branch retains affinity restoration separately from merged document always contract`() {
+        withFixture(FixturePhase.PENDING_STARTED) { fixture ->
+            val model = ManifestDocumentLaunchPolicyModel(app.packageManager) {
+                ActivityInfo.DOCUMENT_LAUNCH_NONE
+            }
+            val before = fixture.snapshot()
+
+            val firstMain = model.launchFromLauncher(MAIN_COMPONENT)
+            assertMainScreen(firstMain)
+            awaitMainReceiptRead(firstMain)
+            model.goHome()
+
+            val restoredMain = model.launchFromLauncher(MAIN_COMPONENT)
+            assertSame(
+                "Only this deliberately forced non-document branch restores the affinity top; the merged manifest is asserted as always above",
+                firstMain.activity,
+                restoredMain.activity,
+            )
+            assertEquals(firstMain.key, restoredMain.key)
+            assertMainScreen(restoredMain)
+            awaitMainReceiptRead(restoredMain)
+            assertEquals(1, model.taskKeys().size)
 
             fixture.assertUnchanged(before)
             model.destroyAll()
@@ -256,10 +364,14 @@ class WatchLauncherTaskIsolationTest {
 
     /**
      * Synthetic key, not Activity.getTaskId(): Android task ids are intentionally outside this
-     * unit test. The key is only the declared affinity that ActivityTaskManager would use for a
-     * minimal NEW_TASK affinity lookup.
+     * unit test. The declared affinity models the non-document policy lookup; a non-null
+     * [documentInstance] is an in-test identity assigned for each documentLaunchMode=always
+     * icon launch. It is a policy-model token, never an Android task id.
      */
-    private data class SyntheticTaskKey(val declaredAffinity: String)
+    private data class SyntheticTaskKey(
+        val declaredAffinity: String,
+        val documentInstance: Long? = null,
+    )
 
     private data class ResolvedLauncher(
         val component: ComponentName,
@@ -267,19 +379,41 @@ class WatchLauncherTaskIsolationTest {
         val intent: Intent,
     )
 
+    private data class SeededPreUpdateSharedTask(
+        val baseRequested: ComponentName,
+        val key: SyntheticTaskKey,
+        val top: ModelScreen,
+    )
+
     /**
-     * Minimal model of NEW_TASK affinity restoration for this test. Its metadata comes from the
-     * actual PackageManager and every produced screen is a real production ActivityController.
-     * It neither shadows Android nor pretends to emulate all ActivityTaskManager rules.
+     * Minimal document-launch policy simulation for this test. Metadata comes from the actual
+     * PackageManager and each produced screen is a real production ActivityController. The
+     * `always` branch gives every icon launch a fresh synthetic document key; the deliberately
+     * non-document branch retains the focused affinity-top restoration behavior. This neither
+     * shadows Android nor emulates all ActivityTaskManager rules.
      */
-    private class ManifestNewTaskRestorationModel(private val packageManager: PackageManager) {
+    private class ManifestDocumentLaunchPolicyModel(
+        private val packageManager: PackageManager,
+        private val documentLaunchModeFor: (ActivityInfo) -> Int = { it.documentLaunchMode },
+    ) {
         private val tasks = linkedMapOf<SyntheticTaskKey, ModelTask>()
         private var foreground: ModelTask? = null
+        private var nextDocumentInstance = 0L
 
         fun launchFromLauncher(requested: ComponentName): ModelScreen {
             val resolved = resolveLauncher(packageManager, requested)
-            val key = SyntheticTaskKey(requireNotNull(resolved.info.taskAffinity) { "Launcher activity must declare an affinity" })
-            val task = tasks.getOrPut(key) { ModelTask(key) }
+            val declaredAffinity = requireNotNull(resolved.info.taskAffinity) { "Launcher activity must declare an affinity" }
+            val alwaysCreatesNewDocument = documentLaunchModeFor(resolved.info) == ActivityInfo.DOCUMENT_LAUNCH_ALWAYS
+            val key = if (alwaysCreatesNewDocument) {
+                SyntheticTaskKey(declaredAffinity, ++nextDocumentInstance)
+            } else {
+                SyntheticTaskKey(declaredAffinity)
+            }
+            val task = if (alwaysCreatesNewDocument) {
+                ModelTask(key).also { tasks[key] = it }
+            } else {
+                tasks.getOrPut(key) { ModelTask(key) }
+            }
 
             if (foreground !== task) foreground?.top?.moveHome()
             foreground = task
@@ -294,6 +428,38 @@ class WatchLauncherTaskIsolationTest {
         }
 
         fun taskKeys(): Set<SyntheticTaskKey> = tasks.keys
+
+        fun containsTask(key: SyntheticTaskKey): Boolean = key in tasks
+
+        fun topFor(key: SyntheticTaskKey): ModelScreen? = tasks[key]?.top
+
+        /**
+         * Seeds only the test model with a retained pre-update shared-affinity task. Its base
+         * requested component and opposite top intentionally expose the old restoration shape;
+         * neither represents an ATM task, taskId, or observed device task state.
+         */
+        fun seedPreUpdateSharedTask(
+            baseRequested: ComponentName,
+            oppositeTop: ComponentName,
+        ): SeededPreUpdateSharedTask {
+            require(baseRequested == MAIN_COMPONENT || baseRequested == SAVED_COMPONENT) {
+                "Seed base must be one of the two focused launcher components: $baseRequested"
+            }
+            require(oppositeTop == MAIN_COMPONENT || oppositeTop == SAVED_COMPONENT) {
+                "Seed top must be one of the two focused launcher components: $oppositeTop"
+            }
+            require(baseRequested != oppositeTop) {
+                "Pre-update seed must model the requested component with the opposite retained top"
+            }
+            val key = SyntheticTaskKey(LEGACY_SHARED_AFFINITY)
+            check(key !in tasks) { "A pre-update shared task was already seeded" }
+            val task = ModelTask(key)
+            val top = createActualTop(task, resolveLauncher(packageManager, oppositeTop))
+            task.top = top
+            tasks[key] = task
+            foreground = task
+            return SeededPreUpdateSharedTask(baseRequested, key, top)
+        }
 
         fun destroyAll() {
             foreground = null
@@ -347,7 +513,10 @@ class WatchLauncherTaskIsolationTest {
         }
 
         override fun recreateForConfiguration() {
-            controller.configurationChange()
+            val changed = android.content.res.Configuration(activity.resources.configuration)
+            changed.orientation = if (changed.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE)
+                android.content.res.Configuration.ORIENTATION_PORTRAIT else android.content.res.Configuration.ORIENTATION_LANDSCAPE
+            controller.configurationChange(changed)
             stopped = false
         }
 
@@ -399,14 +568,6 @@ class WatchLauncherTaskIsolationTest {
         val text = screenText(screen.activity)
         assertTrue("Saved diagnostics heading missing: $text", text.any { it.contains("HUGR Saved Diagnostics") })
         assertTrue("Saved report was not read through the actual viewer: $text", text.any { it.contains("HUGR SAVED DIAGNOSTIC v1") })
-        assertTrue("Share control should be present but never clicked: $text", text.any { it.contains("Share this diagnostic") })
-    }
-
-    private fun assertNoPassiveDispatch(screen: ModelScreen) {
-        val shadow = Shadows.shadowOf(screen.activity)
-        assertNull("Passive navigation must not request permissions", shadow.lastRequestedPermission)
-        assertNull("Passive navigation must not start a service", shadow.nextStartedService)
-        assertNull("Passive navigation must not launch Share or another activity", shadow.peekNextStartedActivityForResult())
     }
 
     private fun awaitMainReceiptRead(screen: ModelScreen) {
@@ -433,6 +594,29 @@ class WatchLauncherTaskIsolationTest {
     private companion object {
         val MAIN_COMPONENT = ComponentName("com.hugr.wearos", MainActivity::class.java.name)
         val SAVED_COMPONENT = ComponentName("com.hugr.wearos", SavedDiagnosticActivity::class.java.name)
+        const val LEGACY_SHARED_AFFINITY = "com.hugr.wearos"
+
+        /** Pure policy-model assertions: synthetic document instance tokens are not task ids. */
+        fun assertDocumentSyntheticLaunch(screen: ModelScreen) {
+            assertTrue(
+                "documentLaunchMode=always policy must give each icon launch a synthetic document token",
+                screen.key.documentInstance != null,
+            )
+        }
+
+        /** Pure policy-model assertion; it makes no claim about Android ActivityTaskManager ids. */
+        fun assertDistinctSyntheticTasks(first: ModelScreen, second: ModelScreen) {
+            assertNotEquals(
+                "Separate icon launches must use separate synthetic policy keys",
+                first.key,
+                second.key,
+            )
+            assertNotSame(
+                "Separate icon launches must create distinct actual ActivityController instances",
+                first.activity,
+                second.activity,
+            )
+        }
 
         fun resolveLauncher(packageManager: PackageManager, requested: ComponentName): ResolvedLauncher {
             val intent = Intent(Intent.ACTION_MAIN)
