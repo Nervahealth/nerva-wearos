@@ -91,3 +91,15 @@ One source APK assembly and one final compatibility staging/signing operation; n
 - Completed joined suite: **all six phases PASS**, native **94/94 pass**; real code/SQLite test adapter and actual cross-language ACK fixtures, still synthetic only.
 
 No physical success is claimed. Installation/current receipt routing/real SDK sensor callbacks/service timer/radio/custody/report restart proof remain physical acceptance requirements. Prepared gate is receipt-first and conditionally stops on STARTED/FINALIZED/error; no automatic receipt-only failure conversion or new-run bypass. Historical Watch78 first error remains physically undiagnosed.
+
+## 2026-10-13 00:37 BST — installation verification and passive current receipt authority
+
+Neil: “Verify Watch80 installation and read the current receipt status without starting a new run.” This authorizes only Settings version verification, followed conditionally on exact Watch80 version by one passive blue Main HUGR receipt read, first stable result/error or 60 seconds, no retry. No installation/update is inferred from a request to verify installation; if Settings still shows 79 or another version, stop and report rather than install or launch. No device observation/result has yet been supplied for Watch80.
+
+Phone61 and Bluetooth settings remain untouched. All Watch buttons/switches, Start, receipt-only, retained delivery, service start, sensing, new recording, Connect/reconnect, pairing/reset, data clear/uninstall, legacy/frozen actions, Share/export/private upload and N1 remain excluded. Saved Diagnostics launch/Next/Share is not included in this narrower authority. A passive Main launch may write ordinary startup breadcrumbs but must not change the selected run receipt or canonical source bytes.
+
+Operator readback requested: Settings version, correct Main versus diagnostics surface, exact Fresh phase/failure or ready/STOP text, source/run if readily visible, manifest/accepted-ACK counts/revision if visible, whether any control was pressed or unexpected behavior occurred. No routine video or full private report upload is requested. STARTED/FINALIZED, FAILED/COMPLETED or absent each ends this observation; none authorizes a new Start. Physical installation identity and receipt state remain **PENDING OPERATOR OBSERVATION**, not confirmed by source/APK checks.
+
+### Operator update — 2026-10-13 00:38 BST
+
+Neil reports: “Normal updatw settingas applisy says 0.80.0 combined fresh.” Record normal in-place update and Settings-observed `0.80.0 combined fresh` as **operator-confirmed**, consistent with the admitted version prefix; do not claim an independent installed-APK checksum/signature read. The complete version suffix, any post-update launch/control use, and absence of unexpected warnings are not independently observed or explicitly confirmed here. No duplicate installation is needed. Next authorized step is the one passive blue Main receipt read, within 60 seconds, no controls/Phone/Bluetooth/Saved Diagnostics. Current receipt status remains pending; no new recording authorized.

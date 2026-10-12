@@ -57,3 +57,9 @@ If Watch failure or Phone has no useful specific cause, later authority may incl
 Acceptance target: **actual sensor recording → controlled finalization → full verified canonical delivery → Watch-origin exact ACK/completion → durable Phone report → matching offline restart recheck**. Source tests/build are not physical acceptance. After passing, next milestones remain **duration ladder → eight hours and existing live Watchtower bridge**, separately authorized.
 
 Watch69 **NOT QUALIFIED**. Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**. Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
+
+## Current authority override — 2026-10-13 00:37 BST
+
+**Only installation verification and one passive receipt read are authorized now.** Verify Watch Settings → Apps → HUGR shows `0.80.0-combined-fresh-flow-launcher-candidate`; if not, stop without installing, reopening Main or retrying. Once exact Watch80 version is observed, blue Main once, first stable receipt/ready/error or 60 seconds, all controls untouched. Stop and report the phase/text; no Start even if eligible. No Phone/Bluetooth changes, Saved Diagnostics read, service/receipt-only action, Share/export or private upload. Sections 3–4 and the broader authorization payload above remain **proposed, not authorized**. No Watch80 installation or receipt result is yet observed in this task.
+
+**00:38 BST operator update:** normal update and Settings `0.80.0 combined fresh` reported, superseding the pending-installation observation above. No reinstall is requested. Proceed only with the already-authorized passive Main/current-receipt read, then stop. Any unreported prior Main opening must be clarified from recollection rather than prompting a duplicate tap.
