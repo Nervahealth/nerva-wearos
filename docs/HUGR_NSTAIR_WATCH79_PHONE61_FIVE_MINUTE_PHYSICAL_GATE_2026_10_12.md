@@ -1,6 +1,6 @@
-# Watch79 + unchanged Phone61 — proposed complete short-run gate
+# Watch79 + unchanged Phone61 — authorized complete short-run gate
 
-**PREPARED ONLY. No installation, launch, Connect, recording or report read is authorized by the 2026-10-12 build instruction.** Use this only after Neil expressly authorizes the device gate below. Historical Watch78 attempt is stopped and is not reopened.
+**AUTHORIZED — execution/result not yet reported.** On 2026-10-12 at 20:36:57 CEST Neil authorized the Watch79 update via Wear Installer 2 and execution of this prepared gate. The earlier build instruction itself authorized no device action; this later authority supplies the exact conditional installation/run/offline/failure-read sequence below. Historical Watch78 attempt is stopped and is not reopened. Neil performs the physical actions; the assistant cannot remotely operate or observe these devices.
 
 **Sole admitted Watch79:** [download APK](https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/YJssxNMXYjxWFyCU.apk), `HUGR_Watch79w_0.79.0_corrected-fresh-start-receipt-candidate.apk`, 12922629 bytes; full SHA-256 `91d3337b963c7fb31c510ba58cab8f59cd4e9ee62899b2f4762bedc5383ce5fb`. Signer, compiled correction/bridge, protected journal, compatibility payload and uploaded full-byte readback passed. Do not install older Watch78 or an intermediate build output.
 
@@ -8,7 +8,7 @@
 
 Use only the final admitted Watch79 APK identified in the build receipt, through ordinary Wear Installer 2 **in-place HUGR update**. Preserve app/data. Choose Done, not Open. Watch Settings app list must show **0.79.0-corrected-fresh-start-receipt-candidate**. Phone61 on **Honor** stays **2.0.61-compatible-fresh-run-report-candidate**; do not install/migrate it or substitute the Fold.
 
-Stop for uninstall, Clear storage/cache, downgrade, signer/package mismatch, reset/setup or unexpected warning. No retry. Installation success does not itself authorize the run.
+Stop for uninstall, Clear storage/cache, downgrade, signer/package mismatch, reset/setup or unexpected warning. No retry. Only a successful expected update and Settings version check permit continuation into the run under the current combined authority; no additional permission stop is required.
 
 ## 2. One fresh five-minute recording and durable Phone result
 
