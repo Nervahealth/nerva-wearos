@@ -28,6 +28,12 @@ internal object WatchDiagnosticRuntime {
         primaryExceptionReport = null
         synchronized(tail) { tail.clear() }
     }
+    /** No journal I/O; attach only identifiers already obtained from current admission. */
+    @Synchronized
+    fun bindAttempt(context: Context, attempt: UUID?, session: UUID?) {
+        if (current == null) begin(context, attempt, session)
+        else current = current?.copy(attemptId = attempt, sourceSessionId = session)
+    }
     @Synchronized
     fun update(attempt: UUID?, session: UUID?, lineage: Long, cursor: Long?, retained: Long?, historical: Long?, mtu: Int, queued: Long?) {
         current = current?.copy(attemptId = attempt, sourceSessionId = session, lineage = lineage,

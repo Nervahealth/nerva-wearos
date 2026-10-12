@@ -10,6 +10,8 @@ internal class FreshRunSession(
     private var receipt = initial
     private var accepting = false
     private var ioFailed = false
+    val runId = initial.runId
+    private var stopScheduled = false
     private fun update(next: FreshRunReceipt) {
         check(!ioFailed)
         try { store.publish(next); receipt = next } catch (e: Exception) { ioFailed = true; accepting = false; throw e }
@@ -19,6 +21,13 @@ internal class FreshRunSession(
         if (accepting || receipt.phase != FreshRunPhase.STARTED || elapsed() - receipt.startElapsedMs >= receipt.durationMs) return false
         accepting = true; return true
     }
+    /** Process-local liveness only: not a durable receipt, sensor or finalization proof. */
+    @Synchronized fun recordingStopScheduled() {
+        check(accepting && !ioFailed && receipt.phase == FreshRunPhase.STARTED)
+        check(!stopScheduled)
+        stopScheduled = true
+    }
+    @Synchronized fun isRecordingStopScheduled(): Boolean = stopScheduled
     @Synchronized fun acceptsSamples(): Boolean = accepting && !ioFailed && receipt.phase == FreshRunPhase.STARTED &&
         elapsed() >= receipt.startElapsedMs && elapsed() - receipt.startElapsedMs < receipt.durationMs
     @Synchronized fun quiesce() { accepting = false }

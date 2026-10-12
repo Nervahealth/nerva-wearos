@@ -65,11 +65,24 @@ class BleGattService : Service() {
     private var freshConfirmed = false
     private var freshConnectedOnce = false
     private var freshStartedAt = 0L
+    private var freshRequestedRunId: UUID? = null
+    private var freshStopping = false
     private val freshPager = FreshRunReceiptPager { FreshRunRuntime.current(this) }
     private val freshDeadline = object : Runnable {
         override fun run() {
-            if (!freshMode) return
+            if (!freshMode || freshStopping) return
             val session = FreshRunRuntime.session
+            if (!freshReceiptOnly && (session == null || session.runId != freshRequestedRunId)) {
+                saveFreshDiagnostic(DiagnosticStage.SERVICE_INITIALIZATION, DiagnosticOutcome.INVALID_SOURCE_ID)
+                stopFresh("HEALTH_START_IDENTITY_CHANGED"); return
+            }
+            // A successful startForegroundService request is not Health entry.
+            // Only the same session's actual timer-post success satisfies handoff.
+            if (!freshReceiptOnly && session?.isRecordingStopScheduled() != true &&
+                SystemClock.elapsedRealtime() - freshStartedAt >= 15_000L) {
+                saveFreshDiagnostic(DiagnosticStage.SERVICE_INITIALIZATION, DiagnosticOutcome.DEADLINE)
+                stopFresh("HEALTH_START_TIMEOUT"); return
+            }
             val expired = if (freshReceiptOnly) SystemClock.elapsedRealtime() - freshStartedAt >= FreshRunSession.RECEIPT_ONLY_MS
                 else session?.permitsDelivery() != true
             if (expired) { stopFresh("DELIVERY_DEADLINE"); return }
@@ -307,22 +320,30 @@ class BleGattService : Service() {
             freshMode = true
             freshReceiptOnly = freshAction == FreshRunRuntime.ACTION_SERVE_FRESH_RECEIPT_ONLY
             freshStartedAt = SystemClock.elapsedRealtime()
+            var failedStage = DiagnosticStage.STARTUP_SELECTION
             try {
                 if (freshReceiptOnly) FreshRunRuntime.openReceiptOnly(this)
-                else requireNotNull(FreshRunRuntime.session)
-                if (!startFreshForeground()) error("Foreground failed")
+                else freshRequestedRunId = requireNotNull(FreshRunRuntime.session).runId
+                failedStage = DiagnosticStage.FOREGROUND_PROMOTION
+                startFreshForeground()
                 runtimeMode = EvidenceEgressGattRuntimeMode.STANDARD
+                failedStage = DiagnosticStage.SERVICE_INITIALIZATION
                 if (!freshReceiptOnly) {
                     sourceJournal = requireNotNull(FreshRunRuntime.session).journal
                     // GATT owns delivery before starting Health, and survives its finalization.
                     registerSensorReceivers()
                     transportHandler.post(transportTicker)
+                    failedStage = DiagnosticStage.SERVICE_START
                     startForegroundService(Intent(this, HealthSensorService::class.java).apply { action = FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES })
+                    failedStage = DiagnosticStage.SERVICE_INITIALIZATION
                     healthHandler.post(healthTicker)
                 }
                 transportHandler.post(freshDeadline)
                 initializeBluetooth()
-            } catch (_: Exception) { stopFresh("SERVICE_START_FAILED") }
+            } catch (failure: Exception) {
+                saveFreshDiagnostic(failedStage, failure = failure)
+                stopFresh("SERVICE_START_FAILED")
+            }
             return START_NOT_STICKY
         }
         if (intent == null || freshMode) { if (runtimeMode == null) stopSelf(); return START_NOT_STICKY }
@@ -405,7 +426,7 @@ class BleGattService : Service() {
         return START_NOT_STICKY
     }
 
-    private fun startFreshForeground(): Boolean = try {
+    private fun startFreshForeground() {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.createNotificationChannel(NotificationChannel("hugr_fresh_v3", "HUGR fresh recording delivery", NotificationManager.IMPORTANCE_LOW))
         val notification = NotificationCompat.Builder(this, "hugr_fresh_v3")
@@ -413,11 +434,20 @@ class BleGattService : Service() {
             .setContentText(if (freshReceiptOnly) "Current receipt only · no sensing" else "Five-minute recording and bounded delivery")
             .setOngoing(true).build()
         startForeground(4003, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
-        true
-    } catch (_: Exception) { false }
+    }
+
+    private fun saveFreshDiagnostic(stage: DiagnosticStage, outcome: DiagnosticOutcome = DiagnosticOutcome.EXCEPTION, failure: Throwable? = null) {
+        val run = FreshRunRuntime.session
+        WatchDiagnosticRuntime.bindAttempt(this, run?.runId, run?.journal?.watchBootSessionId)
+        WatchDiagnosticRuntime.update(run?.runId, run?.journal?.watchBootSessionId,
+            causalLineageState.currentLineage(), null, null, null, negotiatedMtu, null)
+        WatchDiagnosticRuntime.capture(this, stage, outcome, failure)
+    }
 
     private fun stopFresh(code: String) {
-        if (!freshMode) return
+        if (!freshMode || freshStopping) return
+        freshStopping = true
+        transportHandler.removeCallbacks(freshDeadline)
         FreshRunRuntime.session?.let { runCatching { it.fail(code) } }
         stopService(Intent(this, HealthSensorService::class.java))
         notificationCompletionBlocked = true

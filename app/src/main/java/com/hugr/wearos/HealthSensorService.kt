@@ -152,12 +152,7 @@ class HealthSensorService : Service() {
         try {
             startForegroundWithNotification()
         } catch (failure: Exception) {
-            freshSession?.let { runCatching { it.fail("HEALTH_FOREGROUND_FAILED") } }
-            WatchDiagnosticRuntime.capture(this, DiagnosticStage.SERVICE_START, failure = failure)
-            NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.BOUNDED_RUN_FINALIZATION_FAILED)
-            stopped = true
-            boundedRunGate.requestStop()
-            stopSelf()
+            failFreshInitialization("HEALTH_FOREGROUND_FAILED", DiagnosticStage.FOREGROUND_PROMOTION, failure)
             return
         }
         if (freshSession?.begin() != true) { stopped = true; stopSelf(); return }
@@ -173,13 +168,43 @@ class HealthSensorService : Service() {
             return
         }
         NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.BOUNDED_RUN_STARTED)
-        acquireWakeLock()
-        registerScreenReceiver()
-        startJournalSyncTimer()
-        startFlushTimer()
-        connectAndStartTracking()
-        boundedRunStop = Runnable { finalizeBoundedOrdinaryRun() }.also {
-            controlHandler.postDelayed(it, freshSession?.remainingRecordingMs() ?: durationMs)
+        try {
+            // Arm the bound before any Samsung constructor/connect callback can
+            // block or throw; only successful Handler posting acknowledges handoff.
+            boundedRunStop = Runnable { finalizeBoundedOrdinaryRun() }.also {
+                check(controlHandler.postDelayed(it, freshSession?.remainingRecordingMs() ?: durationMs))
+            }
+            requireNotNull(freshSession).recordingStopScheduled()
+            acquireWakeLock()
+            registerScreenReceiver()
+            startJournalSyncTimer()
+            startFlushTimer()
+            connectAndStartTracking()
+        } catch (failure: Exception) {
+            failFreshInitialization("HEALTH_INITIALIZATION_FAILED", DiagnosticStage.SERVICE_INITIALIZATION, failure)
+        }
+    }
+
+    private fun failFreshInitialization(code: String, stage: DiagnosticStage, failure: Throwable?) {
+        val run = freshSession
+        WatchDiagnosticRuntime.bindAttempt(this, run?.runId, run?.journal?.watchBootSessionId)
+        // Preserve the actual first exception before receipt writes or SDK cleanup.
+        WatchDiagnosticRuntime.capture(this, stage, failure = failure)
+        stopped = true
+        run?.quiesce()
+        run?.let { runCatching { it.fail(code) } }
+        cancelBoundedRunStop()
+        boundedRunGate.requestStop()
+        boundedRunGate.markFinalizationFailed()
+        controlHandler.post {
+            stopTrackingAndDisconnect()
+            stopFlushTimer()
+            stopJournalSyncTimer()
+            unregisterScreenReceiver()
+            releaseWakeLock()
+            sendStatus("Fresh startup failed: $code")
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf()
         }
     }
 
@@ -305,7 +330,7 @@ class HealthSensorService : Service() {
             Log.i(TAG, "Connecting to Health Tracking Service...")
         } catch (e: Exception) {
             recordCausal(CausalEventCode.SDK_CONNECTION_FAILED, arg0 = 1L)
-            freshSession?.let { runCatching { it.fail("SDK_CONNECTION_FAILED") } }; haltTrackingAfterSourceLoss()
+            failFreshInitialization("SDK_CONNECTION_FAILED", DiagnosticStage.SERVICE_INITIALIZATION, e)
             sendStatus("ERROR connecting: ${e.message}")
             Log.e(TAG, "Failed to connect: ${e.message}", e)
         }
@@ -321,7 +346,10 @@ class HealthSensorService : Service() {
             isConnected = true
             sdkStatus = 1
             sendDeviceHealthMetadata()
-            startAllTrackers()
+            try { startAllTrackers() }
+            catch (failure: Exception) {
+                failFreshInitialization("SDK_TRACKER_SETUP_FAILED", DiagnosticStage.SERVICE_INITIALIZATION, failure)
+            }
             }
         }
 
@@ -339,15 +367,16 @@ class HealthSensorService : Service() {
         }
 
         override fun onConnectionFailed(error: HealthTrackerException?) {
+            if (stopped || freshSession?.acceptsSamples() != true) return
             recordCausal(CausalEventCode.SDK_CONNECTION_FAILED, arg0 = 2L)
-            freshSession?.let { runCatching { it.fail("SDK_CONNECTION_FAILED") } }; haltTrackingAfterSourceLoss()
+            failFreshInitialization("SDK_CONNECTION_FAILED", DiagnosticStage.SERVICE_INITIALIZATION, error)
             Log.e(TAG, "Connection failed: ${error?.message}")
             sendStatus("SDK FAILED: ${error?.message}")
             isConnected = false
             sdkStatus = 3
             activeSensorMask = 0
             sendDeviceHealthMetadata()
-            healthTrackingService = null
+            // The posted failure cleanup still needs the handle to disconnect it.
         }
     }
 
@@ -355,7 +384,11 @@ class HealthSensorService : Service() {
         if (stopped || freshSession?.acceptsSamples() != true) return
         val service = healthTrackingService ?: return
 
-        val supportedTypes = service.trackingCapability.supportHealthTrackerTypes
+        val supportedTypes = try { requireNotNull(service.trackingCapability.supportHealthTrackerTypes) }
+        catch (failure: Exception) {
+            failFreshInitialization("SDK_CAPABILITY_FAILED", DiagnosticStage.SERVICE_INITIALIZATION, failure)
+            return
+        }
         var supportedSourceMask = 16 // DEVICE_HEALTH is existing canonical stream 5.
         if (HealthTrackerType.HEART_RATE_CONTINUOUS in supportedTypes) supportedSourceMask = supportedSourceMask or 1
         if (HealthTrackerType.EDA_CONTINUOUS in supportedTypes) supportedSourceMask = supportedSourceMask or 2
@@ -393,9 +426,11 @@ class HealthSensorService : Service() {
                 sendStatus("EDA NOT SUPPORTED!")
             }
         } catch (e: Exception) {
+            failFreshInitialization("SENSOR_FAILED", DiagnosticStage.SERVICE_INITIALIZATION, e)
             recordTracker(CausalEventCode.TRACKER_START_FAILED, CausalStreamCode.EDA)
             sendStatus("EDA ERROR: ${e.message}")
             Log.e(TAG, "EDA tracker failed: ${e.message}", e)
+            return
         }
 
         // Raw PPG tracker — independent evidence stream. It never substitutes for HR.
@@ -416,9 +451,11 @@ class HealthSensorService : Service() {
                 sendStatus("PPG NOT SUPPORTED — raw PPG stream unavailable")
             }
         } catch (e: Exception) {
+            failFreshInitialization("SENSOR_FAILED", DiagnosticStage.SERVICE_INITIALIZATION, e)
             recordTracker(CausalEventCode.TRACKER_START_FAILED, CausalStreamCode.PPG)
             sendStatus("PPG ERROR: ${e.message}")
             Log.e(TAG, "PPG tracker failed: ${e.message}", e)
+            return
         }
 
         // Accelerometer tracker — independent try/catch
@@ -437,9 +474,11 @@ class HealthSensorService : Service() {
                 sendStatus("Accel NOT SUPPORTED!")
             }
         } catch (e: Exception) {
+            failFreshInitialization("SENSOR_FAILED", DiagnosticStage.SERVICE_INITIALIZATION, e)
             recordTracker(CausalEventCode.TRACKER_START_FAILED, CausalStreamCode.ACCEL)
             sendStatus("ACCEL ERROR: ${e.message}")
             Log.e(TAG, "Accel tracker failed: ${e.message}", e)
+            return
         }
 
         // Skin Temperature tracker — independent try/catch (Cluster 33, 43, 48)
@@ -458,9 +497,11 @@ class HealthSensorService : Service() {
                 sendStatus("Skin Temp CONTINUOUS not supported on this device")
             }
         } catch (e: Exception) {
+            failFreshInitialization("SENSOR_FAILED", DiagnosticStage.SERVICE_INITIALIZATION, e)
             recordTracker(CausalEventCode.TRACKER_START_FAILED, CausalStreamCode.SKIN_TEMP)
             sendStatus("SKIN_TEMP ERROR: ${e.message}")
             Log.e(TAG, "Skin temp tracker failed: ${e.message}", e)
+            return
         }
 
         sendStatus("=== TRACKER INIT (typed cardiac evidence) ===")
@@ -481,9 +522,11 @@ class HealthSensorService : Service() {
                 sendStatus("HEART_RATE_CONTINUOUS NOT SUPPORTED")
             }
         } catch (e: Exception) {
+            failFreshInitialization("SENSOR_FAILED", DiagnosticStage.SERVICE_INITIALIZATION, e)
             recordTracker(CausalEventCode.TRACKER_START_FAILED, CausalStreamCode.CARDIAC)
             sendStatus("HR evidence tracker ERROR: ${e.message}")
             Log.e(TAG, "HR evidence tracker failed: ${e.message}", e)
+            return
         }
 
         sendDeviceHealthMetadata()

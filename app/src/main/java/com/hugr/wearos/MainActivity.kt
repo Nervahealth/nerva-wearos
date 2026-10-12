@@ -58,8 +58,10 @@ class MainActivity : ComponentActivity() {
     private var freshReadPending = false
     private var freshTerminalFailure = false
     private var freshAdmissionScheduled = false
+    private var freshReadinessResolved = false
+    private var freshReceiptDisplayed = false
     private val freshActionButtons = mutableListOf<Button>()
-    private fun freshActionBlocked(): Boolean = freshTerminalFailure || freshReadPending || freshRequested ||
+    private fun freshActionBlocked(): Boolean = !freshReadinessResolved || freshTerminalFailure || freshReadPending || freshRequested ||
         FreshRunRuntime.session != null || FreshRunRuntime.receiptOnly
     private fun latchFreshFailure(message: String) {
         if (freshTerminalFailure) return
@@ -120,6 +122,7 @@ class MainActivity : ComponentActivity() {
         layout.addView(statusText)
         layout.addView(Button(this).apply {
             text = "Start fresh 5 minutes"
+            isEnabled = false
             freshActionButtons += this
             setOnClickListener {
                 if (freshActionBlocked()) return@setOnClickListener
@@ -130,6 +133,7 @@ class MainActivity : ComponentActivity() {
         })
         layout.addView(Button(this).apply {
             text = "Serve current fresh receipt only"
+            isEnabled = false
             freshActionButtons += this
             setOnClickListener {
                 if (freshActionBlocked()) return@setOnClickListener
@@ -148,6 +152,7 @@ class MainActivity : ComponentActivity() {
         })
         layout.addView(Button(this).apply {
             text = "Explicit retained v2 delivery"
+            isEnabled = false
             freshActionButtons += this
             setOnClickListener {
                 if (freshActionBlocked()) return@setOnClickListener
@@ -219,7 +224,13 @@ class MainActivity : ComponentActivity() {
             startFinalizedDeliveryRecovery()
             return
         }
-
+        // Returning from clock/ambient is not a new launch or a new readiness decision.
+        // Do not repaint a live fresh receipt with the passive first-frame headline.
+        if (freshRequested || freshReceiptDisplayed || FreshRunRuntime.session != null || FreshRunRuntime.receiptOnly) {
+            renderEvidence()
+            startReadinessRefresh()
+            return
+        }
         statusText.text = "HUGR\nReady · deliberate fresh action required"
         evidenceText.text = "Opening is passive. New per-run v3 recording or current fresh receipt only are explicit actions. Existing source roots are not opened."
         startReadinessRefresh()
@@ -384,7 +395,8 @@ class MainActivity : ComponentActivity() {
         Thread({
             try {
                 if (isFinishing || isDestroyed) return@Thread
-                FreshRunRuntime.admit(applicationContext)
+                val admitted = FreshRunRuntime.admit(applicationContext)
+                WatchDiagnosticRuntime.bindAttempt(applicationContext, admitted.runId, admitted.journal.watchBootSessionId)
                 runOnUiThread {
                     if (isFinishing || isDestroyed) {
                         FreshRunRuntime.end()
@@ -471,7 +483,7 @@ class MainActivity : ComponentActivity() {
             receiverRegistered = true
         }
         if (freshUi || finalizedDeliveryRecoveryOnly) startReadinessRefresh()
-        if (permissionDecisionReached || finalizedDeliveryRecoveryOnly) renderEvidence() else renderFirstFrame(firstFramePresentation)
+        if (freshUi || permissionDecisionReached || finalizedDeliveryRecoveryOnly) renderEvidence() else renderFirstFrame(firstFramePresentation)
     }
 
     override fun onPause() {
@@ -519,7 +531,9 @@ class MainActivity : ComponentActivity() {
         if (freshUi) {
             if (freshTerminalFailure || freshReadPending) return
             freshReadPending = true
-            freshActionButtons.forEach { it.isEnabled = false }
+            // Block actions logically on every read, but do not blink already-ready
+            // controls disabled/enabled on each passive one-second poll.
+            if (!freshReadinessResolved) freshActionButtons.forEach { it.isEnabled = false }
             Thread({
                 val result = runCatching { FreshRunRuntime.current(applicationContext) }
                 result.exceptionOrNull()?.let { failure ->
@@ -530,12 +544,19 @@ class MainActivity : ComponentActivity() {
                     freshReadPending = false
                     if (isFinishing || isDestroyed || freshTerminalFailure) return@runOnUiThread
                     val receipt = result.getOrNull()
+                    freshReadinessResolved = result.isSuccess
                     freshActionButtons.forEach { it.isEnabled = !freshActionBlocked() }
                     if (result.isFailure) {
                         latchFreshFailure("Fresh receipt unavailable / interrupted IO · no completion")
                     } else if (receipt != null) {
-                        statusText.text = "HUGR\nFresh ${receipt.phase.name} · ${receipt.failure}"
-                        evidenceText.text = "Source ${receipt.sourceId}\nRun ${receipt.runId}\nRequested 5 minutes; supported/started ${receipt.supportedMask}/${receipt.startedMask}\nManifests ${receipt.manifests.size}; exact accepted ACKs ${receipt.acks.size}\nReceipt revision ${receipt.revision}. Phone durable report confirmation is separate. PPG live-only; no canonical PPG in this receipt."
+                        freshReceiptDisplayed = true
+                        val status = "HUGR\nFresh ${receipt.phase.name}" +
+                            if (receipt.failure == "NONE") " · no recorded failure" else " · ${receipt.failure}"
+                        val evidence = "Source ${receipt.sourceId}\nRun ${receipt.runId}\nRequested 5 minutes; supported/started ${receipt.supportedMask}/${receipt.startedMask}\nManifests ${receipt.manifests.size}; exact accepted ACKs ${receipt.acks.size}\nReceipt revision ${receipt.revision}. STARTED is admission, not proof of sensor records. Phone durable report confirmation is separate. PPG live-only; no canonical PPG in this receipt."
+                        // Even equal setText calls invalidate/relayout TextViews. Render
+                        // only changed evidence and retain manual scroll/selection.
+                        if (statusText.text.toString() != status) statusText.text = status
+                        if (evidenceText.text.toString() != evidence) evidenceText.text = evidence
                     }
                 }
             }, "HUGR-FreshReceiptRead").start()
