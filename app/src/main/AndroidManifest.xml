@@ -56,6 +56,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:taskAffinity="com.hugr.wearos.main"
             android:icon="@drawable/ic_startup_diagnostic_main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -114,6 +115,7 @@
 
         <!-- App-owned operational reports only; no telemetry or journal access. -->
         <activity android:name=".SavedDiagnosticActivity" android:exported="true"
+            android:taskAffinity="com.hugr.wearos.diagnostics"
             android:label="HUGR Saved Diagnostics" android:icon="@android:drawable/ic_menu_info_details">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
