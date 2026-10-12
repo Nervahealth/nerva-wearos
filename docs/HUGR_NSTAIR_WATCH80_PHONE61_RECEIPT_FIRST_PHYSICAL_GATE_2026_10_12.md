@@ -1,6 +1,6 @@
 # Watch80 + unchanged Phone61 — receipt-first physical acceptance gate
 
-**PREPARED ONLY. No installation, launch, Connect, recording or private-data transfer is authorized by the current build instruction.** Neil operates the physical devices; the assistant cannot remotely execute or observe this gate. The single admitted artifact identity/link will be added after build and full uploaded-byte admission.
+**READY FOR SEPARATE AUTHORIZATION. No installation, launch, Connect, recording or private-data transfer is authorized by the current build instruction.** Neil operates the physical devices; the assistant cannot remotely execute or observe this gate. Sole admitted Watch80: [download APK](https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/uRsKWFoPZblCUccb.apk), `HUGR_Watch80w_0.80.0_combined-fresh-flow-launcher-candidate.apk`, 12,926,725 bytes. Full SHA-256 `cdc5647769ad1de9eb909259b3d1edebc2bfe428bfb80141a9b593de687445e2`. Same predecessor signer; compiled bridge/task policy, ZIP/alignment/protected payload and complete uploaded-byte readback PASS.
 
 Phone remains **Honor / 2.0.61-compatible-fresh-run-report-candidate**. Do not substitute Samsung/Fold, change Bluetooth/companion pairing or migrate app/data. No uninstall, clear, reset, egress, retained-v2/legacy/frozen action, Share/export/private upload or observer/N1 activation.
 

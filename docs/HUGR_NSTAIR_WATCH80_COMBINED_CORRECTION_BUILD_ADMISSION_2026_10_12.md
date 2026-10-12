@@ -2,7 +2,7 @@
 
 ## Current state
 
-**PREBUILD — source tests PASS; sole Watch80 build authorized, not yet produced or admitted.** Phone61 source/runtime/APK unchanged. No installation, device launch, connection, recording, private transfer or N1 is authorized by this build instruction.
+**FINAL — the sole Watch80 APK is built and artifact-admitted; uploaded APK and checksum sidecar fully byte-read back MATCH.** Phone61 source/runtime/APK unchanged. No installation, device launch, connection, recording, private transfer or N1 is authorized by this build instruction. The unknown current Watch79 receipt remains a conditional physical admission dependency, not silently bypassed.
 
 ## Authority and scope
 
@@ -70,3 +70,24 @@ Prepared procedure: `HUGR_NSTAIR_WATCH80_PHONE61_RECEIPT_FIRST_PHYSICAL_GATE_202
 Watch69 **NOT QUALIFIED**. Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**. Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
 
 After this named fresh short run is physically accepted, advance to separately scoped **duration ladder → eight hours → existing live-observation/Watchtower bridge**. Full observer stack is not a prerequisite for short acceptance; no new telemetry infrastructure is added here.
+
+## Final artifact admission — 2026-10-13
+
+One source APK assembly and one final compatibility staging/signing operation; no second candidate or Phone build. Exact source used for the build: Watch local commit `136bc470d052066c229d839f96b3ec8bd03ae9ca`, remotely preserved before build with shared tree `00d0ffdd756926de35aa032b65173f018fd6e546`.
+
+- Sole APK: `HUGR_Watch80w_0.80.0_combined-fresh-flow-launcher-candidate.apk`
+- Local admitted artifact: `/home/ubuntu/HUGR_WATCH80_COMBINED_CORRECTION_2026_10_12/artifacts/HUGR_Watch80w_0.80.0_combined-fresh-flow-launcher-candidate.apk`
+- Package: `com.hugr.wearos`; code `80`; version `0.80.0-combined-fresh-flow-launcher-candidate`.
+- Size: **12,926,725 bytes**.
+- Full APK SHA-256: **`cdc5647769ad1de9eb909259b3d1edebc2bfe428bfb80141a9b593de687445e2`**.
+- Signer SHA-256: `fc91d26565d61b0a1c67db4dd0d358c8377c65b2fcb1ede00283b6c7b90c1706`, independently identical to admitted Watch79 predecessor.
+- Sole install URL: https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/uRsKWFoPZblCUccb.apk
+- Checksum sidecar URL: https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/JsugIffBrERmBliv.sha256
+- Downloaded APK compared byte-for-byte with admitted APK, full SHA matched; downloaded checksum compared byte-for-byte with local sidecar. **PASS**.
+- ZIP integrity/unique entry names, alignment, unique DEX classes (**8,165 definitions**), exact compiled fresh bridge/startup/timer/capture hooks and both exact Activity affinity/document policy attributes: **PASS**.
+- Protected SourceJournal and compatibility DEX exact identities above: **PASS**. Compatibility egress runtime remains unvalidated/excluded.
+- Completed Watch source suite: **235 total, 231 pass, 4 fixture-dependent skips, 0 failures/errors**.
+- Completed unchanged Phone deterministic suite: **142 total, 140 pass, 2 fixture-dependent skips, 0 failures**.
+- Completed joined suite: **all six phases PASS**, native **94/94 pass**; real code/SQLite test adapter and actual cross-language ACK fixtures, still synthetic only.
+
+No physical success is claimed. Installation/current receipt routing/real SDK sensor callbacks/service timer/radio/custody/report restart proof remain physical acceptance requirements. Prepared gate is receipt-first and conditionally stops on STARTED/FINALIZED/error; no automatic receipt-only failure conversion or new-run bypass. Historical Watch78 first error remains physically undiagnosed.
