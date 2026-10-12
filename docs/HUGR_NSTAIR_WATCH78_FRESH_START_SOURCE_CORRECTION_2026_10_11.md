@@ -67,3 +67,7 @@ Bounded corrected Watch production/tests and copied receipt/control changes foll
 Watch69 **NOT QUALIFIED**. Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**. Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
 
 No physical journal/private physiological bytes, frozen/legacy roots, device change, build/signing, reset, migration, new recording, live ACK, egress, private-data transfer or N1 execution performed.
+
+## Saved diagnostic supplied 2026-10-12 — later evidence
+
+Neil supplied a saved report video showing Watch78 UNCAUGHT_EXCEPTION/EXCEPTION, java.lang.IllegalStateException at BoundedNormalStartupGate.deferFreshScope:25 → MainActivity fresh-start call:241 → Start callback:114, report wall time 2026-10-11 10:10:51 CEST. This physically captures the already-corrected repeat/scheduled-Start exception path, not the first receipt-unavailable cause. Source session/attempt unknown; no recording or qualification inferred. See `HUGR_NSTAIR_WATCH78_CAPTURED_REPEAT_START_EXCEPTION_2026_10_12.md`. No further filming needed for this crash; recommend separate Watch79 corrected build/admission authority, Phone61 unchanged. No build/device/production changes made.
