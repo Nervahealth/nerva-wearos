@@ -2,7 +2,7 @@
 
 ## Current state
 
-**Authorized build/admission only; prebuild integration confirmed. No device action authorized or performed.** One Watch79 artifact will use `com.hugr.wearos`, code `79`, version `0.79.0-corrected-fresh-start-receipt-candidate`, the existing Watch signer and unchanged admitted compatibility DEX. Phone61 remains unchanged on Honor; no Phone build or historical Watch69 reconstruction.
+**BUILD / ARTIFACT ADMISSION COMPLETE; NOT INSTALLED OR DEVICE-TESTED. No device action authorized or performed.** The sole Watch79 artifact uses `com.hugr.wearos`, code `79`, version `0.79.0-corrected-fresh-start-receipt-candidate`, the existing Watch signer and unchanged admitted compatibility DEX. Phone61 remains unchanged on Honor; no Phone build or historical Watch69 reconstruction.
 
 Neil authorized one corrected greater-version Watch79 build using completed Android app-anchor handling, repeat-Start containment, serialized receipt/admission work, persistent visible failure and original-exception capture before cleanup. This receipt and the separately proposed physical gate preserve that exact scope. Build/artifact success is not installation, physical acceptance, qualification or N1 authority.
 
@@ -48,3 +48,34 @@ The physical gate is `HUGR_NSTAIR_WATCH79_PHONE61_FIVE_MINUTE_PHYSICAL_GATE_2026
 After a physically accepted full short lifecycle and offline recheck, move to the duration ladder and existing live-observation/Watchtower milestone, not another historical recovery loop or full observer-stack prerequisite. This record grants neither of those later executions.
 
 Watch69 **NOT QUALIFIED**. Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**. Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
+
+## Final build/artifact admission — 2026-10-12
+
+**One source APK assembly and one definitive compatibility-staged signed installation artifact; no replacement APK or Phone rebuild.** Gradle `assembleDebug` plus only existing `FreshRunAndroidPathTest`/`FreshRunAndroidAdmissionTest` succeeded in 42 seconds. Additional version-bound startup check: **8/8, zero failures/errors/skips**. Earlier full suites and joined production-chain validation remain reused, not represented as newly rerun.
+
+The first optional compiled-disassembly assertion used Java-style `Class.method` spelling rather than DEX `Class;.method`; its corrected check passes using exact compiled descriptor syntax. This was an inspection-helper issue, not an APK defect, source correction or rebuild.
+
+| Artifact identity/check | Final admitted value |
+|---|---|
+| Sole installation file | `HUGR_Watch79w_0.79.0_corrected-fresh-start-receipt-candidate.apk` |
+| Package / greater version | `com.hugr.wearos` / `79` / `0.79.0-corrected-fresh-start-receipt-candidate` |
+| Exact bytes | `12922629` |
+| Full APK SHA-256 | `91d3337b963c7fb31c510ba58cab8f59cd4e9ee62899b2f4762bedc5383ce5fb` |
+| Signer certificate SHA-256 | `fc91d26565d61b0a1c67db4dd0d358c8377c65b2fcb1ede00283b6c7b90c1706` — independently matches admitted Watch78 signer |
+| Compatibility DEX SHA-256 | `a2477754c9e4b10a9d91584ca2281b4190a9b0776411fec19970dd47f96ab784` — unchanged parent payload, not claimed runtime-validated |
+| Protected `SourceJournal.kt` SHA-256 | `24d369f82440781b5846f5b609f459df7a5d7cb49bd794726ff7f15cc50d0361` — unchanged |
+| ZIP / alignment / unique class definitions | PASS / PASS / `8164` definitions, no duplicates |
+| Compiled corrected startup | PASS: trusted-anchor adapter, failure latch, pending/admission guards, worker threads and durable capture/admission calls in actual DEX disassembly |
+| Compiled full fresh-run bridge | PASS: fresh runtime/session/receipt/store/pager and ordinary GATT exact ACK/completion components uniquely present |
+| Tested integrated production-byte identity | PASS: all recorded Watch app implementation hashes unchanged except deliberate version configuration; Phone61 stage/APK unchanged |
+| Upload/full-byte readback | PASS: downloaded CDN APK and checksum sidecar are exactly byte-equal to local admitted pair |
+
+**Sole admitted download:** [Watch79 APK](https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/YJssxNMXYjxWFyCU.apk).
+
+Checksum sidecar: [Watch79 checksum](https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/xWsszsjKnPXvrypX.sha256).
+
+Exact build-source Watch commit: `b7f76fb00e27fd536e1801e00e37761187b5046b`; prebuild source remote mirror `c8e4a05e7358703e36fbc24e8e4059496c6168dc`, exact shared tree `dcb21b4b0724d8f5b7a82f8a69b7d5a6a1e1afbf`. Phone61 runtime remains its earlier admitted source; current documentation/source baseline `6d0d40b7dfe0c4cd7909f11ae2d784835f0f6474` / remote `57aa43e02f76ddebdea337a060d1b3213124840c` / exact tree `966be868e33a27bc3df16b0bb852d2680089ceff`. Final admission/control successors require their own remote mirror/readback below; these prebuild identities do not stand in for final closeout.
+
+Sanitized build/admission metadata resides under `/home/ubuntu/HUGR_WATCH79_CORRECTED_BUILD_2026_10_12/validation/`. No credentials, private physiological payloads, diagnostic video or frozen storage are published. Final independent preservation readback is delivered separately without creating a self-referential Git commit.
+
+**Remaining blocker is physical acceptance, not a demonstrated missing Phone dependency.** Installed devices remain Watch78 + Phone61 until a separately authorized Watch-only update. First historical receipt-unavailable cause stays unresolved; any new STOP must be read from this corrected candidate rather than assumed repaired. No new recording has occurred.
