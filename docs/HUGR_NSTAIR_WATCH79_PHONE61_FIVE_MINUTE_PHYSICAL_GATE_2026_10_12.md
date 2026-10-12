@@ -51,3 +51,9 @@ Physical acceptance must demonstrate **actual sensor record → controlled final
 After physical acceptance, the next milestones stay **duration ladder → eight-hour rehearsal and existing live-observation/Watchtower bridge** under their own scoped execution. Full observer stack and optional Watch69 reconstruction are not prerequisites for this short test.
 
 Watch69 **NOT QUALIFIED**. Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**. Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`. No existing or frozen material is mutated by this proposed fresh-root route.
+
+## Later operator clarification — interaction hold unchanged
+
+Neil reports initial unfamiliar fresh-action surface → one Start → clock face → “main watch button” → black screen → eventual directly perceived flashing/visible STARTED. Exact Start time unavailable; no guessed deadline or qualified lifecycle. Physical button versus launcher is unresolved; Phone opened/Connect state unanswered. New explicit fresh-action menu is expected for Watch79, unlike the prior retained-recovery readiness surface; clock backgrounding is not itself proof of crash. Black/flashing remain unresolved, no source change or retry authorized.
+
+Next action under existing failure-read authority: **Saved Diagnostics “i” once**, not Main; first report or 60 seconds, passive local build/time/stage/outcome/exception read only. No Next/Share/upload or new attempt. If no report, or header belongs to an older attempt/build, report that without browsing further or claiming a new Watch79 exception. Source correction/build authority is not inferred from this clarification.
