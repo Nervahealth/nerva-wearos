@@ -61,3 +61,9 @@ Next action under existing failure-read authority: **Saved Diagnostics “i” o
 ## Confirmed button/Phone facts — later 2026-10-12 reply
 
 Neil explicitly confirms **physical side button**, and **Phone61 unopened / no Connect**. Do not infer a deliberate second Main launcher tap or a failed Phone connection. Actual Android Activity lifecycle and Watch recording/finalization remain unknown. Interaction hold unchanged; next only the already-authorized **one passive Watch Saved Diagnostics first report / 60-second read**, if not yet performed. No Main/Start/PhoneConnect/retry/Share/upload or source correction follows from this confirmation.
+
+## Passive diagnostic read consumed — later 2026-10-12 video
+
+The shown report is the known Watch78 `UNCAUGHT_EXCEPTION` from saved wall time `1791706251463` (11 October), with `BoundedNormalStartupGate.deferFreshScope:25` and the same terminal timestamp as the previously preserved incident. It is **not a new Watch79 failure report** and is **not current installation-version proof**. It neither diagnoses Watch79 flashing/black return nor proves current recording stop/finalization. No newer-report inventory is established. Do not repeat the reader or press Next by default. Phone61 unopened/noConnect remains confirmed.
+
+Physical gate remains on hold; one first-report read has been supplied. Next proposal requires explicit source/test authority for Watch79 Android-facing startup/service/timer/receipt-refresh/lifecycle investigation and only demonstrated corrections; no APK build, installation, new recording/retry/Phone action, private transfer or historical reconstruction. No such implementation is authorized by the supplied video alone.
