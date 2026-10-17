@@ -1,0 +1,227 @@
+RUN# — HUGR FOUNDER–IMPLEMENTATION ALIGNMENT
+PURPOSE
+
+Perform a bounded alignment audit, not an implementation task.
+
+ChatGPT/Moustache has spent extensive time interrogating Neil's evolving understanding of what HUGR is intended to do, what remains hypothetical, and how the original HUGR concept may relate to a broader HUGR Labs possibility.
+
+Manus has substantially greater access to HUGR's actual implementation history, repository, tests, research work, design rationale and documentary record.
+
+The objective is not agreement.
+
+The objective is to establish where:
+
+FOUNDER INTENT ↔ DOCUMENTED DESIGN ↔ EXECUTABLE REALITY ↔ CURRENT EVIDENCE
+
+align, differ, or remain unknown.
+
+IMPORTANT EVIDENCE ASYMMETRY
+
+Neil is authoritative evidence for his intent, remembered discussions, desired human relationship and hypotheses.
+
+He is not expected to defend mathematical, software or architectural implementation decisions.
+
+ChatGPT is providing a reconstruction of Neil's intent and conceptual maturation. It does not have Manus's documentary/repository coverage and must not be treated as an implementation authority.
+
+Manus is authoritative only to the extent supported by recoverable project evidence. Do not retrospectively rationalize an old decision merely because a plausible explanation can now be generated.
+
+Where historical rationale cannot be recovered:
+
+UNKNOWN.
+
+DOCUMENT-COVERAGE LIMITATION
+
+Manus produced a very large body of technical, scientific, research, design, governance, testing and continuity documentation across HUGR.
+
+The present archaeology examined only a deliberately restricted Safe Map plus a small number of targeted historical audit/recovery documents.
+
+Therefore:
+
+Absence of rationale or evidence from the archaeology packet is NOT evidence that no such rationale or documentation exists.
+
+Where historical intent or implementation rationale materially affects classification, retrieve the minimum existing primary record necessary.
+
+Do not perform broad archaeology unless required to resolve a material disagreement.
+
+MOUSTACHE'S CURRENT RECONSTRUCTION
+1. Original HUGR
+
+HUGR began as a deliberately opinionated, human-centred dysregulation/awareness system.
+
+Its core intuition was not simply:
+
+detect state → label person → intervene.
+
+It was closer to:
+
+learn enough about this individual's changing physiology and context that the system may sometimes notice something useful early enough to offer a private, minimal “tap on the shoulder.”
+
+Four-state language, tolerance-window concepts, dysregulation, haptics, check-ins and related clinical constructs may therefore be legitimate HUGR application hypotheses/design choices.
+
+Their presence is not automatically ontology contamination.
+
+2. What HUGR is trying to learn
+
+Current hypothesis:
+
+HUGR seeks useful structure in an individual's longitudinal physiological trajectory, under uncertainty and context, rather than assuming that a sensor snapshot directly reveals a person's psychological state or identity.
+
+The system may use categories or decision boundaries when useful.
+
+But those categories remain models/instruments, not declarations about what the person is.
+
+3. Meaning
+
+Current principle:
+
+Preserve evidence before collapsing it into meaning.
+
+Observations, identity, clocks, quality, missingness, provenance, transformations, baselines, deviations, uncertainty and competing explanations should survive as far upstream as practicable.
+
+Human meaning, clinical interpretation and application-specific constructs should enter where purpose requires them, not silently at acquisition.
+
+This does not require original HUGR to become clinically neutral.
+
+4. Learning
+
+“Learning Neil” contains several separate propositions:
+
+remember Neil → model Neil personally → predict something about Neil → discover when prediction is wrong → update eligible machinery → demonstrate later prospective improvement.
+
+Stored history is not by itself learning.
+
+Adaptive thresholds/baselines are adaptation.
+
+A model changing parameters is computational learning/adaptation.
+
+The strongest HUGR claim requires:
+
+qualified evidence → prediction using only then-available information → immutable freeze → future outcome → predefined score/error → eligible update → later prospective comparison.
+
+The 22 August recovery appears to have implemented a candidate form of this loop; its physiological usefulness remains unproved. The archaeology report already records that prospective benefit remains unestablished.
+
+5. Query/action hypothesis
+
+The original tap may survive, but its role may be broader than “intervention.”
+
+When an uncertain trajectory contains an informative ambiguity, HUGR may eventually choose among:
+
+tap / ask / explain / wait / abstain / remain silent.
+
+A question may sometimes be an information-seeking action:
+
+observe → preserve uncertainty → identify useful ambiguity → decide whether/when to query → obtain human context/outcome → score → update.
+
+Whether this is useful is a HYPOTHESIS, not a demonstrated capability.
+
+6. Human authority
+
+The person has privileged authority over:
+
+lived experience, goals, preferences, burden, perceived meaning and self-report.
+
+The person does not thereby establish:
+
+sensor validity, physiological causality, model calibration or universal scientific meaning.
+
+Conversely, the model's physiological inference does not overrule the person's meaning.
+
+7. Original HUGR versus possible HUGR Labs
+
+Current hypothesis only:
+
+Original HUGR may remain an opinionated dysregulation application.
+
+Some lower machinery may prove reusable:
+
+qualified observations → transformations → personalized comparators/baselines → uncertain temporal inference → bounded prediction/question → outcome → scoring → eligible learning.
+
+That possible reusable substrate is currently a HUGR Labs hypothesis.
+
+Technical reuse does not establish scientific utility, market value or platform generality. The current archaeology explicitly preserves that boundary.
+
+8. App and portal implication — SILVER PENCIL ONLY
+
+Do not redesign either interface during this RUN#.
+
+Instead classify existing app/portal assumptions:
+
+ALIGNED — compatible with this mature interpretation.
+
+PREMATURE COLLAPSE — turns uncertain trajectory/evidence into stronger state/meaning than presently justified.
+
+APPLICATION-SPECIFIC — legitimate HUGR opinionated projection rather than substrate truth.
+
+LEGACY — reflects an earlier architecture/hypothesis.
+
+UNKNOWN — requires empirical or source discriminator.
+
+Question only:
+
+If this mature interpretation eventually survives empirical testing, which existing app/portal assumptions already support it, and which would eventually require reconsideration?
+
+No fixes.
+
+QUESTIONS FOR MANUS
+Question	Moustache's current understanding	Manus task
+What is HUGR trying to learn?	Useful individual longitudinal trajectories relevant to bounded questions; not literal identity/state	Correct against design + implementation
+Where does HUGR-specific meaning currently enter?	Ideally after qualified evidence/uncertainty where purpose allows	Map actual coupling
+What is “learning”?	Freeze → outcome → score → eligible update → prospective improvement	Correct against executable machinery
+What may original HUGR remain?	Opinionated dysregulation/awareness application	Identify intentional application specificity
+What might HUGR Labs become?	Potential reusable observation/inference/query/learning substrate	Mark HYPOTHESIS; identify actual reusable candidates only
+What has actually been demonstrated?	Portions of substrate + engineering behavior; not physiological-intelligence proposition	Repository/runtime/test evidence has veto
+What did historical constraints explain?	Some provisional architecture likely reflected unavailable/changing sensors and evidence scarcity	Retrieve minimum contemporaneous evidence where material
+What remains empirical?	Whether individualized physiology supports useful prediction/disambiguation/action	Identify exact reality discriminators
+MANUS RIGHT OF REPLY
+
+For any apparent defect, fork, simplification or strange architectural choice, distinguish:
+
+1. What actually exists?
+2. Why was it built that way at the time?
+3. What constraints/information existed then?
+4. Was it provisional scaffolding or intended durable architecture?
+5. What later evidence changed its status?
+6. What, if anything, remains worth preserving?
+
+Cite existing source/doc/history where available.
+
+If rationale cannot be recovered, say UNKNOWN.
+
+If Moustache is wrong, say so explicitly.
+
+OUTPUT
+
+Return one compact alignment matrix.
+
+For each material proposition classify:
+
+AGREED
+EVIDENCE SAYS OTHERWISE
+PARTIALLY ALIGNED
+UNKNOWN
+HYPOTHESIS
+NEEDS EMPIRICAL DISCRIMINATOR
+
+For disagreements provide only:
+
+exact disagreement → minimum evidence → corrected formulation.
+
+Do not produce another Bible.
+
+Do not implement.
+
+Do not refactor.
+
+Do not redesign app or portal.
+
+Do not conduct broad research unless necessary to resolve a material disagreement.
+
+STOP RULE
+
+Stop when we possess a shared map of:
+
+what Neil intends + what Manus actually built + what evidence currently supports + what remains hypothesis/unknown.
+
+Agreement is not success. Correctly located disagreement is success.
+
+Return the compact packet to Neil for relay to Moustache.
