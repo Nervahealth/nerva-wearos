@@ -1,0 +1,2101 @@
+======================================================================
+HUGR — POST-FUR-BALL MAXIMUS CANONICAL MANUS HANDOVER
+======================================================================
+
+DOCUMENT ROLE
+Canonical working handover for the next HUGR engineering phase.
+
+STATUS
+GRAND SPRING CLEAN: CLOSED
+WTF-WERE-THEY-THINKING ARCHAEOLOGY: CLOSED
+EINSTEIN-IN-THE-GRASS GENERAL POSSIBILITY PASS: CLOSED
+UX RECONCILIATION: CLOSED
+VIS/COMMERCIAL RECONCILIATION: CLOSED
+FUR BALL MAXIMUS: CLOSED
+VIS-COUNT STRATEGIC ALLOCATION: SUFFICIENTLY DEFINED FOR CURRENT PHASE
+
+THIS INVOCATION:
+READ / ORIENT / VERIFY / REPORT ONLY.
+
+DO NOT IMPLEMENT, BUILD, INSTALL, MODIFY REPOSITORIES, RUN DEVICE ACTIONS,
+CHANGE ARCHITECTURE, REFACTOR, OR BEGIN NSTAIR EXECUTION IN THIS TURN.
+
+The purpose of this invocation is to allow Manus to reorient against the
+current canonical HUGR position, inspect current reality, identify any
+CONSEQUENTIAL contradiction, and return a SMALL bounded answer to Neil /
+the other team member before engineering resumes.
+
+======================================================================
+0. WHY THIS DOCUMENT EXISTS
+======================================================================
+
+HUGR accumulated substantial product thinking, scientific hypotheses,
+engineering infrastructure, experimental machinery, visualisation ideas,
+portal concepts, research possibilities and governance mechanisms.
+
+Some were valuable.
+Some were premature.
+Some solved real future problems.
+Some solved old assumptions.
+Some became stranded.
+Some were implemented before their necessity was established.
+Some apparently complicated pieces may be unusually valuable precisely
+because they preserve future learning.
+Some apparently clever pieces must no longer control the product.
+
+The project has now completed a large reconciliation exercise.
+
+DO NOT respond to this handover by reopening the entire universe.
+
+The immediate challenge is no longer:
+
+    "What could HUGR possibly become?"
+
+It is:
+
+    "Given what HUGR now is, what already exists, and what we have learned,
+     what is the smallest trustworthy path from the present repository state
+     into an actual Minimum Coherent HUGR?"
+
+The central Fur Ball conclusion is:
+
+    DO NOT REWRITE HUGR.
+    DO NOT CONTINUE BUILDING THE OLD GRAND MACHINE.
+    DO NOT AMPUTATE USEFUL ADVANCED MACHINERY MERELY BECAUSE BOOK ONE
+    DOES NOT CURRENTLY NEED IT.
+
+Instead:
+
+    REPAIR THE EVIDENTIARY TRUNK.
+    ISOLATE BOOK ONE FROM UNEARNED COMPLEXITY.
+    PRESERVE USEFUL ADVANCED CAPABILITY BEHIND CLEAN BOUNDARIES.
+    PUT ALTERNATIVE INTELLIGENCE IN SHADOW WHERE CHEAP.
+    PARK WHAT IS NOT CURRENTLY EARNED.
+    BUILD THE FIRST REAL SUKI LOOP.
+    LET DATA PROMOTE FUTURE COMPLEXITY.
+
+======================================================================
+1. SOURCE / AUTHORITY HIERARCHY
+======================================================================
+
+When sources conflict, use this order:
+
+1. ACTUAL SUBMITTED / FILED / INSTALLED / DEVICE-TESTED ARTIFACT
+2. DIRECT REPOSITORY SOURCE + TEST EVIDENCE
+3. ACTUAL CURRENT TECHNICAL RECORD / EXECUTION RECORD
+4. ACTUAL CONVERSATION / DOCUMENT SOURCE MATERIAL
+5. EXPLICIT LATER CORRECTION / RECONCILIATION
+6. MEMORY / SUMMARY
+7. INFERENCE
+
+Do not silently promote inference above direct evidence.
+
+If this handover states something that DIRECT CURRENT REPOSITORY EVIDENCE
+materially disproves, report the contradiction.
+
+Do not "correct" a frozen product/scientific decision merely because an old
+implementation embodies an older assumption.
+
+OLD CODE IS EVIDENCE OF WHAT WAS BUILT.
+IT IS NOT AUTOMATICALLY CURRENT PRODUCT AUTHORITY.
+
+======================================================================
+2. CURRENT HUGR PRODUCT CONSTITUTION
+======================================================================
+
+HUGR offers a compelling longitudinal self-observation experience organised
+around Suki.
+
+It observes an individual's physiology over time, identifies potentially
+interesting WITHIN-PERSON changes, and may sometimes offer a gentle tactile
+invitation to notice what is happening now.
+
+THE TIMELY INVITATION IS ITSELF PART OF THE CORE INTERVENTION.
+
+The person can then explore what HUGR observed, add their own context,
+notice patterns over time, and decide what — if anything — those patterns
+mean.
+
+HUGR does NOT need to know the person's psychological state in order to do
+this honestly.
+
+Current simplest formulation:
+
+    PHYSIOLOGY CHANGED
+        ↓
+    HUGR THINKS THIS MAY BE WORTH NOTICING
+        ↓
+    QUALITY / MOVEMENT / HISTORY / BURDEN / UNCERTAINTY CHECKS
+        ↓
+    TAP / WAIT / ASK / SILENCE
+        ↓
+    HUMAN NOTICES / IGNORES / RESPONDS / ADDS CONTEXT
+        ↓
+    HUGR PRESERVES WHAT HAPPENED
+        ↓
+    LONGITUDINAL HISTORY BECOMES MORE USEFUL
+        ↓
+    ALTERNATIVE MECHANISMS CAN LEARN FROM THE SAME REALITY
+
+The tap is not merely a label request.
+
+    THE TAP IS BOTH MESSAGE AND INTERVENTION.
+
+But this does NOT mean HUGR currently claims therapeutic physiological
+regulation.
+
+Book One / Minimum Coherent HUGR is:
+
+    THE SMALLEST COMPELLING SUKI
+        ×
+    THE SMALLEST TRUSTWORTHY LEARNING SUBSTRATE.
+
+Book One must be recognisably HUGR, not merely a telemetry demonstration.
+
+======================================================================
+3. THE "CHILDREN'S BOOK / ANIMATION COMPANY" RULE
+======================================================================
+
+HUGR is the book Neil wants to put his name on.
+
+HUGR Labs / reusable machinery is the animation company.
+
+If building Pixar prevents us finishing the first book, we failed.
+
+But if an animation-company capability genuinely makes the book possible,
+makes future books cheaper, or preserves high-value learning at very low
+marginal cost, do not destroy it merely because Book One does not display it.
+
+Therefore:
+
+    BOOK ONE GETS ONLY EARNED FOREGROUND COMPLEXITY.
+
+    THE ANIMATION COMPANY MAY REMAIN MUCH MORE SOPHISTICATED UNDERNEATH,
+    PROVIDED IT DOES NOT TAX BOOK ONE'S CRITICAL PATH.
+
+======================================================================
+4. SCIENTIFIC / EPISTEMIC CONSTITUTION
+======================================================================
+
+Maintain the following separations:
+
+    MEASUREMENT
+        ≠
+    SIGNAL
+        ≠
+    FEATURE
+        ≠
+    PHYSIOLOGICAL PROCESS
+        ≠
+    PSYCHOLOGICAL STATE
+        ≠
+    CLINICAL INTERPRETATION.
+
+Do not perform reverse inference merely because several physiological
+features move together.
+
+EDA:
+Established useful measure of sympathetic sudomotor activity.
+Not a specific detector of anxiety, trauma, craving, dysregulation, etc.
+
+Cardiac / IBI / HRV:
+Potentially useful autonomic information under appropriate measurement
+conditions.
+Not direct psychological state truth.
+
+ACC / activity:
+Useful movement/context/quality information.
+Not psychological meaning.
+
+Human self-report:
+Important HUMAN MEANING / CONTEXT.
+Not physiological ground truth by default.
+
+A participant saying "nothing happened" does not automatically make the
+physiological event false.
+
+A participant saying "I was anxious" does not automatically establish that a
+physiological model detected anxiety.
+
+======================================================================
+5. ACTIVE MULTIMODAL SCIENTIFIC HYPOTHESIS
+======================================================================
+
+HUGR's multimodal hypothesis is NOT merely:
+
+    "three noisy sensors can vote better than one."
+
+The active testable hypothesis is:
+
+    WITHIN-PERSON LONGITUDINAL RELATIONSHIPS AMONG MULTIPLE IMPERFECT
+    PHYSIOLOGICAL SIGNALS MAY CONTAIN USEFUL INFORMATION THAT IS NOT
+    PRESENT IN THE INDIVIDUAL SIGNALS ALONE.
+
+Potentially useful information may include:
+
+- coupling;
+- decoupling;
+- agreement;
+- disagreement;
+- lead / lag;
+- temporal ordering;
+- trajectory;
+- persistence;
+- recovery;
+- recurrence;
+- divergence;
+- relation to personal history;
+- relation to movement/activity;
+- relation to circadian/sleep context;
+- relation to human context.
+
+Whether this information:
+
+- exists reliably,
+- adds incremental value,
+- works for whom,
+- works under what conditions,
+- improves Suki opportunity selection,
+- or just generates additional noise
+
+is an EMPIRICAL QUESTION.
+
+Fusion does not need to terminate in:
+
+    STATE = ANXIETY.
+
+It may terminate in:
+
+    THIS MAY BE INTERESTING ENOUGH TO ASK THE HUMAN.
+
+Disagreement among modalities may itself be informative.
+
+======================================================================
+6. CURRENT CLOSED-LOOP POSITION
+======================================================================
+
+Closed loop has NOT been abandoned.
+
+It has been decomposed.
+
+CURRENT CORE CLOSED LOOP:
+
+    LONGITUDINAL PHYSIOLOGY
+        ↓
+    POSSIBLY INTERESTING CHANGE
+        ↓
+    QUALITY / ACTIVITY / PERSONAL REFERENCE / UNCERTAINTY
+        ↓
+    WORTH ASKING / NOTICING?
+        ↓
+    SUKI TAP / WAIT / SILENCE
+        ↓
+    HUMAN NOTICES / IGNORES / EXPLAINS
+        ↓
+    CONTEXT + WHAT HAPPENED NEXT
+        ↓
+    LONGITUDINAL MEMORY
+        ↓
+    COMPARE MECHANISMS / IMPROVE SUKI
+        ↺
+
+The human is inside the loop.
+
+DO NOT resurrect the previous stronger claim:
+
+    physiology
+        → psychological nervous-system state known
+        → automatically selected therapeutic haptic antidote
+        → state regulated.
+
+That remains a possible formal research direction, not current product truth.
+
+Useful hierarchy:
+
+1. CLOSED-LOOP AWARENESS / CURIOSITY — CORE / BOOK
+2. CLOSED-LOOP ADAPTIVE ATTENTION / SENSING — LAB POSSIBILITY
+3. CLOSED-LOOP INTERVENTION OPTIMISATION — FORMAL RESEARCH
+4. THERAPEUTIC STATE-CONTROL MACHINE — UNPROVEN / NOT CURRENT CLAIM
+
+======================================================================
+7. SUKI COMMUNICATION PRINCIPLE
+======================================================================
+
+Maximum intelligence underneath.
+Minimum necessary intervention above.
+
+HUGR should learn:
+
+- when something may be worth noticing;
+- whether to interrupt;
+- whether to remain silent;
+- whether to tap now;
+- whether to ask now;
+- whether to ask later;
+- whether never to ask.
+
+Two timings may differ:
+
+A. TIMELY EMBODIED ACKNOWLEDGEMENT
+
+    physiologically relevant opportunity
+        → tiny Suki tap
+        → zero required cognitive load.
+
+B. TIMELY COGNITIVE INQUIRY
+
+    later
+        → re-evaluate receptivity / Four Gates
+        → ask now / wait / never ask.
+
+Current principle:
+
+    SUKI DOES NOT MERELY LEARN WHAT MAY BE WORTH NOTICING.
+    SHE LEARNS WHAT KIND OF PRESENCE THE MOMENT CAN TOLERATE,
+    AND WHEN CURIOSITY BECOMES KIND AGAIN.
+
+======================================================================
+8. FOUR GATES
+======================================================================
+
+Four Gates govern COMMUNICATION, not observation retention.
+
+They constrain:
+
+- whether to interrupt;
+- when;
+- wording;
+- intensity;
+- channel;
+- deferment;
+- silence.
+
+Approximate historical/current concepts include:
+
+- TRUE ENOUGH?
+- USEFUL?
+- KIND?
+- NECESSARY?
+- TIMELY?
+
+Do not throw away underlying evidence because Suki decides not to communicate.
+
+Silence / WAIT / ABSTAIN / NOT NOW are legitimate logged decisions.
+
+======================================================================
+9. DATA / EVIDENCE CONSTITUTION
+======================================================================
+
+The strategic data asset is NOT merely:
+
+    physiology database
+
+or:
+
+    physiology + self-report.
+
+It is a replayable longitudinal record of:
+
+- what the body did;
+- what HUGR could actually observe;
+- quality and missingness;
+- personal history available at the time;
+- what competing engines made of it;
+- what opportunity was generated;
+- what HUGR decided to do or not do;
+- what was actually delivered;
+- whether the person perceived it;
+- what the person reported or supplied as context;
+- how the person interacted;
+- what happened afterwards;
+- what HUGR subsequently learned.
+
+Core event families should remain distinguishable:
+
+OBSERVATION
+QUALITY
+CONTEXT
+INFERENCE
+OPPORTUNITY
+DECISION
+DELIVERY
+HUMAN RESPONSE / MEANING
+PRODUCT INTERACTION
+MODEL / LEARNING
+
+Important:
+
+    OPPORTUNITY ≠ DECISION ≠ DELIVERY ≠ PERCEPTION ≠ RESPONSE.
+
+Also preserve:
+
+    EVENT TIME ≠ ENTRY TIME.
+
+Later context may be retrospective and temporally uncertain.
+
+A later model may reinterpret old data.
+
+It may NOT rewrite what HUGR knew at the historical moment.
+
+======================================================================
+10. EVIDENCE INVARIANT
+======================================================================
+
+A value may move upward only if its:
+
+- identity;
+- time;
+- lineage;
+- missingness;
+- quality;
+- version;
+- uncertainty;
+- failure history
+
+can move with it.
+
+Derived representations must never destroy source evidence.
+
+Today's data should remain useful even if today's theory is wrong.
+
+This is especially important because future HUGR may investigate temporal,
+spectral, phase, cross-signal and longitudinal relationships we do not yet know
+how to model.
+
+======================================================================
+11. SENSOR / PLATFORM PRINCIPLE
+======================================================================
+
+Do not assume:
+
+    WATCH MEASURES IT
+        =
+    HUGR CAN ACCESS THE EXACT DATA LATER.
+
+For each important stream distinguish:
+
+A. Samsung-managed health data:
+- what Samsung measures;
+- stores;
+- synchronises;
+- exposes;
+- at what resolution;
+- timestamps/status;
+- latency.
+
+B. HUGR Sensor SDK acquisition:
+- what HUGR itself must acquire;
+- retain;
+- transport;
+- timestamp;
+- qualify.
+
+Do not unnecessarily rebuild infrastructure Samsung already provides.
+
+Do not rely on Samsung pathways where they destroy information required for
+the Suki/research job.
+
+Current architecture principle:
+
+    SAMSUNG-SPECIFIC ACQUISITION MAY BE PLATFORM-SPECIFIC.
+
+    HUGR-OWNED EVIDENCE IDENTITY, PACKAGE SEMANTICS, PROVENANCE,
+    MISSINGNESS AND DOWNSTREAM ANALYSIS MUST REMAIN PLATFORM-INDEPENDENT.
+
+Do NOT respond by building Apple support or a universal sensor framework.
+
+======================================================================
+12. FUR BALL MAXIMUS — COMPONENT DISPOSITION
+======================================================================
+
+Treat this disposition as FROZEN unless current repository evidence
+materially contradicts it.
+
+----------------------------------------------------------------------
+CORE — KEEP / REPAIR / PROTECT
+----------------------------------------------------------------------
+
+- Samsung Watch acquisition pathways required for current N1.
+- Canonical watch source journal.
+- Stable source/event identity.
+- watchBootSessionId + recordIndex or current canonical equivalent.
+- append-before-transport.
+- source timestamps.
+- source/order information.
+- phone receipt timestamps.
+- processing/acceptance clocks where relevant.
+- status / quality / missingness.
+- explicit gap handling.
+- retained/live distinction.
+- replay high-water discipline.
+- exact manifest/ACK integrity.
+- canonical phone persistence.
+- duplicate/collision handling.
+- fail-closed behaviour where evidence integrity is threatened.
+- immutable/reconstructable export.
+- minimum reverse trace.
+- provenance.
+- version/build/run linkage.
+- prospective freeze / comparator / scoring capability where already useful.
+- explicit abstention / uncertainty.
+- evidence contracts.
+
+COAL:
+YES, where needed to close the bounded substrate path.
+
+----------------------------------------------------------------------
+BOOK / FOREGROUND — AFTER SUBSTRATE ACCEPTANCE
+----------------------------------------------------------------------
+
+- Suki.
+- one conservative foreground opportunity mechanism.
+- one governed user-facing policy.
+- quality/motion/freshness/personal-history checks.
+- refractory / burden protection.
+- tap / wait / silence.
+- watch haptic invitation.
+- minimal context response.
+- possible immediate versus deferred inquiry.
+- longitudinal episode/history.
+- progressive depth.
+- explicit uncertainty.
+- organic/alive interface candidate sufficient to make Book One recognisable.
+- person retains authority over meaning.
+
+COAL:
+YES, after substrate gate.
+
+----------------------------------------------------------------------
+SHADOW / LAB — PRESERVE, COMPARE, DO NOT GIVE USER AUTHORITY YET
+----------------------------------------------------------------------
+
+- rolling baselines.
+- longer-term anchor baselines.
+- contextual baselines.
+- circadian baselines.
+- EDA candidates.
+- cardiac / IBI / HRV candidates.
+- ACC/context candidates.
+- multimodal concurrence/conflict.
+- multimodal relational dynamics.
+- lead/lag.
+- coupling/decoupling.
+- candidate fusion.
+- HMM.
+- Kalman.
+- temporal/state-space candidates.
+- sensor-utility candidates.
+- candidate personalised engines.
+- prospective comparators.
+- scoring.
+- model disagreement.
+- active query / information-gain concepts.
+- richer trajectory calculations.
+- future adaptive sensing ideas.
+
+These may be scientifically/productively useful.
+
+Their current lack of foreground use is NOT evidence that they are useless.
+
+COAL:
+Only when a defined experiment earns the work.
+
+----------------------------------------------------------------------
+KEEP AS INFRASTRUCTURE — DO NOT EXPAND NOW
+----------------------------------------------------------------------
+
+- scientific-memory semantics.
+- protected evidence ledger concepts.
+- Watchtower / evidence audit surface.
+- replay / monitor / export infrastructure.
+- platform-neutral evidence contracts.
+- participant/source separation primitives.
+- version/provenance architecture.
+- configurable retention capability at architecture level.
+- researcher-oriented traceability concepts.
+
+Do not polish or cathedral-build.
+
+----------------------------------------------------------------------
+PARK / BYPASS
+----------------------------------------------------------------------
+
+- broad clinician portal development.
+- DAW/VST implementation.
+- generalized plugin ecosystem.
+- mycelium.
+- Space Station.
+- universal research configurator.
+- adaptive sensing controller.
+- digital twin system.
+- Apple port.
+- pharma infrastructure.
+- trial platform expansion.
+- multi-person therapist/parent/partner messaging.
+- generalized AI intervention generation.
+- 3D physiological glyph/cymatic system.
+- biological sonification.
+- advanced specialty workflows.
+- broad clinical integration.
+- DIPS/Infodoc work unless a concrete first customer earns it.
+
+Preserve inexpensive optionality.
+
+Do not spend active engineering merely because these ideas are interesting.
+
+----------------------------------------------------------------------
+GOLDEN ACORNS — PRESERVE IDEA / EXPERIMENT LATER
+----------------------------------------------------------------------
+
+- birdsong / spectrogram as longitudinal trajectory representation.
+- phase-space representation.
+- 3D dynamical physiological glyph.
+- learned tactile language.
+- personal physiological "phrases" / recurrence recognition.
+- immediate touch + deferred inquiry.
+- multimodal relationships as information.
+- adaptive sensor utility.
+- researcher-configurable trajectory representation.
+- organic multidimensional interface.
+- recognition before explanation.
+
+KEEP IDEA DOES NOT MEAN BUILD NOW.
+
+----------------------------------------------------------------------
+RETIRE IMPLEMENTATION / REMOVE FROM CURRENT AUTHORITY
+----------------------------------------------------------------------
+
+- static four-state heuristic if presented as physiological truth.
+- any four-state runtime assumption that forces the canonical evidence model.
+- phone vibration automation as substitute for intended watch Suki.
+- implementations that collapse raw evidence into untraceable classifications.
+- implementations whose old premise conflicts with current product/scientific
+  constitution.
+- advanced components that impose unnecessary runtime coupling on the bounded
+  Book One path.
+
+Prefer:
+
+    BYPASS + PRESERVE CODE/SPEC/TESTS
+
+over destructive deletion where inexpensive.
+
+----------------------------------------------------------------------
+REJECT AS CURRENT CLAIM
+----------------------------------------------------------------------
+
+- four validated discrete nervous-system/brain states.
+- EDA/HRV/ACC directly determining psychological state.
+- self-report as physiological ground truth.
+- universal physiology-before-conscious-awareness claim.
+- validated rapid psychological-state classification.
+- state-specific therapeutic haptic antidote.
+- causal physiological improvement inferred from uncontrolled post-haptic
+  observations.
+- Symbiosis Score as proof of learning.
+- Arc Time as validated awareness/outcome measure.
+- relapse detection currently established.
+- substance identification currently established.
+- drug concentration inference currently established.
+- wrist-derived brain-network state currently established.
+- precision medicine matching currently established.
+- Bayesian therapeutic optimisation currently established.
+- phase-space/spectrogram as clinical biomarker.
+- consumer hardware becoming "clinical grade" merely because it has sensors.
+
+REJECT CLAIM ≠ DELETE RESEARCH POSSIBILITY.
+
+======================================================================
+13. ANTI-LOBOTOMY RULE
+======================================================================
+
+Before discarding historical machinery:
+
+    RECOVER THE PROBLEM IT WAS TRYING TO SOLVE.
+
+Then distinguish:
+
+- real field requirement;
+- product hypothesis;
+- scientific hypothesis;
+- engineering workaround;
+- obsolete assumption;
+- unsupported claim.
+
+RETIRE IMPLEMENTATION ≠ REJECT PROBLEM.
+
+NOT FOR BOOK ONE ≠ FALSE.
+
+NOT YET DEMONSTRATED ≠ USELESS.
+
+PARK ≠ DELETE.
+
+======================================================================
+14. ADVANCED SUBSTRATE — GOVERNING RULE
+======================================================================
+
+Do NOT ask merely:
+
+    "Do we need component X for N1?"
+
+Ask:
+
+1. What problem does X solve?
+2. Is that problem still real?
+3. What does X cost FROM TODAY?
+4. Does retaining X increase:
+   - runtime complexity?
+   - debugging surface?
+   - battery use?
+   - transport/storage burden?
+   - cognitive burden?
+   - dependency coupling?
+5. Can X be bypassed while preserving:
+   - source;
+   - tests;
+   - spec;
+   - option value?
+6. Can X run safely in SHADOW?
+7. What future uncertainty could X reduce?
+8. What would make X earn promotion?
+9. What is the cheapest form in which its option value survives?
+
+Do not preserve X because money/credits were already spent.
+
+That is sunk cost.
+
+Do not destroy X because it looks "too advanced."
+
+The preferred policy is:
+
+    PRESERVE CAPABILITY CHEAPLY.
+    REMOVE UNEARNED RUNTIME DEPENDENCY.
+    SPEND ONLY WHEN EVIDENCE PROMOTES THE CAPABILITY.
+
+======================================================================
+15. CURRENT TECHNICAL REALITY — HIGH LEVEL
+======================================================================
+
+The current system should be regarded as:
+
+    A PARTIALLY ASSEMBLED METEOROLOGICAL MACHINE.
+
+It is not a collection of empty mock-ups.
+
+It is not yet a trustworthy closed-loop HUGR product.
+
+Strong existing assets include, subject to current repository verification:
+
+- real Samsung watch acquisition;
+- append-only / fail-closed source journaling;
+- retained/live BLE transport;
+- canonical phone persistence;
+- ACK/replay machinery;
+- prospective comparison/scoring machinery;
+- scientific-memory infrastructure;
+- protected audit/Watchtower infrastructure;
+- advanced candidate engines in source;
+- trajectory/phase/spectral mathematics and UI shells.
+
+The major problem is not:
+
+    "We forgot to invent intelligence."
+
+The major problem is:
+
+    IMPORTANT EVIDENCE PIPES ARE NOT YET HONESTLY JOINED END TO END.
+
+Historically identified gaps include:
+
+G1.
+CURRENTNESS UNDER RETAINED REPLAY
+
+G2.
+RAW EVIDENCE → FEATURE / DERIVED PROVENANCE
+
+G3.
+HUMAN CONTEXT → CANONICAL EVIDENCE
+
+G4.
+OPPORTUNITY → GOVERNED ACTION DECISION
+
+G5.
+DELIVERY → PERCEPTION / CONTEXT / OUTCOME
+
+G6.
+ACCEPTED EVIDENCE → REAL LONGITUDINAL ANALYSIS / VISUALISATION
+
+Do not assume this list is current repository fact without checking.
+
+Do not create G7–G47 merely because you can.
+
+======================================================================
+16. CURRENT SUBSTRATE TARGET
+======================================================================
+
+The substrate is the EVIDENTIARY NERVOUS SYSTEM.
+
+It is not the product.
+
+We do NOT require:
+
+- perfect uninterrupted Bluetooth;
+- every sensor at maximum sampling forever;
+- all-stream realtime;
+- universal 24/7 scientific fidelity;
+- 14 days with zero gaps;
+- every August dream telemetry requirement.
+
+We DO require enough trustworthiness to support Minimum Suki + N1 honestly.
+
+Minimum acceptance properties:
+
+1. Required current foreground signals can be acquired.
+
+2. Canonical source identity survives.
+
+3. Source time remains distinguishable from phone receipt time.
+
+4. Quality/status/missingness are explicit.
+
+5. Retained records survive ordinary interruption.
+
+6. Reconnect/replay does not silently:
+   - invent data;
+   - duplicate records;
+   - collide identities;
+   - lose already-journaled accepted evidence.
+
+7. LIVE and REPLAY remain distinguishable.
+
+8. Stale/historical data cannot masquerade as current physiology.
+
+9. Charging/off-wrist/unsupported/missing are not silently interpreted as
+   physiology.
+
+10. One representative event/window can be reconstructed from:
+       WATCH SOURCE
+           →
+       PHONE ACCEPTANCE
+           →
+       DURABLE EVIDENCE
+           →
+       EXPORT
+           →
+       SIMPLE ANALYSIS.
+
+11. Founder does not need to manually nurse Bluetooth during ordinary use.
+
+A recoverable explicitly labelled gap is acceptable.
+
+Silent invented continuity is not.
+
+======================================================================
+17. SUBSTRATE GRANULARITY RULE
+======================================================================
+
+For EVERY proposed fidelity requirement ask:
+
+    WHAT BREAKS IF WE REMOVE OR REDUCE THIS?
+
+Consider:
+
+- signal/data type;
+- sampling rate;
+- resolution;
+- continuous versus episodic;
+- daytime versus overnight;
+- source timestamps;
+- receipt timestamps;
+- status/quality;
+- batching;
+- missingness;
+- replay;
+- ACK/retry;
+- retention;
+- readback;
+- immutable export;
+- live latency;
+- battery;
+- storage;
+- transport.
+
+Classify requirement against:
+
+1. MINIMUM SUKI LOOP
+2. ORDINARY LONGITUDINAL PRODUCT
+3. EXPLORATORY N1
+4. FORMAL RESEARCH
+5. FUTURE ADVANCED HUGR
+6. NONE CURRENTLY DEMONSTRATED
+
+Do not remove source-time fidelity, status or missingness merely because they
+are inconvenient.
+
+Do not preserve maximum fidelity merely because "better data" sounds good.
+
+======================================================================
+18. CURRENT EXPECTED NEXT TECHNICAL BOUNDARY
+======================================================================
+
+Unless current repository evidence materially contradicts it, the next
+engineering target remains:
+
+    NSTAIR-R0.2 RETAINED-TIMING / READBACK CLOSURE.
+
+Known historical boundary:
+
+The watch and phone minimum exporter cores had been developed/tested and a
+bounded invocation/transfer contract drafted.
+
+The exporters were intentionally separated from:
+
+- acquisition;
+- BLE;
+- replay;
+- ACK;
+- journal deletion;
+- normal startup;
+- physiology interpretation;
+- model execution.
+
+The immediate question remains approximately:
+
+    FOR CANONICAL RECORD
+    (watchBootSessionId, recordIndex)
+
+    WHEN WAS IT MEASURED AT SOURCE?
+    WHEN WAS IT JOURNALED?
+    WHEN/HOW WAS IT SERVED LIVE OR REPLAYED?
+    WHEN WAS IT RECEIVED / ACCEPTED BY PHONE?
+    CAN THOSE FACTS BE RECONSTRUCTED EXTERNALLY WITHOUT MODIFYING
+    NORMAL ACQUISITION / TRANSPORT SEMANTICS?
+
+Do not redesign BLE to answer a readback question.
+
+Do not widen NSTAIR automatically.
+
+======================================================================
+19. EXPECTED STAIRCASE AFTER REALITY CHECK
+======================================================================
+
+This is expected future order, NOT authority to execute all stages now.
+
+STAIR A — KNOW WHAT HAPPENED
+    finish minimum retained-timing/readback capability.
+
+STAIR B — PROVE ORDINARY LIFE
+    one bounded 8–12 hour ordinary waking-day rehearsal including appropriate
+    background/range loss/rejoin/off-wrist or charging behaviour.
+
+STAIR C — PROVE MEMORY
+    one real watch → phone → durable evidence → export → simple analysis /
+    reverse trace.
+
+STAIR D — EXPLICIT SUBSTRATE GO / NO-GO.
+
+THEN STOP TREATING SUBSTRATE AS THE PRODUCT.
+
+Enter actual HUGR.
+
+======================================================================
+20. MINIMUM SUKI LOOP AFTER SUBSTRATE GO
+======================================================================
+
+Expected first actual product loop:
+
+    QUALIFIED PHYSIOLOGY
+        ↓
+    PERSONAL REFERENCE / SIMPLE CHANGE DETECTOR
+        ↓
+    QUALITY / MOTION / FRESHNESS / HISTORY
+        ↓
+    OPPORTUNITY
+        ↓
+    BURDEN / REFRACTORY / FOUR-GATES POLICY
+        ↓
+    TAP / WAIT / SILENCE
+        ↓
+    HUMAN NOTICE / IGNORE / CONTEXT
+        ↓
+    PRESERVED EPISODE
+        ↓
+    LONGITUDINAL HISTORY
+        ↓
+    SHADOW ENGINE COMPARISON.
+
+No psychological state label is required.
+
+No HMM is required.
+
+No LLM is required.
+
+No clinician portal is required.
+
+No therapeutic efficacy claim is required.
+
+But this IS HUGR.
+
+======================================================================
+21. N1 ROLE
+======================================================================
+
+N1 is NOT clinical proof.
+
+N1 is an:
+
+    INSTRUMENTED EDITORIAL + ENGINE LABORATORY.
+
+Questions include:
+
+PRODUCT
+- Is this recognisably HUGR?
+- Does accumulated use become interesting/useful enough to continue?
+- Is Suki quiet enough?
+- Is the history worth returning to?
+- Would Neil keep wearing it if he had not invented it?
+
+ENGINE
+- Which candidate mechanisms generate worthwhile opportunities?
+- Which produce noise?
+- What does activity gating buy?
+- What does EDA add?
+- What does cardiac add?
+- What do relationships among them add?
+- When should HUGR abstain?
+
+LEARNING
+- Can candidates be compared over the SAME retained physiology?
+- Can their outputs be preserved prospectively?
+- Can one foreground policy act while alternatives remain shadow?
+
+SCIENCE
+- What questions emerge that deserve proper formal study?
+
+======================================================================
+22. SHADOW ENGINE TOURNAMENT
+======================================================================
+
+DO NOT BUILD THIS IN THE CURRENT TURN.
+
+But preserve the architecture for it.
+
+Candidate tournament may later include:
+
+A.
+SIMPLE WITHIN-PERSON SINGLE-CHANNEL CHANGE.
+
+B.
+SIMPLE CHANGE + QUALITY / MOTION / CONTEXT GATING.
+
+C.
+SIMPLE MULTIMODAL CONCURRENCE / DISAGREEMENT.
+
+D.
+RELATIONAL MULTIMODAL MODEL:
+- coupling;
+- divergence;
+- lead/lag;
+- trajectory;
+- temporal structure.
+
+E.
+RECOVERED ADVANCED FUSION / HMM / KALMAN CANDIDATE,
+only where cheap enough to make scientifically honest.
+
+One user-facing foreground Suki.
+
+Many shadow candidates.
+
+Evaluation question:
+
+    WHICH CANDIDATE IDENTIFIES SUFFICIENTLY USEFUL / INTERESTING SUKI
+    OPPORTUNITIES AT ACCEPTABLE INTERRUPTION / FALSE-POSITIVE BURDEN?
+
+And:
+
+    DOES LONGITUDINAL MULTIMODAL RELATIONSHIP INFORMATION ADD INCREMENTAL
+    VALUE BEYOND SIMPLER COMPARATORS?
+
+Do not ask:
+
+    "Which engine detects Anxiety™?"
+
+======================================================================
+23. LONGITUDINAL UX
+======================================================================
+
+HUGR should become visibly more valuable because it has known the person for
+seven days rather than seven minutes.
+
+The UX direction is:
+
+    STATE REPRESENTATION
+        →
+    TRAJECTORY / PATTERN EXPLORATION.
+
+Do not simply replace four discrete states with a red-yellow-green scalar.
+
+Preferred epistemic ladder:
+
+    FEEL
+        →
+    FORM
+        →
+    PATTERN
+        →
+    DATA.
+
+Example:
+
+Depth 0:
+Suki tap / minimal acknowledgement.
+
+Depth 1:
+Something changed.
+
+Depth 2:
+Here is the shape/trajectory around that episode.
+
+Depth 3:
+EDA / cardiac / movement / context / quality.
+
+Depth 4:
+rawer trajectories / provenance / research detail.
+
+Core constraint:
+
+    HUGR SHOULD VISUALISE WHAT IT MEASURED MORE CONFIDENTLY THAN WHAT
+    IT THINKS IT MEANS.
+
+Organic / alive interface:
+BOOK candidate.
+
+Exact encoding:
+EXPERIMENT.
+
+Birdsong / spectrogram:
+GOLDEN ACORN / research + UX experiment.
+
+3D glyph / cymatic object:
+PARKED experiment, not current engineering.
+
+======================================================================
+24. VIS-COUNT-ROMANESCO
+======================================================================
+
+VIS-COUNT is a FORK-SELECTION / RESOURCE-ALLOCATION lens.
+
+It is NOT a universal ceremonial gate around every keystroke.
+
+For a candidate move m ask:
+
+1. WHAT CONSEQUENTIAL UNCERTAINTY DOES IT REDUCE?
+
+Across:
+
+① WHAT HUGR IS / PRODUCT LEARNING
+
+② HOW TO BUILD / MEASURE / TEST IT
+
+③ HOW TO SELL / FUND / PARTNER / RESOURCE IT
+
+2. WHAT REUSABLE CAPABILITY DOES IT CREATE?
+
+3. DOES IT INCREASE FUTURE LEARNING VELOCITY?
+
+4. WHAT USEFUL OUTPUTS CAN IT GENERATE?
+
+Examples:
+- trustworthy data;
+- user learning;
+- product learning;
+- technical capability;
+- scientific learning;
+- commercial learning;
+- relationships;
+- funding leverage.
+
+5. WHAT DOES IT COST?
+
+- credits;
+- cash;
+- engineering time;
+- founder time;
+- attention;
+- context switching;
+- maintenance;
+- complexity.
+
+6. WHAT IS THE OPPORTUNITY COST?
+
+7. HOW REVERSIBLE IS IT?
+
+8. WHAT HARD DEPENDENCY DOES IT UNLOCK?
+
+9. DOES IT CREATE DESTRUCTIVE LOCK-IN?
+
+- architecture;
+- vendor;
+- regulation;
+- scientific claim;
+- market;
+- customer;
+- commercial position.
+
+10. WHAT DOES IT DO TO DEFENSIBILITY / OPTIONALITY?
+
+11. DOES IT CREATE COMPOUNDING LEARNING?
+
+Key formulation:
+
+    WHICH BOUNDED MOVE COLLAPSES THE MOST CONSEQUENTIAL UNCERTAINTY
+    ACROSS WHAT HUGR IS, WHETHER/HOW IT CAN WORK, AND WHO WILL RESOURCE
+    OR PAY FOR IT — WITHOUT DESTRUCTIVE LOCK-IN?
+
+Hard constraints remain sovereign:
+
+- safety;
+- legality;
+- scientific integrity;
+- hard engineering dependencies.
+
+======================================================================
+25. DEPLOYMENT DISTANCE
+======================================================================
+
+Do not confuse:
+
+    LOW-HANGING CUSTOMER
+
+with:
+
+    LOW TOTAL DEPLOYMENT DISTANCE.
+
+A clinician may immediately understand HUGR but routine clinical deployment
+may create:
+
+- patient identity;
+- consent/legal basis;
+- clinical responsibility;
+- role/access control;
+- health-data handling;
+- audit/security;
+- procurement;
+- journal workflow;
+- DIPS/Infodoc integration;
+- MDR / intended-purpose consequences.
+
+A research deployment may therefore be technically/regulatorily closer even
+if commercial value is less immediate.
+
+Do not let a customer-shaped opportunity silently redefine the current build.
+
+======================================================================
+26. RUN# — RESTORED TO ITS ORIGINAL USEFUL FUNCTION
+======================================================================
+
+RUN# was originally an ANTI-DRIFT / ANTI-FORK WRAPPER.
+
+It became overloaded while HUGR itself was unstable.
+
+Now that:
+
+- the Bible/product constitution is provisionally frozen;
+- the archaeology is closed;
+- Fur Ball has classified machinery;
+- VIS-COUNT exists;
+- the engineering path is bounded;
+
+RUN# should become SMALL again.
+
+Its job is:
+
+    KEEP THE CURRENT MOVE HONEST.
+
+Before substantive engineering action, answer briefly:
+
+RUN# REALITY
+What already exists?
+What is actually demonstrated?
+What am I about to duplicate?
+
+RUN# ALIGNMENT
+Does this preserve the frozen HUGR constitution and current Fur Ball
+disposition?
+
+RUN# ANTI-GAFFER
+Am I repairing the cause or attaching another workaround to the symptom?
+
+RUN# ANTI-FORK
+Does this create a needless alternate implementation/path/data model?
+
+RUN# SQUIRREL
+Am I adding anything the bounded task did not require?
+
+RUN# REINVENTION
+Does Samsung / Android / Wear OS / Expo / standard engineering already solve
+this problem?
+
+RUN# DOCUMENT
+What documentation / evidence record must be updated so the next task inherits
+truth rather than folklore?
+
+RUN# STOP
+What exact result terminates this task?
+
+RUN# is NOT permission to reopen strategy every five minutes.
+
+======================================================================
+27. NEIL-SKILL / FOUNDER-SQUIRREL RULE
+======================================================================
+
+If the repository / workspace contains the current Neil skill.md or equivalent
+working-rule file:
+
+    READ IT BEFORE SUBSTANTIVE ENGINEERING EXECUTION.
+
+Apply its anti-drift principles.
+
+In particular:
+
+- distinguish narrative/marketing value;
+- engineering/functioning value;
+- evidence/research-grade validity;
+- flag rabbit holes;
+- flag hype;
+- flag ego/financial-pressure induced scope expansion;
+- do not reward endless novelty generation;
+- do not let founder curiosity silently expand task scope.
+
+Founder intuition may choose what to investigate.
+
+It does not determine what the data says.
+
+Do not patronise the founder.
+
+Do not automatically obey a new squirrel merely because it sounds exciting.
+
+Record worthwhile new ideas cheaply under PARKED OBSERVATION and continue.
+
+======================================================================
+28. ANTI-GAFFER-TAPE RULE
+======================================================================
+
+Do not prefer a workaround merely because it is locally easy.
+
+Before adding workaround layer N+1 ask:
+
+- What is the actual failure?
+- What assumption is generating it?
+- Is the workaround hiding a deeper source/timing/lifecycle/API problem?
+- Does the workaround damage provenance or future maintainability?
+- Are we solving a symptom whose proper solution already exists elsewhere?
+
+A deliberately narrow temporary workaround may be acceptable IF:
+
+- it is explicitly labelled;
+- it preserves evidence integrity;
+- it does not become canonical architecture;
+- it has a removal/expiration condition;
+- it is cheaper than correcting a non-critical underlying issue right now.
+
+Otherwise:
+
+    DO NOT GAFFER-TAPE A CRITICAL EVIDENCE PATH.
+
+======================================================================
+29. REINVENTION CHECK — THE "DUMB BLONDE" RULE
+======================================================================
+
+This is IMPORTANT.
+
+Repeatedly during HUGR development, complicated engineering work has sometimes
+continued before asking a basic question such as:
+
+    "HAS SOMEBODY ALREADY SOLVED THIS?"
+
+That question must now be institutionalised.
+
+If a bounded engineering problem:
+
+- survives one disciplined repair cycle;
+- produces repeated workaround layers;
+- consumes substantial time/credits without reducing uncertainty;
+- keeps moving the failure;
+- requires increasingly exotic custom infrastructure;
+- or simply feels unexpectedly difficult for a supposedly standard platform
+  operation;
+
+STOP BEFORE ANOTHER PATCH and ask:
+
+1. Are we using the correct platform primitive/API?
+
+2. Is this a known Samsung / Android / Wear OS / Expo limitation or pattern?
+
+3. Does Samsung already retain/sync/expose the required data adequately?
+
+4. Does Android/Wear OS already provide a safer transport/lifecycle/storage
+   primitive?
+
+5. Are we rebuilding something commodity infrastructure already provides?
+
+6. Has an old HUGR architectural assumption made the problem unnecessarily
+   difficult?
+
+7. Would a small documentation / external research pass reduce uncertainty
+   more cheaply than another implementation attempt?
+
+If YES or UNCLEAR:
+
+    REQUEST A BOUNDED RESEARCH / ESCALATION PASS.
+
+Do not continue gaffer-taping while pretending persistence itself is rigor.
+
+======================================================================
+30. COAL / CREDIT GOVERNANCE
+======================================================================
+
+CURRENT CONTEXT:
+
+HUGR presently has approximately 95,000 restored Manus credits available.
+
+They are a finite working reserve intended to bridge roughly the next
+10–15 days before normal subscription availability improves.
+
+DO NOT interpret returned credits as permission for maximum-compute mode.
+
+The objective is not:
+
+    MINIMISE EVERY CREDIT.
+
+The objective is:
+
+    BUY THE MAXIMUM CONSEQUENTIAL UNCERTAINTY REDUCTION AND LEARNING
+    CAPABILITY PER UNIT OF COAL.
+
+Importance of project ≠ permission for maximum mode.
+
+A critical task may be extremely bounded and therefore cheap.
+
+A small-looking problem may justify expensive reasoning if it has become a
+genuine causal knot.
+
+======================================================================
+31. MODE# — COMPUTE-TIER GOVERNANCE
+======================================================================
+
+RUN# decides:
+
+    SHOULD / HOW SHOULD THIS BOUNDED WORK PROCEED?
+
+MODE# decides:
+
+    HOW MUCH COMPUTATIONAL / AGENT INTELLIGENCE DOES THIS STEP DESERVE?
+
+Default principle:
+
+    USE THE LEAST EXPENSIVE MODE CAPABLE OF EXECUTING THE FROZEN TASK
+    FAITHFULLY AND SAFELY.
+
+----------------------------------------------------------------------
+LITE
+----------------------------------------------------------------------
+
+Use where the task is predominantly:
+
+- file/source retrieval;
+- exact search;
+- comparison;
+- hashes;
+- deterministic inspection;
+- test reruns;
+- status checks;
+- straightforward evidence extraction;
+- small documentation maintenance;
+- low-ambiguity transformation;
+- bounded reporting.
+
+Do not use Lite when uncertainty itself is the hard problem.
+
+----------------------------------------------------------------------
+STANDARD / PRO — DEFAULT HOME BASE FOR NEXT ENGINEERING PHASE
+----------------------------------------------------------------------
+
+Use for:
+
+- bounded repository reasoning;
+- implementation inside frozen architecture;
+- local debugging;
+- one clearly specified feature/adapter;
+- multi-file changes with known objective;
+- test-fix-test cycles;
+- evidence-chain integration;
+- documentation that requires understanding rather than transcription.
+
+This should normally be the HOME BASE while the present plan remains stable.
+
+----------------------------------------------------------------------
+MAX — SPECIALIST CONSULTANT, NOT HOME BASE
+----------------------------------------------------------------------
+
+Use Max only where its additional reasoning/search/planning capability is
+specifically expected to buy something.
+
+Examples:
+
+- unresolved cross-repository causal knot;
+- consequential architecture fork;
+- ambiguity across several plausible mechanisms;
+- repeated failed repair attempts;
+- reinvention-check trigger;
+- high-impact decision where wrong choice produces substantial lock-in;
+- large code/history synthesis where lower mode cannot safely establish truth;
+- adversarial final review before an irreversible/high-cost move.
+
+DO NOT select Max merely because:
+
+- HUGR is important;
+- the history is complicated;
+- the prompt is long;
+- more intelligence sounds reassuring;
+- credits happen to be available.
+
+======================================================================
+32. MODE ESCALATION RULE
+======================================================================
+
+Do not silently escalate an expensive task.
+
+If current mode appears inadequate, STOP and return:
+
+MODE ESCALATION REQUEST
+
+A. EXACT UNRESOLVED QUESTION
+What cannot be safely resolved at current tier?
+
+B. EVIDENCE ALREADY EXAMINED
+What did you inspect/test?
+
+C. WHY CURRENT MODE IS INADEQUATE
+What reasoning/search barrier remains?
+
+D. CHEAPER DECOMPOSITION
+Can the problem be broken into smaller low-cost steps instead?
+
+E. EXPECTED VALUE OF MAX
+What specifically is Max expected to discover/decide that lower mode cannot?
+
+F. COST OF NOT ESCALATING
+What decision/dependency remains blocked?
+
+G. BOUNDED MAX OBJECTIVE
+What exact answer would terminate the Max pass?
+
+After the Max question is resolved:
+
+    DROP BACK TO THE CHEAPEST SUFFICIENT MODE.
+
+Max is not a permanent state transition.
+
+======================================================================
+33. COMPUTE-AWARE VIS-COUNT
+======================================================================
+
+Before expensive autonomous work ask:
+
+    HOW LITTLE AUTONOMOUS WORK CAN WE BUY WHILE STILL COLLAPSING
+    THE UNCERTAINTY WE ACTUALLY CARE ABOUT?
+
+Remember that cost may come from more than model inference.
+
+Long-running tasks, VM activity, repeated tooling, broad searches and
+unnecessary execution all consume resources.
+
+Therefore scope reduction often saves more coal than merely changing model.
+
+Prefer:
+
+    SMALL QUESTION
+        →
+    SMALL SEARCH
+        →
+    DECISION
+        →
+    SMALL IMPLEMENTATION
+        →
+    EVIDENCE
+        →
+    NEXT QUESTION.
+
+Avoid:
+
+    "Here is HUGR. Please comprehensively improve it."
+
+======================================================================
+34. DOCUMENTATION IS PART OF THE ENGINEERING JOB
+======================================================================
+
+RUN# historically existed partly to prevent each new task inheriting folklore.
+
+After substantive engineering work, update the minimum necessary canonical
+documentation.
+
+Documentation must preserve:
+
+- what changed;
+- why;
+- exact source/build identities;
+- evidence/test status;
+- what remains unproved;
+- failed attempts when decision-relevant;
+- current blocker;
+- current STOP boundary;
+- parked observations where relevant.
+
+Do NOT produce an enormous new architecture Bible after every change.
+
+Prefer updating existing canonical records.
+
+Do not allow documentation to imply:
+
+    CODED = BUILT
+    BUILT = INSTALLED
+    INSTALLED = DEVICE-TESTED
+    DEVICE-TESTED = SCIENTIFICALLY VALID
+    SCIENTIFICALLY PLAUSIBLE = PRODUCT USEFUL
+    PRODUCT USEFUL = CLINICALLY VALIDATED.
+
+Use explicit evidence-state language.
+
+======================================================================
+35. CURRENT BUSINESS / VIS PARALLEL BRANCH
+======================================================================
+
+Engineering may proceed in parallel with Ådne/VIS preparation.
+
+The engineering branch must NOT wait for all commercial uncertainty to vanish.
+
+The commercial branch must NOT redefine engineering casually.
+
+Current VIS questions include:
+
+- first segment;
+- intended purpose;
+- MDR fork;
+- deployment distance;
+- competence gaps;
+- capital;
+- partnerships;
+- payment model;
+- what external evidence/discriminators should be gathered.
+
+Useful current story:
+
+HUGR has more engineering infrastructure than its first product requires.
+
+We are deliberately narrowing foreground complexity while preserving useful
+learning/research capability.
+
+The near-term engineering goal is a trustworthy longitudinal Suki loop.
+
+The research opportunity includes testing whether person-specific longitudinal
+relationships among imperfect physiological streams add useful information
+beyond simpler approaches.
+
+Do not inflate:
+
+- Samsung relationship;
+- prototype maturity;
+- clinical readiness;
+- validation;
+- current therapeutic capabilities.
+
+======================================================================
+36. FIRST USERS / N2 / REDDIT — NOT CURRENT BUILD AUTHORITY
+======================================================================
+
+Expected sequence after N1 coherence may be approximately:
+
+N1 NEIL
+    ↓
+small non-Neil portability attack,
+possibly one carefully selected person or tiny paid Prolific wearable cohort
+    ↓
+tiny Reddit founding-reader cohort
+    ↓
+larger heterogeneous use
+    ↓
+formal research for questions product use cannot answer honestly.
+
+Early users are USERS FIRST.
+
+Do not turn Reddit into a cheap RCT.
+
+Do not turn paid Prolific compliance into proof of voluntary retention.
+
+======================================================================
+37. CURRENT FIRST-USER DATA GOVERNANCE PRINCIPLE
+======================================================================
+
+Before external participants, HUGR will need adequate:
+
+- participant separation;
+- pseudonymous identity;
+- explicit destination;
+- purpose/consent tracking;
+- retention/deletion policy;
+- safe upload/recovery;
+- version/cohort assignment;
+- withdrawal/stop mechanism;
+- support/bug reporting;
+- distinction between ordinary product use, product improvement and research.
+
+Do not build the whole clinical governance universe now.
+
+But do not design Book One so badly that external use requires demolition.
+
+======================================================================
+38. WHAT NOT TO BUILD NOW
+======================================================================
+
+NO active coal for:
+
+- full clinician portal;
+- Mycelium;
+- DAW/VST ecosystem;
+- generalized plugins;
+- digital twin;
+- adaptive sensing controller;
+- therapeutic haptic optimisation;
+- broad AI intervention engine;
+- bipolar classifier;
+- substance detector;
+- medication concentration inference;
+- clinical decision support;
+- pharma/trial platform;
+- Apple;
+- universal cross-device framework;
+- massive 3D visualisation;
+- generalized research workbench expansion;
+- broad DIPS/Infodoc integration;
+- full MDR implementation work before intended purpose is clarified;
+- universal 24/7 maximum-fidelity telemetry merely because possible;
+- another general archaeology;
+- another Grand Reconciliation;
+- another Fur Ball;
+- Auditor 2.0;
+- Meta-Auditor;
+- architecture philosophy essays.
+
+Record worthwhile discoveries.
+Do not operationalise them without a future decision.
+
+======================================================================
+39. STOP CONDITIONS ARE MANDATORY
+======================================================================
+
+Every substantive engineering task must have a terminal condition.
+
+Examples:
+
+- exact timing join obtained;
+- exporter package generated;
+- one test moves RED→GREEN;
+- named contradiction established;
+- specific API question answered;
+- one evidence chain regenerated;
+- one blocker identified with proof.
+
+Once terminal condition is reached:
+
+    STOP.
+
+Do not automatically use remaining context/time/credits to improve adjacent
+things.
+
+======================================================================
+40. PRESENT RUN# FOR THIS INVOCATION
+======================================================================
+
+RUN# ID:
+POST-FUR-BALL-MAXIMUS-REALITY-CHECK-R0.1
+
+OBJECTIVE:
+Determine whether the CURRENT repositories materially contradict the frozen
+Fur Ball disposition and whether NSTAIR-R0.2 retained-timing/readback remains
+the correct smallest next engineering boundary.
+
+MODE INTENT:
+Use the least costly adequate reasoning tier.
+
+This invocation is analysis/report only.
+
+No implementation authority.
+
+REALITY:
+Inspect actual current repository state and existing canonical technical
+records.
+
+ALIGNMENT:
+Treat the product/science/Fur-Ball constitution above as frozen unless direct
+current evidence demonstrates a consequential contradiction.
+
+ANTI-GAFFER:
+Do not propose another patch chain before establishing the actual current
+break.
+
+ANTI-FORK:
+Do not invent alternate architecture if current path remains viable.
+
+SQUIRREL:
+Do not expand into future product/research ideas.
+
+REINVENTION:
+If current obstacle appears to involve a standard Samsung/Android/Wear OS/Expo
+capability, flag whether a bounded external/documentation check is warranted.
+
+DOCUMENT:
+Identify which existing canonical technical document should eventually be
+updated if/when engineering resumes.
+
+STOP:
+Return the small response defined below.
+
+======================================================================
+41. QUESTIONS MANUS MUST ANSWER NOW
+======================================================================
+
+Answer ONLY these questions.
+
+A. CONSEQUENTIAL CONTRADICTIONS
+
+Does CURRENT repository/source/test reality materially contradict any of the
+Fur Ball dispositions or assumptions above?
+
+Answer:
+YES / NO.
+
+If YES:
+List ONLY consequential contradictions.
+
+For each:
+- repository;
+- path/file;
+- function/object;
+- direct evidence;
+- why it matters to the present engineering path.
+
+Do NOT list minor stylistic differences or old stale documentation unless they
+would change what we do next.
+
+----------------------------------------------------------------------
+B. NSTAIR-R0.2 VALIDITY
+
+Are the existing retained-timing exporter cores + bounded invocation/transfer
+approach still the shortest sane route to answering the currentness/readback
+question?
+
+Answer:
+
+YES
+or
+NO / MATERIAL QUALIFICATION.
+
+If NO / QUALIFIED:
+provide the minimum evidence.
+
+Do not propose a redesign merely because another architecture might be nicer.
+
+----------------------------------------------------------------------
+C. CURRENT COMPONENT OBSTRUCTION
+
+Does any currently active advanced / legacy component materially obstruct or
+contaminate the bounded NSTAIR path?
+
+If YES:
+name it.
+
+Preferred remedy:
+BYPASS / ISOLATE.
+
+Do NOT delete/refactor unless absolutely necessary and subsequently authorised.
+
+----------------------------------------------------------------------
+D. REINVENTION CHECK
+
+Before resuming custom engineering, is there ONE external/platform question
+that should be checked because it could make the present NSTAIR approach
+unnecessary or materially simpler?
+
+If NO:
+say NO.
+
+If YES:
+state ONE bounded question only.
+
+Do not launch the research in this turn.
+
+----------------------------------------------------------------------
+E. MODE RECOMMENDATION
+
+For the NEXT bounded engineering action, recommend:
+
+LITE
+STANDARD/PRO
+or
+MAX
+
+Give at most 2 sentences explaining why.
+
+MAX must satisfy the escalation rules above.
+
+----------------------------------------------------------------------
+F. NEXT ACTION
+
+State ONE smallest engineering action that should follow if Neil authorises
+execution.
+
+One action.
+
+Not a roadmap.
+
+----------------------------------------------------------------------
+G. DOCUMENTATION TARGET
+
+Name the existing canonical document/record that should be updated after that
+action.
+
+Do not create another Bible.
+
+======================================================================
+42. REQUIRED RESPONSE FORMAT — KEEP IT SMALL
+======================================================================
+
+Return this exact high-level structure:
+
+1. REALITY CHECK
+Contradictions: YES / NO
+[only consequential details if YES]
+
+2. NSTAIR-R0.2
+VALID / QUALIFIED / INVALID
+[brief reason]
+
+3. ACTIVE OBSTRUCTION
+NONE
+or
+[one/few exact blockers]
+
+4. REINVENTION CHECK
+NO EXTERNAL CHECK NEEDED
+or
+ONE BOUNDED QUESTION:
+[...]
+
+5. MODE#
+LITE / STANDARD-PRO / MAX
+[very short justification]
+
+6. NEXT ACTION
+[ONE action only]
+
+7. DOCUMENTATION
+[existing record to update]
+
+8. SCOPE CONFIRMATION
+Explicitly confirm:
+- no code changed;
+- no build performed;
+- no architecture widened;
+- no model/UX/portal work started;
+- no parked branch promoted.
+
+DO NOT write another giant report.
+
+DO NOT begin implementation.
+
+DO NOT consume remaining task scope exploring adjacent ideas.
+
+We want your SMALL ORIENTATION ANSWER back before execution.
+
+======================================================================
+43. SIX FROZEN MAXIMS
+======================================================================
+
+1.
+BOOK ONE GETS ONLY COMPLEXITY REQUIRED TO MAKE HUGR TRUSTWORTHY,
+RECOGNISABLE AND WORTH CONTINUING TO USE.
+
+2.
+THE ANIMATION COMPANY MAY REMAIN MORE SOPHISTICATED THAN BOOK ONE,
+PROVIDED THAT SOPHISTICATION DOES NOT TAX BOOK ONE'S CRITICAL PATH.
+
+3.
+EXISTING ADVANCED MACHINERY IS NOT PROMOTED BECAUSE IT EXISTS,
+REPAIRED BECAUSE IT WAS EXPENSIVE,
+OR DESTROYED BECAUSE IT IS PREMATURE.
+PRESERVE ITS CHEAPEST USEFUL OPTION VALUE.
+
+4.
+ONE FOREGROUND SUKI MAY ACT.
+MANY CANDIDATE SUKIS MAY OBSERVE IN SHADOW.
+
+5.
+TODAY'S INTERPRETATION MUST NEVER DESTROY EVIDENCE FUTURE HUGR MAY
+NEED TO DISCOVER THAT TODAY'S INTERPRETATION WAS WRONG.
+
+6.
+THE NEXT UNIT OF COAL GOES TO THE SMALLEST BOUNDED MOVE THAT
+COLLAPSES CONSEQUENTIAL UNCERTAINTY AND INCREASES FUTURE LEARNING
+CAPACITY.
+
+======================================================================
+44. FINAL OPERATING MANTRAS
+======================================================================
+
+BUILD NARROW.
+ARCHITECT BROAD.
+
+PRUNE EXPENDITURE AGGRESSIVELY.
+PRUNE OPTIONALITY CAUTIOUSLY.
+
+PRESERVE THE PROBLEM BEFORE JUDGING THE SOLUTION.
+
+RETIRE IMPLEMENTATION ≠ REJECT PROBLEM.
+
+NOT FOR BOOK ONE ≠ FALSE.
+
+NOT YET DEMONSTRATED ≠ USELESS.
+
+PARK ≠ DELETE.
+
+ONE FOREGROUND SUKI.
+MANY SHADOW CANDIDATES.
+
+AWARENESS EARLIER, NOT AUTHORITY EARLIER.
+
+SALIENCE MAY GENERATE A HYPOTHESIS.
+IT DOES NOT PROVIDE THE EVIDENCE FOR IT.
+
+IMAGINATION GENERATES OPTION SPACE.
+EVIDENCE ALLOCATES BELIEF.
+VIS-COUNT ALLOCATES RESOURCES.
+
+MAXIMUM INTELLIGENCE UNDERNEATH.
+MINIMUM NECESSARY INTERVENTION ABOVE.
+
+THE SUBSTRATE IS THE EVIDENTIARY NERVOUS SYSTEM.
+IT IS NOT THE PRODUCT.
+
+WHEN A PROBLEM BECOMES WEIRDLY HARD:
+ASK WHETHER WE ARE USING THE RIGHT LEGO PIECE BEFORE MOULDING ANOTHER
+ONE FROM GAFFER TAPE.
+
+AND:
+
+DO NOT TURN 95,000 RESTORED PIECES OF COAL INTO A NEW FUR BALL.
+
+======================================================================
+END OF CANONICAL POST-FUR-BALL HANDOVER
+======================================================================
