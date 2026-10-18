@@ -4,7 +4,7 @@
 
 Neil authorized **one signer-continuous Watch-only candidate build and artifact admission at 23:59 Europe/Oslo, 18 October 2026**. Preparation crosses midnight into 19 October. Phone62's application, production code, artifact and installed state remain unchanged; documentation-only standing preservation mirrors are not a Phone rebuild.
 
-**Latest disposition: ARTIFACT ADMITTED — ONE Watch-only build completed, no device action.** Earlier preparation is preserved in Git history; the completed admission below supersedes only its pending disposition. No installation, app launch, passive device receipt read, receipt closeout, connection, new recording or qualification is authorized or performed by this record.
+**Latest disposition: Watch82 ordinary installation/update and Settings confirmation OPERATOR-REPORTED; Main remains unopened.** Build/admission evidence below remains valid and preserved. No app launch, passive device receipt read, receipt closeout, connection, new recording or qualification is authorized/performed by this update. The reported installation is recorded as evidence, not retroactive authority for further device actions.
 
 Source baseline: Watch local `2f01475910bda33a13bd83baf4072a8ce4b16a3f`, remote `0085be32b75c0d41aeb07f2b9417015730ac6001`, exact tree `55ab3aa837f93190b56f3b238e19fc39c4ddb514`; completed readiness correction receipt `HUGR_NSTAIR_WATCH81_READINESS_ADMISSION_UI_SOURCE_TEST_CORRECTION_2026_10_18.md`. The exact clean local Watch/Phone heads and production/protected hashes at preparation are captured in `validation/preparation-baseline.json`.
 
@@ -47,7 +47,7 @@ Exact artifact identity and complete uploaded-byte readback are recorded below a
 
 ## Preserved physical and historical boundaries
 
-Installed Watch81/Phone62 remain unchanged. Latest physical selected receipt identity/revision is unknown; STARTED was visible before the earlier approximately18:03 Start press. The earlier attempt remains STOP / NOT QUALIFIED. No current sensor, timer, finalization, canonical-byte, exact ACK/completion or physical acceptance proof is inferred from source/build admission.
+At build/admission time, installed Watch81/Phone62 remained unchanged. The later Watch82 installation report is recorded below; Phone62 has no reported new action in this message. Latest physical selected receipt identity/revision is unknown; STARTED was visible before the earlier approximately18:03 Start press. The earlier attempt remains STOP / NOT QUALIFIED. No current sensor, timer, finalization, canonical-byte, exact ACK/completion or physical acceptance proof is inferred from source/build admission.
 
 No receipt-only action, retained delivery, Start, Connect/reconnect, pairing/reset, uninstall/data clearing, frozen/legacy action, private physiological/media transfer, Word edit, accepted S4 change, engine/clarification implementation or N1 is authorized here.
 
@@ -99,4 +99,14 @@ The code's receipt-only service is bounded to two minutes; this is not physical 
 
 The sole final artifact, SHA-256 sidecar and admission metadata have complete uploaded-byte readback. Final source-owned receipt → Master → no affected authorized private proposal → Alignment last → bounded commits → controlled non-force both-repository GitHub preflight/mirror → independent exact head/tree/record-byte readback is the completion route. Exact final remote identities are in `validation/final-independent-remote-readback.json` after successful publication; no main merge or force push is allowed.
 
-Only future installation and passive current-receipt read remain proposed; neither is authorized/performed now. Phone62 application, production/build code, artifact and device remain unchanged. Historical failed/unclassified/frozen statuses above remain exact. No qualified fresh physical recording or N1 is claimed. Known archived Phone whole-repository TypeScript errors remain unchanged; this Watch-only build is not a Phone typecheck repair or Phone build.
+Watch82 installation is now operator-reported below. One passive current-receipt read remains proposed and is not authorized/performed now. Phone62 application, production/build code, artifact and device remain unchanged. Historical failed/unclassified/frozen statuses above remain exact. No qualified fresh physical recording or N1 is claimed. Known archived Phone whole-repository TypeScript errors remain unchanged; this Watch-only build is not a Phone typecheck repair or Phone build.
+
+## Watch82 installation report — 19 October 2026, 00:28 Europe/Oslo
+
+Neil reports: “ok new watch apk installed the normal way and confirmed on settings app list not opened”. In the immediately preceding admitted-candidate context, this records the ordinary Watch82 update, Settings app-list confirmation and explicit unopened state. It is operator-reported installation evidence, not an independent installed-binary checksum or literal version-name transcription. Do not request another installation merely because no literal Settings version was typed.
+
+The message reports no new Phone action; the last admitted/installed Phone62 baseline remains retained without inventing a fresh confirmation. No Main launch, new Start, receipt-only action, retained delivery, Connect, Bluetooth/pairing change, source-root/private-data access, sensing, recording or receipt mutation was performed by Manus. No test rerun, build or production change is needed to preserve this report.
+
+**Next proposed action, requiring separate explicit authorization:** one passive Watch82 Main receipt read, first stable result/error or at most 60 seconds. Read the actual source ID, run ID, receipt revision and phase/reason; a short passive scroll only for existing detail is acceptable. No action buttons, Phone HUGR/Connect, Bluetooth/settings change, retry/relaunch or receipt closeout. This is identification, not a new recording or a fix.
+
+The earlier receipt remains unresolved until that observation. If inactive STARTED is actually found, consider a separately authorized guarded metadata-only interruption; if FINALIZED, preserve it and do not use receipt-only (which rewrites it FAILED) or assume retained-v2 selects v3. Active runtime/error/unclear identity stops. No automatic closeout, no Start through STARTED/FINALIZED, no manufactured finalization or qualification. Watch69 NOT QUALIFIED; Watch68 v1 UNCLASSIFIED / NOT VERIFIED; Watch58 TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED.
