@@ -20,8 +20,8 @@ android {
         applicationId 'com.hugr.wearos'
         minSdk 30
         targetSdk 34
-        versionCode 81
-        versionName '0.81.0-integrated-recording-correction-candidate'
+        versionCode 82
+        versionName '0.82.0-readable-receipt-admission-candidate'
     }
 
     buildTypes {
