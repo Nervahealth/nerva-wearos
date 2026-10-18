@@ -51,3 +51,15 @@ If FINALIZED is actually observed instead, preserve it and do not press receipt-
 Source-owning Watch record → Master → no affected authorized private proposal → Alignment last → bounded documentation commits → controlled both-repository preflight/non-force mirror → independent remote head/tree/record-byte readback. No production-source/test/build change, data-root operation, device command, Word edit, private-media upload, S4/research change or qualification.
 
 Watch69 **NOT QUALIFIED**. Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**. Watch58 **TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED**.
+
+## Operator clarification — 19 October 2026, 01:39 Europe/Oslo
+
+Neil explicitly confirms: “only opened Main and scroll, with no Start, receipt-only, retained-delivery or Phone/Connect action before or after the clip”.
+
+This resolves the action-history uncertainty in the earlier video-only record: the reported interaction was passive Main opening and scrolling only, with the listed controls and Phone connection unused. Do not request the same clarification again or blame/infer another action. This is operator evidence, not a new live receipt read or global hardware/service-state measurement.
+
+The reply confirms actions; it does **not explicitly authorize** the separately proposed receipt-only interruption. Receipt closeout remains HOLD pending a distinct approving reply. There is no new physical receipt mutation, finalization, new recording, delivery, acknowledgement or qualification. The last actual observed selected source/run remains `039fe584-19fe-41e5-8a8e-24f4db316c24` / `c01a7a37-a789-471f-bf3c-ad7bc3de2ef6`, revision8 STARTED/failureNONE, manifests2/exactacceptedACK0. These are the earlier video fields, not invented fresh observations.
+
+Only the existing separately authorized guarded closeout remains proposed: local receipt-only metadata interruption for that inactive STARTED receipt, same source/run, expected revision9 FAILED/PROCESS_INTERRUPTED; source files and receipt inventory retained, no finalization or qualification claim. No new source correction/build is necessary for that existing operation. Changed identity/phase, FINALIZED, active runtime, refusal/error or unexpected prompt STOP. No new Start, Phone/Connect/retry, Bluetooth/settings change, data clearing, egress, legacy/frozen-root/private-data, Word/S4/research/N1 action. Source-owned record → Master → no affected authorized private proposal → Alignment last → bounded documentation commits → controlled non-force GitHub mirror and independent exact head/tree/byte readback.
+
+Watch69 NOT QUALIFIED; Watch68 v1 UNCLASSIFIED / NOT VERIFIED; Watch58 TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED.
