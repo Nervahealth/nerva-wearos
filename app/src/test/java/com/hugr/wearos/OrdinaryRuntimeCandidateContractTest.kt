@@ -75,8 +75,11 @@ class OrdinaryRuntimeCandidateContractTest {
             assertTrue(branch.contains("run.acceptsSamples()"))
             assertTrue(branch.contains("sourceJournal.recordDelivery"))
         }
-        val retainedButton = between(mainSource, "text = \"Explicit retained v2 delivery\"", "layout.addView(Switch")
-        assertTrue(retainedButton.contains("if (freshActionBlocked()) return@setOnClickListener"))
+        val retainedButton = between(mainSource, "text = \"Explicit retained v2 delivery\"", "content.addView(Switch")
+        assertTrue(retainedButton.contains("if (retainedDeliveryBlocked()) return@setOnClickListener"))
+        val retainedGuard = between(mainSource, "private fun retainedDeliveryBlocked()", "private fun latchFreshFailure")
+        assertTrue(retainedGuard.contains("freshActionBlocked()"))
+        assertTrue(retainedGuard.contains("retainedDeliveryRequested"))
         val guard = between(mainSource, "private fun freshActionBlocked()", "private fun latchFreshFailure")
         assertTrue(guard.contains("FreshRunRuntime.session != null"))
         assertTrue(guard.contains("FreshRunRuntime.receiptOnly"))

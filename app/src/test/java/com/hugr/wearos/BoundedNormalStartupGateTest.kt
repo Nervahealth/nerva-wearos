@@ -87,7 +87,9 @@ class BoundedNormalStartupGateTest {
 
         assertFalse(begin.contains("Thread({"))
         assertFalse(begin.contains("probeRetainedFinalizedDeliveryInBackground()"))
-        assertTrue(begin.contains("deliberate fresh action required"))
+        assertTrue(begin.contains("FRESH RECEIPT CHECKING · START LOCKED"))
+        assertFalse(begin.contains("requestForegroundPermissions()"))
+        assertFalse(begin.contains("startAllServices()"))
         assertFalse(begin.contains("WatchSourceRuntime.journal("))
         assertFalse(begin.contains("WatchCausalRuntime.recorder("))
         assertTrue(retainedProbe.contains("WatchSourceRuntime.journal(applicationContext)"))
