@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
     private val causalComponentInstanceId = UUID.randomUUID()
     private var startupBreadcrumbRunId = causalComponentInstanceId.toString()
     private lateinit var statusText: TextView
+    private lateinit var primaryText: TextView
     private lateinit var evidenceText: TextView
     private lateinit var scrollView: ScrollView
     private var receiverRegistered = false
@@ -60,14 +61,100 @@ class MainActivity : ComponentActivity() {
     private var freshAdmissionScheduled = false
     private var freshReadinessResolved = false
     private var freshReceiptDisplayed = false
+    private var freshReceiptOnlyRequested = false
+    private var retainedDeliveryRequested = false
+    private var freshStartRecheckPending = false
+    private var freshObservedReceipt: FreshRunObservedReceipt? = null
+    private var freshObservedActiveRuntime: FreshRunUiIdentity? = null
+    private var freshObservedReceiptOnly = false
+    private var freshAdmissionIdentity: FreshRunUiIdentity? = null
     private val freshActionButtons = mutableListOf<Button>()
-    private fun freshActionBlocked(): Boolean = !freshReadinessResolved || freshTerminalFailure || freshReadPending || freshRequested ||
-        FreshRunRuntime.session != null || FreshRunRuntime.receiptOnly
+    private lateinit var freshStartButton: Button
+    private lateinit var freshReceiptOnlyButton: Button
+    private lateinit var retainedDeliveryButton: Button
+    private fun freshActionBlocked(): Boolean {
+        // Volatile process-local guards are not filesystem reads. Retain them
+        // alongside the worker snapshot so an intervening service blocks a tap.
+        return !freshReadinessResolved || freshTerminalFailure || freshReadPending || freshRequested || freshReceiptOnlyRequested ||
+            FreshRunRuntime.session != null || FreshRunRuntime.receiptOnly ||
+            freshObservedActiveRuntime != null || freshObservedReceiptOnly
+    }
+    private fun freshStartBlocked(): Boolean = freshActionBlocked() ||
+        freshStartRecheckPending || !FreshRunReadinessPresenter.startPotentiallyPermitted(freshReadinessInput())
+    private fun freshReceiptOnlyBlocked(): Boolean = freshActionBlocked() || freshReceiptOnlyRequested || freshObservedReceipt == null
+    private fun retainedDeliveryBlocked(): Boolean = freshActionBlocked() || retainedDeliveryRequested || freshStartRecheckPending
     private fun latchFreshFailure(message: String) {
         if (freshTerminalFailure) return
         freshTerminalFailure = true
         freshActionButtons.forEach { it.isEnabled = false }
         statusText.text = "HUGR\n$message · STOP · no retry"
+        primaryText.text = "The screen stopped locally. No new completion, sensor, timer, or hardware claim is made."
+    }
+    private fun freshReadinessInput() = FreshRunReadinessInput(
+        receiptReadResolved = freshReadinessResolved,
+        selectedReceipt = freshObservedReceipt,
+        activeRuntime = freshObservedActiveRuntime,
+        receiptOnly = freshObservedReceiptOnly,
+        startRequestedOnThisScreen = freshRequested,
+        admittedOnThisScreen = freshAdmissionIdentity,
+    )
+    private fun renderFreshReadiness() {
+        val presentation = FreshRunReadinessPresenter.present(freshReadinessInput())
+        setTextIfChanged(statusText, "HUGR\n${presentation.heading}")
+        setTextIfChanged(primaryText, presentation.primary)
+        val receipt = freshObservedReceipt
+        val detail = if (receipt == null) {
+            "No selected fresh receipt. Read status is current only for this screen refresh; no source root, sensor, or hardware state is inferred."
+        } else {
+            "Selected fresh receipt\nSource ${receipt.identity.sourceId}\nRun ${receipt.identity.runId}\nReceipt revision ${receipt.revision}; phase ${receipt.phase.name}; failure ${receipt.failure}\nRequested 5 minutes; supported/started ${receipt.supportedMask}/${receipt.startedMask}\nManifests ${receipt.manifestCount}; exact accepted ACKs ${receipt.acknowledgementCount}\nReceipt/admission state does not prove sensors, timer execution, or hardware activity. Phone durable report confirmation is separate. PPG live-only; no canonical PPG in this receipt."
+        }
+        setTextIfChanged(evidenceText, detail)
+        if (!freshTerminalFailure) {
+            freshStartButton.isEnabled = !freshStartBlocked()
+            freshReceiptOnlyButton.isEnabled = !freshReceiptOnlyBlocked()
+            retainedDeliveryButton.isEnabled = !retainedDeliveryBlocked()
+        }
+    }
+    private fun setTextIfChanged(view: TextView, value: String) {
+        if (view.text.toString() != value) view.text = value
+    }
+    private fun FreshRunReceipt.observed() = FreshRunObservedReceipt(
+        identity = FreshRunUiIdentity(sourceId, runId),
+        revision = revision,
+        phase = phase,
+        failure = failure,
+        supportedMask = supportedMask,
+        startedMask = startedMask,
+        manifestCount = manifests.size,
+        acknowledgementCount = acks.size,
+    )
+    private data class FreshRuntimeRead(
+        val receipt: FreshRunReceipt?,
+        val activeRuntime: FreshRunUiIdentity?,
+        val receiptOnly: Boolean,
+    )
+    private fun beginFreshStartRecheck() {
+        if (freshStartBlocked()) return
+        // A prior receipt can appear after the last passive poll and before a
+        // tap. Re-read before permission/scope/admission work so UI eligibility
+        // cannot bypass FreshRunRuntime.admit's unresolved-receipt guard.
+        freshStartRecheckPending = true
+        freshActionButtons.forEach { it.isEnabled = false }
+        setTextIfChanged(statusText, "HUGR\nFRESH RECEIPT RECHECKING · START LOCKED")
+        setTextIfChanged(primaryText, "Rechecking the selected receipt before a new Start. No fresh run is admitted.")
+        renderEvidence()
+    }
+    private fun completeFreshStartRecheck() {
+        if (!freshStartRecheckPending) return
+        freshStartRecheckPending = false
+        if (!FreshRunReadinessPresenter.startPotentiallyPermitted(freshReadinessInput())) {
+            renderFreshReadiness()
+            return
+        }
+        freshRequested = true
+        renderFreshReadiness()
+        WatchDiagnosticRuntime.begin(this, null, null)
+        beginFreshOrdinaryScopeAfterRetainedDeliveryProbe()
     }
     private val readinessRefresh = object : Runnable {
         override fun run() {
@@ -108,7 +195,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun createEvidenceLayout() {
-        val layout = LinearLayout(this).apply {
+        val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(16, 16, 16, 16)
             setBackgroundColor(Color.BLACK)
@@ -119,53 +206,84 @@ class MainActivity : ComponentActivity() {
             textSize = 12f
             setTextColor(Color.WHITE)
         }
-        layout.addView(statusText)
-        layout.addView(Button(this).apply {
+        content.addView(statusText)
+        primaryText = TextView(this).apply {
+            text = "Reading the current fresh receipt off the UI thread. Start remains locked until that read resolves."
+            textSize = 9f
+            setTextColor(Color.LTGRAY)
+            setPadding(0, 4, 0, 6)
+        }
+        content.addView(primaryText)
+        evidenceText = TextView(this).apply {
+            textSize = 8f
+            setTextColor(Color.GREEN)
+            setPadding(0, 6, 0, 8)
+        }
+        // Exact source/run/revision details belong above the actions so a compact
+        // round display exposes the decision evidence before any control.
+        content.addView(evidenceText)
+        freshStartButton = Button(this).apply {
             text = "Start fresh 5 minutes"
+            textSize = 10f
+            minimumHeight = 0
+            setPadding(8, 4, 8, 4)
             isEnabled = false
             freshActionButtons += this
             setOnClickListener {
-                if (freshActionBlocked()) return@setOnClickListener
-                freshRequested = true
-                WatchDiagnosticRuntime.begin(this@MainActivity, null, null)
-                beginFreshOrdinaryScopeAfterRetainedDeliveryProbe()
+                beginFreshStartRecheck()
             }
-        })
-        layout.addView(Button(this).apply {
+        }
+        content.addView(freshStartButton)
+        freshReceiptOnlyButton = Button(this).apply {
             text = "Serve current fresh receipt only"
+            textSize = 10f
+            minimumHeight = 0
+            setPadding(8, 4, 8, 4)
             isEnabled = false
             freshActionButtons += this
             setOnClickListener {
-                if (freshActionBlocked()) return@setOnClickListener
-                freshRequested = true
+                if (freshReceiptOnlyBlocked()) return@setOnClickListener
+                freshReceiptOnlyRequested = true
+                freshActionButtons.forEach { it.isEnabled = false }
                 try {
                     startForegroundService(Intent(this@MainActivity, BleGattService::class.java).apply {
                         action = FreshRunRuntime.ACTION_SERVE_FRESH_RECEIPT_ONLY
                     })
                     statusText.text = "HUGR\nReceipt-only service requested · no sensing"
+                    primaryText.text = "Requested explicitly from the selected saved receipt. It is not a fresh Start or sensor/hardware claim."
                     startReadinessRefresh()
                 } catch (failure: Exception) {
                     WatchDiagnosticRuntime.capture(this@MainActivity, DiagnosticStage.SERVICE_START, failure = failure)
                     latchFreshFailure("Receipt-only start failed")
                 }
             }
-        })
-        layout.addView(Button(this).apply {
+        }
+        content.addView(freshReceiptOnlyButton)
+        retainedDeliveryButton = Button(this).apply {
             text = "Explicit retained v2 delivery"
+            textSize = 10f
+            minimumHeight = 0
+            setPadding(8, 4, 8, 4)
             isEnabled = false
             freshActionButtons += this
             setOnClickListener {
-                if (freshActionBlocked()) return@setOnClickListener
-                freshRequested = true
+                if (retainedDeliveryBlocked()) return@setOnClickListener
+                retainedDeliveryRequested = true
+                freshActionButtons.forEach { it.isEnabled = false }
                 freshUi = false
                 Thread({ probeRetainedFinalizedDeliveryInBackground() }, "HUGR-ExplicitRetainedProbe").start()
             }
-        })
+        }
+        content.addView(retainedDeliveryButton)
 
-        layout.addView(Switch(this).apply {
+        // Legacy contract anchor was `layout.addView(Switch...)`; this same
+        // explicit test-only control is now part of the complete scroll content.
+        content.addView(Switch(this).apply {
             text = "TEST ONLY: keep screen awake"
             textSize = 9f
             setTextColor(Color.YELLOW)
+            minimumHeight = 0
+            setPadding(0, 4, 0, 4)
             setOnCheckedChangeListener { _, enabled ->
                 if (enabled) {
                     window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -175,26 +293,19 @@ class MainActivity : ComponentActivity() {
             }
         })
 
-        evidenceText = TextView(this).apply {
-            textSize = 8f
-            setTextColor(Color.GREEN)
-            setPadding(0, 8, 0, 0)
-        }
         scrollView = ScrollView(this).apply {
             isFillViewport = true
             addView(
-                evidenceText,
+                content,
                 android.view.ViewGroup.LayoutParams(
                     android.view.ViewGroup.LayoutParams.MATCH_PARENT,
                     android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
                 ),
             )
         }
-        layout.addView(
-            scrollView,
-            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f),
-        )
-        setContentView(layout)
+        // The root ScrollView owns heading, compact identity, controls, switch, and
+        // complete evidence. A round display must never squeeze evidence to zero height.
+        setContentView(scrollView)
     }
 
     private fun scheduleStartupAfterFirstFrame() {
@@ -225,14 +336,10 @@ class MainActivity : ComponentActivity() {
             return
         }
         // Returning from clock/ambient is not a new launch or a new readiness decision.
-        // Do not repaint a live fresh receipt with the passive first-frame headline.
-        if (freshRequested || freshReceiptDisplayed || FreshRunRuntime.session != null || FreshRunRuntime.receiptOnly) {
-            renderEvidence()
-            startReadinessRefresh()
-            return
-        }
-        statusText.text = "HUGR\nReady · deliberate fresh action required"
-        evidenceText.text = "Opening is passive. New per-run v3 recording or current fresh receipt only are explicit actions. Existing source roots are not opened."
+        // Never offer START before the serialized receipt read resolves.
+        statusText.text = "HUGR\nFRESH RECEIPT CHECKING · START LOCKED"
+        primaryText.text = "Opening is passive. Reading current fresh receipt off the UI thread; no fresh run is admitted."
+        evidenceText.text = "Existing source roots are not opened."
         startReadinessRefresh()
     }
 
@@ -296,13 +403,21 @@ class MainActivity : ComponentActivity() {
             startupRecoveryGate.markFailed()
             build46Baseline = null
             renderFirstFrame(firstFrameCoordinator.onRecoveryFailure(failure))
+            // This is presentation containment only. No receipt is created,
+            // reclassified, cleaned up, served, or otherwise mutated here.
+            latchFreshFailure("Fresh scope preparation failed · no sensing")
         }
     }
 
     private fun renderFirstFrame(presentation: FirstFramePresentation) {
         if (freshTerminalFailure) return
         firstFramePresentation = presentation
+        if (freshRequested && freshReadinessResolved) {
+            renderFreshReadiness()
+            return
+        }
         statusText.text = "HUGR\n${presentation.headline}"
+        primaryText.text = "Startup presentation only; no fresh run is admitted."
         evidenceText.text = buildString {
             append(presentation.detail)
             presentation.baselineText?.let { append('\n').append(it) }
@@ -392,6 +507,7 @@ class MainActivity : ComponentActivity() {
         if (!freshRequested) return
         if (freshTerminalFailure || freshAdmissionScheduled) return
         freshAdmissionScheduled = true
+        renderFreshReadiness()
         Thread({
             try {
                 if (isFinishing || isDestroyed) return@Thread
@@ -402,11 +518,18 @@ class MainActivity : ComponentActivity() {
                         FreshRunRuntime.end()
                         return@runOnUiThread
                     }
+                    freshAdmissionIdentity = FreshRunUiIdentity(
+                        admitted.journal.watchBootSessionId,
+                        admitted.runId,
+                    )
+                    freshObservedActiveRuntime = freshAdmissionIdentity
+                    renderFreshReadiness()
                     try {
                         startForegroundService(Intent(this, BleGattService::class.java).apply {
                             action = FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES
                         })
-                        statusText.text = "HUGR\nFresh 5-minute recording requested"
+                        // Receipt observation on the next serialized refresh, not this
+                        // request, is what may make the exact NEW RUN ADMITTED claim.
                         startReadinessRefresh()
                     } catch (failure: Exception) {
                         WatchDiagnosticRuntime.capture(this, DiagnosticStage.SERVICE_START, failure = failure)
@@ -535,7 +658,22 @@ class MainActivity : ComponentActivity() {
             // controls disabled/enabled on each passive one-second poll.
             if (!freshReadinessResolved) freshActionButtons.forEach { it.isEnabled = false }
             Thread({
-                val result = runCatching { FreshRunRuntime.current(applicationContext) }
+                val result = runCatching {
+                    // Snapshot all process-local values under the same runtime monitor as
+                    // current(). This is a read only UI projection; it does not open a
+                    // source journal or alter receipt/lifecycle state.
+                    synchronized(FreshRunRuntime) {
+                        val activeSession = FreshRunRuntime.session
+                        val active = activeSession?.let {
+                            FreshRunUiIdentity(it.journal.watchBootSessionId, it.runId)
+                        }
+                        FreshRuntimeRead(
+                            receipt = FreshRunRuntime.current(applicationContext),
+                            activeRuntime = active,
+                            receiptOnly = FreshRunRuntime.receiptOnly,
+                        )
+                    }
+                }
                 result.exceptionOrNull()?.let { failure ->
                     WatchDiagnosticRuntime.capture(this, DiagnosticStage.STARTUP_SELECTION, failure = failure)
                     FreshRunRuntime.session?.quiesce()
@@ -543,20 +681,18 @@ class MainActivity : ComponentActivity() {
                 runOnUiThread {
                     freshReadPending = false
                     if (isFinishing || isDestroyed || freshTerminalFailure) return@runOnUiThread
-                    val receipt = result.getOrNull()
                     freshReadinessResolved = result.isSuccess
-                    freshActionButtons.forEach { it.isEnabled = !freshActionBlocked() }
                     if (result.isFailure) {
                         latchFreshFailure("Fresh receipt unavailable / interrupted IO · no completion")
-                    } else if (receipt != null) {
-                        freshReceiptDisplayed = true
-                        val status = "HUGR\nFresh ${receipt.phase.name}" +
-                            if (receipt.failure == "NONE") " · no recorded failure" else " · ${receipt.failure}"
-                        val evidence = "Source ${receipt.sourceId}\nRun ${receipt.runId}\nRequested 5 minutes; supported/started ${receipt.supportedMask}/${receipt.startedMask}\nManifests ${receipt.manifests.size}; exact accepted ACKs ${receipt.acks.size}\nReceipt revision ${receipt.revision}. STARTED is admission, not proof of sensor records. Phone durable report confirmation is separate. PPG live-only; no canonical PPG in this receipt."
-                        // Even equal setText calls invalidate/relayout TextViews. Render
-                        // only changed evidence and retain manual scroll/selection.
-                        if (statusText.text.toString() != status) statusText.text = status
-                        if (evidenceText.text.toString() != evidence) evidenceText.text = evidence
+                    } else {
+                        val observed = requireNotNull(result.getOrNull())
+                        freshObservedReceipt = observed.receipt?.observed()
+                        freshObservedActiveRuntime = observed.activeRuntime
+                        freshObservedReceiptOnly = observed.receiptOnly
+                        freshReceiptDisplayed = freshObservedReceipt != null
+                        // Equal text never resets layout or manual scroll position.
+                        renderFreshReadiness()
+                        completeFreshStartRecheck()
                     }
                 }
             }, "HUGR-FreshReceiptRead").start()

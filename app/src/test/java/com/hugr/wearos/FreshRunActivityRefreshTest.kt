@@ -77,18 +77,18 @@ class FreshRunActivityRefreshTest {
             invoke(activity, "renderEvidence")
             await { !field<Boolean>(activity, "freshReadPending") }
             val buttons = field<MutableList<Button>>(activity, "freshActionButtons")
-            assertTrue(buttons.all { it.isEnabled })
+            assertReadyWithoutReceipt(buttons)
             // Keep the real worker pending. Actions remain logically blocked by freshReadPending;
             // after the initial ready decision a passive refresh need not repaint all buttons.
             synchronized(FreshRunRuntime) {
                 invoke(activity, "renderEvidence")
                 assertTrue(field<Boolean>(activity, "freshReadPending"))
-                assertTrue("Ready controls must not blink disabled on every passive poll", buttons.all { it.isEnabled })
+                assertReadyWithoutReceipt(buttons)
                 buttons.forEach { it.performClick() }
                 assertFalse(field<Boolean>(activity, "freshRequested"))
             }
             await { !field<Boolean>(activity, "freshReadPending") }
-            assertTrue(buttons.all { it.isEnabled })
+            assertReadyWithoutReceipt(buttons)
         } finally { controller.destroy(); root.deleteRecursively() }
     }
 
@@ -107,6 +107,12 @@ class FreshRunActivityRefreshTest {
 
     private fun invoke(target: Any, name: String) = target.javaClass.getDeclaredMethod(name).apply { isAccessible = true }.invoke(target)
     @Suppress("UNCHECKED_CAST") private fun <T> field(target: Any, name: String): T = target.javaClass.getDeclaredField(name).apply { isAccessible = true }.get(target) as T
+    private fun assertReadyWithoutReceipt(buttons: List<Button>) {
+        assertTrue(buttons.single { it.text == "Start fresh 5 minutes" }.isEnabled)
+        assertTrue(buttons.single { it.text == "Explicit retained v2 delivery" }.isEnabled)
+        assertFalse("Receipt-only must remain independently unavailable without a current receipt",
+            buttons.single { it.text == "Serve current fresh receipt only" }.isEnabled)
+    }
     private fun await(test: () -> Boolean) {
         repeat(300) { Shadows.shadowOf(Looper.getMainLooper()).idle(); if (test()) return; Thread.sleep(10) }
         fail("Receipt worker did not complete")
