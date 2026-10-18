@@ -2,7 +2,9 @@
 
 **Authority:** Neil authorised source/test investigation and correction of demonstrated defects at 19:14 Europe/Oslo. **No APK build, version/signing change, installation or device action is authorised or performed.** The installed pair remains Watch80 / Phone61 on Honor, containing the earlier source, not these new corrections.
 
-**Checkpoint status: WORK IN PROGRESS — focused corrections validated; full joined validation running.** This is not final acceptance, candidate admission, or physical qualification. The full actual-wire joined result will be recorded in a dated completion addendum, not guessed from passing focused tests.
+**Latest disposition: source/test GREEN — all six actual-wire joined phases and the final Watch unit rerun passed. Physical result remains STOP / NOT QUALIFIED.** See the completion addendum below; no build or device authority is implied.
+
+**Earlier checkpoint history: WORK IN PROGRESS — focused corrections validated; full joined validation running when recorded.** That WIP source/control snapshot was independently preserved on GitHub. It is not erased or retrospectively presented as complete validation, candidate admission or physical qualification.
 
 ## Physical evidence remains separate
 
@@ -74,3 +76,26 @@ No S4/Atlas/private proposal change is affected or authorised. No image/video/pr
 ## Preservation safety clarification — no evidence rewrite
 
 The publication scan identified a new synthetic test-device literal and obsolete device-address literals already present in affected current control copies. The test address is now generated from fixture bytes, with identical simulated behavior. Complete obsolete address tokens in current Master/Alignment copies are replaced by `[DEVICE_ADDRESS]`; all surrounding factual statements, source/status identities and historical commits remain intact. Longer public signer SHA-256 fingerprints are not device addresses and remain unchanged. This is bounded data minimization, not source recovery, private-data export, evidence reclassification or a Git history rewrite.
+
+## 18 October completion addendum — source/test GREEN, no build/device action
+
+All six joined phases exited successfully: **real Watch fresh journal writer → actual Watch live/replay notification serializer → current Phone ingestion/native exact equality and Phone ACK frames → real Watch pre-final-ACK replica accepts the exact Phone frames and publishes matching completed receipt → production Phone report publication/restart/offline custody reader → complete Phone deterministic suite**. The final full Watch rerun also passed after the fixture-only address representation change.
+
+| Final validation | Result |
+|---|---|
+| Watch full unit suite | 236 total; 232 passed, 4 skipped; 0 failures/errors |
+| Phone full deterministic suite | 150 total; 148 passed, 2 skipped; 0 failures/cancelled |
+| Native production custody/report/restart/offline suite | 96 passed; 0 failures/errors/skips |
+| Dedicated current fresh actual-wire joined case | 1 passed; 0 failures/skips |
+| Actual production Phone callback baseline → correction | 1 pass / 3 fail → 4 pass / 0 fail |
+| Changed current Phone source/test TypeScript diagnostics | None reported |
+| Whole-repository TypeScript check | Still RED: 29 diagnostics in three unchanged archived harness/snapshot files; not concealed or repaired outside scope |
+| Protected SourceJournal and RetainedTimingExportActivity | Exact pre-correction bytes unchanged |
+
+The two skipped Phone cases require separate prior replay-wire fixtures (current cursor and synthetic historical 8184 cursor); they were not counted as executed joined proof. The dedicated fresh actual-wire case did execute. Skipped Watch cases and all test/protection summaries are retained in `docs/evidence/watch80-joined-source-correction-2026-10-18/final-test-summary.json`. No synthetic result qualifies a historical or current physical recording, validates the sensor SDK/radio on hardware, proves private canonical custody or grants clinical/N1 validity.
+
+**Remaining boundary:** the corrected source has not been built or installed. The installed Watch80/Phone61 pair still contains the earlier code. Today's exact initiating callback/ordering and actual fresh-run finalisation/custody remain unproved; no new run identity, historical provenance or artifact proof was invented. Source corrections address demonstrated defects together, not a claimed complete explanation of the screenshot.
+
+**One next move proposed:** authorise one integrated, signer-continuous Watch-and-Phone candidate build/admission using this tested baseline. Both sides changed; another Watch-only APK would omit the demonstrated native Phone custody correction. That later admission must carry a reviewed handling of today's failed/unresolved run and one complete short-recording acceptance procedure. It must not silently retry/reconnect or bypass an active/STARTED receipt. Installation, receipt-only state changes, launches, sensing, private readback and a subsequent five-minute run remain separate explicit device authority. No diagnostic-only reproduction, all-engine rebuild, historical Watch69 reconstruction, new telemetry platform, phone-host migration or computer purchase is a prerequisite for this source result.
+
+The WIP checkpoint was remotely preserved and independently read back before final closeout. Final closeout repeats the standing source receipt → Master → no affected authorised private proposal → Alignment last order, then bounded non-force existing-branch preservation and independent exact remote head/tree/changed-source/receipt byte verification. Final head/tree identities are recorded in the delivered preservation check; a local test pass or commit alone is not claimed as remote preservation.
