@@ -63,3 +63,21 @@ The reply confirms actions; it does **not explicitly authorize** the separately 
 Only the existing separately authorized guarded closeout remains proposed: local receipt-only metadata interruption for that inactive STARTED receipt, same source/run, expected revision9 FAILED/PROCESS_INTERRUPTED; source files and receipt inventory retained, no finalization or qualification claim. No new source correction/build is necessary for that existing operation. Changed identity/phase, FINALIZED, active runtime, refusal/error or unexpected prompt STOP. No new Start, Phone/Connect/retry, Bluetooth/settings change, data clearing, egress, legacy/frozen-root/private-data, Word/S4/research/N1 action. Source-owned record → Master → no affected authorized private proposal → Alignment last → bounded documentation commits → controlled non-force GitHub mirror and independent exact head/tree/byte readback.
 
 Watch69 NOT QUALIFIED; Watch68 v1 UNCLASSIFIED / NOT VERIFIED; Watch58 TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED.
+
+## Explicit closeout authority — 19 October 2026, 01:44 Europe/Oslo
+
+Neil explicitly approves: “Authorize the one receipt-only interruption closeout”. This supersedes only the prior closeout-approval HOLD. His earlier confirmation of passive Main and scrolling remains accepted without repeat questioning.
+
+Authority: one existing guarded local receipt-only action for source `039fe584-19fe-41e5-8a8e-24f4db316c24`, run `c01a7a37-a789-471f-bf3c-ad7bc3de2ef6`, last observed revision8 STARTED/NONE. Expected metadata transition is same source/run, revision9 FAILED/PROCESS_INTERRUPTED; recorded masks/timing/manifests/ACK inventory and source journal files preserved by the existing receipt-only path. Selected receipt-file publication is an atomic replacement, not an archive of its old bytes. No finalization/canonical-custody/ACK completion/qualification claim.
+
+### Approved short physical procedure
+
+1. On Watch82's existing Main screen, wake it if needed and passively scroll. Confirm the selected receipt still says STARTED, revision8, with the same source/run above (short labels source039fe584/run c01a7a37). If another identity/revision/phase, active-runtime heading, error, prompt or unavailable screen appears, stop and report; no relaunch/retry/workaround.
+2. Scroll to **SERVE CURRENT FRESH RECEIPT ONLY** and tap it **once**. Do not press Start fresh5minutes or Explicit retainedv2delivery. Leave Phone HUGR/Connect and Bluetooth/settings untouched.
+3. Observe the receipt detail for the first result/error, at most **two minutes from the tap**. Expected result is same source/run, revision9, **FAILED / PROCESS_INTERRUPTED**. A temporary receipt-only/requested heading may appear; it is not a new recording. If the button is unavailable, the screen refuses or anything unexpected occurs, do not press again. Record/report the actual phase/revision/reason, or one photo if easier. Stop interaction afterward, no new Start or Connect.
+
+This approved step does not require a Watch on-wrist sensor run or a Phone connection. Source review confirms the receipt-only mode skips the HealthSensorService, sensor receivers and normal source-journal delivery; GATT is metadata-only and code-bounded to two minutes. Deadline/time passage is not independent service-shutdown or finalization evidence. No device action has been executed by Manus or reported after this approval yet; physical result is **PENDING**. No new build/test/source correction, private report export, device command, clearing/uninstall/pairing change, egress, legacy/frozen action, Word/S4/research/N1 or fresh recording authorized.
+
+After an actually observed same-identity FAILED/PROCESS_INTERRUPTED result, preserve that result before proposing a separately authorized fresh complete acceptance. Do not jump from this metadata closeout to a new recording or qualification.
+
+Standing source-owned record → Master → no affected authorized private proposal → Alignment last → bounded documentation commits → controlled both-repository non-force mirror → independent exact remote head/tree/record-byte readback. Watch69 NOT QUALIFIED; Watch68 v1 UNCLASSIFIED / NOT VERIFIED; Watch58 TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED.
