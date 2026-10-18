@@ -64,6 +64,8 @@ class BleGattService : Service() {
     private var freshReceiptOnly = false
     private var freshConfirmed = false
     private var freshConnectedOnce = false
+    private var freshReconnectAvailable = false
+    private var freshReconnectUsed = false
     private var freshStartedAt = 0L
     private var freshRequestedRunId: UUID? = null
     private var freshStopping = false
@@ -943,14 +945,31 @@ class BleGattService : Service() {
             if (freshMode) {
                 freshPager.reset()
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    if (freshConnectedOnce) { stopFresh("CONNECTION_REUSED"); return }
+                    if (freshConnectedOnce && !freshReconnectAvailable) { stopFresh("CONNECTION_REUSED"); return }
+                    if (freshReconnectAvailable) {
+                        freshReconnectAvailable = false
+                        freshReconnectUsed = true
+                    }
                     freshConnectedOnce = true
                     connectedDevice = device
                     if (freshReceiptOnly) return
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     connectedDevice = null
-                    stopFresh("PHONE_DISCONNECTED")
-                    return
+                    // Fresh recording has its own Health-owned five-minute bound. A
+                    // Phone transport interruption must not convert that admitted run
+                    // into a failed/ended recording before the bound can quiesce and
+                    // finalize its current source receipt. Permit one later ordinary
+                    // GATT connection; the common disconnect path below resets only
+                    // the transport lineage and resumes advertising.
+                    if (freshReceiptOnly) {
+                        stopFresh("PHONE_DISCONNECTED")
+                        return
+                    }
+                    if (!freshConnectedOnce || freshReconnectUsed) {
+                        stopFresh("CONNECTION_REUSED")
+                        return
+                    }
+                    freshReconnectAvailable = true
                 }
             }
             when (newState) {

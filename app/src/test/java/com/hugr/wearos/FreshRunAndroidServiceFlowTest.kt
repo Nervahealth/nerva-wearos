@@ -513,6 +513,111 @@ class FreshRunAndroidServiceFlowTest {
         }
     }
 
+    @Test
+    fun `actual fresh Health recording survives a transient Phone disconnect and permits same-run resume`() {
+        val controller = Robolectric.buildActivity(MainActivity::class.java).create().start().resume()
+        val activity = controller.get()
+        val receiptRoot = FreshRunRuntime.receiptRoot(activity)
+        receiptRoot.deleteRecursively()
+        ShadowStatFs.registerStats(activity.noBackupFilesDir, 4_096, 1_000_000, 1_000_000)
+        Settings.Global.putInt(activity.contentResolver, Settings.Global.BOOT_COUNT, 7908)
+        Shadows.shadowOf(activity).grantPermissions(*permissionSet)
+        enableSyntheticBluetooth(activity)
+        var bleController: org.robolectric.android.controller.ServiceController<BleGattService>? = null
+        var healthController: org.robolectric.android.controller.ServiceController<HealthSensorService>? = null
+        try {
+            FreshRunAndroidServiceFlowTestOnlySamsungSdk.supportedTypes = setOf(
+                HealthTrackerType.HEART_RATE_CONTINUOUS,
+                HealthTrackerType.EDA_CONTINUOUS,
+                HealthTrackerType.ACCELEROMETER_CONTINUOUS,
+                HealthTrackerType.SKIN_TEMPERATURE_CONTINUOUS,
+            )
+            enterRealFreshActionSurface(activity)
+            assertTrue(freshButtons(activity).single { it.text == "Start fresh 5 minutes" }.performClick())
+            await("real Main queued BLE") { startedServices(activity).any { it.isFreshBleStart() } }
+            val session = requireNotNull(FreshRunRuntime.session)
+            bleController = Robolectric.buildService(BleGattService::class.java, startedServices(activity).single { it.isFreshBleStart() })
+                .create().startCommand(0, 87)
+            healthController = Robolectric.buildService(
+                HealthSensorService::class.java,
+                startedServices(bleController.get()).single { it.isFreshHealthStart() },
+            ).create().startCommand(0, 88)
+            val health = healthController.get()
+            FreshRunAndroidServiceFlowTestOnlySamsungSdk.emit(
+                HealthTrackerType.EDA_CONTINUOUS,
+                listOf(DataPoint(1_791_000_000_101L, mapOf(ValueKey.EdaSet.SKIN_CONDUCTANCE to 1.25f))),
+            )
+            FreshRunAndroidServiceFlowTestOnlySamsungSdk.emit(
+                HealthTrackerType.HEART_RATE_CONTINUOUS,
+                listOf(
+                    DataPoint(
+                        1_791_000_000_102L,
+                        mapOf(
+                            ValueKey.HeartRateSet.HEART_RATE to 72,
+                            ValueKey.HeartRateSet.HEART_RATE_STATUS to 0,
+                            ValueKey.HeartRateSet.IBI_LIST to listOf(800),
+                            ValueKey.HeartRateSet.IBI_STATUS_LIST to listOf(0),
+                        ),
+                    ),
+                ),
+            )
+            FreshRunAndroidServiceFlowTestOnlySamsungSdk.emit(
+                HealthTrackerType.ACCELEROMETER_CONTINUOUS,
+                listOf(
+                    DataPoint(
+                        1_791_000_000_103L,
+                        mapOf(
+                            ValueKey.AccelerometerSet.ACCELEROMETER_X to 1,
+                            ValueKey.AccelerometerSet.ACCELEROMETER_Y to 2,
+                            ValueKey.AccelerometerSet.ACCELEROMETER_Z to 3,
+                        ),
+                    ),
+                ),
+            )
+            FreshRunAndroidServiceFlowTestOnlySamsungSdk.emit(
+                HealthTrackerType.SKIN_TEMPERATURE_CONTINUOUS,
+                listOf(
+                    DataPoint(
+                        1_791_000_000_104L,
+                        mapOf(
+                            ValueKey.SkinTemperatureSet.OBJECT_TEMPERATURE to 33.5f,
+                            ValueKey.SkinTemperatureSet.AMBIENT_TEMPERATURE to 21.0f,
+                            ValueKey.SkinTemperatureSet.STATUS to 0,
+                        ),
+                    ),
+                ),
+            )
+            Shadows.shadowOf(Looper.getMainLooper()).idle()
+            val callback: android.bluetooth.BluetoothGattServerCallback = field(bleController.get(), "gattServerCallback")
+            val adapter = (activity.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
+            // Generated synthetic fixture, not an operator device identifier.
+            val fixtureAddress = listOf(0x00, 0x11, 0x22, 0x33, 0x44, 0x55).joinToString(":") { "%02X".format(it) }
+            val phone = adapter.getRemoteDevice(fixtureAddress)
+
+            callback.onConnectionStateChange(phone, android.bluetooth.BluetoothGatt.GATT_SUCCESS, android.bluetooth.BluetoothProfile.STATE_CONNECTED)
+            callback.onConnectionStateChange(phone, android.bluetooth.BluetoothGatt.GATT_SUCCESS, android.bluetooth.BluetoothProfile.STATE_DISCONNECTED)
+
+            assertEquals("a transport disconnect cannot abort the autonomous five-minute recording", FreshRunPhase.STARTED, session.snapshot().phase)
+            assertTrue("Health must retain the already-armed automatic stop", session.acceptsSamples())
+            assertEquals(BoundedOrdinaryRunGate.State.ACCEPTING_SAMPLES, field<BoundedOrdinaryRunGate>(health, "boundedRunGate").state())
+
+            callback.onConnectionStateChange(phone, android.bluetooth.BluetoothGatt.GATT_SUCCESS, android.bluetooth.BluetoothProfile.STATE_CONNECTED)
+            assertSameRun(session, requireNotNull(FreshRunRuntime.session))
+            assertEquals(FreshRunPhase.STARTED, session.snapshot().phase)
+            Shadows.shadowOf(Looper.getMainLooper()).idleFor(5, TimeUnit.MINUTES)
+            val terminal = requireNotNull(FreshRunRuntime.current(activity))
+            assertEquals("the original run must finalize on its own five-minute bound", FreshRunPhase.FINALIZED, terminal.phase)
+            assertEquals("NONE", terminal.failure)
+            assertEquals(BoundedOrdinaryRunGate.State.FINALIZED, field<BoundedOrdinaryRunGate>(health, "boundedRunGate").state())
+        } finally {
+            runCatching { healthController?.destroy() }
+            runCatching { bleController?.destroy() }
+            controller.destroy()
+            ShadowStatFs.unregisterStats(activity.noBackupFilesDir)
+            receiptRoot.deleteRecursively()
+        }
+    }
+
     private fun enterRealFreshActionSurface(activity: MainActivity) {
         field<TextView>(activity, "evidenceText").viewTreeObserver.dispatchOnDraw()
         await("Main first receipt decision") { booleanField(activity, "freshReadinessResolved") }
@@ -551,6 +656,11 @@ class FreshRunAndroidServiceFlowTest {
         val text = requireNotNull(report)
         assertTrue("diagnostic attempt must remain the admitted fresh run", text.contains("attempt=${receipt.runId}"))
         assertTrue("diagnostic source must remain the admitted fresh source", text.contains("sourceSession=${receipt.sourceId}"))
+    }
+
+    private fun assertSameRun(expected: FreshRunSession, actual: FreshRunSession) {
+        assertEquals(expected.runId, actual.runId)
+        assertEquals(expected.journal.watchBootSessionId, actual.journal.watchBootSessionId)
     }
 
     private fun await(description: String, condition: () -> Boolean) {

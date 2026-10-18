@@ -231,6 +231,12 @@ class FreshRunReceiptTest {
             File(dir,"source-id.txt").writeText("${r.initial.sourceId}\n")
             File(dir,"canonical-records.base64").writeText(r.records.joinToString("\n",postfix="\n"){Base64.getEncoder().encodeToString(it.canonicalBytes())})
             File(dir,"manifest-frames.base64").writeText(r.sealed.joinToString("\n",postfix="\n"){Base64.getEncoder().encodeToString(SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(it)))})
+            val notifications = r.sealed.flatMapIndexed { index, manifest ->
+                val records = r.records.filter { it.recordIndex in manifest.firstRecordIndex..manifest.lastRecordIndex }
+                SourceReplayProtocol.buildDataFrames(records, replay = index > 0, maximumAttPayloadBytes = 514) +
+                    listOf(SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(manifest)))
+            }
+            File(dir,"source-wire-notifications.base64").writeText(notifications.joinToString("\n",postfix="\n"){Base64.getEncoder().encodeToString(it)})
             File(dir,"ack-frames.base64").writeText(r.sealed.joinToString("\n",postfix="\n"){Base64.getEncoder().encodeToString(SourceReplayProtocol.encodeSegmentAcknowledgement(SourceSegmentAcknowledgement(r.initial.sourceId,it.lastRecordIndex,it.sha256Hex)))})
             File(dir,"receipt-digest.txt").writeText(FreshRunReceipt.digest(completed.bytes())+"\n")
         }finally{r.close()}
