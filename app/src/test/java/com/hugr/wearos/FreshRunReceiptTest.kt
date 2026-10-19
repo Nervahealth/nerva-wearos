@@ -365,9 +365,15 @@ class FreshRunReceiptTest {
         }
         val r=Rig(durationMs=duration,version=FreshRunReceiptVersion.V2);try{
             r.begin();File(dir,"started.tsv").writeBytes(r.session.snapshot().bytes())
-            repeat(count){index-> val stream=SourceStreamCode.entries[index%SourceStreamCode.entries.size];requireNotNull(r.session.append(stream,r.wall+index,fixturePayload(stream)))}
+            repeat(count){index->
+                val offset=if(count==1)0L else index.toLong()*(duration-1L)/(count-1L)
+                r.elapsed=r.initial.startElapsedMs+offset;r.wall=r.initial.startWallMs+offset
+                val stream=SourceStreamCode.entries[index%SourceStreamCode.entries.size]
+                requireNotNull(r.session.append(stream,r.wall,fixturePayload(stream)))
+            }
             File(dir,"streaming-acked.tsv").writeBytes(r.session.snapshot().bytes())
-            r.finishTime();r.session.finalizeRecording();val before=r.session.snapshot();val manifests=before.manifests
+            r.elapsed=r.initial.startElapsedMs+duration;r.wall=r.initial.startWallMs+duration
+            r.session.finalizeRecording();val before=r.session.snapshot();val manifests=before.manifests
             require(manifests.isNotEmpty());File(dir,"finalized.tsv").writeBytes(before.bytes());r.journal.forceSync();copyReplica(r.root,File(dir,"watch-verifier-root"))
             writeFixtureWire(dir,r.journal,manifests)
             manifests.filter{m->before.acks.none{it.last==m.lastRecordIndex}}.forEach{r.ack(it)}
