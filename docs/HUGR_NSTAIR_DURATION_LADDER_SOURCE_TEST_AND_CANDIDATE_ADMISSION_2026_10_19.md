@@ -109,3 +109,58 @@ Test-onlycorrectionreplacesblankkeyreturnwithAssume(skip,notfalsePASS), explicit
 ## Latest disposition — actual joined requalification complete at21:54 Europe/Oslo
 
 **SOURCE/CAPACITY PASS_SYNTHETIC_ONLY now rests on actual keyed execution, not the earlier silent returns.** Correctfixturekeyandmandatoryrecord/manifest/ACKphaseoutput independentlyestablishactualnativewriter/report/restart/offlinefor all5/30/120/480rungs. Eight-hour801505records480manifests960PhoneACKphasefacts480WatchacceptedACKs andterminalcompletion; beginning/midpoint/endwriterrestart+durableoffline verified. Fullnative148(145pass3explicitopt-infixtureskip), fullWatch262(258pass4skip), fullPhone159(157pass2skip)no failures. Actualjoinedtests1/1non-skipped each. 180000msunchanged; single8MiBwindowonly. PriorbadfixturekeyPASSclaimwithdrawnthenexplicitlyrequalified; nofailed/interruptedartifactdeleted. Bothbuildsheldbeforeexecution; compatibleWatch83/Phone63nowmayresumeasONEbuildperdevice fromsameproductionbytes. No install/recording/privateexport/N1; physicalfive-minutePASS/protectedhashesunchanged.
+
+## Final latest disposition — one compatible pair artifact-admitted
+
+# Watch83 / Phone63 — admitted duration-ladder candidate pair
+
+**19 October 2026. READY FOR REVIEW at the artifact boundary.** One Watch and one Phone build completed after genuine synthetic source/capacity qualification. No installation, device action, recording, private-data transfer or N1 was performed. The physical Watch82/Phone62 five-minute PASS is preserved unchanged.
+
+## Measured outcome
+
+The dominant remaining sandbox cost was repeated native SQLite cursor-window refill and ordering. One demonstrated correction gives the existing serial selected cursor a fixed **8 MiB** window on API28+, with strict allocation-failure cleanup. No SQL/schema change, whole-record materialization, omitted verification pass, weakened equality/hash/CRC/gap/provenance proof or deadline increase. The **180,000 ms** budget remains unchanged. Earlier Phone60 used 45 seconds; the extension's 180 seconds had no inspected empirical Honor calibration.
+
+| Eight-hour synthetic stage | Corrected time |
+|---|---:|
+| Record-index / exact manifest verification | 30.301 s |
+| File-offset coverage | 72.549 s |
+| Stream sequence / gaps | 41.514 s |
+| Final file hash / size | 0.210 s |
+| Cumulative core, including other core setup | **144.838 s** |
+
+Pre-correction cumulative verification stopped at181.522s. Isolated pass measurements are not interchangeable with cumulative qualification. Source copying/fingerprints/requalification were separately exercised through the actual stable terminal and offline paths. These are sandbox/Robolectric/nativeSQLite timings, **not Honor performance measurements or an eight-hour physical PASS**. Lower-rung core totals were1.708s(30min) and12.604s(2hr); workload scaling remains faster than record count and record/byte effects were not independently isolated.
+
+## Actual full-chain regression
+
+Genuine correctly keyed Watch wire→Phone production writer→exact manifests/ACK phases→Watch-origin completion→durable report→restart→offline recheck PASSED for5/30/120/480-minute virtual durations. Eight hours: **801,505 records, 480 manifests, 480 exact Watch accepted ACKs and 960 Phone ACK-phase facts**. Beginning/midpoint/end writer restart, terminal custody and offline proof passed. FullWatch262/4skips, native148/3opt-infixture skips, Phone159/2skips; no failures. All explicit actual joined rungs ran one non-skipped test and emitted the exact count sentinel.
+
+An earlier post-correction runner supplied the wrong native fixture key and silently returned. Its complete-chain PASS claim was withdrawn and preserved as superseded history. The test now skips explicitly without input; the corrected runner requires both actual execution and counts. Both builds were held **before starting** until this real requalification passed. No premature or replacement candidate build occurred.
+
+## The sole admitted artifacts
+
+| Candidate | Package / version code | Version | Bytes |
+|---|---|---|---:|
+| Watch83 | `com.hugr.wearos` /83 | `0.83.0-duration-ladder-candidate` | 12,959,493 |
+| Phone63 | `health.hugr.app` /63 | `2.0.63-duration-ladder-candidate` | 152,047,530 |
+
+Watch SHA-256: `c9a5cbdaf090563c6666c98ae628878e0399f1e586fc238a07a2389fc399386e`
+Phone SHA-256: `a43e30c6d0e823f7582efcb264e99f3ac60eaa96d78769a203cbc78007ac5882`
+
+Both actual predecessor signers match; version codes strictly increase. SignedWatchDEX proves the closed5/30/120/480-minute policy and fixed15-minute grace. SignedPhoneDEX proves the exact8,388,608-byte cursor window and API28/SQLiteCursor guard, V2 receipt/custody/proof classes, bounded caches and native verified ACK facts. ZIP/alignment/uniqueclasses/runtime exclusions passed. The original Phone substring detector falsely flagged a predecessor AndroidXCompose compatibility name; the reviewed controlled helper now rejects actual test namespaces and explicit native test classes. This is an artifact-inspection-only correction, not a runtime change or another build. Original failed name-scan evidence remains preserved.
+
+Full public-CDN APK bytes, SHA256 and sidecar bytes independently match both local artifacts. No APK, raw build response, credential, private media or physiological payload is committed into source repositories.
+
+Watch download: https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/qSDtGhbowCiYmcBH.apk
+Phone download: https://files.manuscdn.com/user_upload_by_module/session_file/310519663237475822/jjpRFvXzxdFIPbeD.apk
+
+Watch producing source head: `3ca77f44062c689d3e3dd9df4167b80e61b90bc4`, tree `01383a879b4c3dc6e2f003488e9e0bb0339690f0`.
+Phone producing source head: `8b30411ca6110204b3dc8313b91b08d38232507b`, tree `1bcfe1bfe81af0ce65b137fe5eb7ac7bc54bc790`.
+Phone managed build: `2b4f4b6a-b983-4bef-8a2d-22b0ed613254`, existing frozen-signing project. Final source/control closeout follows artifact admission; the helper-only change does not alter staged runtime input bytes.
+
+## Next physical boundary — not authorized here
+
+Review and separately authorize **installation-only: Phone63 on Honor first, then Watch83 using Wear Installer2**, keeping app/data; verify exact versions in Settings and leave HUGR unopened. No uninstall, clearing, reset, pairing change or silent Fold substitution. Then separately authorize the prepared **30-minute** one-shot gate, followed by success-only process-restart/offline readback. Only after physical PASS advance to two hours, then eight hours. Synthetic capacity is not battery/sleep/radio/clinical validation; eight-hour instrument PASS would not itself authorize N1.
+
+The prepared30-minute card remains review-only. Acquisition deadline is anchored to admission; total horizon is45minutes including fixed15-minute delivery grace. No routine Watch filming is required. Longer offline readback uses the same production180-second verifier budget; an operator180-second observation proposal is not a wired210-second watchdog claim.
+
+No engine/clarification, portal, egress, S4, frozen/legacy or historical session operation. Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 **TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED**.
