@@ -16,8 +16,12 @@ internal object WatchFreshRunDurationPolicy {
     const val DELIVERY_GRACE_MS = 900_000L
     const val MAX_LIFETIME_MS = EIGHT_HOURS_MS + DELIVERY_GRACE_MS // 495 minutes
 
-    /** Finite receipt/source inventory ceilings; overflow fails closed, never truncates. */
-    const val MAX_RECEIPT_BYTES = 512 * 1024
+    /**
+     * V2 keeps V1's human-readable m/a rows. The reconciled 2 MiB ceiling is
+     * therefore intentional: a complete 2,048-entry five-stream inventory must
+     * never be compacted, omitted, or relabelled to manufacture a success.
+     */
+    const val MAX_RECEIPT_BYTES = 2 * 1024 * 1024
     const val MAX_MANIFESTS = 2_048
     const val MAX_ACKS = 2_048
     const val MAX_MANIFEST_STREAM_RANGES = 10_240

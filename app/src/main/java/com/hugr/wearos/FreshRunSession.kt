@@ -12,6 +12,10 @@ internal class FreshRunSession(
     private var ioFailed = false
     val runId = initial.runId
     private var stopScheduled = false
+    // Fresh receipt publication has its own high-water mark. It reads the
+    // journal's indexed finalized frontier and never consumes the separate
+    // drain queue owned by the standard GATT replay path.
+    private var inventoryHighWaterRecordIndex = initial.manifests.lastOrNull()?.lastRecordIndex ?: 0L
     private fun update(next: FreshRunReceipt) {
         check(!ioFailed)
         try { store.publish(next); receipt = next } catch (e: Exception) { ioFailed = true; accepting = false; throw e }
@@ -50,14 +54,25 @@ internal class FreshRunSession(
     }
     @Synchronized fun captureManifests() {
         if (ioFailed) error("Receipt IO failed")
-        // SourceJournal owns the durable finalized index. Its drain is an exact
-        // per-instance generation queue populated only after a successful sealed
-        // rename/index. Unlike finalizedManifests(), it does not rescan or hash
-        // the complete growing manifest inventory on every sample append.
-        val found = journal.drainNewlyFinalizedManifests()
-        if (found.isEmpty()) return
+        // Do not drain SourceJournal.newlyFinalizedManifests(): BleGattService
+        // consumes that queue for standard GATT replay. The journal's indexed
+        // high-water mark is O(1)-ish metadata on every append; only a changed
+        // frontier opens/hashes a newly sealed segment, once per seal.
+        val frontier = journal.highestFinalizedRecordIndex(receipt.sourceId)
+        if (frontier <= inventoryHighWaterRecordIndex) return
+        val additions = ArrayList<SourceSegmentManifest>()
+        var cursor = inventoryHighWaterRecordIndex
+        while (cursor < frontier) {
+            val manifest = requireNotNull(
+                journal.nextFinalizedManifest(receipt.sourceId, cursor, frontier),
+            ) { "Indexed finalized manifest missing below receipt frontier" }
+            require(manifest.firstRecordIndex == cursor + 1L) { "Finalized receipt inventory gap" }
+            additions += manifest
+            cursor = manifest.lastRecordIndex
+        }
+        require(cursor == frontier) { "Finalized receipt frontier mismatch" }
         val merged = receipt.manifests.toMutableList()
-        found.forEach { m ->
+        additions.forEach { m ->
             require(m.watchBootSessionId == receipt.sourceId) { "Foreign finalized source" }
             val previous = merged.firstOrNull { it.firstRecordIndex == m.firstRecordIndex }
             if (previous != null) require(FreshRunReceiptStore.sameInventory(listOf(previous), listOf(m)))
@@ -66,6 +81,7 @@ internal class FreshRunSession(
         val limit = if (receipt.isV2()) WatchFreshRunDurationPolicy.MAX_MANIFESTS else FreshRunReceipt.MAX_V1_INVENTORY
         require(merged.size <= limit) { "Receipt manifest inventory capacity" }
         val ordered = merged.sortedBy { it.firstRecordIndex }
+        inventoryHighWaterRecordIndex = frontier
         if (!FreshRunReceiptStore.sameInventory(receipt.manifests, ordered)) update(receipt.copy(revision = receipt.revision + 1, manifests = ordered))
     }
     @Synchronized fun finalizeRecording() {

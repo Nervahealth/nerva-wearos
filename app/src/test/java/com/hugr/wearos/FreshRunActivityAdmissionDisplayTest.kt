@@ -297,6 +297,41 @@ class FreshRunActivityAdmissionDisplayTest {
     }
 
     @Test
+    fun `selected thirty minute ladder admits only matching actual V2 source run and duration identity`() {
+        val launched = launchAndResolve()
+        try {
+            grantFreshPermissions(launched.activity)
+            val selected = button(launched.activity, "Start selected ladder duration")
+            assertEquals(
+                "default ladder selection is the explicit 30-minute ladder rung",
+                WatchFreshRunDurationPolicy.THIRTY_MINUTES_MS,
+                field<Long>(launched.activity, "selectedFreshDurationMs"),
+            )
+            assertTrue(selected.performClick())
+            await("selected V2 production admission") { FreshRunRuntime.session != null }
+            val session = requireNotNull(FreshRunRuntime.session)
+            val admitted = requireNotNull(FreshRunRuntime.current(launched.activity))
+            assertEquals(FreshRunReceiptVersion.V2, admitted.version)
+            assertEquals(WatchFreshRunDurationPolicy.THIRTY_MINUTES_MS, admitted.durationMs)
+            assertEquals(session.runId, admitted.runId)
+            assertEquals(session.journal.watchBootSessionId, admitted.sourceId)
+            invoke(launched.activity, "renderEvidence")
+            await("selected V2 identity receipt render") { !booleanField(launched.activity, "freshReadPending") }
+            assertTrue(status(launched.activity).contains(NEW_RUN_ADMITTED))
+            assertIdentity(launched.activity, admitted)
+            assertTrue(allText(launched.activity).contains("30 minutes"))
+            val intent = Shadows.shadowOf(application()).allStartedServices.single { item ->
+                item.action == FreshRunRuntime.ACTION_START_FRESH_DURATION_LADDER &&
+                    item.component?.className == BleGattService::class.java.name
+            }
+            assertEquals(WatchFreshRunDurationPolicy.THIRTY_MINUTES_MS,
+                intent.getLongExtra(FreshRunRuntime.EXTRA_FRESH_DURATION_MS, -1L))
+        } finally {
+            launched.controller.destroy()
+        }
+    }
+
+    @Test
     fun `320 square layout puts status source run and actions in one scroll hierarchy with identity before controls`() {
         val receipt = failedReceipt()
         persist(receipt)

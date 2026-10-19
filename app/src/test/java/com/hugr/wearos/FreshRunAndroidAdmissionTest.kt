@@ -178,7 +178,16 @@ class FreshRunAndroidAdmissionTest {
             assertTrue(status.text.toString().contains("Fresh receipt unavailable / interrupted IO · no completion"))
             assertTrue(status.text.toString().contains("STOP · no retry"))
             assertFalse(booleanField(activity, "freshReadPending"))
-            assertEquals(3, buttons.size)
+            assertEquals(4, buttons.size)
+            assertEquals(
+                setOf(
+                    "Start fresh 5 minutes",
+                    "Start selected ladder duration",
+                    "Serve current fresh receipt only",
+                    "Explicit retained v2 delivery",
+                ),
+                buttons.map { it.text.toString() }.toSet(),
+            )
             assertTrue(buttons.all { !it.isEnabled })
 
             val before = status.text.toString()

@@ -11,12 +11,17 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class FreshRunReceiptTest {
-    private class Rig(val root: File = Files.createTempDirectory("fresh-v3-").toFile(), val fault: (String) -> Unit = {}) {
+    private class Rig(
+        val root: File = Files.createTempDirectory("fresh-v3-").toFile(),
+        val fault: (String) -> Unit = {},
+        val durationMs: Long = WatchFreshRunDurationPolicy.FIVE_MINUTES_MS,
+        val version: FreshRunReceiptVersion = FreshRunReceiptVersion.V1,
+    ) {
         var elapsed = 1000L; var wall = 1_800_000_000_000L
         val store = FreshRunReceiptStore(File(root,"fresh_ordinary_runs_v3"), fault = fault)
         val run = UUID.randomUUID()
         val journal = SourceJournal(store.sourceRoot(run), 10, { Long.MAX_VALUE }, { wall }, maxSegmentAgeMs = 60_000)
-        val initial = FreshRunReceipt(journal.watchBootSessionId, run, startWallMs = wall, startElapsedMs = elapsed, bootCount = 10)
+        val initial = FreshRunReceipt(journal.watchBootSessionId, run, durationMs = durationMs, startWallMs = wall, startElapsedMs = elapsed, bootCount = 10, version = version)
         val session: FreshRunSession
         val records = mutableListOf<WatchSourceRecord>()
         val sealed = mutableListOf<SourceSegmentManifest>()
@@ -35,7 +40,7 @@ class FreshRunReceiptTest {
         }
         fun seal(): SourceSegmentManifest { val m = requireNotNull(journal.finalizeActiveSegment()); session.captureManifests(); sealed += m; return m }
         fun ack(m: SourceSegmentManifest) { assertTrue(session.acceptAck(SourceSegmentAcknowledgement(initial.sourceId,m.lastRecordIndex,m.sha256Hex),m.lastRecordIndex)) }
-        fun finishTime() { elapsed += 300_000; wall += 300_000 }
+        fun finishTime() { elapsed += durationMs; wall += durationMs }
         fun close() { runCatching { journal.close() }; root.deleteRecursively() }
     }
     private fun rejects(block: () -> Unit) { try { block(); fail("Expected fail-closed rejection") } catch (_: IllegalArgumentException) {} catch (_: IllegalStateException) {} }
@@ -85,6 +90,26 @@ class FreshRunReceiptTest {
             r.session.quiesce(); r.wall += 300_000; r.session.finalizeRecording()
             assertEquals(index+1,r.journal.latestRecordIndex()); assertFalse(r.session.begin())
         } finally { r.close() }
+    }
+    @Test fun `receipt inventory capture observes finalized index without consuming GATT manifest queue`() {
+        val r=Rig();try{
+            r.begin();r.batchValid();val manifest=requireNotNull(r.journal.finalizeActiveSegment())
+            r.session.captureManifests()
+            assertEquals(listOf(manifest),r.journal.drainNewlyFinalizedManifests())
+            val receiptManifest = r.session.snapshot().manifests.single()
+            assertTrue(FreshRunReceiptStore.sameInventory(listOf(manifest), listOf(receiptManifest)))
+            assertEquals("receipt_${manifest.firstRecordIndex}_${manifest.lastRecordIndex}", receiptManifest.segmentId)
+            assertNotEquals(manifest.segmentId, receiptManifest.segmentId)
+        }finally{r.close()}
+    }
+    @Test fun `V2 late callbacks never append at exact selected duration`() {
+        val r=Rig(durationMs=WatchFreshRunDurationPolicy.TWO_HOURS_MS,version=FreshRunReceiptVersion.V2);try{
+            r.begin();r.batchValid();r.elapsed+=r.initial.durationMs-1
+            assertNotNull(r.session.append(SourceStreamCode.DEVICE_HEALTH,r.wall,fixturePayload(SourceStreamCode.DEVICE_HEALTH)))
+            r.elapsed++
+            assertFalse(r.session.acceptsSamples())
+            assertNull(r.session.append(SourceStreamCode.DEVICE_HEALTH,r.wall,fixturePayload(SourceStreamCode.DEVICE_HEALTH)))
+        }finally{r.close()}
     }
     @Test fun `ACK exact endpoint hash and source queued tuple rejects leave canonical intact`() {
         val r=Rig(); try {
@@ -241,37 +266,113 @@ class FreshRunReceiptTest {
             assertEquals(FreshRunPhase.FAILED,session.snapshot().phase);assertEquals("STREAM_MISSING",session.snapshot().failure)
         }finally{journal.close();root.deleteRecursively()}
     }
-    @Test fun `V2 compact 2048 manifest and ACK inventory serializes under fixed 512 KiB and parses exact`() {
+    @Test fun `V2 textual 2048 manifest and ACK full five-range inventory parses and round-trips under two MiB`() {
         val source=UUID.randomUUID();val manifests=(0 until WatchFreshRunDurationPolicy.MAX_MANIFESTS).map { index ->
             val first=index*5L+1;val ranges=SourceStreamCode.entries.associateWith { SourceStreamRange(1,first,first) }
             SourceSegmentManifest("fixture_$index",source,first,first+4,5,240,"%064x".format(index+1),ranges)
         };val acks=manifests.map { FreshAcceptedAck(it.lastRecordIndex,it.sha256Hex,29_700_000L) }
         val receipt=FreshRunReceipt(source,UUID.randomUUID(),revision=2,phase=FreshRunPhase.FINALIZED,durationMs=WatchFreshRunDurationPolicy.EIGHT_HOURS_MS,startWallMs=1_800_000_000_000L,startElapsedMs=1_000L,finalizedWallMs=1_800_028_800_000L,finalizedElapsedMs=28_801_000L,bootCount=10,supportedMask=31,startedMask=31,manifests=manifests,acks=acks,version=FreshRunReceiptVersion.V2)
-        val bytes=receipt.bytes();assertTrue("actual V2 inventory must fit contract ceiling: ${bytes.size}",bytes.size<=WatchFreshRunDurationPolicy.MAX_RECEIPT_BYTES)
+        val bytes=receipt.bytes(); val text=bytes.toString(Charsets.US_ASCII)
+        assertTrue("actual V2 inventory must fit reconciled ceiling: ${bytes.size}",bytes.size<=2*1024*1024)
+        assertTrue(text.startsWith("HUGR_RUN_RECEIPT_V2\n"));assertTrue(text.lineSequence().filter{it.startsWith("m\t")}.all{it.split('\t').size==7})
+        assertTrue(text.lineSequence().filter{it.startsWith("a\t")}.all{it.split('\t').size==4})
         val parsed=FreshRunReceipt.parse(bytes);assertEquals(2_048,parsed.manifests.size);assertEquals(2_048,parsed.acks.size);assertArrayEquals(bytes,parsed.bytes())
+    }
+    @Test fun `V2 rejects unsupported duration and every finite capacity overflow while V1 bounds stay exact`() {
+        val source=UUID.randomUUID();val base=FreshRunReceipt(source,UUID.randomUUID(),startWallMs=1,startElapsedMs=1,bootCount=1,version=FreshRunReceiptVersion.V2)
+        rejects{base.copy(durationMs=299_999L).bytes()}; rejects{base.copy(durationMs=28_800_001L).bytes()}
+        val manifest=SourceSegmentManifest("m",source,1,1,1,48,"a".repeat(64),mapOf(SourceStreamCode.DEVICE_HEALTH to SourceStreamRange(1,1,1)))
+        rejects{base.copy(manifests=List(WatchFreshRunDurationPolicy.MAX_MANIFESTS+1){manifest.copy(firstRecordIndex=it.toLong()+1,lastRecordIndex=it.toLong()+1)}).bytes()}
+        assertEquals(65_536,FreshRunReceipt.MAX_BYTES);assertEquals(64,FreshRunReceipt.MAX_V1_INVENTORY);assertEquals(1_200_000L,FreshRunReceipt.MAX_V1_LIFETIME_MS)
+    }
+    @Test fun `receipt pager permits seven digit grammar and fixes snapshot SHA at R1 zero`() {
+        val r=Rig();try{
+            r.begin();r.batchValid();r.seal();val frozen=r.session.snapshot();var reads=0
+            val pager=FreshRunReceiptPager{reads++;frozen};pager.request("R1:0");val first=pager.frame()
+            assertEquals(1,reads);pager.request("R1:1");val second=pager.frame();assertEquals(1,reads)
+            assertArrayEquals(first.copyOfRange(12,44),second.copyOfRange(12,44))
+            rejects{pager.request("R1:10000000")};rejects{pager.request("R1:0000001")}
+        }finally{r.close()}
+    }
+    private fun fixturePayload(stream: SourceStreamCode): ByteArray = when(stream){
+        SourceStreamCode.CARDIAC -> SourcePayloadCodec.cardiac(1,60,0,1,0,1,-1,0,false,"REALTIME",1,true)
+        SourceStreamCode.EDA -> SourcePayloadCodec.eda(0.5f,"REALTIME",1,true)
+        SourceStreamCode.ACCEL -> SourcePayloadCodec.accel(10,20,1000,"REALTIME",1,true)
+        SourceStreamCode.SKIN_TEMP -> SourcePayloadCodec.skinTemperature(33.5f,24f,0,"REALTIME",1,true)
+        SourceStreamCode.DEVICE_HEALTH -> SourcePayloadCodec.deviceHealth(80,14,27,1,77,5,0,0,0,0,0,517,0,false,0,0,0,0)
+    }
+    private fun fixtureDuration(): Long = System.getenv("HUGR_FRESH_DURATION_MS")?.toLongOrNull()
+        ?: WatchFreshRunDurationPolicy.FIVE_MINUTES_MS
+    private fun fixtureRecordCount(): Int = System.getenv("HUGR_FRESH_RECORD_COUNT")?.toIntOrNull() ?: 10
+    private fun writeFixtureWire(dir: File, journal: SourceJournal, manifests: List<SourceSegmentManifest>) {
+        File(dir,"canonical-records.base64").bufferedWriter().use { canonical ->
+            File(dir,"source-wire-notifications.base64").bufferedWriter().use { wire ->
+                manifests.forEachIndexed { manifestIndex, manifest ->
+                    var cursor=manifest.firstRecordIndex-1
+                    while(cursor<manifest.lastRecordIndex){
+                        val block=journal.readRecordsAfter(manifest.watchBootSessionId,cursor,manifest.lastRecordIndex,25_000)
+                        require(block.isNotEmpty()){"Fixture source range missing"};block.forEach{canonical.append(Base64.getEncoder().encodeToString(it.canonicalBytes())).append('\n')}
+                        SourceReplayProtocol.buildDataFrames(block,replay=manifestIndex>0,maximumAttPayloadBytes=514).forEach{
+                            wire.append(Base64.getEncoder().encodeToString(it)).append('\n')
+                        };cursor=block.last().recordIndex
+                    }
+                    wire.append(Base64.getEncoder().encodeToString(SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(manifest)))).append('\n')
+                }
+            }
+        }
+        File(dir,"manifest-frames.base64").bufferedWriter().use { out -> manifests.forEach {
+            out.append(Base64.getEncoder().encodeToString(SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(it)))).append('\n')
+        }}
+        File(dir,"ack-frames.base64").bufferedWriter().use { out -> manifests.forEach {
+            out.append(Base64.getEncoder().encodeToString(SourceReplayProtocol.encodeSegmentAcknowledgement(SourceSegmentAcknowledgement(it.watchBootSessionId,it.lastRecordIndex,it.sha256Hex)))).append('\n')
+        }}
+    }
+    private fun writeLegacyFiveMinuteFixtureWire(dir: File, r: Rig) {
+        File(dir,"canonical-records.base64").writeText(r.records.joinToString("\n",postfix="\n"){Base64.getEncoder().encodeToString(it.canonicalBytes())})
+        File(dir,"manifest-frames.base64").writeText(r.sealed.joinToString("\n",postfix="\n"){Base64.getEncoder().encodeToString(SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(it)))})
+        val notifications = r.sealed.flatMapIndexed { index, manifest ->
+            val records = r.records.filter { it.recordIndex in manifest.firstRecordIndex..manifest.lastRecordIndex }
+            SourceReplayProtocol.buildDataFrames(records, replay = index > 0, maximumAttPayloadBytes = 514) +
+                listOf(SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(manifest)))
+        }
+        File(dir,"source-wire-notifications.base64").writeText(notifications.joinToString("\n",postfix="\n"){Base64.getEncoder().encodeToString(it)})
+        File(dir,"ack-frames.base64").writeText(r.sealed.joinToString("\n", postfix="\n") { manifest ->
+            Base64.getEncoder().encodeToString(
+                SourceReplayProtocol.encodeSegmentAcknowledgement(
+                    SourceSegmentAcknowledgement(r.initial.sourceId, manifest.lastRecordIndex, manifest.sha256Hex),
+                ),
+            )
+        })
     }
     @Test fun `produce real Watch canonical joined fixture streaming acceptance finalized completion restart`() {
         if(System.getenv("HUGR_FRESH_VERIFY_FIXTURE")=="1") return
-        val output=System.getenv("HUGR_FRESH_FIXTURE_DIR")?:return
-        val dir=File(output);dir.mkdirs();val r=Rig();try{
-            r.begin(); File(dir,"started.tsv").writeBytes(r.session.snapshot().bytes())
-            r.batchValid();val first=r.seal();r.ack(first);File(dir,"streaming-acked.tsv").writeBytes(r.session.snapshot().bytes())
-            r.elapsed+=1000;r.wall+=1000;r.batchValid();r.finishTime();r.session.finalizeRecording()
-            val final=r.journal.finalizedManifests().single();r.sealed+=final;File(dir,"finalized.tsv").writeBytes(r.session.snapshot().bytes())
-            r.journal.forceSync();copyReplica(r.root,File(dir,"watch-verifier-root"))
-            r.ack(final)
+        val output=System.getenv("HUGR_FRESH_FIXTURE_DIR")?:return;val duration=fixtureDuration();val count=fixtureRecordCount()
+        require(WatchFreshRunDurationPolicy.accepts(duration)&&count>0&&count<=WatchFreshRunDurationPolicy.MAX_CANONICAL_RECORDS)
+        val dir=File(output);dir.mkdirs()
+        // Preserve the historical writer's V1 five-minute/ten-record sequence
+        // byte-for-byte. Ladder cases use V2 and a bounded journal reread rather
+        // than retaining duplicate in-memory record arrays.
+        if(duration==WatchFreshRunDurationPolicy.FIVE_MINUTES_MS&&count==10){
+            val r=Rig();try{
+                r.begin();File(dir,"started.tsv").writeBytes(r.session.snapshot().bytes())
+                r.batchValid();val first=r.seal();r.ack(first);File(dir,"streaming-acked.tsv").writeBytes(r.session.snapshot().bytes())
+                r.elapsed+=1000;r.wall+=1000;r.batchValid();r.finishTime();r.session.finalizeRecording()
+                val final=r.journal.finalizedManifests().single();r.sealed+=final;File(dir,"finalized.tsv").writeBytes(r.session.snapshot().bytes())
+                r.journal.forceSync();copyReplica(r.root,File(dir,"watch-verifier-root"));writeLegacyFiveMinuteFixtureWire(dir,r);r.ack(final)
+                val completed=r.store.current()!!;File(dir,"completed.tsv").writeBytes(completed.bytes());File(dir,"restart.tsv").writeBytes(FreshRunReceiptStore(File(r.root,"fresh_ordinary_runs_v3")).current()!!.bytes())
+                File(dir,"source-id.txt").writeText("${r.initial.sourceId}\n");File(dir,"receipt-digest.txt").writeText(FreshRunReceipt.digest(completed.bytes())+"\n")
+            }finally{r.close()};return
+        }
+        val r=Rig(durationMs=duration,version=FreshRunReceiptVersion.V2);try{
+            r.begin();File(dir,"started.tsv").writeBytes(r.session.snapshot().bytes())
+            repeat(count){index-> val stream=SourceStreamCode.entries[index%SourceStreamCode.entries.size];requireNotNull(r.session.append(stream,r.wall+index,fixturePayload(stream)))}
+            File(dir,"streaming-acked.tsv").writeBytes(r.session.snapshot().bytes())
+            r.finishTime();r.session.finalizeRecording();val before=r.session.snapshot();val manifests=before.manifests
+            require(manifests.isNotEmpty());File(dir,"finalized.tsv").writeBytes(before.bytes());r.journal.forceSync();copyReplica(r.root,File(dir,"watch-verifier-root"))
+            writeFixtureWire(dir,r.journal,manifests)
+            manifests.filter{m->before.acks.none{it.last==m.lastRecordIndex}}.forEach{r.ack(it)}
             val completed=r.store.current()!!;File(dir,"completed.tsv").writeBytes(completed.bytes());File(dir,"restart.tsv").writeBytes(FreshRunReceiptStore(File(r.root,"fresh_ordinary_runs_v3")).current()!!.bytes())
-            File(dir,"source-id.txt").writeText("${r.initial.sourceId}\n")
-            File(dir,"canonical-records.base64").writeText(r.records.joinToString("\n",postfix="\n"){Base64.getEncoder().encodeToString(it.canonicalBytes())})
-            File(dir,"manifest-frames.base64").writeText(r.sealed.joinToString("\n",postfix="\n"){Base64.getEncoder().encodeToString(SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(it)))})
-            val notifications = r.sealed.flatMapIndexed { index, manifest ->
-                val records = r.records.filter { it.recordIndex in manifest.firstRecordIndex..manifest.lastRecordIndex }
-                SourceReplayProtocol.buildDataFrames(records, replay = index > 0, maximumAttPayloadBytes = 514) +
-                    listOf(SourceReplayProtocol.encodeManifestFrame(SourceManifestFrame(manifest)))
-            }
-            File(dir,"source-wire-notifications.base64").writeText(notifications.joinToString("\n",postfix="\n"){Base64.getEncoder().encodeToString(it)})
-            File(dir,"ack-frames.base64").writeText(r.sealed.joinToString("\n",postfix="\n"){Base64.getEncoder().encodeToString(SourceReplayProtocol.encodeSegmentAcknowledgement(SourceSegmentAcknowledgement(r.initial.sourceId,it.lastRecordIndex,it.sha256Hex)))})
-            File(dir,"receipt-digest.txt").writeText(FreshRunReceipt.digest(completed.bytes())+"\n")
+            File(dir,"source-id.txt").writeText("${r.initial.sourceId}\n");File(dir,"receipt-digest.txt").writeText(FreshRunReceipt.digest(completed.bytes())+"\n")
         }finally{r.close()}
     }
     @Test fun `verify Phone exact ACK frames against preserved real Watch pre final ACK replica`() {

@@ -2,15 +2,12 @@ package com.hugr.wearos
 
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.nio.channels.FileChannel
 import java.nio.file.Files
 import java.nio.file.LinkOption
 import java.nio.file.StandardCopyOption
 import java.nio.file.StandardOpenOption
 import java.security.MessageDigest
-import java.util.Base64
 import java.util.UUID
 
 internal enum class FreshRunPhase { STARTED, FINALIZED, COMPLETED, FAILED }
@@ -32,19 +29,16 @@ internal data class FreshRunReceipt(
         append("run\t$sourceId\t$runId\t$revision\t${phase.name}\n")
         append("time\t$durationMs\t$startWallMs\t$startElapsedMs\t$finalizedWallMs\t$finalizedElapsedMs\t$bootCount\n")
         append("scope\t$supportedMask\t$startedMask\t$failure\n")
+        // V2 deliberately retains V1's complete, textual m/a rows. Only the
+        // header and the closed duration/capacity contract differ; no compact
+        // Base64 side format is permitted for an admitted fresh-run receipt.
         manifests.forEach { m ->
-            if (isV2()) append("m\t${encodeV2Manifest(m)}\n")
-            else {
-                val ranges = m.streamRanges.entries.sortedBy { it.key.wireCode }.joinToString(",") {
-                    "${it.key.wireCode}:${it.value.count}:${it.value.firstSequence}:${it.value.lastSequence}"
-                }
-                append("m\t${m.firstRecordIndex}\t${m.lastRecordIndex}\t${m.recordCount}\t${m.byteCount}\t${m.sha256Hex}\t$ranges\n")
+            val ranges = m.streamRanges.entries.sortedBy { it.key.wireCode }.joinToString(",") {
+                "${it.key.wireCode}:${it.value.count}:${it.value.firstSequence}:${it.value.lastSequence}"
             }
+            append("m\t${m.firstRecordIndex}\t${m.lastRecordIndex}\t${m.recordCount}\t${m.byteCount}\t${m.sha256Hex}\t$ranges\n")
         }
-        acks.forEach { ack ->
-            if (isV2()) append("a\t${encodeV2Ack(ack)}\n")
-            else append("a\t${ack.last}\t${ack.hash}\t${ack.elapsed}\n")
-        }
+        acks.forEach { ack -> append("a\t${ack.last}\t${ack.hash}\t${ack.elapsed}\n") }
         append("end\n")
     }.toByteArray(Charsets.US_ASCII).also { require(it.size <= maxBytes()) }
 
@@ -64,20 +58,26 @@ internal data class FreshRunReceipt(
         } else {
             require(WatchFreshRunDurationPolicy.accepts(durationMs)) { "V2 duration is not in the closed ladder" }
         }
-        require(manifests.size <= inventoryLimit() && acks.size <= inventoryLimit()) { "Receipt inventory limit" }
+        require(manifests.size <= inventoryLimit()) { "Receipt manifest inventory limit" }
+        require(acks.size <= if (isV2()) WatchFreshRunDurationPolicy.MAX_ACKS else MAX_V1_INVENTORY) {
+            "Receipt ACK inventory limit"
+        }
         if (isV2()) {
             require(manifests.sumOf { it.streamRanges.size } <= WatchFreshRunDurationPolicy.MAX_MANIFEST_STREAM_RANGES) {
                 "Receipt stream-range inventory limit"
             }
-            require(manifests.sumOf { it.recordCount } <= WatchFreshRunDurationPolicy.MAX_CANONICAL_RECORDS) {
-                "Receipt canonical-record inventory limit"
-            }
-            require(manifests.sumOf { it.byteCount } <= WatchFreshRunDurationPolicy.MAX_ACCEPTED_SNAPSHOT_BYTES) {
-                "Receipt accepted-byte inventory limit"
-            }
-            require(manifests.all { it.byteCount <= UInt.MAX_VALUE.toLong() }) {
-                "V2 manifest byte count cannot be compactly encoded"
-            }
+            requireBoundedTotal(manifests.map { it.recordCount }, WatchFreshRunDurationPolicy.MAX_CANONICAL_RECORDS,
+                "Receipt canonical-record inventory limit")
+            requireBoundedTotal(manifests.map { it.byteCount }, WatchFreshRunDurationPolicy.MAX_ACCEPTED_SNAPSHOT_BYTES,
+                "Receipt accepted-byte inventory limit")
+        }
+    }
+
+    private fun requireBoundedTotal(values: Iterable<Long>, maximum: Long, message: String) {
+        var total = 0L
+        values.forEach { value ->
+            require(value >= 0L && value <= maximum && total <= maximum - value) { message }
+            total += value
         }
     }
 
@@ -111,9 +111,6 @@ internal data class FreshRunReceipt(
         const val MAX_V1_LIFETIME_MS = 20 * 60 * 1000L
         const val MAX_SUPPORTED_BYTES = WatchFreshRunDurationPolicy.MAX_RECEIPT_BYTES
         private val hashPattern = Regex("[0-9a-f]{64}")
-        private val v2TokenPattern = Regex("[A-Za-z0-9_-]+")
-        private val base64 = Base64.getUrlEncoder().withoutPadding()
-        private val base64Decoder = Base64.getUrlDecoder()
         fun digest(bytes: ByteArray): String = MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
         fun canonicalUuid(raw: String): UUID = UUID.fromString(raw).also { require(it.toString() == raw) }
         fun parse(bytes: ByteArray): FreshRunReceipt {
@@ -141,13 +138,9 @@ internal data class FreshRunReceipt(
                 val p = line.split('\t')
                 when (p[0]) {
                     "m" -> {
-                        val manifest = if (version == FreshRunReceiptVersion.V2) {
-                            require(p.size == 2); decodeV2Manifest(p[1], source)
-                        } else {
-                            require(p.size == 7 && hashPattern.matches(p[5]))
-                            val first = p[1].toLong(); val last = p[2].toLong(); val count = p[3].toLong(); val size = p[4].toLong()
-                            SourceSegmentManifest("receipt_${first}_${last}", source, first, last, count, size, p[5], parseV1Ranges(p[6]))
-                        }
+                        require(p.size == 7 && hashPattern.matches(p[5]))
+                        val first = p[1].toLong(); val last = p[2].toLong(); val count = p[3].toLong(); val size = p[4].toLong()
+                        val manifest = SourceSegmentManifest("receipt_${first}_${last}", source, first, last, count, size, p[5], parseV1Ranges(p[6]))
                         require(acks.isEmpty())
                         require(manifest.firstRecordIndex > 0 && manifest.lastRecordIndex >= manifest.firstRecordIndex &&
                             manifest.lastRecordIndex < Long.MAX_VALUE && manifest.recordCount == manifest.lastRecordIndex - manifest.firstRecordIndex + 1 &&
@@ -157,12 +150,8 @@ internal data class FreshRunReceipt(
                         manifests += manifest
                     }
                     "a" -> {
-                        val ack = if (version == FreshRunReceiptVersion.V2) {
-                            require(p.size == 2); decodeV2Ack(p[1])
-                        } else {
-                            require(p.size == 4 && hashPattern.matches(p[2]))
-                            FreshAcceptedAck(p[1].toLong(), p[2], p[3].toLong())
-                        }
+                        require(p.size == 4 && hashPattern.matches(p[2]))
+                        val ack = FreshAcceptedAck(p[1].toLong(), p[2], p[3].toLong())
                         require(ack.elapsed >= t[3].toLong() && acks.none { it.last == ack.last } &&
                             manifests.any { it.lastRecordIndex == ack.last && it.sha256Hex == ack.hash })
                         acks += ack
@@ -171,7 +160,8 @@ internal data class FreshRunReceipt(
                 }
             }
             val inventoryLimit = if (version == FreshRunReceiptVersion.V2) WatchFreshRunDurationPolicy.MAX_MANIFESTS else MAX_V1_INVENTORY
-            require(manifests.size <= inventoryLimit && acks.size <= inventoryLimit)
+            val ackLimit = if (version == FreshRunReceiptVersion.V2) WatchFreshRunDurationPolicy.MAX_ACKS else MAX_V1_INVENTORY
+            require(manifests.size <= inventoryLimit && acks.size <= ackLimit)
             val receipt = FreshRunReceipt(source, run, revision, phase, duration, t[2].toLong(), t[3].toLong(), t[4].toLong(), t[5].toLong(), t[6].toInt(), supported, started, s[3], manifests, acks, version)
             require(version != FreshRunReceiptVersion.V2 || acks.all { it.elapsed <= receipt.deliveryDeadlineElapsedMs() })
             require(receipt.bytes().contentEquals(bytes))
@@ -180,56 +170,6 @@ internal data class FreshRunReceipt(
             if (phase == FreshRunPhase.FAILED) require(receipt.failure != "NONE") else require(receipt.failure == "NONE")
             if (phase == FreshRunPhase.COMPLETED) require(receipt.completionFailure() == null && acks.size == manifests.size)
             return receipt
-        }
-        /** Compact V2 m/a records make 2048 inventories fit under the 512 KiB retained receipt ceiling. */
-        private fun encodeV2Manifest(manifest: SourceSegmentManifest): String {
-            require(manifest.firstRecordIndex in 1..WatchFreshRunDurationPolicy.MAX_CANONICAL_RECORDS &&
-                manifest.lastRecordIndex in manifest.firstRecordIndex..WatchFreshRunDurationPolicy.MAX_CANONICAL_RECORDS &&
-                manifest.recordCount in 1..WatchFreshRunDurationPolicy.MAX_CANONICAL_RECORDS &&
-                manifest.byteCount in 1..4_294_967_295L &&
-                manifest.streamRanges.size in 1..SourceStreamCode.entries.size)
-            val ranges = manifest.streamRanges.entries.sortedBy { it.key.wireCode }
-            val bytes = ByteBuffer.allocate(49 + ranges.size * 13).order(ByteOrder.BIG_ENDIAN)
-                .putInt(manifest.firstRecordIndex.toInt()).putInt(manifest.lastRecordIndex.toInt()).putInt(manifest.recordCount.toInt())
-                .putInt(manifest.byteCount.toInt()).put(hexToBytes(manifest.sha256Hex)).put(ranges.size.toByte())
-            ranges.forEach { (stream, range) ->
-                require(range.count in 1..WatchFreshRunDurationPolicy.MAX_CANONICAL_RECORDS && range.firstSequence in 1..0xffff_ffffL &&
-                    range.lastSequence in range.firstSequence..0xffff_ffffL)
-                bytes.put(stream.wireCode.toByte()).putInt(range.count.toInt()).putInt(range.firstSequence.toInt()).putInt(range.lastSequence.toInt())
-            }
-            return base64.encodeToString(bytes.array())
-        }
-        private fun decodeV2Manifest(token: String, source: UUID): SourceSegmentManifest {
-            require(v2TokenPattern.matches(token)); val raw = base64Decoder.decode(token)
-            require(base64.encodeToString(raw) == token && raw.size in 62..114)
-            val data = ByteBuffer.wrap(raw).order(ByteOrder.BIG_ENDIAN)
-            val first = data.int.toLong() and 0xffff_ffffL; val last = data.int.toLong() and 0xffff_ffffL
-            val count = data.int.toLong() and 0xffff_ffffL; val size = data.int.toLong() and 0xffff_ffffL
-            val hashBytes = ByteArray(32); data.get(hashBytes)
-            val hash = hashBytes.joinToString("") { "%02x".format(it) }
-            val n = data.get().toInt() and 0xff; require(n in 1..SourceStreamCode.entries.size && raw.size == 49 + n * 13)
-            val ranges = linkedMapOf<SourceStreamCode, SourceStreamRange>(); var prior = 0
-            repeat(n) {
-                val code = data.get().toInt() and 0xff; require(code in 1..5 && code > prior); prior = code
-                val range = SourceStreamRange(data.int.toLong() and 0xffff_ffffL, data.int.toLong() and 0xffff_ffffL, data.int.toLong() and 0xffff_ffffL)
-                require(range.count > 0 && range.firstSequence > 0 && range.lastSequence >= range.firstSequence)
-                ranges[SourceStreamCode.fromWireCode(code)] = range
-            }
-            return SourceSegmentManifest("receipt_${first}_${last}", source, first, last, count, size, hash, ranges)
-        }
-        private fun encodeV2Ack(ack: FreshAcceptedAck): String {
-            require(ack.last in 1..WatchFreshRunDurationPolicy.MAX_CANONICAL_RECORDS && ack.elapsed >= 0)
-            return base64.encodeToString(ByteBuffer.allocate(44).order(ByteOrder.BIG_ENDIAN).putInt(ack.last.toInt())
-                .put(hexToBytes(ack.hash)).putLong(ack.elapsed).array())
-        }
-        private fun decodeV2Ack(token: String): FreshAcceptedAck {
-            require(v2TokenPattern.matches(token)); val raw = base64Decoder.decode(token)
-            require(raw.size == 44 && base64.encodeToString(raw) == token); val data = ByteBuffer.wrap(raw).order(ByteOrder.BIG_ENDIAN)
-            val hashBytes = ByteArray(32); data.get(hashBytes)
-            return FreshAcceptedAck(data.int.toLong() and 0xffff_ffffL, hashBytes.joinToString("") { "%02x".format(it) }, data.long)
-        }
-        private fun hexToBytes(hex: String): ByteArray {
-            require(hashPattern.matches(hex)); return ByteArray(32) { index -> hex.substring(index * 2, index * 2 + 2).toInt(16).toByte() }
         }
         private fun parseV1Ranges(raw: String): Map<SourceStreamCode, SourceStreamRange> {
             val ranges = linkedMapOf<SourceStreamCode, SourceStreamRange>(); var previousCode = 0
@@ -343,12 +283,18 @@ internal class FreshRunReceiptStore(
 /** A connection owns one snapshot. R1:0 replaces it; nonzero never rereads the store. */
 internal class FreshRunReceiptPager(private val latest: () -> FreshRunReceipt?) {
     private var snapshot: ByteArray? = null
+    private var snapshotSha256: String? = null
     private var offset: Int? = null
-    @Synchronized fun reset() { snapshot = null; offset = null }
+    @Synchronized fun reset() { snapshot = null; snapshotSha256 = null; offset = null }
     @Synchronized fun request(raw: String) {
-        require(Regex("R1:(0|[1-9][0-9]{0,5})").matches(raw))
+        // V2 receipts may be up to 2 MiB. Preserve the R1 grammar while allowing
+        // seven decimal digits; bounds are checked against the immutable snapshot.
+        require(Regex("R1:(0|[1-9][0-9]{0,6})").matches(raw))
         val requested = raw.substring(3).toInt()
-        if (requested == 0) snapshot = latest()?.bytes()?.copyOf() ?: byteArrayOf()
+        if (requested == 0) {
+            snapshot = latest()?.bytes()?.copyOf() ?: byteArrayOf()
+            snapshotSha256 = snapshot?.takeIf { it.isNotEmpty() }?.let(FreshRunReceipt::digest)
+        }
         val bytes = requireNotNull(snapshot) { "No receipt snapshot" }
         require(requested in 0..bytes.size && (requested == 0 || requested < bytes.size))
         offset = requested
@@ -357,8 +303,9 @@ internal class FreshRunReceiptPager(private val latest: () -> FreshRunReceipt?) 
         val bytes = requireNotNull(snapshot); val start = requireNotNull(offset)
         require(mtu >= 46) { "MTU cannot carry receipt header and payload" }
         val pageSize = minOf(384, mtu - 1 - 44, bytes.size - start)
-        val digest = if (bytes.isEmpty()) ByteArray(32) else MessageDigest.getInstance("SHA-256").digest(bytes)
-        return ByteBuffer.allocate(44 + pageSize).order(ByteOrder.LITTLE_ENDIAN)
+        // The SHA is fixed with this R1:0 snapshot, never recomputed per page.
+        val digest = snapshotSha256?.let(::hexToBytes) ?: ByteArray(32)
+        return java.nio.ByteBuffer.allocate(44 + pageSize).order(java.nio.ByteOrder.LITTLE_ENDIAN)
             .putInt(0x31524748).putInt(bytes.size).putInt(start).put(digest)
             .put(bytes, start, pageSize).array()
     }
@@ -368,6 +315,9 @@ internal class FreshRunReceiptPager(private val latest: () -> FreshRunReceipt?) 
         if (bytes.isEmpty()) return false
         val selected = FreshRunReceipt.parse(bytes); val current = latest() ?: return false
         return selected.phase == FreshRunPhase.COMPLETED && current.phase == FreshRunPhase.COMPLETED &&
-            parts[1] == current.sourceId.toString() && parts[2] == FreshRunReceipt.digest(bytes) && current.bytes().contentEquals(bytes)
+            parts[1] == current.sourceId.toString() && parts[2] == snapshotSha256 && current.bytes().contentEquals(bytes)
+    }
+    private fun hexToBytes(hex: String): ByteArray = ByteArray(32) { index ->
+        hex.substring(index * 2, index * 2 + 2).toInt(16).toByte()
     }
 }

@@ -36,8 +36,11 @@ class OrdinaryRuntimeCandidateContractTest {
         val freshGattStart = gattSource.substringAfter("if (freshAction == FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES").substringBefore("if (intent == null || freshMode)")
         assertTrue(freshGattStart.contains("startFreshForeground()"))
         assertTrue(freshGattStart.contains("startForegroundService(Intent(this, HealthSensorService::class.java)"))
-        assertTrue(freshGattStart.contains("FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES"))
-        assertTrue(healthSource.contains("startBoundedOrdinaryRun(BoundedOrdinaryRunPolicy.SHORT_ADMISSION_DURATION_MS)"))
+        assertTrue(freshGattStart.contains("FreshRunRuntime.ACTION_START_FRESH_DURATION_LADDER"))
+        assertTrue(freshGattStart.contains("FreshRunRuntime.EXTRA_FRESH_DURATION_MS"))
+        assertTrue(healthSource.contains("startBoundedOrdinaryRun(receipt.durationMs)"))
+        assertTrue(healthSource.contains("intent.getLongExtra(FreshRunRuntime.EXTRA_FRESH_DURATION_MS, -1L)"))
+        assertTrue(gattSource.contains("FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES"))
         assertFalse(normalStartup.contains("ACTION_START_EGRESS_ONLY"))
         assertFalse(normalStartup.contains("EvidenceEgressActivation"))
     }
