@@ -1,0 +1,204 @@
+{
+  "phone_head": "4008d53ff9d0f84b67824b9bc61d14ae97eefe89",
+  "watch_head": "0d282ce0f62e910cfe073efdfb015e1627cb429e",
+  "phone_branch": "preservation/phone-control-and-source-2026-10-03",
+  "phone_runtime_sha256": {
+    "components/BioParticles.tsx": "534b6905d375674e71d1b6b08623a183e57cbfd44cf6b694414292328dce9677",
+    "components/CrashReporter.tsx": "710a707f7babbbd5b8043bc60050d40f968ae363aa41c9ee79899f0ebd58c1db",
+    "components/HUGRHeader.tsx": "ac6dd320dc160a09cd1e5055ef66da9db8d8dfb9ce21b70a390130150a466602",
+    "components/LogModal.tsx": "bf2d5e8fdadc458c3944313e8070f1f41ed33698b6dcc5b57dcb8fe4147e3088",
+    "components/PolarConnect.tsx": "35dbc3a3af66344cac6b980f86e9c2d813fa2633c6596524dbe6bdd1e3e11b6c",
+    "components/PostHapticCheckIn.tsx": "ca15cc535fce2404be61476d0ecebf6a7e8507a90270170240c86b50061bf391",
+    "components/WatchConnect.tsx": "152b941b168967fbd1fac46cc7dc75c87081beb3bda6393a5d86e2e6c1bb64f7",
+    "components/WaterStateView.tsx": "fb6aff05b526949f0887c557d2a6409982227345202080859e13af89628738a2",
+    "lib/ambientSound.ts": "c1b8d2039323c0c795fbfef48ea880a208216ae5d8709f90b7a9b59e84a21843",
+    "lib/baselines.ts": "9319a22b91947f6aa7fc1b04bac0449d4bd427c844ea976fca3fd991a23601e6",
+    "lib/bluetooth.ts": "9b9d64077fe543dd81a0801e2ae4280cad51c6b3bca9cd26aec7ee078b40c431",
+    "lib/build45SourceIngestion.ts": "8ab3f4fdfa3d1374d85258c7bac44abd0d02a3a2e53d642cb0c1ace2c5b90a05",
+    "lib/build45SourcePersistence.ts": "3ed9aff4351c7a0676ac79b95f4c3340e974802b6e53c306ae3c8c0dd902ce3a",
+    "lib/build45SourceProtocol.ts": "0905722ca23a968a2f20d990b54b3859d3eb3cf2dd7618e9acbd63ea006d9243",
+    "lib/build46TransportStatus.ts": "2c91c466dc0e1a74eb3ab1aec6dd955410ba07be2c946bca8c971b3212212828",
+    "lib/circadian.ts": "bc64dd8c33b43dc59dacef86f5e33ae85d1a5a7bc9ff2ded53e3834d07ac40a4",
+    "lib/crossValidation.ts": "18cc69207c96145fabf575b683304205acc3655da3e0a621231206685b021bdc",
+    "lib/dataSync.ts": "fc6e7cfa3a775af0b47f804c1bc7f0393f65c697d7d30e8cb5b883e1c08aaa4d",
+    "lib/debugTelemetry.ts": "08e77e4db30a30714740435aa7544cfa3466a5114dbba16062b930cb8cb1cdf8",
+    "lib/durationLadderContract.ts": "79eff1f1a61d3f06f315071f9fe438288dad91f57915ea393e02d03b184a3d59",
+    "lib/epochFreshness.ts": "761f9e4e7b0119b02c22b99777c925e8cabbf019dd05d274cdb6754d18ab56a0",
+    "lib/foregroundService.ts": "8631da10d3cb3b3f56468a66a4df86b16be75995674f35db2811514decb2e2bd",
+    "lib/freshRunFailureBoundary.ts": "823faf7b363502c0a21e84326edafdde8362ab3479f9a31ebebfbc461e9582fb",
+    "lib/fusion.ts": "c9a3d5637c20a053fea73672b5ea92f233c37a2106c1a8f5942a913c14a83fb0",
+    "lib/fusionEngine.ts": "b964e2cc132ad9983f2dc3b44cd9a427c3bd1b8f1026a4a04ee071f5eaafd14e",
+    "lib/haptics.ts": "defe240db6edeb5a1f686f1c7c9f752dca2fc0e33c56c78512a028945496c11d",
+    "lib/healthConnect.ts": "f27a1d9584c7f9a4c9e58b533e932096453b19677f4b88727a664cb364f5af41",
+    "lib/hmm.ts": "ebc8b54b22cbb9782ec53f59b14e1b4b29972ab8505598c96a39f489beaff16d",
+    "lib/hrv.ts": "01f57373e5a0f47f39aae8559e37ead847db74159aa76e434713aa90ad86ed08",
+    "lib/i18n.ts": "c14a4adb02a01e1bd7bf14972e1f86a83c03586e629fe12112662fd684fd130b",
+    "lib/kalman.ts": "042d40df956aa0f3c8fa8eb319fc37cbc2d9af7d5c42c2015806fb125e422128",
+    "lib/learning/legacyStateHeuristic.ts": "14d727d344edfa2b9085ae6dd88c9645121f294b30e1cb2058fad4bcf25ad375",
+    "lib/learning/shadowEpochAdapter.ts": "3a69884c83a71007364ce45376c74e1c93781ebdbcb22393fe564c7259aa70f0",
+    "lib/learning/shadowLearning.ts": "4332073a7a9b24e91cca05745b1e56e87d62a8c2a6b89bdf6d6a0feaf37cf2c7",
+    "lib/learning/shadowLearningRuntime.ts": "51e132799d52cfc9a74a947f27728d2630fbc76e5d592097304860e15ce35c10",
+    "lib/liveCardiacPolicy.ts": "0422008426be5e890b91fe2f576a8b3ecf12ce33575937742f0c093604b460bb",
+    "lib/motion.ts": "d8b66a4cb69f5bfcacae3220dcfe6f8ddee02857b6fb34fe6ae4c5a9278f14f7",
+    "lib/oura.ts": "e318dc4ade9ae59c04f503e1a6440b2b40f96f3ea757f0adf4a30609fcd77a77",
+    "lib/phoneRunAckEvidence.ts": "08938eb4d7067461edf5b68af379e84395e81a523ce69f1cf9c7d69c289d45fd",
+    "lib/rawDataStore.ts": "2d553244a72aa5533c6e287530e9508d53709403e5aedc505697712bacf18549",
+    "lib/rawTemporalPoints.ts": "2c99b9fbe59db961c7d6e70755a126767af0edfec87f073a1d89fa254d3e55b1",
+    "lib/recoveryAttemptGuard.ts": "db0dd4349cc39f6b78e4e3e25b07076914d15d22c66d01657bf5a03e87ebc95c",
+    "lib/recoveryDiagnostic.ts": "195bf14ec14b89927c1b184df9affa68940bd64efa66815b4dd36b64acfaf930",
+    "lib/recoveryDiagnosticModel.ts": "17996229a7aa681aea6889b0e0c22c2afe013804f168994a61a06864cf5c3387",
+    "lib/scientificMemoryCore.ts": "038ed936cdf4eade53b450150d53c30361d77fc349a6027b5854b07f15ea284c",
+    "lib/scientificMemorySync.ts": "138562032fba6239600c98b5e9e14a488b4e81979400e9b87af787d8b8a5dc22",
+    "lib/screenActivity.ts": "2b057f365eaa641e43a98e708cff24e04e7c55283e3837c92611441cd1e0ecfb",
+    "lib/signalProcessing.ts": "be7d6854447d3627645080569b88f2164fcd410ccbb547032f2a1075d5b9f97f",
+    "lib/storage.ts": "55987ad72d5fbdae95d1c0324e19eeed46a68b18a8fd65cc2197a077a6bf3c73",
+    "lib/telemetryFreshness.ts": "dd32b00fa94dae6a2a2767277e578b87b20d4a89630c68a75cfbac35b7bc874e",
+    "lib/theme.ts": "046d9b7a38f279b87bfb007c31c17e168c7f22175939f757dddd0c8bd79cacd6",
+    "lib/types.ts": "b4c71e1d51b95d4341bea7ee23d98acdc41490661652080f29771e4d90dba612",
+    "lib/watchRunReceiptTransport.ts": "564d3ec33ad095508de67252453991e7c8928757695b7e3c36ec07033111ef80",
+    "lib/watchTelemetryProtocol.ts": "565b95adf264787f71dd88352094641632d73e214969b811ba0c7a741b63e744",
+    "modules/hugr-foreground-service/android/src/main/java/health/hugr/foreground/HUGRForegroundModule.kt": "cba84c88b4e456213d4624d15b5fa1be3c0a26aa9809fcfbfbe0153011a09cf4",
+    "modules/hugr-foreground-service/android/src/main/java/health/hugr/foreground/HUGRForegroundService.kt": "13b75262cb0a6fd680e7c50b98e95dc1ee7f85375caf1e2e613cb9124c3f3533",
+    "modules/hugr-source-journal/android/src/main/AndroidManifest.xml": "a59d43c944ec56d4d1f295ab07b6ba2c85637965819b5df329fc2f7f17575679",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/BoundedSelectedSnapshot.kt": "29576c3baecaed0703de854566e6fe08876cabef4616c5229d74f75ccec77c2f",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/DurationLadderPolicy.kt": "4810fa1afcba67a9694fe761dee1d72b68911f6b7a7467cb95e8ffb730e92a16",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedSourceEvidenceActivity.kt": "612be822d3df34ad5bff25e7fd761387f978499289e6640a6c7d5a9904b83ff0",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt": "95c9dc34681bdd18dee250f38545786d728001c791ffdebab1f811b9579d8c09",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/PendingAppendJournal.kt": "8166bd9db6c7d4ba3221a859d867146bffaaa50afe1fab9a8c6d1edfd33063fe",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/PhoneCanonicalEvidenceCore.kt": "6d032d8f10eea8d34409f11b28d0a032005d4aafa04ea627687ebf9f3b1d0a99",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/PhoneCustodyRunReportStore.kt": "af3ac7e0393e4f28448c65e9a7e34692b010b7383cf4626e941159376e12a906",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/PhoneWatchReceiptBridge.kt": "f5870bc02721ba3b2650accdbfe22d12b7b055d53437927c158d0447600dec13",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/SelectedCompletedRunExportActivity.kt": "a58db55d8307263188d298c06e0d7249f69e79c3db4cbb6b8c60d5871f06dda9",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/SelectedCompletedRunExporter.kt": "4ca1799ff361e402e2009972e65aba5a6daf59467d90b086ff408967b9cd4766",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/SourceGapTracker.kt": "b73257b1d8fb392d506b9a362800e6c2b1a9ef4b198f2fd36b726bccd1179171",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/WatchRunReceipt.kt": "f77c80f5b8dd051a009fab0e3032d785c6df829bdea89dc8c7e58f3c8a68f343",
+    "modules/nerva-haptics/android/src/main/java/health/nerva/haptics/NervaHapticsModule.kt": "61c7747425f13f8472386147b4117aba58835fe8fb33a8afb0633bd24c25860e",
+    "modules/nerva-wearos/android/src/main/java/health/hugr/wearos/NervaWearOSModule.kt": "1339e56cc59be0f5c1fb31b22e45750bd7f2fed453837297386726a5039e49df",
+    "plugins/withHUGRForegroundService.js": "33881d650123a0dc05e878a217dec63cc0eebc9233edaeb4a370ba34b70b828f",
+    "plugins/withHUGRSourceEvidenceIsolation.js": "0bf0c5c003e1f91e6affdc93260292a067e6b593f4a7d871dd43d8b761ef1c95",
+    "recovery-snapshots/phone-control-and-source-2026-10-03/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt": "1b7631cb42f2aad87f34bd55f9def1e46ea49f8aa877cae6d729c911a58bc13b",
+    "/home/ubuntu/HUGR_WATCH82_PHONE62_ACCEPTANCE_RESULT_2026_10_19/HUGR_NSTAIR_WATCH82_PHONE62_FIVE_MINUTE_ACCEPTANCE_PASSED_2026_10_19.md": "609cc1c01ae629a3abad55b80e0432e73f52bf2b1d5bf789685b2c334a6c6ddd"
+  },
+  "original_export_protected": {
+    "/home/ubuntu/HUGR_WATCH69_ORDINARY_ONLY_2026_10_03/worktree/app/src/main/java/com/hugr/wearos/SourceJournal.kt": "24d369f82440781b5846f5b609f459df7a5d7cb49bd794726ff7f15cc50d0361",
+    "/home/ubuntu/HUGR_WATCH69_ORDINARY_ONLY_2026_10_03/worktree/app/src/main/java/com/hugr/wearos/SourceReplayProtocol.kt": "f5548f6b509327660965e7862939022c5468a82cd32f5bef97c997b25c546550",
+    "/home/ubuntu/HUGR_WATCH69_ORDINARY_ONLY_2026_10_03/worktree/app/src/main/java/com/hugr/wearos/BleGattService.kt": "e4b1d6116b35b8c85f4c6404258881f541dd82b626eddcac5e193098f2158ade",
+    "/home/ubuntu/HUGR_WATCH69_ORDINARY_ONLY_2026_10_03/worktree/app/src/main/java/com/hugr/wearos/HealthSensorService.kt": "b9f71ce79ebb7efaaea19a89f63c77b976329aae5b194cdaa3198e6aea8663a4",
+    "/home/ubuntu/HUGR_WATCH69_ORDINARY_ONLY_2026_10_03/worktree/app/build.gradle": "fbb24292922f5e731126c8ed9f6fbbde1b3cd6a65ca2152ee6c10b039025d0b2",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/app.json": "3636fccaeed9922512111342e0e90ea9c097d6a8d9cc7697af50c5280e21c718",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/lib/bluetooth.ts": "9b9d64077fe543dd81a0801e2ae4280cad51c6b3bca9cd26aec7ee078b40c431",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt": "95c9dc34681bdd18dee250f38545786d728001c791ffdebab1f811b9579d8c09",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/PhoneCustodyRunReportStore.kt": "af3ac7e0393e4f28448c65e9a7e34692b010b7383cf4626e941159376e12a906",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/PhoneWatchReceiptBridge.kt": "f5870bc02721ba3b2650accdbfe22d12b7b055d53437927c158d0447600dec13",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/PhoneCanonicalEvidenceCore.kt": "6d032d8f10eea8d34409f11b28d0a032005d4aafa04ea627687ebf9f3b1d0a99",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/WatchRunReceipt.kt": "f77c80f5b8dd051a009fab0e3032d785c6df829bdea89dc8c7e58f3c8a68f343",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedSourceEvidenceActivity.kt": "612be822d3df34ad5bff25e7fd761387f978499289e6640a6c7d5a9904b83ff0",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/docs/HUGR_NSTAIR_WATCH82_PHONE62_FIVE_MINUTE_ACCEPTANCE_PASSED_2026_10_19.md": "609cc1c01ae629a3abad55b80e0432e73f52bf2b1d5bf789685b2c334a6c6ddd"
+  },
+  "old_app_config": {
+    "expo": {
+      "name": "HUGR",
+      "slug": "hugr-mobile",
+      "owner": "neilhugr",
+      "version": "2.0.63-duration-ladder-candidate",
+      "orientation": "portrait",
+      "icon": "./assets/icon.png",
+      "userInterfaceStyle": "dark",
+      "backgroundColor": "#010a06",
+      "ios": {
+        "supportsTablet": false,
+        "bundleIdentifier": "health.hugr.app"
+      },
+      "android": {
+        "package": "health.hugr.app",
+        "versionCode": 63,
+        "adaptiveIcon": {
+          "foregroundImage": "./assets/adaptive-icon.png",
+          "backgroundColor": "#010a06"
+        },
+        "permissions": [
+          "android.permission.VIBRATE",
+          "android.permission.RECEIVE_BOOT_COMPLETED",
+          "android.permission.ACTIVITY_RECOGNITION",
+          "android.permission.BLUETOOTH_SCAN",
+          "android.permission.BLUETOOTH_CONNECT",
+          "android.permission.ACCESS_FINE_LOCATION",
+          "android.permission.BLUETOOTH",
+          "android.permission.BLUETOOTH_ADMIN",
+          "android.permission.health.READ_SLEEP",
+          "android.permission.health.READ_RESPIRATORY_RATE",
+          "android.permission.health.READ_SKIN_TEMPERATURE",
+          "android.permission.health.READ_RESTING_HEART_RATE",
+          "android.permission.health.READ_HEART_RATE_VARIABILITY",
+          "android.permission.health.READ_HEART_RATE",
+          "android.permission.health.READ_STEPS",
+          "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
+          "android.permission.FOREGROUND_SERVICE",
+          "android.permission.FOREGROUND_SERVICE_HEALTH",
+          "android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE",
+          "android.permission.WAKE_LOCK",
+          "android.permission.POST_NOTIFICATIONS"
+        ]
+      },
+      "plugins": [
+        [
+          "expo-build-properties",
+          {
+            "android": {
+              "compileSdkVersion": 36,
+              "targetSdkVersion": 36,
+              "minSdkVersion": 26,
+              "buildToolsVersion": "35.0.0",
+              "kotlinVersion": "2.1.20",
+              "enableProguardInReleaseBuilds": false,
+              "enableMinifyInReleaseBuilds": false
+            }
+          }
+        ],
+        "expo-router",
+        "expo-font",
+        [
+          "expo-secure-store",
+          {
+            "configureAndroidBackup": true
+          }
+        ],
+        [
+          "expo-splash-screen",
+          {
+            "backgroundColor": "#010a06",
+            "image": "./assets/splash.png",
+            "imageWidth": 200
+          }
+        ],
+        [
+          "expo-notifications",
+          {
+            "icon": "./assets/icon.png",
+            "color": "#2d6a4f"
+          }
+        ],
+        "expo-asset",
+        "react-native-health-connect",
+        [
+          "react-native-ble-plx",
+          {
+            "isBackgroundEnabled": true,
+            "neverForLocation": true,
+            "bluetoothAlwaysPermission": "Allow HUGR to connect to your heart rate monitor"
+          }
+        ],
+        "./plugins/withHUGRForegroundService",
+        "./plugins/withHUGRSourceEvidenceIsolation"
+      ],
+      "scheme": "hugr",
+      "extra": {
+        "router": {},
+        "eas": {
+          "projectId": "d0c3af97-5a78-4ba1-bc8b-8a21f169ce44"
+        }
+      }
+    }
+  },
+  "authorized_scope": "ONE Phone64 build/artifact admission, no installation/device/real export; user recalls force-stop not data clearing; recorded physical five-minute offline recheck was Phone62; current installed version not independently read"
+}
