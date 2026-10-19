@@ -1,0 +1,36 @@
+{
+  "scope": "SOURCE/TEST ONLY; no version change, APK, device, realdata or canonical export",
+  "baseline": {
+    "watch": {
+      "head": "9fda1abc0ecb2cd30b9259c7c863ed0d22dc21eb",
+      "tree": "4e41c99bc6329dbaf75a1a72f68830c6134c3fcf",
+      "branch": "preservation/watch68-partial-source-2026-10-03"
+    },
+    "phone": {
+      "head": "b8a6edaa7d2f4ca23c9755b92014f8ac23f52b9e",
+      "tree": "c549cff50e072a5d8cc95f5575cf427c9c2d1398",
+      "branch": "preservation/phone-control-and-source-2026-10-03"
+    },
+    "controls": {
+      "head": "281db26b46621e34ff502e0496acb1a2da0197fb",
+      "tree": "e429681908585ad8e54e86193e6354a184174c10",
+      "branch": "preservation/watch69-control-records-2026-10-03"
+    }
+  },
+  "protected": {
+    "/home/ubuntu/HUGR_WATCH69_ORDINARY_ONLY_2026_10_03/worktree/app/src/main/java/com/hugr/wearos/SourceJournal.kt": "24d369f82440781b5846f5b609f459df7a5d7cb49bd794726ff7f15cc50d0361",
+    "/home/ubuntu/HUGR_WATCH69_ORDINARY_ONLY_2026_10_03/worktree/app/src/main/java/com/hugr/wearos/SourceReplayProtocol.kt": "f5548f6b509327660965e7862939022c5468a82cd32f5bef97c997b25c546550",
+    "/home/ubuntu/HUGR_WATCH69_ORDINARY_ONLY_2026_10_03/worktree/app/src/main/java/com/hugr/wearos/BleGattService.kt": "e4b1d6116b35b8c85f4c6404258881f541dd82b626eddcac5e193098f2158ade",
+    "/home/ubuntu/HUGR_WATCH69_ORDINARY_ONLY_2026_10_03/worktree/app/src/main/java/com/hugr/wearos/HealthSensorService.kt": "b9f71ce79ebb7efaaea19a89f63c77b976329aae5b194cdaa3198e6aea8663a4",
+    "/home/ubuntu/HUGR_WATCH69_ORDINARY_ONLY_2026_10_03/worktree/app/build.gradle": "fbb24292922f5e731126c8ed9f6fbbde1b3cd6a65ca2152ee6c10b039025d0b2",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/app.json": "3636fccaeed9922512111342e0e90ea9c097d6a8d9cc7697af50c5280e21c718",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/lib/bluetooth.ts": "9b9d64077fe543dd81a0801e2ae4280cad51c6b3bca9cd26aec7ee078b40c431",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt": "95c9dc34681bdd18dee250f38545786d728001c791ffdebab1f811b9579d8c09",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/PhoneCustodyRunReportStore.kt": "af3ac7e0393e4f28448c65e9a7e34692b010b7383cf4626e941159376e12a906",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/PhoneWatchReceiptBridge.kt": "f5870bc02721ba3b2650accdbfe22d12b7b055d53437927c158d0447600dec13",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/PhoneCanonicalEvidenceCore.kt": "6d032d8f10eea8d34409f11b28d0a032005d4aafa04ea627687ebf9f3b1d0a99",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/WatchRunReceipt.kt": "f77c80f5b8dd051a009fab0e3032d785c6df829bdea89dc8c7e58f3c8a68f343",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedSourceEvidenceActivity.kt": "612be822d3df34ad5bff25e7fd761387f978499289e6640a6c7d5a9904b83ff0",
+    "/home/ubuntu/HUGR_PHONE_SOURCE_RECOVERY_2026_10_03/repository/docs/HUGR_NSTAIR_WATCH82_PHONE62_FIVE_MINUTE_ACCEPTANCE_PASSED_2026_10_19.md": "609cc1c01ae629a3abad55b80e0432e73f52bf2b1d5bf789685b2c334a6c6ddd"
+  }
+}
