@@ -39,6 +39,10 @@ internal class FreshRunSession(
     }
     @Synchronized fun append(stream: SourceStreamCode, timestamp: Long, payload: ByteArray): WatchSourceRecord? {
         if (!acceptsSamples()) return null
+        if (receipt.isV2() && journal.latestRecordIndex() >= WatchFreshRunDurationPolicy.MAX_CANONICAL_RECORDS) {
+            fail("RECEIPT_RECORD_CAPACITY")
+            return null
+        }
         return try {
             val record = journal.append(stream, timestamp, payload)
             captureManifests(); record
@@ -46,14 +50,21 @@ internal class FreshRunSession(
     }
     @Synchronized fun captureManifests() {
         if (ioFailed) error("Receipt IO failed")
-        val found = journal.finalizedManifests(journal.watchBootSessionId)
+        // SourceJournal owns the durable finalized index. Its drain is an exact
+        // per-instance generation queue populated only after a successful sealed
+        // rename/index. Unlike finalizedManifests(), it does not rescan or hash
+        // the complete growing manifest inventory on every sample append.
+        val found = journal.drainNewlyFinalizedManifests()
+        if (found.isEmpty()) return
         val merged = receipt.manifests.toMutableList()
         found.forEach { m ->
+            require(m.watchBootSessionId == receipt.sourceId) { "Foreign finalized source" }
             val previous = merged.firstOrNull { it.firstRecordIndex == m.firstRecordIndex }
             if (previous != null) require(FreshRunReceiptStore.sameInventory(listOf(previous), listOf(m)))
             else { check(receipt.phase == FreshRunPhase.STARTED); merged += m }
         }
-        require(merged.size <= 64)
+        val limit = if (receipt.isV2()) WatchFreshRunDurationPolicy.MAX_MANIFESTS else FreshRunReceipt.MAX_V1_INVENTORY
+        require(merged.size <= limit) { "Receipt manifest inventory capacity" }
         val ordered = merged.sortedBy { it.firstRecordIndex }
         if (!FreshRunReceiptStore.sameInventory(receipt.manifests, ordered)) update(receipt.copy(revision = receipt.revision + 1, manifests = ordered))
     }
@@ -107,6 +118,11 @@ internal class FreshRunSession(
         update(receipt.copy(revision = receipt.revision + 1, phase = FreshRunPhase.FAILED, failure = code))
     }
     @Synchronized fun forceSync() { if (accepting) journal.forceSync() }
-    @Synchronized fun permitsDelivery(): Boolean = !ioFailed && elapsed() >= receipt.startElapsedMs && elapsed() - receipt.startElapsedMs < MAX_LIFETIME_MS
-    companion object { const val MAX_LIFETIME_MS = 20 * 60 * 1000L; const val RECEIPT_ONLY_MS = 2 * 60 * 1000L }
+    @Synchronized fun deliveryLifetimeMs(): Long = receipt.deliveryLifetimeMs()
+    @Synchronized fun permitsDelivery(): Boolean = !ioFailed && elapsed() >= receipt.startElapsedMs && elapsed() < receipt.deliveryDeadlineElapsedMs()
+    companion object {
+        /** Historical V1 ceiling retained for the legacy action only. */
+        const val MAX_LIFETIME_MS = FreshRunReceipt.MAX_V1_LIFETIME_MS
+        const val RECEIPT_ONLY_MS = 2 * 60 * 1000L
+    }
 }

@@ -217,6 +217,39 @@ class FreshRunReceiptTest {
             rejects{FreshRunReceipt.parse(receipt.bytes().toString(Charsets.US_ASCII).replace("scope\t31", "scope\t63").toByteArray())}
         }finally{r.close()}
     }
+    @Test fun `V2 closed duration ladder binds exact duration and absolute delivery deadline while V1 remains readable`() {
+        val source=UUID.randomUUID(); val v1=FreshRunReceipt(source,UUID.randomUUID(),startWallMs=1_800_000_000_000L,startElapsedMs=1_000L,bootCount=10)
+        assertTrue(v1.bytes().toString(Charsets.US_ASCII).startsWith("HUGR_RUN_RECEIPT_V1\n"))
+        assertEquals(FreshRunReceiptVersion.V1,FreshRunReceipt.parse(v1.bytes()).version)
+        listOf(WatchFreshRunDurationPolicy.FIVE_MINUTES_MS,WatchFreshRunDurationPolicy.THIRTY_MINUTES_MS,WatchFreshRunDurationPolicy.TWO_HOURS_MS,WatchFreshRunDurationPolicy.EIGHT_HOURS_MS).forEach { duration ->
+            val v2=v1.copy(runId=UUID.randomUUID(),durationMs=duration,version=FreshRunReceiptVersion.V2)
+            assertTrue(v2.bytes().toString(Charsets.US_ASCII).startsWith("HUGR_RUN_RECEIPT_V2\n"))
+            assertEquals(duration,FreshRunReceipt.parse(v2.bytes()).durationMs)
+            assertEquals(v2.startElapsedMs+duration+WatchFreshRunDurationPolicy.DELIVERY_GRACE_MS,v2.deliveryDeadlineElapsedMs())
+        }
+        rejects { v1.copy(durationMs=600_000L,version=FreshRunReceiptVersion.V2).bytes() }
+        rejects { v1.copy(durationMs=600_000L).bytes() }
+    }
+    @Test fun `V2 duration minus one accepts and exact duration rejects late sample while finalization remains exact`() {
+        val root=Files.createTempDirectory("fresh-v2-boundary-").toFile(); var elapsed=1_000L; var wall=1_800_000_000_000L
+        val store=FreshRunReceiptStore(File(root,"runs")); val run=UUID.randomUUID(); val journal=SourceJournal(store.sourceRoot(run),10,{Long.MAX_VALUE},{wall},maxSegmentAgeMs=Long.MAX_VALUE)
+        try{
+            val initial=FreshRunReceipt(journal.watchBootSessionId,run,durationMs=WatchFreshRunDurationPolicy.THIRTY_MINUTES_MS,startWallMs=wall,startElapsedMs=elapsed,bootCount=10,version=FreshRunReceiptVersion.V2)
+            store.createInExistingNewRun(initial); val session=FreshRunSession(journal,store,initial,{elapsed},{wall})
+            assertTrue(session.begin());session.scope(31,31);elapsed+=initial.durationMs-1;assertNotNull(session.append(SourceStreamCode.DEVICE_HEALTH,wall,byteArrayOf(1)))
+            elapsed++;assertNull(session.append(SourceStreamCode.DEVICE_HEALTH,wall,byteArrayOf(1)));session.quiesce();session.finalizeRecording()
+            assertEquals(FreshRunPhase.FAILED,session.snapshot().phase);assertEquals("STREAM_MISSING",session.snapshot().failure)
+        }finally{journal.close();root.deleteRecursively()}
+    }
+    @Test fun `V2 compact 2048 manifest and ACK inventory serializes under fixed 512 KiB and parses exact`() {
+        val source=UUID.randomUUID();val manifests=(0 until WatchFreshRunDurationPolicy.MAX_MANIFESTS).map { index ->
+            val first=index*5L+1;val ranges=SourceStreamCode.entries.associateWith { SourceStreamRange(1,first,first) }
+            SourceSegmentManifest("fixture_$index",source,first,first+4,5,240,"%064x".format(index+1),ranges)
+        };val acks=manifests.map { FreshAcceptedAck(it.lastRecordIndex,it.sha256Hex,29_700_000L) }
+        val receipt=FreshRunReceipt(source,UUID.randomUUID(),revision=2,phase=FreshRunPhase.FINALIZED,durationMs=WatchFreshRunDurationPolicy.EIGHT_HOURS_MS,startWallMs=1_800_000_000_000L,startElapsedMs=1_000L,finalizedWallMs=1_800_028_800_000L,finalizedElapsedMs=28_801_000L,bootCount=10,supportedMask=31,startedMask=31,manifests=manifests,acks=acks,version=FreshRunReceiptVersion.V2)
+        val bytes=receipt.bytes();assertTrue("actual V2 inventory must fit contract ceiling: ${bytes.size}",bytes.size<=WatchFreshRunDurationPolicy.MAX_RECEIPT_BYTES)
+        val parsed=FreshRunReceipt.parse(bytes);assertEquals(2_048,parsed.manifests.size);assertEquals(2_048,parsed.acks.size);assertArrayEquals(bytes,parsed.bytes())
+    }
     @Test fun `produce real Watch canonical joined fixture streaming acceptance finalized completion restart`() {
         if(System.getenv("HUGR_FRESH_VERIFY_FIXTURE")=="1") return
         val output=System.getenv("HUGR_FRESH_FIXTURE_DIR")?:return

@@ -317,7 +317,10 @@ class BleGattService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val freshAction = intent?.action
-        if (freshAction == FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES || freshAction == FreshRunRuntime.ACTION_SERVE_FRESH_RECEIPT_ONLY) {
+        if (freshAction == FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES ||
+            freshAction == FreshRunRuntime.ACTION_START_FRESH_DURATION_LADDER ||
+            freshAction == FreshRunRuntime.ACTION_SERVE_FRESH_RECEIPT_ONLY
+        ) {
             if (runtimeMode != null || freshMode) return START_NOT_STICKY
             freshMode = true
             freshReceiptOnly = freshAction == FreshRunRuntime.ACTION_SERVE_FRESH_RECEIPT_ONLY
@@ -325,7 +328,16 @@ class BleGattService : Service() {
             var failedStage = DiagnosticStage.STARTUP_SELECTION
             try {
                 if (freshReceiptOnly) FreshRunRuntime.openReceiptOnly(this)
-                else freshRequestedRunId = requireNotNull(FreshRunRuntime.session).runId
+                else {
+                    val session = requireNotNull(FreshRunRuntime.session)
+                    if (freshAction == FreshRunRuntime.ACTION_START_FRESH_DURATION_LADDER) {
+                        val duration = intent?.getLongExtra(FreshRunRuntime.EXTRA_FRESH_DURATION_MS, -1L) ?: -1L
+                        require(session.snapshot().isV2() && session.snapshot().durationMs == duration &&
+                            WatchFreshRunDurationPolicy.accepts(duration)) { "Fresh ladder duration identity changed" }
+                    } else require(!session.snapshot().isV2() &&
+                        session.snapshot().durationMs == WatchFreshRunDurationPolicy.FIVE_MINUTES_MS) { "Legacy action changed" }
+                    freshRequestedRunId = session.runId
+                }
                 failedStage = DiagnosticStage.FOREGROUND_PROMOTION
                 startFreshForeground()
                 runtimeMode = EvidenceEgressGattRuntimeMode.STANDARD
@@ -336,7 +348,12 @@ class BleGattService : Service() {
                     registerSensorReceivers()
                     transportHandler.post(transportTicker)
                     failedStage = DiagnosticStage.SERVICE_START
-                    startForegroundService(Intent(this, HealthSensorService::class.java).apply { action = FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES })
+                    startForegroundService(Intent(this, HealthSensorService::class.java).apply {
+                        action = freshAction
+                        if (freshAction == FreshRunRuntime.ACTION_START_FRESH_DURATION_LADDER) {
+                            putExtra(FreshRunRuntime.EXTRA_FRESH_DURATION_MS, requireNotNull(FreshRunRuntime.session).snapshot().durationMs)
+                        }
+                    })
                     failedStage = DiagnosticStage.SERVICE_INITIALIZATION
                     healthHandler.post(healthTicker)
                 }
@@ -433,7 +450,12 @@ class BleGattService : Service() {
         manager.createNotificationChannel(NotificationChannel("hugr_fresh_v3", "HUGR fresh recording delivery", NotificationManager.IMPORTANCE_LOW))
         val notification = NotificationCompat.Builder(this, "hugr_fresh_v3")
             .setSmallIcon(android.R.drawable.stat_sys_data_bluetooth).setContentTitle("HUGR fresh run")
-            .setContentText(if (freshReceiptOnly) "Current receipt only · no sensing" else "Five-minute recording and bounded delivery")
+            .setContentText(
+                if (freshReceiptOnly) "Current receipt only · no sensing"
+                else requireNotNull(FreshRunRuntime.session).snapshot().let { receipt ->
+                    "${if (receipt.isV2()) "V2 " else ""}${WatchFreshRunDurationPolicy.label(receipt.durationMs)} recording and bounded delivery"
+                },
+            )
             .setOngoing(true).build()
         startForeground(4003, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
     }

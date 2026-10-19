@@ -70,8 +70,11 @@ class MainActivity : ComponentActivity() {
     private var freshAdmissionIdentity: FreshRunUiIdentity? = null
     private val freshActionButtons = mutableListOf<Button>()
     private lateinit var freshStartButton: Button
+    private lateinit var freshLadderStartButton: Button
     private lateinit var freshReceiptOnlyButton: Button
     private lateinit var retainedDeliveryButton: Button
+    /** UI-local selection; only the later returned V2 receipt binds an admitted run. */
+    private var selectedFreshDurationMs = WatchFreshRunDurationPolicy.DEFAULT_DURATION_MS
     private fun freshActionBlocked(): Boolean {
         // Volatile process-local guards are not filesystem reads. Retain them
         // alongside the worker snapshot so an intervening service blocks a tap.
@@ -106,11 +109,12 @@ class MainActivity : ComponentActivity() {
         val detail = if (receipt == null) {
             "No selected fresh receipt. Read status is current only for this screen refresh; no source root, sensor, or hardware state is inferred."
         } else {
-            "Selected fresh receipt\nSource ${receipt.identity.sourceId}\nRun ${receipt.identity.runId}\nReceipt revision ${receipt.revision}; phase ${receipt.phase.name}; failure ${receipt.failure}\nRequested 5 minutes; supported/started ${receipt.supportedMask}/${receipt.startedMask}\nManifests ${receipt.manifestCount}; exact accepted ACKs ${receipt.acknowledgementCount}\nReceipt/admission state does not prove sensors, timer execution, or hardware activity. Phone durable report confirmation is separate. PPG live-only; no canonical PPG in this receipt."
+            "Selected fresh receipt\nSource ${receipt.identity.sourceId}\nRun ${receipt.identity.runId}\nReceipt revision ${receipt.revision}; phase ${receipt.phase.name}; failure ${receipt.failure}\nRequested ${WatchFreshRunDurationPolicy.label(receipt.durationMs)} (${receipt.version.name}); supported/started ${receipt.supportedMask}/${receipt.startedMask}\nManifests ${receipt.manifestCount}; exact accepted ACKs ${receipt.acknowledgementCount}\nReceipt/admission state does not prove sensors, timer execution, or hardware activity. Phone durable report confirmation is separate. PPG live-only; no canonical PPG in this receipt."
         }
         setTextIfChanged(evidenceText, detail)
         if (!freshTerminalFailure) {
             freshStartButton.isEnabled = !freshStartBlocked()
+            freshLadderStartButton.isEnabled = !freshStartBlocked()
             freshReceiptOnlyButton.isEnabled = !freshReceiptOnlyBlocked()
             retainedDeliveryButton.isEnabled = !retainedDeliveryBlocked()
         }
@@ -127,21 +131,25 @@ class MainActivity : ComponentActivity() {
         startedMask = startedMask,
         manifestCount = manifests.size,
         acknowledgementCount = acks.size,
+        durationMs = durationMs,
+        version = version,
     )
     private data class FreshRuntimeRead(
         val receipt: FreshRunReceipt?,
         val activeRuntime: FreshRunUiIdentity?,
         val receiptOnly: Boolean,
     )
-    private fun beginFreshStartRecheck() {
+    private fun beginFreshStartRecheck(durationMs: Long = WatchFreshRunDurationPolicy.FIVE_MINUTES_MS) {
         if (freshStartBlocked()) return
+        if (!WatchFreshRunDurationPolicy.accepts(durationMs)) return
+        selectedFreshDurationMs = durationMs
         // A prior receipt can appear after the last passive poll and before a
         // tap. Re-read before permission/scope/admission work so UI eligibility
         // cannot bypass FreshRunRuntime.admit's unresolved-receipt guard.
         freshStartRecheckPending = true
         freshActionButtons.forEach { it.isEnabled = false }
         setTextIfChanged(statusText, "HUGR\nFRESH RECEIPT RECHECKING · START LOCKED")
-        setTextIfChanged(primaryText, "Rechecking the selected receipt before a new Start. No fresh run is admitted.")
+        setTextIfChanged(primaryText, "Rechecking the selected receipt before the explicit ${WatchFreshRunDurationPolicy.label(durationMs)} Start. No fresh run is admitted.")
         renderEvidence()
     }
     private fun completeFreshStartRecheck() {
@@ -222,6 +230,24 @@ class MainActivity : ComponentActivity() {
         // Exact source/run/revision details belong above the actions so a compact
         // round display exposes the decision evidence before any control.
         content.addView(evidenceText)
+        val durationSelectButton = Button(this).apply {
+            text = "Ladder duration: ${WatchFreshRunDurationPolicy.label(selectedFreshDurationMs)}"
+            textSize = 9f
+            minimumHeight = 0
+            setPadding(8, 4, 8, 4)
+            setOnClickListener {
+                if (freshActionBlocked() || freshStartRecheckPending) return@setOnClickListener
+                selectedFreshDurationMs = when (selectedFreshDurationMs) {
+                    WatchFreshRunDurationPolicy.THIRTY_MINUTES_MS -> WatchFreshRunDurationPolicy.TWO_HOURS_MS
+                    WatchFreshRunDurationPolicy.TWO_HOURS_MS -> WatchFreshRunDurationPolicy.EIGHT_HOURS_MS
+                    WatchFreshRunDurationPolicy.EIGHT_HOURS_MS -> WatchFreshRunDurationPolicy.FIVE_MINUTES_MS
+                    else -> WatchFreshRunDurationPolicy.THIRTY_MINUTES_MS
+                }
+                text = "Ladder duration: ${WatchFreshRunDurationPolicy.label(selectedFreshDurationMs)}"
+                setTextIfChanged(primaryText, "Selected ladder duration ${WatchFreshRunDurationPolicy.label(selectedFreshDurationMs)}. Selection alone does not admit a run.")
+            }
+        }
+        content.addView(durationSelectButton)
         freshStartButton = Button(this).apply {
             text = "Start fresh 5 minutes"
             textSize = 10f
@@ -234,6 +260,16 @@ class MainActivity : ComponentActivity() {
             }
         }
         content.addView(freshStartButton)
+        freshLadderStartButton = Button(this).apply {
+            text = "Start selected ladder duration"
+            textSize = 10f
+            minimumHeight = 0
+            setPadding(8, 4, 8, 4)
+            isEnabled = false
+            freshActionButtons += this
+            setOnClickListener { beginFreshStartRecheck(selectedFreshDurationMs) }
+        }
+        content.addView(freshLadderStartButton)
         freshReceiptOnlyButton = Button(this).apply {
             text = "Serve current fresh receipt only"
             textSize = 10f
@@ -511,7 +547,11 @@ class MainActivity : ComponentActivity() {
         Thread({
             try {
                 if (isFinishing || isDestroyed) return@Thread
-                val admitted = FreshRunRuntime.admit(applicationContext)
+                val admitted = if (selectedFreshDurationMs == WatchFreshRunDurationPolicy.FIVE_MINUTES_MS) {
+                    FreshRunRuntime.admit(applicationContext)
+                } else {
+                    FreshRunRuntime.admitLadder(applicationContext, selectedFreshDurationMs)
+                }
                 WatchDiagnosticRuntime.bindAttempt(applicationContext, admitted.runId, admitted.journal.watchBootSessionId)
                 runOnUiThread {
                     if (isFinishing || isDestroyed) {
@@ -526,7 +566,10 @@ class MainActivity : ComponentActivity() {
                     renderFreshReadiness()
                     try {
                         startForegroundService(Intent(this, BleGattService::class.java).apply {
-                            action = FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES
+                            val receipt = admitted.snapshot()
+                            action = if (receipt.isV2()) FreshRunRuntime.ACTION_START_FRESH_DURATION_LADDER
+                            else FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES
+                            if (receipt.isV2()) putExtra(FreshRunRuntime.EXTRA_FRESH_DURATION_MS, receipt.durationMs)
                         })
                         // Receipt observation on the next serialized refresh, not this
                         // request, is what may make the exact NEW RUN ADMITTED claim.

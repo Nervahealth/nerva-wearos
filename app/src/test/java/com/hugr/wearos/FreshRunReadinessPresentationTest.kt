@@ -16,6 +16,8 @@ class FreshRunReadinessPresentationTest {
         startedMask = 16,
         manifestCount = 0,
         acknowledgementCount = 0,
+        durationMs = WatchFreshRunDurationPolicy.FIVE_MINUTES_MS,
+        version = FreshRunReceiptVersion.V1,
     )
     private fun input(
         resolved: Boolean = true,

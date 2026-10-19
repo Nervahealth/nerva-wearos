@@ -13,6 +13,8 @@ import java.nio.file.Files
 internal object FreshRunRuntime {
     const val DIRECTORY = "fresh_ordinary_runs_v3"
     const val ACTION_START_FRESH_FIVE_MINUTES = "com.hugr.wearos.START_FRESH_FIVE_MINUTES"
+    const val ACTION_START_FRESH_DURATION_LADDER = "com.hugr.wearos.START_FRESH_DURATION_LADDER"
+    const val EXTRA_FRESH_DURATION_MS = "fresh_duration_ms"
     const val ACTION_SERVE_FRESH_RECEIPT_ONLY = "com.hugr.wearos.SERVE_FRESH_RECEIPT_ONLY"
     @Volatile var session: FreshRunSession? = null
         private set
@@ -32,7 +34,14 @@ internal object FreshRunRuntime {
         val fd = Os.open(dir.absolutePath, OsConstants.O_RDONLY, 0)
         try { check(OsConstants.S_ISDIR(Os.fstat(fd).st_mode)); Os.fsync(fd) } finally { Os.close(fd) }
     })
-    @Synchronized fun admit(context: Context): FreshRunSession {
+    /** Historical action: preserve exact V1 five-minute receipt bytes/semantics. */
+    @Synchronized fun admit(context: Context): FreshRunSession = admit(context, WatchFreshRunDurationPolicy.FIVE_MINUTES_MS, FreshRunReceiptVersion.V1)
+    /** A ladder duration is explicit at admission and is always serialized as V2. */
+    @Synchronized fun admitLadder(context: Context, durationMs: Long): FreshRunSession {
+        require(WatchFreshRunDurationPolicy.accepts(durationMs)) { "Fresh duration is not in the closed ladder" }
+        return admit(context, durationMs, FreshRunReceiptVersion.V2)
+    }
+    @Synchronized private fun admit(context: Context, durationMs: Long, version: FreshRunReceiptVersion): FreshRunSession {
         check(session == null && !receiptOnly) { "Fresh service already active" }
         val store = store(context)
         val previous = store.current()
@@ -48,11 +57,13 @@ internal object FreshRunRuntime {
             val initial = FreshRunReceipt(
                 journal.watchBootSessionId,
                 run,
+                durationMs = durationMs,
                 startWallMs = System.currentTimeMillis(),
                 startElapsedMs = SystemClock.elapsedRealtime(),
                 bootCount = boot,
                 supportedMask = 16,
                 startedMask = 16,
+                version = version,
             )
             // sourceRoot may have created run directory before receipt admission.
             store.createInExistingNewRun(initial)

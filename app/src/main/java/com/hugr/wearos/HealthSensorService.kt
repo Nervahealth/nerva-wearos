@@ -112,11 +112,20 @@ class HealthSensorService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES -> {
+            FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES,
+            FreshRunRuntime.ACTION_START_FRESH_DURATION_LADDER -> {
                 freshSession = FreshRunRuntime.session
                 if (freshSession == null || stopped == false) { stopSelf(); return START_NOT_STICKY }
+                val receipt = freshSession!!.snapshot()
+                val isLadder = intent.action == FreshRunRuntime.ACTION_START_FRESH_DURATION_LADDER
+                val expectedDuration = if (isLadder) {
+                    intent.getLongExtra(FreshRunRuntime.EXTRA_FRESH_DURATION_MS, -1L)
+                } else WatchFreshRunDurationPolicy.FIVE_MINUTES_MS
+                if (receipt.durationMs != expectedDuration || receipt.isV2() != isLadder ||
+                    (isLadder && !WatchFreshRunDurationPolicy.accepts(expectedDuration))
+                ) { stopSelf(); return START_NOT_STICKY }
                 stopped = false
-                startBoundedOrdinaryRun(BoundedOrdinaryRunPolicy.SHORT_ADMISSION_DURATION_MS)
+                startBoundedOrdinaryRun(receipt.durationMs)
             }
             ACTION_STOP_TRACKING -> {
                 freshSession?.fail("USER_STOPPED")
@@ -143,7 +152,12 @@ class HealthSensorService : Service() {
     }
 
     private fun startBoundedOrdinaryRun(durationMs: Long) {
-        if (!BoundedOrdinaryRunPolicy.acceptsDuration(durationMs) || !boundedRunGate.begin()) {
+        val receipt = freshSession?.snapshot()
+        if (receipt == null || receipt.durationMs != durationMs ||
+            (receipt.isV2() && !WatchFreshRunDurationPolicy.accepts(durationMs)) ||
+            (!receipt.isV2() && !BoundedOrdinaryRunPolicy.acceptsDuration(durationMs)) ||
+            !boundedRunGate.begin()
+        ) {
             NormalStartupMarkerStore(this).recordCurrent(NormalStartupStage.BOUNDED_RUN_FINALIZATION_FAILED)
             sendStatus("BOUNDED ORDINARY RUN REFUSED")
             stopSelf()
@@ -175,7 +189,7 @@ class HealthSensorService : Service() {
                 check(controlHandler.postDelayed(it, freshSession?.remainingRecordingMs() ?: durationMs))
             }
             requireNotNull(freshSession).recordingStopScheduled()
-            acquireWakeLock()
+            acquireWakeLock(requireNotNull(freshSession).deliveryLifetimeMs())
             registerScreenReceiver()
             startJournalSyncTimer()
             startFlushTimer()
@@ -290,13 +304,15 @@ class HealthSensorService : Service() {
 
     // ─── Wake Lock (keeps CPU active when screen off) ──────────────────────────
 
-    private fun acquireWakeLock() {
+    private fun acquireWakeLock(lifetimeMs: Long) {
+        require(lifetimeMs in 1..WatchFreshRunDurationPolicy.MAX_LIFETIME_MS)
         val powerManager = getSystemService(POWER_SERVICE) as PowerManager
         wakeLock = powerManager.newWakeLock(
             PowerManager.PARTIAL_WAKE_LOCK,
             "HUGR::SensorWakeLock"
         ).apply {
-            acquire(FreshRunSession.MAX_LIFETIME_MS) // 10 hours max (safety timeout)
+            // Duration + fixed grace; neither UI activity nor reconnect resets this bound.
+            acquire(lifetimeMs)
         }
         Log.i(TAG, "Wake lock acquired")
         sendStatus("Wake lock acquired")

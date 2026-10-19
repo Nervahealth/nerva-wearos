@@ -21,6 +21,8 @@ internal data class FreshRunObservedReceipt(
     val startedMask: Int,
     val manifestCount: Int,
     val acknowledgementCount: Int,
+    val durationMs: Long,
+    val version: FreshRunReceiptVersion,
 )
 
 internal data class FreshRunReadinessInput(
