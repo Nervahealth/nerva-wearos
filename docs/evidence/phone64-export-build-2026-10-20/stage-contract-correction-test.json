@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "runtime_files": 157,
+  "source_stage_committed_bytes_equal": true,
+  "dependency_symlink_ignored_and_not_committed": true,
+  "no_committed_symlink": true,
+  "exact_committed_whitelist": true,
+  "generated_root_android_ios_absent": true,
+  "original_bad_stage_preserved": true,
+  "EAS_submission_count": 0,
+  "runtime_sources_changed": false
+}
