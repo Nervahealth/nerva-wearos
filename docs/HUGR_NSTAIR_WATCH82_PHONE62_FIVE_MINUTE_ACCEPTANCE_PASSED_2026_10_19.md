@@ -58,3 +58,11 @@ Only this sanitized outcome/provenance record is committed. Raw report/video/fra
 Standing source-owner → Master → affected authorized private proposal only (none here; accepted S4 unchanged) → Alignment last → bounded documentation commits → controlled both-repository write preflight/non-force mirror → independent remote head/tree/record-byte readback. No main merge or force push.
 
 Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 **TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED**. Old interrupted source remains FAILED/PROCESS_INTERRUPTED, not finalized or qualified by this fresh success.
+
+## 14:32 operator observation — old Main screens dismissed before Start
+
+Neil states this was the first time **all old Watch Main HUGR screens were closed before starting**. This is a useful procedural observation, not proof of superstition or operator fault.
+
+Current `MainActivity.kt:56–84,141–154,246` defines Activity-local `freshRequested`, `freshReceiptOnlyRequested` and pending-admission flags, and rejects further actions when those locks or process-local runtime guards are set. A recreated Main Activity starts with new screen-local flags, then rereads actual persisted receipt/runtime eligibility. The Main manifest has a distinct main-task affinity and `documentLaunchMode="always"` (`AndroidManifest.xml:59–60`), so multiple old task cards are plausible. Returning to an old screen can retain its screen-local action lock; dismissing old Main cards and opening a fresh Main can avoid that stale screen. It does **not** bypass saved STARTED/FINALIZED guards or prove a sensor service was stopped, and is not app-data clearing.
+
+Therefore fresh-screen preparation is a **source-supported practical precaution**, already part of the approved pre-Start card. We cannot identify dismissal of all cards as the sole cause of success: the integrated Watch/Phone source fixes and prior explicit interruption closeout also changed the conditions, and this run was not a controlled causal comparison. No extra run, old-screen experiment, fix or build is needed to establish the already-passed short acceptance. Retain bounded fresh-Main preparation before a future separately approved run; do not infer permission to dismiss screens or stop services during an active recording.
