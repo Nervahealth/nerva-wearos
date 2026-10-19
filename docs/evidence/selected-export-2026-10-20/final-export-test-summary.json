@@ -1,0 +1,86 @@
+{
+  "scope": "SYNTHETIC EXPORT SOFTWARE TESTS ONLY; real recording not accessed",
+  "source_test_outcome": "PASS",
+  "native_full_suite": {
+    "tests": 158,
+    "passed": 154,
+    "skipped": 4,
+    "failures_errors": 0,
+    "skip_names": [
+      {
+        "class": "health.hugr.sourcejournal.SelectedCompletedRunExportTest",
+        "test": "existingEightHourFixtureProductionWriterExportsSelectedPackage"
+      },
+      {
+        "class": "health.hugr.sourcejournal.PhoneWatchReceiptProductionIntegrationTest",
+        "test": "actualWatchSourceJournalFixtureJoinsProductionWriterVerifierReportReceiptRestartOffline"
+      },
+      {
+        "class": "health.hugr.sourcejournal.EightHourTerminalCapacityTest",
+        "test": "actualEightHourFixtureTerminalBridgeFullStreamsProductionWriterCustody"
+      },
+      {
+        "class": "health.hugr.sourcejournal.TerminalVerifierPassMeasurementTest",
+        "test": "measuresSelectedActualFixturePrivateVerifierPassesBeforeAnyCorrection"
+      }
+    ]
+  },
+  "eight_hour_export_test": {
+    "tests": 1,
+    "passed": 1,
+    "skipped": 0,
+    "failures_errors": 0,
+    "skip_names": []
+  },
+  "phone_full_suite": {
+    "tests": 162,
+    "pass": 160,
+    "fail": 0,
+    "skipped": 2
+  },
+  "independent_reader_unit_tests": 11,
+  "independent_native_produced_packages": [
+    {
+      "kind": "8hr",
+      "package_sha256": "9b0e7501f5a4c3fbf594d8f0b49e15ed1096f07ff8f4a00fbeb80d9ef9f9ed2e",
+      "package_bytes": 10697347,
+      "canonical_bytes": 58189263,
+      "canonical_sha256": "7236d9cdf9783dac0efd6e617f1d62b966bcf865d3c50d03220aeeaaa438595e",
+      "records": 801505,
+      "manifests": 480,
+      "exact_watch_accepted_acks": 480,
+      "independent_seconds": 13.003,
+      "verified": true
+    },
+    {
+      "kind": "v1",
+      "package_sha256": "66d32f7ec8a01f43441e45398a66d0d77c2a8e0addf8152506e931d2ac2bc44e",
+      "package_bytes": 5656,
+      "canonical_bytes": 260,
+      "canonical_sha256": "868e5ca233eadda1846bdf300aa7ddd4508e956ddb5bc7e65dba47e0a1185388",
+      "records": 5,
+      "manifests": 1,
+      "exact_watch_accepted_acks": 1,
+      "independent_seconds": 0.009,
+      "verified": true
+    },
+    {
+      "kind": "v2",
+      "package_sha256": "52a7dea1c6d247200fb3bf19f355a40d1e1dbefd521262fb557d814506455e45",
+      "package_bytes": 5643,
+      "canonical_bytes": 260,
+      "canonical_sha256": "868e5ca233eadda1846bdf300aa7ddd4508e956ddb5bc7e65dba47e0a1185388",
+      "records": 5,
+      "manifests": 1,
+      "exact_watch_accepted_acks": 1,
+      "independent_seconds": 0.006,
+      "verified": true
+    }
+  ],
+  "protected_source_and_physical_acceptance_unchanged": true,
+  "protected_hash_count": 14,
+  "repository_wide_typecheck": "29 errors in 3 unchanged archived files; no current changed-file diagnostic",
+  "core_deadline_ms_unchanged": 180000,
+  "build_install_device_real_export": "NOT AUTHORIZED OR PERFORMED",
+  "research_data_handoff": "NOT COMPLETE"
+}

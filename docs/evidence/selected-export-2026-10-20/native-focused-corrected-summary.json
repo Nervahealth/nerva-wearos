@@ -1,0 +1,10 @@
+{
+  "tests": "10",
+  "failures": "0",
+  "errors": "0",
+  "skipped": "1",
+  "time": "7.814",
+  "skipped_cases": [
+    "existingEightHourFixtureProductionWriterExportsSelectedPackage"
+  ]
+}

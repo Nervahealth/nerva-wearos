@@ -2,7 +2,7 @@
 
 ## Current disposition
 
-**AUTHORIZED SOURCE/TEST WORK IN PROGRESS. No build, installation, real export or research-data handoff completed.**
+**SOURCE/TEST COMPLETE — independent synthetic package handoff PASS. No build, installation, device access or real-record export performed. Real research-data handoff NOT COMPLETE.**
 
 Neil's 20 October 2026 00:33 Europe/Oslo instruction authorizes the smallest isolated Phone capability to copy an explicitly selected completed run's unchanged canonical parent, exact manifests, original completed Watch receipt, original durable Phone report and available provenance into a checksummed private-save/share package. The appended end-to-end completion criterion belongs to this same task: a separate analysis reader must verify the package and produce a readable descriptive inventory, including negative and existing eight-hour synthetic-fixture tests. This is not a new architecture, telemetry or research programme.
 
@@ -40,7 +40,7 @@ This portable selected-evidence/lineage package supplies part of the already pla
 
 - Recording/custody: preserved physical five-minute PASS.
 - Duration capacity: preserved admitted synthetic ladder PASS, not Honor performance or physiological validity.
-- Export source/test: pending current work.
+- Export source/test: PASS; completed counts and limitations below.
 - Real research-data handoff: **NOT COMPLETE until an actual permitted exported recording is independently verified and inspected.**
 
 Only sanitized source/tests, protocol documentation, timings/counts and control records go to GitHub. Canonical physiological records, real reports, private media and exported ZIPs do not. Remote preservation of source/control documents is not canonical recording backup. S4/accepted adapter/companion/T2.2/October reconciliation and all prior failures/corrections remain unchanged.
@@ -50,3 +50,49 @@ Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 *
 ## WIP validation checkpoint — retained history
 
 The independent reader has passed 11 synthetic positive/negative tests. The first native focused execution compiled and ran ten cases: three failed and the unrequested eight-hour fixture case was explicitly skipped. The exposed failure-code/fixture issues and same-process provider sharing were corrected in source; the corrected focused rerun is pending at this checkpoint. Do not treat this WIP snapshot as native GREEN, complete export validation, a built candidate or real research handoff. Original failed XML and all earlier tests remain retained. No real records, APK or device action occurred.
+
+## Final source/test validation — supersedes the WIP pending disposition only
+
+| Check | Observed result |
+|---|---|
+| Complete production-extracted native suite | 158 cases: 154 passed, zero failures/errors, four explicit fixture-dependent skips |
+| Dedicated existing eight-hour export fixture | One genuinely executed case passed, zero skips; original actual Watch fixture reused |
+| Complete Phone deterministic suite | 162 cases: 160 passed, zero failures, two historical fixture-dependent skips |
+| Separate Python reader suite | 11 passed, including missing/altered/mismatched material, rewritten outer checksums, valid-CRC payload tampering and trusted parent-anchor mismatch rejection |
+| Native-produced packages independently verified | V1 small, V2 small and eight-hour package all passed; no exporter success flag used as reader proof |
+| Eight-hour selected export | 801,505 canonical records; 480 manifests; 480 exact Watch-accepted ACKs; full parent and original selected report/receipt bytes |
+| Protected evidence/source | Fourteen exact hashes unchanged, including the physical five-minute PASS and existing writer/verifier/bridge/report/reader/BLE/Watch boundaries |
+
+The four complete-native skips are the unprovided eight-hour exporter fixture, historical complete joined fixture, focused eight-hour terminal fixture and pass-measurement fixture. The exporter eight-hour case was then explicitly executed with its actual fixture and no skip. Historical complete duration-chain evidence is preserved, not replaced by skipped cases in this task. Phone skips are the unrelated historical joined-recovery fixture prerequisites; the supplied fresh Watch wire case executed. Repository-wide TypeScript remains non-green: 29 errors in three unchanged archived files, no new changed-file diagnostic. No assertion is weakened to accept a failed source/custody check.
+
+The independently verified eight-hour canonical parent is 58,189,263 bytes, SHA-256 `7236d9cdf9783dac0efd6e617f1d62b966bcf865d3c50d03220aeeaaa438595e`; the generated synthetic ZIP is 10,697,347 bytes, SHA-256 `9b0e7501f5a4c3fbf594d8f0b49e15ed1096f07ff8f4a00fbeb80d9ef9f9ed2e`. Each synthetic stream has 160,301 records. The separate reader emits recorded min/max millisecond fields, ordering/shared-timestamp observations, schema-unit descriptions and explicit opaque/status/producer/clock/chronology unknowns without calculating physiology or RMSSD. These are synthetic software test observations, not findings about the real five-minute recording or Honor speed. Eight-hour fixture production setup, completion, export and native byte/state assertions ran in 431.714 seconds; independent ZIP verification/inventory took 13.003 seconds. Those total test times are not a widened verifier deadline. The existing 180,000 ms canonical verifier budget remains unchanged.
+
+Read-only preservation was checked before and after successful export, selected mismatch/incomplete/pending/schema/symlink/CRC refusal and cancellation. No `PhoneSourceJournal` instantiation, pending recovery or `exportAccepted` is invoked by the exporter; the original source database is copied and only the disposable copy is opened read-only. The complete file, original latest selected report envelope and original decoded receipt are copied unchanged. The manifest sidecar is explicitly derived metadata with exact tuple/hash/range membership; no canonical record is renumbered, reordered, interpolated or reserialized. Scratch databases and other sessions are not included in the ZIP.
+
+### Native save/share boundary and its remaining physical check
+
+The new launcher is **HUGR Selected Completed-Run Export**, distinct from **HUGR Saved Source Evidence**. Source/run are entered explicitly; there is no latest-run fallback or hardcoded five-minute UUID. Activity and narrow provider use the same separate `:selectedRunExport` process, so their process-local exact-token registry is usable. Package preparation and saving run on a worker; no Main HUGR/Connect/BLE/service/network call is added. Before Share the generated ZIP is private. Explicit Share grants only its exact read-only content URI; provider byte equality, MIME/name/size, mode/path refusal, expiry/revocation and destroy cleanup passed. Save uses Android's explicit document chooser; cancellation removes the private generated package. Destinations and already-received copies are user-owned; ZIP is not encrypted or origin-authenticated.
+
+These are native JVM/Robolectric and source/intent/provider tests. Real Android chooser/provider permission behavior and an actual saved real recording are still untested; no hardware claim is made. Ordinary Android Application initialization is not a new telemetry authority; this native surface does not launch Main HUGR or its connection/recording actions.
+
+## Concrete next proposal — not execution authority
+
+1. **Authorize one Phone-only candidate build/admission, proposed Phone64.** Keep `health.hugr.app`, the existing managed Phone project and signer, greater version than Phone63, all admitted duration-ladder corrections, no Watch83 change. Admit exact packaged exporter/provider process, URI/save actions and independent-protocol source inclusion; exclude test/runtime mocks; checksum APK/uploaded bytes and preserve source/artifact records. This task changed no version, signing or build configuration and made no APK.
+2. **Separately authorize installation-only on Honor.** Ordinary same-package update; no uninstall/data clearing; confirm Phone64 in Settings; leave Watch83 and its artifact unchanged. Installed Phone62/63 state must be checked from actual current evidence, never inferred from candidate admission.
+3. **Separately authorize one private existing-run export after duration work is idle.** Open only HUGR Selected Completed-Run Export. Enter source `24ca3a75-62ab-4912-91a0-d50613b02928` and run `46628727-a977-4dd7-b4e6-19e196efe383`; Prepare selected package, then explicit Save/private Share. Supply original saved ZIP plus displayed byte count/SHA privately to the analysis task. No Main/Connect/replay/pending recovery/new recording. Stop at any pending/changed/incomplete/mismatch failure; do not bypass it or interrupt an active rehearsal.
+4. **Independently verify and inspect the actual ZIP.** Use the preserved acceptance report's expected source/run, 8,349 records/six manifests, parent byte count 539,746 and reported SHA-256 `a71ff129b07b53c5c67f2d2160746d8a5de4c887997cde921dfb8898b9f6b470` as external comparison anchors, not as already-read canonical bytes. Verify actual ZIP SHA, full parent bytes/CRC/identity and every manifest/report/receipt/ACK member. Then read the actual descriptive inventory and give the same private package to the clarification agent. Do not qualify native IBI chronology/RMSSD or commit learning.
+
+Example later verification command, to run only after the actual private ZIP arrives:
+
+```bash
+python3 verify_hugr_export.py actual-selected-run.zip \
+  --expected-source 24ca3a75-62ab-4912-91a0-d50613b02928 \
+  --expected-run 46628727-a977-4dd7-b4e6-19e196efe383 \
+  --expected-canonical-bytes 539746 \
+  --expected-canonical-sha256 a71ff129b07b53c5c67f2d2160746d8a5de4c887997cde921dfb8898b9f6b470 \
+  --output-dir private-inventory
+```
+
+This supplies the selected exact-evidence/provenance boundary of the existing Watchtower plan, not live telemetry, portal ingestion or a second observer stack. The acceptance receipt remains unchanged and can accompany the later private package as separately preserved engineering provenance; original producer SDK/build fields not stored inside the recording remain explicitly unknown rather than guessed from the current exporter build.
+
+Recording/custody PASS, synthetic duration capacity PASS, and synthetic export source/test PASS are separate from **real research-data handoff NOT COMPLETE**. GitHub source preservation does not prove private canonical backup or preservation of any separately scoped clarification repository. Only sanitized source/tests/docs and aggregate synthetic evidence are preserved there; no physiological records, real reports, media or export ZIPs are published.

@@ -1,0 +1,6 @@
+{
+  "repository_wide_exit_clean": false,
+  "repository_wide_error_count": 29,
+  "new_changed_file_diagnostics": [],
+  "scope": "Existing archived typecheck errors retained; do not claim repository-wide GREEN"
+}
