@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "actualCdnExtensions": [
+    ".apk",
+    ".sha256"
+  ],
+  "uniqueExpectedHostLinks": 2,
+  "uploadedOnce": true,
+  "noReupload": true,
+  "originalUploadResponseRetained": true
+}

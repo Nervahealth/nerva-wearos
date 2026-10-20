@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "jobId": "b5af5d64-6054-4297-a268-17f77ea53bdf",
+  "submissionCount": 1,
+  "originalPrefixBytes": 84665337,
+  "originalPrefixSha256": "d7e17855834f619bda805e71a802f8cbb3638acb22f7b33e5efd9e0b3e16a49e",
+  "originalPrefixUnchanged": true,
+  "wholeArtifactBytes": 152064086,
+  "wholeArtifactSha256": "a19542b8628af1c95aff0996fb9ce2a7a43e2eb769d7c8e7f1dc184ba23335bc",
+  "rangeSupported": true,
+  "existingCompletedBuildOnly": true
+}

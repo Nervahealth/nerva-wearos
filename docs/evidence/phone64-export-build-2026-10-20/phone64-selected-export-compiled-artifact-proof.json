@@ -1,0 +1,84 @@
+{
+  "status": "PASS",
+  "scope": "READ_ONLY_COMPILED_APK_ADMISSION_ONLY",
+  "apk": "/home/ubuntu/HUGR_PHONE64_SELECTED_EXPORT_BUILD_2026_10_20/artifacts/HUGR_Phone64p_2.0.64_selected-run-private-export-candidate.apk",
+  "sha256": "a19542b8628af1c95aff0996fb9ce2a7a43e2eb769d7c8e7f1dc184ba23335bc",
+  "bytes": 152064086,
+  "package": "health.hugr.app",
+  "versionCode": 64,
+  "versionName": "2.0.64-selected-run-private-export-candidate",
+  "signerSha256": "a1780089becaf58563daa5dfa16c5626928a13ce56a7dc232732e64a8df4e811",
+  "archive": {
+    "zipCrc": "PASS",
+    "pageAlignment": "PASS",
+    "duplicateZipEntries": "PASS"
+  },
+  "compiledClasses": 39346,
+  "uniqueClassDefinitions": true,
+  "manifest": {
+    "selectedActivity": "PASS",
+    "launcherMain": "PASS",
+    "selectedProvider": "PASS",
+    "sameSelectedRunExportProcess": "PASS",
+    "packageBoundAuthority": "health.hugr.app.selectedRunExport",
+    "providerNonExportedReadGrantNarrowSurface": "PASS"
+  },
+  "selectedNativeDefinitions": {
+    "activityDirectSuperclassAndroidActivity": "PASS",
+    "providerDirectSuperclassContentProvider": "PASS",
+    "exporter": "PASS",
+    "registry": "PASS",
+    "inheritedPhone63ReportReceiptWriterCompatibility": "PASS",
+    "readonlyDisposableDatabase": "PASS",
+    "completedPendingAndMutationRefusals": "PASS",
+    "originalFullCopyAndImmutableReceiptReportManifestChecks": "PASS",
+    "explicitSaveShareCancelExpiryModePathGuards": "PASS"
+  },
+  "sourceEvidenceApplicationGuard": {
+    "compiledAndSourceEvidenceScoped": "PASS",
+    "sourceEvidenceActivityDirectSuperclassAndroidActivity": "PASS",
+    "scope": ":sourceEvidence only; no assertion that it guards :selectedRunExport"
+  },
+  "selectedRunExportApplicationStartup": {
+    "ordinaryApplicationOnCreateRuns": "PASS",
+    "reactNativeNativeBootstrapDirectCall": "PASS",
+    "expoApplicationLifecycleDispatchDirectCall": "PASS",
+    "directMainApplicationWriterPendingRecoveryOrBleReference": "ABSENT",
+    "scope": "Direct MainApplication onCreate inspection only; generic Expo package lifecycle behavior and JS evaluation are not asserted absent."
+  },
+  "durationLadder": {
+    "requiredCompiledTerms": [
+      "HUGR_RUN_RECEIPT_V2",
+      "configureSelectedRecordCursorWindow",
+      "SNAPSHOT_CURSOR_WINDOW_ALLOCATION_OR_CONFIGURATION_FAILURE",
+      "hugr-selected-record",
+      "HistoricalReportChainStamp",
+      "ParsedReceiptCacheEntry",
+      "native_verified_manifest",
+      "verifiedCustodyReportInputFromStableSelectedSourceSnapshot",
+      "SOURCE_CHANGED_DURING_VERIFICATION",
+      "DURATION_OR_CANCELLATION_BUDGET_EXCEEDED",
+      "MAX_DURATION_MS",
+      "Hermes"
+    ],
+    "cursorWindowSignedDexProof": {
+      "dex": "classes5.dex",
+      "method": "configureSelectedRecordCursorWindow",
+      "exactWindowBytes8388608": true,
+      "apiAtLeast28Branch": true,
+      "sdkIntRead": true,
+      "sqliteCursorGuard": true,
+      "cursorWindowType": true,
+      "cursorWindowName": true,
+      "cursorWindowStringLongConstructor": true
+    },
+    "runtimeTestExclusions": "PASS"
+  },
+  "nonclaims": [
+    "No build, upload, staging, signing, installation, launch, device, export, record, or app-private-root action occurred.",
+    "This proves compiled artifact predicates only; it does not prove Android chooser/provider behavior, an actual save/share, or any real package/export.",
+    "Separate selected-process components do not prove an Application-process bypass. The retained Application guard is scoped to :sourceEvidence; this validator makes no :selectedRunExport Application-guard claim.",
+    "The selected process executes ordinary MainApplication native React/Expo bootstrap and lifecycle dispatch. This validator does not claim that no app JS or generic Expo lifecycle code can run; it proves only no direct MainApplication writer, pending-recovery, or BLE reference.",
+    "No physiological, research, report, canonical-record, receipt, or ZIP-export bytes were opened or inspected."
+  ]
+}

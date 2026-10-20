@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "live_remote_head_tree_and_all_prior_byte_proofs_match": true,
+  "one_job_dict_or_array_parser_pass": true,
+  "multiple_job_arrays_rejected": true,
+  "no_wait_flag_verified_from_existing_cli": true,
+  "pre_submission_stop_archived_unchanged": true,
+  "EAS_submission_count": 0
+}

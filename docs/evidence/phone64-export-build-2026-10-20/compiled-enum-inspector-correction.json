@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "artifactSha256": "a19542b8628af1c95aff0996fb9ce2a7a43e2eb769d7c8e7f1dc184ba23335bc",
+  "runtimeOrApkChanged": false,
+  "compiledEnumsExactlyChecked": {
+    "launchMode_singleTask": 2,
+    "screenOrientation_portrait": 1,
+    "configChanges_orientation_screenSize": 1152
+  },
+  "wrongEnumsAndWrongTypesRejected": true,
+  "originalFailureRetained": true
+}

@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "fullByteMatch": true,
+  "chunkBytes": 1048576,
+  "localApkBytes": 152064086,
+  "cdnApkBytes": 152064086,
+  "localSha256": "a19542b8628af1c95aff0996fb9ce2a7a43e2eb769d7c8e7f1dc184ba23335bc",
+  "cdnSha256": "a19542b8628af1c95aff0996fb9ce2a7a43e2eb769d7c8e7f1dc184ba23335bc",
+  "sidecarExactByteMatch": true,
+  "sidecarDeclaredSha256": "a19542b8628af1c95aff0996fb9ce2a7a43e2eb769d7c8e7f1dc184ba23335bc",
+  "cdnApkHttpDownload": "PASS",
+  "cdnSidecarHttpDownload": "PASS"
+}

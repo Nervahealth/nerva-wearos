@@ -1,0 +1,43 @@
+{
+  "status": "PASS",
+  "scope": "VALIDATOR_REPRESENTATION_NEGATIVE_TESTS_ONLY",
+  "artifactSha256": "a19542b8628af1c95aff0996fb9ce2a7a43e2eb769d7c8e7f1dc184ba23335bc",
+  "validatorSha256": "65a4666fef85a2004660a57cf7531eadbb610b917f629eb0590f7998b791336d",
+  "allNegativeCasesRejected": true,
+  "checks": {
+    "preserved_manifest_scalar_checks": {
+      "singleTask_correct_2_accepted": true,
+      "singleTask_wrong_3_rejected": true,
+      "portrait_correct_1_accepted": true,
+      "portrait_wrong_0_rejected": true,
+      "configChanges_correct_0x480_accepted": true,
+      "configChanges_wrong_0x80_rejected": true,
+      "enum_wrong_type_rejected": true
+    },
+    "pre28_getter_compilation_check": {
+      "actual_ActivityManager_getter_accepted": true,
+      "source_property_spelling_without_getter_rejected": true,
+      "wrong_getter_owner_rejected": true
+    },
+    "receipt_integrity_method_locality_check": {
+      "actual_parse_in_fresh_custody_accepted": true,
+      "actual_hash_in_decode_helper_accepted": true,
+      "parse_omission_rejected": true,
+      "wrong_decode_only_requirement_demonstrably_false": true
+    },
+    "inherited_revoke_dispatch_check": {
+      "actual_concrete_owner_exact_signature_accepted": true,
+      "wrong_revoke_signature_rejected": true,
+      "wrong_revoke_owner_rejected": true
+    },
+    "inlined_openable_columns_check": {
+      "actual_both_exact_columns_accepted": true,
+      "display_name_only_rejected": true,
+      "size_only_rejected": true,
+      "owner_reference_without_exact_columns_rejected": true
+    }
+  },
+  "nonclaims": [
+    "No APK/source/runtime mutation, build, signing, staging, upload, installation, launch, device action, private-record access, or real export."
+  ]
+}
