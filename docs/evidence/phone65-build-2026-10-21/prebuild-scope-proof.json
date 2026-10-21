@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "unchanged_files": 313,
+  "only_app_identity_changed": true,
+  "corrected_runtime_unchanged": true,
+  "provider_exact_source_file": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/SelectedCompletedRunExporter.kt",
+  "stage_required_inputs_all_present": true,
+  "watch_runtime_unchanged": true,
+  "physical_five_minute_pass_unchanged": true,
+  "build_submissions": 0
+}

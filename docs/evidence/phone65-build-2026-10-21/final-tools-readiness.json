@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "compiledPredicateNegativeTests": 7,
+  "validatorsReadOnly": true,
+  "checksumSidecarParentOwnedAfterBothAdmissions": true,
+  "removedOnlyGeneratedNewToolBytecode": [],
+  "buildSubmissions": 0
+}

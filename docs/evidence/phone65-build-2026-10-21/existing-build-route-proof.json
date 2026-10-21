@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "account": "neilhugr",
+  "projectId": "d0c3af97-5a78-4ba1-bc8b-8a21f169ce44",
+  "projectOwner": "neilhugr",
+  "projectSlug": "hugr-mobile",
+  "easExecutable": "/home/ubuntu/HUGR_PHONE65_EXPORT_SCRATCH_BUILD_2026_10_21/tooling/native-dependencies/runtime-source/node_modules/.bin/eas",
+  "dependencies": "/home/ubuntu/HUGR_PHONE65_EXPORT_SCRATCH_BUILD_2026_10_21/tooling/native-dependencies/runtime-source/node_modules",
+  "frozenLockSha256": "27c87bfc48f5b066607d2466b74607be68333cb1cd8767919f416f985dc8cbb0",
+  "singleBuildSubmissions": 0,
+  "identityInspectionOnly": true,
+  "parser": "strict anchored named fields from already-captured current CLI text; CLI did not emit JSON",
+  "rawAccountResponsesPrivate": true
+}
