@@ -1,0 +1,547 @@
+{
+  "scope": "AUTHORIZED SOURCE/TEST SCRATCH LIFECYCLE ONLY",
+  "allowed_source_paths": [
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/SelectedCompletedRunExporter.kt",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/SelectedRunExportScratchSpace.kt",
+    "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/SelectedCompletedRunExportTest.kt",
+    "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/SelectedRunExportScratchSpaceTest.kt",
+    "tests/selectedCompletedRunExportContracts.test.ts"
+  ],
+  "observed_changed_paths": [
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/SelectedCompletedRunExporter.kt",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/SelectedRunExportScratchSpace.kt",
+    "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/SelectedCompletedRunExportTest.kt",
+    "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/SelectedRunExportScratchSpaceTest.kt",
+    "tests/selectedCompletedRunExportContracts.test.ts"
+  ],
+  "protected_phone_runtime_and_config_hashes": [
+    {
+      "path": "app.json",
+      "sha256": "0669aadbcc8d3024cbd0f4682e5c88d60ea5b7d74dfbf5c3f398454f3f4e75be"
+    },
+    {
+      "path": "app/(tabs)/_layout.tsx",
+      "sha256": "f51f753612f3acec01b2a1fdc93c87730e0f278a6fd2942f46473adc09d7b3c7"
+    },
+    {
+      "path": "app/(tabs)/checkin.tsx",
+      "sha256": "130180374c8ae103b03f55647048e9a9e65e67e05bebc0a9d7f072d35a9ebc55"
+    },
+    {
+      "path": "app/(tabs)/clinician.tsx",
+      "sha256": "5543f07084c0a5b2cbaf2c6c1f1dda9c5154c532384bee23738da2842ec7cca0"
+    },
+    {
+      "path": "app/(tabs)/haptics.tsx",
+      "sha256": "459839aa8de4287b63af4ac78341307f3605dc225bcb13897fb47255df5212dd"
+    },
+    {
+      "path": "app/(tabs)/home.tsx",
+      "sha256": "d2d02f5ab12b0c22e59781e83c77b213aefe8203a71b59ff82ac307f2ce7ff8a"
+    },
+    {
+      "path": "app/(tabs)/progress.tsx",
+      "sha256": "d5185ef3cc2a0d588eaa16ffdaa17d09bfe25def43687aef96a09a9aaab4cc71"
+    },
+    {
+      "path": "app/(tabs)/roots.tsx",
+      "sha256": "aa58b966761ad83da2e60d792b071e93c793c2a40ef86e8c94ad3c0fbcc76504"
+    },
+    {
+      "path": "app/(tabs)/settings.tsx",
+      "sha256": "b6ed4757b19d2a786936ef5bdac4804516a3fc4be496da7d14a059dec4645992"
+    },
+    {
+      "path": "app/_layout.tsx",
+      "sha256": "693645bf3f8e524566224c9c23f11a67202132ee85b0111d61c5f5bb27c283a7"
+    },
+    {
+      "path": "app/consent.tsx",
+      "sha256": "dc2e5484c67672a272091dc16b54f47346c83c1bcdb7f9311458302fe908f689"
+    },
+    {
+      "path": "app/index.tsx",
+      "sha256": "eea4741ab19e62b6fe0e1db69369bb0a00f08776c4efcb8049d4f3eac0b2f674"
+    },
+    {
+      "path": "app/onboarding.tsx",
+      "sha256": "0ca51376afb64f5cd41863f81244feacd93aefb9b0bcb12d5b7c4f7ae1ec8065"
+    },
+    {
+      "path": "components/BioParticles.tsx",
+      "sha256": "534b6905d375674e71d1b6b08623a183e57cbfd44cf6b694414292328dce9677"
+    },
+    {
+      "path": "components/CrashReporter.tsx",
+      "sha256": "710a707f7babbbd5b8043bc60050d40f968ae363aa41c9ee79899f0ebd58c1db"
+    },
+    {
+      "path": "components/HUGRHeader.tsx",
+      "sha256": "ac6dd320dc160a09cd1e5055ef66da9db8d8dfb9ce21b70a390130150a466602"
+    },
+    {
+      "path": "components/LogModal.tsx",
+      "sha256": "bf2d5e8fdadc458c3944313e8070f1f41ed33698b6dcc5b57dcb8fe4147e3088"
+    },
+    {
+      "path": "components/PolarConnect.tsx",
+      "sha256": "35dbc3a3af66344cac6b980f86e9c2d813fa2633c6596524dbe6bdd1e3e11b6c"
+    },
+    {
+      "path": "components/PostHapticCheckIn.tsx",
+      "sha256": "ca15cc535fce2404be61476d0ecebf6a7e8507a90270170240c86b50061bf391"
+    },
+    {
+      "path": "components/WatchConnect.tsx",
+      "sha256": "152b941b168967fbd1fac46cc7dc75c87081beb3bda6393a5d86e2e6c1bb64f7"
+    },
+    {
+      "path": "components/WaterStateView.tsx",
+      "sha256": "fb6aff05b526949f0887c557d2a6409982227345202080859e13af89628738a2"
+    },
+    {
+      "path": "eas.json",
+      "sha256": "0dbd0452a2656b5aa6aa549826949350a7804269551d8764ba2854f587878706"
+    },
+    {
+      "path": "lib/ambientSound.ts",
+      "sha256": "c1b8d2039323c0c795fbfef48ea880a208216ae5d8709f90b7a9b59e84a21843"
+    },
+    {
+      "path": "lib/baselines.ts",
+      "sha256": "9319a22b91947f6aa7fc1b04bac0449d4bd427c844ea976fca3fd991a23601e6"
+    },
+    {
+      "path": "lib/bluetooth.ts",
+      "sha256": "9b9d64077fe543dd81a0801e2ae4280cad51c6b3bca9cd26aec7ee078b40c431"
+    },
+    {
+      "path": "lib/build45SourceIngestion.ts",
+      "sha256": "8ab3f4fdfa3d1374d85258c7bac44abd0d02a3a2e53d642cb0c1ace2c5b90a05"
+    },
+    {
+      "path": "lib/build45SourcePersistence.ts",
+      "sha256": "3ed9aff4351c7a0676ac79b95f4c3340e974802b6e53c306ae3c8c0dd902ce3a"
+    },
+    {
+      "path": "lib/build45SourceProtocol.ts",
+      "sha256": "0905722ca23a968a2f20d990b54b3859d3eb3cf2dd7618e9acbd63ea006d9243"
+    },
+    {
+      "path": "lib/build46TransportStatus.ts",
+      "sha256": "2c91c466dc0e1a74eb3ab1aec6dd955410ba07be2c946bca8c971b3212212828"
+    },
+    {
+      "path": "lib/circadian.ts",
+      "sha256": "bc64dd8c33b43dc59dacef86f5e33ae85d1a5a7bc9ff2ded53e3834d07ac40a4"
+    },
+    {
+      "path": "lib/crossValidation.ts",
+      "sha256": "18cc69207c96145fabf575b683304205acc3655da3e0a621231206685b021bdc"
+    },
+    {
+      "path": "lib/dataSync.ts",
+      "sha256": "fc6e7cfa3a775af0b47f804c1bc7f0393f65c697d7d30e8cb5b883e1c08aaa4d"
+    },
+    {
+      "path": "lib/debugTelemetry.ts",
+      "sha256": "08e77e4db30a30714740435aa7544cfa3466a5114dbba16062b930cb8cb1cdf8"
+    },
+    {
+      "path": "lib/durationLadderContract.ts",
+      "sha256": "79eff1f1a61d3f06f315071f9fe438288dad91f57915ea393e02d03b184a3d59"
+    },
+    {
+      "path": "lib/epochFreshness.ts",
+      "sha256": "761f9e4e7b0119b02c22b99777c925e8cabbf019dd05d274cdb6754d18ab56a0"
+    },
+    {
+      "path": "lib/foregroundService.ts",
+      "sha256": "8631da10d3cb3b3f56468a66a4df86b16be75995674f35db2811514decb2e2bd"
+    },
+    {
+      "path": "lib/freshRunFailureBoundary.ts",
+      "sha256": "823faf7b363502c0a21e84326edafdde8362ab3479f9a31ebebfbc461e9582fb"
+    },
+    {
+      "path": "lib/fusion.ts",
+      "sha256": "c9a3d5637c20a053fea73672b5ea92f233c37a2106c1a8f5942a913c14a83fb0"
+    },
+    {
+      "path": "lib/fusionEngine.ts",
+      "sha256": "b964e2cc132ad9983f2dc3b44cd9a427c3bd1b8f1026a4a04ee071f5eaafd14e"
+    },
+    {
+      "path": "lib/haptics.ts",
+      "sha256": "defe240db6edeb5a1f686f1c7c9f752dca2fc0e33c56c78512a028945496c11d"
+    },
+    {
+      "path": "lib/healthConnect.ts",
+      "sha256": "f27a1d9584c7f9a4c9e58b533e932096453b19677f4b88727a664cb364f5af41"
+    },
+    {
+      "path": "lib/hmm.ts",
+      "sha256": "ebc8b54b22cbb9782ec53f59b14e1b4b29972ab8505598c96a39f489beaff16d"
+    },
+    {
+      "path": "lib/hrv.ts",
+      "sha256": "01f57373e5a0f47f39aae8559e37ead847db74159aa76e434713aa90ad86ed08"
+    },
+    {
+      "path": "lib/i18n.ts",
+      "sha256": "c14a4adb02a01e1bd7bf14972e1f86a83c03586e629fe12112662fd684fd130b"
+    },
+    {
+      "path": "lib/kalman.ts",
+      "sha256": "042d40df956aa0f3c8fa8eb319fc37cbc2d9af7d5c42c2015806fb125e422128"
+    },
+    {
+      "path": "lib/learning/legacyStateHeuristic.ts",
+      "sha256": "14d727d344edfa2b9085ae6dd88c9645121f294b30e1cb2058fad4bcf25ad375"
+    },
+    {
+      "path": "lib/learning/shadowEpochAdapter.ts",
+      "sha256": "3a69884c83a71007364ce45376c74e1c93781ebdbcb22393fe564c7259aa70f0"
+    },
+    {
+      "path": "lib/learning/shadowLearning.ts",
+      "sha256": "4332073a7a9b24e91cca05745b1e56e87d62a8c2a6b89bdf6d6a0feaf37cf2c7"
+    },
+    {
+      "path": "lib/learning/shadowLearningRuntime.ts",
+      "sha256": "51e132799d52cfc9a74a947f27728d2630fbc76e5d592097304860e15ce35c10"
+    },
+    {
+      "path": "lib/liveCardiacPolicy.ts",
+      "sha256": "0422008426be5e890b91fe2f576a8b3ecf12ce33575937742f0c093604b460bb"
+    },
+    {
+      "path": "lib/motion.ts",
+      "sha256": "d8b66a4cb69f5bfcacae3220dcfe6f8ddee02857b6fb34fe6ae4c5a9278f14f7"
+    },
+    {
+      "path": "lib/oura.ts",
+      "sha256": "e318dc4ade9ae59c04f503e1a6440b2b40f96f3ea757f0adf4a30609fcd77a77"
+    },
+    {
+      "path": "lib/phoneRunAckEvidence.ts",
+      "sha256": "08938eb4d7067461edf5b68af379e84395e81a523ce69f1cf9c7d69c289d45fd"
+    },
+    {
+      "path": "lib/rawDataStore.ts",
+      "sha256": "2d553244a72aa5533c6e287530e9508d53709403e5aedc505697712bacf18549"
+    },
+    {
+      "path": "lib/rawTemporalPoints.ts",
+      "sha256": "2c99b9fbe59db961c7d6e70755a126767af0edfec87f073a1d89fa254d3e55b1"
+    },
+    {
+      "path": "lib/recoveryAttemptGuard.ts",
+      "sha256": "db0dd4349cc39f6b78e4e3e25b07076914d15d22c66d01657bf5a03e87ebc95c"
+    },
+    {
+      "path": "lib/recoveryDiagnostic.ts",
+      "sha256": "195bf14ec14b89927c1b184df9affa68940bd64efa66815b4dd36b64acfaf930"
+    },
+    {
+      "path": "lib/recoveryDiagnosticModel.ts",
+      "sha256": "17996229a7aa681aea6889b0e0c22c2afe013804f168994a61a06864cf5c3387"
+    },
+    {
+      "path": "lib/scientificMemoryCore.ts",
+      "sha256": "038ed936cdf4eade53b450150d53c30361d77fc349a6027b5854b07f15ea284c"
+    },
+    {
+      "path": "lib/scientificMemorySync.ts",
+      "sha256": "138562032fba6239600c98b5e9e14a488b4e81979400e9b87af787d8b8a5dc22"
+    },
+    {
+      "path": "lib/screenActivity.ts",
+      "sha256": "2b057f365eaa641e43a98e708cff24e04e7c55283e3837c92611441cd1e0ecfb"
+    },
+    {
+      "path": "lib/signalProcessing.ts",
+      "sha256": "be7d6854447d3627645080569b88f2164fcd410ccbb547032f2a1075d5b9f97f"
+    },
+    {
+      "path": "lib/storage.ts",
+      "sha256": "55987ad72d5fbdae95d1c0324e19eeed46a68b18a8fd65cc2197a077a6bf3c73"
+    },
+    {
+      "path": "lib/telemetryFreshness.ts",
+      "sha256": "dd32b00fa94dae6a2a2767277e578b87b20d4a89630c68a75cfbac35b7bc874e"
+    },
+    {
+      "path": "lib/theme.ts",
+      "sha256": "046d9b7a38f279b87bfb007c31c17e168c7f22175939f757dddd0c8bd79cacd6"
+    },
+    {
+      "path": "lib/types.ts",
+      "sha256": "b4c71e1d51b95d4341bea7ee23d98acdc41490661652080f29771e4d90dba612"
+    },
+    {
+      "path": "lib/watchRunReceiptTransport.ts",
+      "sha256": "564d3ec33ad095508de67252453991e7c8928757695b7e3c36ec07033111ef80"
+    },
+    {
+      "path": "lib/watchTelemetryProtocol.ts",
+      "sha256": "565b95adf264787f71dd88352094641632d73e214969b811ba0c7a741b63e744"
+    },
+    {
+      "path": "modules/hugr-foreground-service/android/build.gradle",
+      "sha256": "e0b363e7d648a7e61070243417d87850a6110feafea84e815524784bad8e65e3"
+    },
+    {
+      "path": "modules/hugr-foreground-service/android/src/main/java/health/hugr/foreground/HUGRForegroundModule.kt",
+      "sha256": "cba84c88b4e456213d4624d15b5fa1be3c0a26aa9809fcfbfbe0153011a09cf4"
+    },
+    {
+      "path": "modules/hugr-foreground-service/android/src/main/java/health/hugr/foreground/HUGRForegroundService.kt",
+      "sha256": "13b75262cb0a6fd680e7c50b98e95dc1ee7f85375caf1e2e613cb9124c3f3533"
+    },
+    {
+      "path": "modules/hugr-foreground-service/expo-module.config.json",
+      "sha256": "b26c01b79d6c7e55c27ac06382ca8b7c541f87f4b2c73dfc598a5e9bb5d88f2b"
+    },
+    {
+      "path": "modules/hugr-foreground-service/index.ts",
+      "sha256": "ad3908a2577f84efa85278dd96f8faebbc37da9b2e921e65d083823ace012f7b"
+    },
+    {
+      "path": "modules/hugr-foreground-service/package.json",
+      "sha256": "551d590f1927753acb54a4c294f8484fad33667e4f08364bd322e50c2bd2e6e7"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/build.gradle",
+      "sha256": "9270179aa1f0e0194535e41d8597e1866b2eed54a814763e61a527850b6d17ee"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/AndroidManifest.xml",
+      "sha256": "a59d43c944ec56d4d1f295ab07b6ba2c85637965819b5df329fc2f7f17575679"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/BoundedSelectedSnapshot.kt",
+      "sha256": "29576c3baecaed0703de854566e6fe08876cabef4616c5229d74f75ccec77c2f"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/DurationLadderPolicy.kt",
+      "sha256": "4810fa1afcba67a9694fe761dee1d72b68911f6b7a7467cb95e8ffb730e92a16"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedSourceEvidenceActivity.kt",
+      "sha256": "612be822d3df34ad5bff25e7fd761387f978499289e6640a6c7d5a9904b83ff0"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt",
+      "sha256": "95c9dc34681bdd18dee250f38545786d728001c791ffdebab1f811b9579d8c09"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/PendingAppendJournal.kt",
+      "sha256": "8166bd9db6c7d4ba3221a859d867146bffaaa50afe1fab9a8c6d1edfd33063fe"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/PhoneCanonicalEvidenceCore.kt",
+      "sha256": "6d032d8f10eea8d34409f11b28d0a032005d4aafa04ea627687ebf9f3b1d0a99"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/PhoneCustodyRunReportStore.kt",
+      "sha256": "af3ac7e0393e4f28448c65e9a7e34692b010b7383cf4626e941159376e12a906"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/PhoneWatchReceiptBridge.kt",
+      "sha256": "f5870bc02721ba3b2650accdbfe22d12b7b055d53437927c158d0447600dec13"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/SelectedCompletedRunExportActivity.kt",
+      "sha256": "a58db55d8307263188d298c06e0d7249f69e79c3db4cbb6b8c60d5871f06dda9"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/SourceGapTracker.kt",
+      "sha256": "b73257b1d8fb392d506b9a362800e6c2b1a9ef4b198f2fd36b726bccd1179171"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/WatchRunReceipt.kt",
+      "sha256": "f77c80f5b8dd051a009fab0e3032d785c6df829bdea89dc8c7e58f3c8a68f343"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/BoundedCursorWindowCapacityTest.kt",
+      "sha256": "cf64761fef1cbe497fe4d27d23dd361034459d980666f2d6ba5db722110e63a8"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/BoundedSnapshotCursorProjectionTest.kt",
+      "sha256": "7bff5b49c655e0436a5a3989cc6e368dec12a8f4c0dd921bad5d075c6a3ffe27"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/CanonicalBufferedReadBoundaryTest.kt",
+      "sha256": "b1055c06a84e8aef36c12d066b1dc4fec061d4393146459c19f04b7d4562f777"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/DurationLadderPolicyTest.kt",
+      "sha256": "55bd87d9f64caffd9aed3d61ff0a392bfa6ddf10bf49536a75c930730f57fd5d"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/EightHourTerminalCapacityTest.kt",
+      "sha256": "11a9c9bcac99654adfef6f6cd4af674f3146f7190f71d5f97f0714b7fa08ec47"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/HUGRSavedSourceEvidenceActivityTest.kt",
+      "sha256": "7c3f60d50ae4a952d36dd83d44cd2defdfb037f3f4d0ebfb2b3ded324205f4c7"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/PendingAppendJournalTest.kt",
+      "sha256": "34e439c40cf87c87d4361be51a6807074d160ab77730dee2923a541f7560e1f6"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/PhoneCanonicalEvidenceCoreTest.kt",
+      "sha256": "c12a5bf735847630e33fc1784309688c293b05cfcdd416f42ddb04653cfe7738"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/PhoneCanonicalEvidenceStreamingTest.kt",
+      "sha256": "b78b06e152bd2409248a84dd76d252c01539cb289cecc997858a54d08f4d4b49"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/PhoneCustodyRunReportStoreTest.kt",
+      "sha256": "72e4e4e594b3bf93fea10d45dc0523eb087ad60d08f8138979540f412c74cdd3"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/PhoneDurableRunOfflineIntegrationTest.kt",
+      "sha256": "dcbfa79e2d340e0aded4de86a8d3cd393244bf9c9bda32f8cdb7be6dff09feaf"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/PhoneProductionCustodyIntegrationTest.kt",
+      "sha256": "2385a615eb4bff5b4c0368ee408b52b8ab47f2d2589417b96b54ff8d83a84b5c"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/PhoneWatchReceiptProductionIntegrationTest.kt",
+      "sha256": "5d1f834c2434b16aa98f523db91a3801cec1122cf2dc9d0f67f823580dec858f"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/ReportDirectoryLinuxShadow.kt",
+      "sha256": "b5ee68aa996af5c140c77c7d40f27dafa16034a0ab6d52010cf5b14373194191"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/SourceGapTrackerTest.kt",
+      "sha256": "0bc3ce51f0f2a533b53dd5d7051aac7bc21e4dd27550f86abc70af0884ad3868"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/TerminalVerifierPassMeasurementTest.kt",
+      "sha256": "1822b1015162524aaf5cba886913ff8e896a1edada877f902db327fbae5a23ea"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/V2PhoneAckReportBoundaryTest.kt",
+      "sha256": "919a44d5b890db60c473e2dee5d98a35474585c4b340d85e72b2ec3469bbcaad"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/VerifiedReportChainStampTest.kt",
+      "sha256": "1108ff6d23a079cf83a96e30b889159cb7dedef59af23d727fb101a27a381e33"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/WatchRunReceiptTest.kt",
+      "sha256": "80b3d6fcd814cd60e8fbbe4381d5edb08791a810aaa4a47fd0695a5a6a170ecc"
+    },
+    {
+      "path": "modules/hugr-source-journal/expo-module.config.json",
+      "sha256": "74b816ead669ab4d2fc288b8508838f4c597c677eec03d5e8d4e8858125a91d4"
+    },
+    {
+      "path": "modules/hugr-source-journal/index.ts",
+      "sha256": "a94f4e55fa9d0464f9cb649f2ca7c137de107c24f4c3c4d517d7118565d45e39"
+    },
+    {
+      "path": "modules/hugr-source-journal/package.json",
+      "sha256": "2761b1d5d7274b34aae8d8405b301236274eaf4bd5fa7ada2a1d0b066267b0d3"
+    },
+    {
+      "path": "modules/nerva-haptics/android/build.gradle",
+      "sha256": "61883b4f6532d09805022f95875422763a5d022fdb0f590bb44ac8566c6aeecd"
+    },
+    {
+      "path": "modules/nerva-haptics/android/src/main/java/health/nerva/haptics/NervaHapticsModule.kt",
+      "sha256": "61c7747425f13f8472386147b4117aba58835fe8fb33a8afb0633bd24c25860e"
+    },
+    {
+      "path": "modules/nerva-haptics/expo-module.config.json",
+      "sha256": "2e443a073582787b87dd8ab00d90193df4422460e2174a58efc341ce269aa42b"
+    },
+    {
+      "path": "modules/nerva-haptics/index.ts",
+      "sha256": "bd739c1c1babd4c03c341a9c30c49c42d16f3a60aa342215986e27307357406a"
+    },
+    {
+      "path": "modules/nerva-haptics/package.json",
+      "sha256": "f43c4d6cd7da7ee0860b9517db80215a9e20103d4746ed84dcfc8bacc7f4053a"
+    },
+    {
+      "path": "modules/nerva-wearos/android/build.gradle",
+      "sha256": "1c4749adfcc6a1d3ace4e2add1eebbf5856a7a33b233bf98c482393d7f245eb8"
+    },
+    {
+      "path": "modules/nerva-wearos/android/src/main/java/health/hugr/wearos/NervaWearOSModule.kt",
+      "sha256": "1339e56cc59be0f5c1fb31b22e45750bd7f2fed453837297386726a5039e49df"
+    },
+    {
+      "path": "modules/nerva-wearos/expo-module.config.json",
+      "sha256": "7f227f4c69210e93781de31d31265f4f57ed11315c8d4f1b30c6e32bff13aca9"
+    },
+    {
+      "path": "modules/nerva-wearos/index.ts",
+      "sha256": "05ce0385154e51a07bec26aa558165074c442314b7ed1d8d453b3e7eee02e377"
+    },
+    {
+      "path": "modules/nerva-wearos/package.json",
+      "sha256": "fcdb3f204a803c87b50194bc816c0ce94f331e4381c9880d617b563c4feee62c"
+    },
+    {
+      "path": "package.json",
+      "sha256": "4eaf756a00e184860c9054d441f464202d0a47f3e909168d2eca7256eb5e79df"
+    },
+    {
+      "path": "plugins/withHUGRForegroundService.js",
+      "sha256": "33881d650123a0dc05e878a217dec63cc0eebc9233edaeb4a370ba34b70b828f"
+    },
+    {
+      "path": "plugins/withHUGRSourceEvidenceIsolation.js",
+      "sha256": "0bf0c5c003e1f91e6affdc93260292a067e6b593f4a7d871dd43d8b761ef1c95"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "27c87bfc48f5b066607d2466b74607be68333cb1cd8767919f416f985dc8cbb0"
+    },
+    {
+      "path": "scripts/verify_hugr_export.py",
+      "sha256": "bde121230dfb16f8fed3982e1a2c843e14a32ded5224ea4e9ab20ad0c7303c5e"
+    }
+  ],
+  "protected_physical_pass_sha256": "609cc1c01ae629a3abad55b80e0432e73f52bf2b1d5bf789685b2c334a6c6ddd",
+  "watch_runtime_unchanged": true,
+  "source_branch_baselines": [
+    {
+      "owner": "phone",
+      "repository": "Nervahealth/nerva-mobile",
+      "branch": "preservation/phone-control-and-source-2026-10-03",
+      "head": "b1d199a5c754ffe6cf094d5b1d77d0772db8d189",
+      "tree": "0b0a58749f8736ada4881914defedae2515a2c3b",
+      "checkout": "/home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/phone",
+      "clean": true
+    },
+    {
+      "owner": "watch",
+      "repository": "Nervahealth/nerva-wearos",
+      "branch": "preservation/watch68-partial-source-2026-10-03",
+      "head": "e1d29a5887325e9d112e2a07388955bb38072267",
+      "tree": "66cb5ad99c0a885894645173b597c82fb12895dc",
+      "checkout": "/home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch",
+      "clean": true
+    },
+    {
+      "owner": "controls",
+      "repository": "Nervahealth/nerva-mobile",
+      "branch": "preservation/watch69-control-records-2026-10-03",
+      "head": "39522836fca24a7b1f13f20d7574904b61dce957",
+      "tree": "725d54b80641b5f9a440be67aabb5451e553e9fc",
+      "checkout": "/home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/controls",
+      "clean": true
+    }
+  ],
+  "no_build_device_real_records": true
+}

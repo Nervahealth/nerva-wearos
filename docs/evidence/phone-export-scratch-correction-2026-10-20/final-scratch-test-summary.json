@@ -1,0 +1,75 @@
+{
+  "scope": "SYNTHETIC SOURCE/TEST ONLY; no real records",
+  "independent_reader_sha256": "bde121230dfb16f8fed3982e1a2c843e14a32ded5224ea4e9ab20ad0c7303c5e",
+  "external_synthetic_parent_anchor": {
+    "source": "c1ed1c54-a2e1-4a2c-a3eb-7b8a9e04c621",
+    "run": "63c6f16e-69f4-43e7-a857-dba8ce47bf3e",
+    "bytes": 260,
+    "sha256": "868e5ca233eadda1846bdf300aa7ddd4508e956ddb5bc7e65dba47e0a1185388",
+    "derivation": "independent encoding of the declared native test input; not package metadata"
+  },
+  "packages": [
+    {
+      "kind": "alias",
+      "package_sha256": "2fa48ed18be3cbbdaf455dfc38722cebe93da1874db7d843a67b79d78c4dd80e",
+      "package_bytes": 5655,
+      "canonical_bytes": 260,
+      "canonical_sha256": "868e5ca233eadda1846bdf300aa7ddd4508e956ddb5bc7e65dba47e0a1185388",
+      "records": 5,
+      "manifests": 1,
+      "exact_watch_accepted_acks": 1,
+      "outcome": "VERIFIED_OFFLINE_CONTRACT_V1"
+    },
+    {
+      "kind": "v1",
+      "package_sha256": "16f03a39d7db613aa284b099e549bcc11eb7a1b705ba7971430a90e9e4b74d8f",
+      "package_bytes": 5654,
+      "canonical_bytes": 260,
+      "canonical_sha256": "868e5ca233eadda1846bdf300aa7ddd4508e956ddb5bc7e65dba47e0a1185388",
+      "records": 5,
+      "manifests": 1,
+      "exact_watch_accepted_acks": 1,
+      "outcome": "VERIFIED_OFFLINE_CONTRACT_V1"
+    },
+    {
+      "kind": "v2",
+      "package_sha256": "af6166c6f4bddbf23b2aca69bab5907b28446f9d887fe633f3168a8414e740da",
+      "package_bytes": 5645,
+      "canonical_bytes": 260,
+      "canonical_sha256": "868e5ca233eadda1846bdf300aa7ddd4508e956ddb5bc7e65dba47e0a1185388",
+      "records": 5,
+      "manifests": 1,
+      "exact_watch_accepted_acks": 1,
+      "outcome": "VERIFIED_OFFLINE_CONTRACT_V1"
+    }
+  ],
+  "focused_native": {
+    "exporter_passed": 10,
+    "scratch_passed": 9,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "eight_hour_export_case": "explicitly excluded; preserved prior capacity results reused"
+  },
+  "baseline_production_alias": {
+    "tests": 1,
+    "expected_failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "failure": "EXPORT_SCRATCH_ROOT_UNSAFE at original ancestor guard"
+  },
+  "complete_native_suite": "NOT COMPLETED; emulated test-worker startup deadline; retained invalid baseline-only leakage attempt excluded from proof",
+  "phone_suite": {
+    "tests": 163,
+    "passed": 160,
+    "failed": 0,
+    "skipped": 3
+  },
+  "independent_reader_unit_tests": {
+    "passed": 11,
+    "failed": 0
+  },
+  "watch_runtime": "UNCHANGED",
+  "real_research_data_handoff": "NOT COMPLETE",
+  "build_install_device_real_export": "NOT AUTHORIZED OR PERFORMED"
+}

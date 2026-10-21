@@ -68,3 +68,104 @@ When no duration rehearsal is active, separately authorize one **Phone64 install
 After installation confirmation and a separate private-export authorization, open only **HUGR Selected Completed-Run Export** (not the information app). Select source `24ca3a75-62ab-4912-91a0-d50613b02928`, run `46628727-a977-4dd7-b4e6-19e196efe383`; prepare and privately Save/Share the unchanged package. Supply that actual ZIP privately to the analysis environment. It must independently match 8,349 records/six manifests, expected canonical parent 539,746 bytes/SHA-256 `a71ff129b07b53c5c67f2d2160746d8a5de4c887997cde921dfb8898b9f6b470`, original receipt/report and all exact membership/ACK checks before descriptive inventory is accepted. Stop on pending, changed, incomplete or mismatched source; no recovery workaround/new recording.
 
 No real physiological artifact has been accessed/exported/published. Recording/custody PASS, synthetic duration capacity PASS, synthetic export source/test PASS and artifact admission PASS remain separate from **real research-data handoff NOT COMPLETE**. GitHub preserves sanitized source/tooling/admission/control records, not private canonical recording backup or any separately scoped clarification repository. No Loop A, RMSSD qualification, baseline/learning ownership or N1 authority is implied. Watch69 NOT QUALIFIED; Watch68 v1 UNCLASSIFIED / NOT VERIFIED; Watch58 TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED.
+
+## Installation-only authority — 20 October 2026, 07:37:40 Europe/Oslo
+
+Neil explicitly authorized: “Authorize the installation-only update to Phone64 on the Honor device now that no duration rehearsal is active, preserving all existing app data.”
+
+**AUTHORIZED / INSTALLATION NOT YET REPORTED.** One ordinary in-place update of the exact admitted Phone64 APK on Honor only. No uninstall, Clear data/storage, reset or replacement package. After successful Android update, read Settings → Apps → HUGR version `2.0.64-selected-run-private-export-candidate` and stop. Do not tap Open after installation or in Settings.
+
+Do not open Main HUGR, Saved Source Evidence or HUGR Selected Completed-Run Export. No Connect/reconnect, Bluetooth or pairing change, Watch83 action, recording, sensing, replay, recovery, acknowledgement, export, private app-storage access, duration rehearsal or N1 is authorized. Stop and report the exact message if installation requests uninstall, displays signature/package mismatch or data-loss/reset language, fails, or shows a different version. No corrective retry follows automatically.
+
+### Post-reset identity and preservation check
+
+The sandbox reset removed the controlled Git worktrees and the dedicated `.gh-hugr-repository-write` login. Recovery files were accessible at their restored original locations; the announced `.recovery` directory was not present at the current filesystem check. The recovered APK and a separate delivery copy were independently SHA-256 checked: exactly 152,064,086 bytes, SHA-256 `a19542b8628af1c95aff0996fb9ce2a7a43e2eb769d7c8e7f1dc184ba23335bc`. These match the original Phone64 admission proof. No build, APK change, signer change or substitution occurred. Android signature tooling was not present after reset; package/signature admission is inherited from the proof for the exact hash-identical APK, not represented as a new signature-tool execution.
+
+Live GitHub GET readback independently confirmed the prior final admission heads and trees unchanged:
+
+| Branch owner | Head | Tree |
+|---|---|---|
+| Watch | `e1d29a5887325e9d112e2a07388955bb38072267` | `66cb5ad99c0a885894645173b597c82fb12895dc` |
+| Phone | `b1d199a5c754ffe6cf094d5b1d77d0772db8d189` | `0b0a58749f8736ada4881914defedae2515a2c3b` |
+| Controls | `39522836fca24a7b1f13f20d7574904b61dce957` | `725d54b80641b5f9a440be67aabb5451e553e9fc` |
+
+The current Phone64 admission receipt was recovered from both source branches; the current Master and Alignment were recovered from the live control head, not the older restored copies. This verifies prior admission preservation only.
+
+The reviewed controlled mirror helper tested the surviving default existing gh login with injected GitHub token variables removed. Its nonsensitive repository-write preflight returned **HTTP 403 on Nervahealth/nerva-wearos** and stopped before any branch/ref update. That route did not reach the mobile write probe. The historically known-denied task-injected route was not blindly retried. No available route has demonstrated write access to both repositories after reset. This installation authorization and its prepared documentation propagation are therefore **REMOTE CLOSEOUT PENDING**, not remotely preserved. A sanitized fallback is checksummed and archive-read-back verified; no recovered historical preservation script is executed against missing worktrees. No force push or main merge.
+
+No device action has been performed by the assistant and installation is not confirmed. Current installed predecessor version and canonical-byte custody are not inferred from memory. Force stop is not Clear data/storage. Actual real-record export remains separately authorized and real research-data handoff remains **NOT COMPLETE**.
+
+Existing recording/custody PASS and synthetic capacity/export PASS remain unchanged. No physiological records, real reports, media, APK binaries or export ZIPs are included in the documentation fallback or proposed GitHub closeout. Source-control preservation is not canonical-record backup. S4, accepted adapter/companion, T2.2, October reconciliation, RMSSD, Loop A and learning ownership remain unchanged.
+
+Watch69 NOT QUALIFIED; Watch68 v1 UNCLASSIFIED / NOT VERIFIED; Watch58 TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED.
+
+## Operator installation report — 20 October 2026 08:15:36 Europe/Oslo
+
+# Phone64 Honor installation — operator report
+
+## Current status
+
+**NORMAL UPDATE REPORTED; HUGR NOT OPENED; SETTINGS VERSION CHECK PENDING.**
+
+On 20 October 2026 at 08:15:36 Europe/Oslo, Neil wrote: “Authorise... And inststalled /updated yjr normal way not opened”. In the immediate Phone64 installation-only context, this records his report that the ordinary update was performed and HUGR was not opened. It is not a report of the exact displayed Settings version, an independent device/package check, or independent verification of retained recording bytes.
+
+The installation-only authority remains the 07:37:40 instruction for the exact admitted Phone64 APK on Honor, preserving app data. The admitted APK is `HUGR_Phone64p_2.0.64_selected-run-private-export-candidate.apk`, package `health.hugr.app`, code 64, version `2.0.64-selected-run-private-export-candidate`, 152,064,086 bytes, SHA-256 `a19542b8628af1c95aff0996fb9ce2a7a43e2eb769d7c8e7f1dc184ba23335bc`. These are admitted artifact identities, not a newly observed installed-version report.
+
+## Smallest remaining check
+
+Read only **Settings → Apps → HUGR** and report the displayed version. Expected: `2.0.64-selected-run-private-export-candidate`. Do not tap Open. Also report whether any unusual installer warning occurred; the current message did not explicitly answer that question. No new installation or retry is requested.
+
+Keep HUGR closed. Leave Watch83 and Bluetooth untouched. No Main HUGR, Saved Source Evidence, selected-run exporter, Connect/reconnect, pairing change, sensing, recording, replay, recovery, acknowledgement, export, private app-storage inspection, duration rehearsal or N1 action follows from this report. The opening “Authorise” is not interpreted as permission for a new export or another device gate.
+
+## Preservation and evidence limits
+
+At this report, the controlled Watch/Phone/control Git worktrees and dedicated repository-write login remain absent following the sandbox reset. The earlier controlled preflight's HTTP 403 on `Nervahealth/nerva-wearos` remains unresolved; no evidence of changed access has been supplied, and no known-denied push or write probe is repeated. No GitHub branch/ref changes occur in this step.
+
+The report is appended to the source-owned Phone64 receipt, then the pending Master copy, then Alignment last. These are explicitly uncommitted documentation copies outside missing Git worktrees. A separate sanitized documentation fallback is checksummed and read back without including physiological records, real reports, media or APK binaries. **Remote closeout remains pending**; the prior build/admission preservation remains distinct from this unsaved-on-GitHub installation result.
+
+Existing five-minute recording/custody PASS, synthetic duration-capacity PASS and exporter source/test PASS are unchanged. Current retained-data custody has not been inspected. Actual private recording export and independent package verification remain separately authorized gates; real research-data handoff is **NOT COMPLETE**. GitHub source preservation is not canonical recording backup.
+
+No S4, accepted adapter/companion, T2.2, October reconciliation, RMSSD, Loop A, baseline or learning-ownership change.
+
+Watch69 NOT QUALIFIED; Watch68 v1 UNCLASSIFIED / NOT VERIFIED; Watch58 TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED.
+
+## Operator Settings confirmation — 20 October 2026 08:43:31 Europe/Oslo
+
+# Phone64 Honor installation-only confirmation
+
+## Current disposition
+
+**INSTALLATION-ONLY GATE COMPLETE — OPERATOR-CONFIRMED. Phone64 installed in place on Honor; expected Settings version confirmed; HUGR reported unopened; no unusual installer warning reported.**
+
+At 08:15:36 Europe/Oslo on 20 October 2026, Neil reported that the app was installed/updated normally and not opened. The assistant then asked him to check only Settings → Apps → HUGR, without tapping Open, and confirm `2.0.64-selected-run-private-export-candidate`, plus whether any unusual installer warning appeared. At 08:43:31 he replied: “Confirmed and nothing unusual”. This confirms the specifically requested Settings version and absence of unusual installer warnings. It is an operator observation, not an independent remote device inspection.
+
+The 08:15 report's pending-version and pending-warning fields are resolved prospectively by this later confirmation; its historical bytes and fallback snapshot remain unchanged. No second installation, retry, app launch or new physical gate is requested or performed by the assistant.
+
+## Exact admitted artifact
+
+- Phone64 APK: `HUGR_Phone64p_2.0.64_selected-run-private-export-candidate.apk`.
+- Package: `health.hugr.app`; versionCode 64.
+- Confirmed Settings version: `2.0.64-selected-run-private-export-candidate`.
+- Admitted artifact size: 152,064,086 bytes.
+- APK SHA-256: `a19542b8628af1c95aff0996fb9ce2a7a43e2eb769d7c8e7f1dc184ba23335bc`.
+- Existing admitted signer certificate SHA-256: `a1780089becaf58563daa5dfa16c5626928a13ce56a7dc232732e64a8df4e811`.
+
+Artifact hash/signature facts come from the original admission and post-reset byte-equality check. The operator Settings check confirms the displayed installed version; no new package/signature-tool execution or independent app-data custody inspection is claimed.
+
+## Remaining boundaries and next dependency
+
+Keep HUGR closed; Watch83 and Bluetooth remain outside this installation-only gate. No Main HUGR, Saved Source Evidence, selected-run exporter, Connect/reconnect, pairing change, sensing, recording, replay, pending recovery, acknowledgement, export, private app-storage access, duration rehearsal or N1 follows automatically.
+
+The next separate proposed gate is one private export of the already-completed five-minute run on Honor, followed by independent package verification and descriptive inventory. It requires explicit new authorization and no active duration rehearsal. Source `24ca3a75-62ab-4912-91a0-d50613b02928`, run `46628727-a977-4dd7-b4e6-19e196efe383`, acceptance anchors 8,349 records/six manifests, canonical parent 539,746 bytes/SHA-256 `a71ff129b07b53c5c67f2d2160746d8a5de4c887997cde921dfb8898b9f6b470`. These anchors are not actual exported records. No real ZIP has been received or inspected; real research-data handoff remains **NOT COMPLETE**.
+
+Installation completion does not establish current canonical-byte retention, physiological validity, native IBI chronology, RMSSD qualification, learning ownership or a live Watchtower handoff. Existing five-minute recording/custody PASS and synthetic duration/export PASS remain distinct and unchanged.
+
+## Preservation status
+
+Controlled Git worktrees and the dedicated repository-write login remain absent after the reset. The previous controlled preflight's HTTP 403 on `Nervahealth/nerva-wearos` remains unresolved. No changed-access evidence has been supplied; no known-denied GitHub write is retried, and no GitHub ref changes in this step.
+
+This confirmation is propagated to the prepared source-owned Phone64 receipt, then the pending Master copy, then Alignment last. No affected private VIS-COUNT proposal is authorized or required. These are uncommitted documentation copies outside missing Git worktrees, not remote preservation. A separate sanitized fallback is checksum/CRC/exact-byte-read-back verified; earlier authority and installation-report archives remain unchanged. **REMOTE CLOSEOUT PENDING** for the installation records; prior build/admission GitHub preservation remains separately established.
+
+No physiological records, real reports, media, APK binaries or real export ZIPs belong in this fallback or GitHub. Source-control preservation is not private canonical-record backup. No S4, accepted adapter/companion, T2.2, October reconciliation, RMSSD, Loop A, baseline or learning-ownership changes.
+
+Watch69 NOT QUALIFIED; Watch68 v1 UNCLASSIFIED / NOT VERIFIED; Watch58 TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED.

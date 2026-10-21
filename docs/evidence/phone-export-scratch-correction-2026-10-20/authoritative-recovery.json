@@ -1,0 +1,29 @@
+[
+  {
+    "owner": "phone",
+    "repository": "Nervahealth/nerva-mobile",
+    "branch": "preservation/phone-control-and-source-2026-10-03",
+    "head": "b1d199a5c754ffe6cf094d5b1d77d0772db8d189",
+    "tree": "0b0a58749f8736ada4881914defedae2515a2c3b",
+    "checkout": "/home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/phone",
+    "clean": true
+  },
+  {
+    "owner": "watch",
+    "repository": "Nervahealth/nerva-wearos",
+    "branch": "preservation/watch68-partial-source-2026-10-03",
+    "head": "e1d29a5887325e9d112e2a07388955bb38072267",
+    "tree": "66cb5ad99c0a885894645173b597c82fb12895dc",
+    "checkout": "/home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch",
+    "clean": true
+  },
+  {
+    "owner": "controls",
+    "repository": "Nervahealth/nerva-mobile",
+    "branch": "preservation/watch69-control-records-2026-10-03",
+    "head": "39522836fca24a7b1f13f20d7574904b61dce957",
+    "tree": "725d54b80641b5f9a440be67aabb5451e553e9fc",
+    "checkout": "/home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/controls",
+    "clean": true
+  }
+]
