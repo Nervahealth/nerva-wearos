@@ -1,0 +1,95 @@
+{
+  "status": "PASS",
+  "scope": "READ_ONLY_COMPILED_APK_ADMISSION_ONLY",
+  "apk": "/home/ubuntu/HUGR_PHONE65_EXPORT_SCRATCH_BUILD_2026_10_21/artifacts/HUGR_Phone65p_2.0.65_selected-run-export-scratch-candidate.apk",
+  "sha256": "49b5c06dc6796feb1ef777353ee567e0e9207bdfe2b5de317b3cf38763c115ae",
+  "bytes": 152064082,
+  "package": "health.hugr.app",
+  "versionCode": 65,
+  "versionName": "2.0.65-selected-run-export-scratch-candidate",
+  "signerSha256": "a1780089becaf58563daa5dfa16c5626928a13ce56a7dc232732e64a8df4e811",
+  "archive": {
+    "zipCrc": "PASS",
+    "pageAlignment": "PASS",
+    "duplicateZipEntries": "PASS"
+  },
+  "compiledClasses": 39349,
+  "uniqueClassDefinitions": true,
+  "manifest": {
+    "selectedActivity": "PASS",
+    "launcherMain": "PASS",
+    "selectedProvider": "PASS",
+    "sameSelectedRunExportProcess": "PASS",
+    "packageBoundAuthority": "health.hugr.app.selectedRunExport",
+    "providerNonExportedReadGrantNarrowSurface": "PASS"
+  },
+  "selectedNativeDefinitions": {
+    "activityDirectSuperclassAndroidActivity": "PASS",
+    "providerDirectSuperclassContentProvider": "PASS",
+    "exporter": "PASS",
+    "registry": "PASS",
+    "inheritedPhone63ReportReceiptWriterCompatibility": "PASS",
+    "readonlyDisposableDatabase": "PASS",
+    "phone65ScratchSpace": {
+      "scratchClassPresent": true,
+      "cacheToRealPathAndLeafNoFollow": true,
+      "rejectLeafAndManagedLinks": true,
+      "ensureCreatedSingleLevelCollisionRecheck": true,
+      "writeNewCreateNewNoFollowDurableAndRechecked": true,
+      "publishNewCollisionGuardAndRecheck": true,
+      "boundedCleanupNoRootFollow": true,
+      "exporterUsesScratchSpaceNotOldAncestorRoutine": true,
+      "scratchFailureTermsPresent": true
+    },
+    "completedPendingAndMutationRefusals": "PASS",
+    "originalFullCopyAndImmutableReceiptReportManifestChecks": "PASS",
+    "explicitSaveShareCancelExpiryModePathGuards": "PASS"
+  },
+  "sourceEvidenceApplicationGuard": {
+    "compiledAndSourceEvidenceScoped": "PASS",
+    "sourceEvidenceActivityDirectSuperclassAndroidActivity": "PASS",
+    "scope": ":sourceEvidence only; no assertion that it guards :selectedRunExport"
+  },
+  "selectedRunExportApplicationStartup": {
+    "ordinaryApplicationOnCreateRuns": "PASS",
+    "reactNativeNativeBootstrapDirectCall": "PASS",
+    "expoApplicationLifecycleDispatchDirectCall": "PASS",
+    "directMainApplicationWriterPendingRecoveryOrBleReference": "ABSENT",
+    "scope": "Direct MainApplication onCreate inspection only; generic Expo package lifecycle behavior and JS evaluation are not asserted absent."
+  },
+  "durationLadder": {
+    "requiredCompiledTerms": [
+      "HUGR_RUN_RECEIPT_V2",
+      "configureSelectedRecordCursorWindow",
+      "SNAPSHOT_CURSOR_WINDOW_ALLOCATION_OR_CONFIGURATION_FAILURE",
+      "hugr-selected-record",
+      "HistoricalReportChainStamp",
+      "ParsedReceiptCacheEntry",
+      "native_verified_manifest",
+      "verifiedCustodyReportInputFromStableSelectedSourceSnapshot",
+      "SOURCE_CHANGED_DURING_VERIFICATION",
+      "DURATION_OR_CANCELLATION_BUDGET_EXCEEDED",
+      "MAX_DURATION_MS",
+      "Hermes"
+    ],
+    "cursorWindowSignedDexProof": {
+      "dex": "classes5.dex",
+      "method": "configureSelectedRecordCursorWindow",
+      "exactWindowBytes8388608": true,
+      "apiAtLeast28Branch": true,
+      "sdkIntRead": true,
+      "sqliteCursorGuard": true,
+      "cursorWindowType": true,
+      "cursorWindowName": true,
+      "cursorWindowStringLongConstructor": true
+    },
+    "runtimeTestExclusions": "PASS"
+  },
+  "nonclaims": [
+    "No build, upload, staging, signing, installation, launch, device, export, record, APK alteration, adjacent APK hash-file write, or app-private-root action occurred.",
+    "This proves compiled artifact predicates only; it does not prove Android chooser/provider behavior, an actual save/share, or any real package/export.",
+    "Separate selected-process components do not prove an Application-process bypass. The retained Application guard is scoped to :sourceEvidence; this validator makes no :selectedRunExport Application-guard claim.",
+    "The selected process executes ordinary MainApplication native React/Expo bootstrap and lifecycle dispatch. This validator does not claim that no app JS or generic Expo lifecycle code can run; it proves only no direct MainApplication writer, pending-recovery, or BLE reference.",
+    "No physiological, research, report, canonical-record, receipt, or ZIP-export bytes were opened or inspected."
+  ]
+}

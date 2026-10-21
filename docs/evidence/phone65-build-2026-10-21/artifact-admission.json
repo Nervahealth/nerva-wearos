@@ -1,0 +1,17 @@
+{
+  "apk": "/home/ubuntu/HUGR_PHONE65_EXPORT_SCRATCH_BUILD_2026_10_21/artifacts/HUGR_Phone65p_2.0.65_selected-run-export-scratch-candidate.apk",
+  "bytes": 152064082,
+  "sha256": "49b5c06dc6796feb1ef777353ee567e0e9207bdfe2b5de317b3cf38763c115ae",
+  "package": "health.hugr.app",
+  "versionCode": 65,
+  "versionName": "2.0.65-selected-run-export-scratch-candidate",
+  "signerSha256": "a1780089becaf58563daa5dfa16c5626928a13ce56a7dc232732e64a8df4e811",
+  "zip": "PASS",
+  "pageAlignment": "PASS",
+  "classDefinitions": 39349,
+  "uniqueClasses": "PASS",
+  "nativeReader": "PASS",
+  "nativeSourceJournalWriter": "PASS",
+  "applicationGuardPresent": "PASS",
+  "runtimeUiStrings": "PASS"
+}

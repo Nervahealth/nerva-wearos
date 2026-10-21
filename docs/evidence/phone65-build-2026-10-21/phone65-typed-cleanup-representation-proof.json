@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "tests": 13,
+  "sameSignedApkSha256": "49b5c06dc6796feb1ef777353ee567e0e9207bdfe2b5de317b3cf38763c115ae",
+  "oldFalseStopReproducedOnActualSignedBlocks": true,
+  "cause": "name-only method parser chose Object erasure bridge instead of exact Path callback",
+  "onlyChangedExistingFunction": "scratch_predicate_report visitor overload selection plus stronger callback/bridge guards",
+  "allOtherFunctionsAstsEqual": true,
+  "originalValidatorAndFailuresRetained": true,
+  "fixedInspectorSha256": "de1f276cab711bf219d32aa271dee9cc347f0e639aa54ad1e6deadd6f691d12d",
+  "apkRuntimeSourceSignerUnchanged": true,
+  "compiledDeadlineSecondsUnchanged": 1200,
+  "newBuildSubmissions": 0,
+  "fullAdmissionStillPending": true
+}

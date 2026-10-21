@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "sameBuildJob": "b1ec4fbe-5d32-4b8d-8a36-d297085fd986",
+  "originalUploadCount": 1,
+  "newUploads": 0,
+  "trustedCapturedHost": "files.manuscdn.com",
+  "returnedUrlCount": 2,
+  "oneApkSuffix": true,
+  "sidecarRoleFinalGate": "exact entire sidecar bytes plus declared local APK hash",
+  "cause": "service-normalized sidecar object suffix did not end in .apk.sha256",
+  "rawRoutingPrivate": true,
+  "fullApkAndSidecarBytesEqual": true
+}

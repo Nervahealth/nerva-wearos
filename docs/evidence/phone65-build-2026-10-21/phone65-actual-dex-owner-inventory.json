@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "dexEntries": 5,
+  "ownersWithHugrClasses": 1,
+  "ownership": [
+    {
+      "dex": "classes.dex",
+      "definitions": 8868,
+      "hugrDefinitions": 0
+    },
+    {
+      "dex": "classes2.dex",
+      "definitions": 6156,
+      "hugrDefinitions": 0
+    },
+    {
+      "dex": "classes3.dex",
+      "definitions": 7173,
+      "hugrDefinitions": 0
+    },
+    {
+      "dex": "classes4.dex",
+      "definitions": 8583,
+      "hugrDefinitions": 0
+    },
+    {
+      "dex": "classes5.dex",
+      "definitions": 8569,
+      "hugrDefinitions": 256
+    }
+  ],
+  "runtimeAndApkUnchanged": true,
+  "originalInspectorRepeatedAllDexPerDescriptor": true,
+  "contentCachedInspectorUniqueOwnerOnly": true,
+  "compiledDeadlineSeconds": 1200
+}

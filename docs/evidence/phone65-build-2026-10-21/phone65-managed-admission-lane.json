@@ -1,0 +1,81 @@
+{
+  "status": "PASS",
+  "scope": "ONE_PHONE65_MANAGED_BUILD_AND_READ_ONLY_ARTIFACT_ADMISSION",
+  "source": {
+    "head": "4aad9d1c2dd7a8b0812adb35dfe4a15ee778ceb0",
+    "tree": "41f5ec51156caec4176360ee91176b139d21c67b",
+    "upstreamRemoteHead": "9b429855ff5b08360afd81fd90dbbe885bd76380",
+    "clean": true,
+    "remoteProofAllThreeTreesAndChangedBytes": "PASS",
+    "unchangedRuntimeHashes": 313,
+    "protectedExportHashes": 2,
+    "widerNativeSuite": "NOT COMPLETED / emulated worker startup timeout; focused earned evidence reused"
+  },
+  "stage": {
+    "path": "/home/ubuntu/HUGR_PHONE65_EXPORT_SCRATCH_BUILD_2026_10_21/phone65-build-stage",
+    "stageCommit": "5fab7b55bace9ae592f377df1733fc01a2204899",
+    "stageTree": "13800f2cdfc787c2030fa9e22b7fdedfe1ed131c",
+    "runtimeInputs": 165,
+    "committedEntries": 167,
+    "sourceStageCommittedBytes": "PASS",
+    "dependencySymlink": "IGNORED_NOT_TRACKED",
+    "committedSymlinks": "NONE",
+    "rootGeneratedAndroidIos": "EXCLUDED",
+    "localModuleAndroid": "INCLUDED",
+    "package": "health.hugr.app",
+    "versionCode": 65,
+    "versionName": "2.0.65-selected-run-export-scratch-candidate",
+    "projectId": "d0c3af97-5a78-4ba1-bc8b-8a21f169ce44",
+    "previewInternalApk": true
+  },
+  "buildJob": {
+    "jobId": "b1ec4fbe-5d32-4b8d-8a36-d297085fd986",
+    "submissionCount": 1,
+    "platform": "ANDROID",
+    "buildProfile": "preview",
+    "projectId": "d0c3af97-5a78-4ba1-bc8b-8a21f169ce44",
+    "freezeCredentials": true,
+    "status": "FINISHED"
+  },
+  "signer": {
+    "publicSha256": "a1780089becaf58563daa5dfa16c5626928a13ce56a7dc232732e64a8df4e811",
+    "status": "PASS"
+  },
+  "admission": {
+    "parentAdmission": "PASS",
+    "compiledAdmission": "PASS",
+    "sha256": "49b5c06dc6796feb1ef777353ee567e0e9207bdfe2b5de317b3cf38763c115ae",
+    "bytes": 152064082,
+    "sidecar": "HUGR_Phone65p_2.0.65_selected-run-export-scratch-candidate.apk.sha256",
+    "package": "health.hugr.app",
+    "versionCode": 65,
+    "versionName": "2.0.65-selected-run-export-scratch-candidate",
+    "signerSha256": "a1780089becaf58563daa5dfa16c5626928a13ce56a7dc232732e64a8df4e811",
+    "selectedApplicationBootstrapCaveat": "Normal React Native/Expo native Application bootstrap retained; direct MainApplication writer, pending-recovery, and BLE references absent; generic lifecycle/JS absence not asserted",
+    "durationCursorWindow8388608Api28Proof": "PASS",
+    "namespaceAwareRuntimeTestExclusion": "PASS",
+    "componentIsolation": "PASS",
+    "readOnlyDexInspectionCache": "content-keyed exact-owner full disassembly; same1200secbudget",
+    "typedCleanupRepresentation": "actual Path callbacks rather than erased Object bridges; bridge dispatch/root guards explicitly verified; 13 negative tests; no predicate dropped",
+    "earlierInspectionTimeoutRetained": true
+  },
+  "cdnReadback": {
+    "status": "PASS",
+    "fullByteMatch": true,
+    "chunkBytes": 1048576,
+    "localApkBytes": 152064082,
+    "cdnApkBytes": 152064082,
+    "localSha256": "49b5c06dc6796feb1ef777353ee567e0e9207bdfe2b5de317b3cf38763c115ae",
+    "cdnSha256": "49b5c06dc6796feb1ef777353ee567e0e9207bdfe2b5de317b3cf38763c115ae",
+    "sidecarExactByteMatch": true,
+    "sidecarDeclaredSha256": "49b5c06dc6796feb1ef777353ee567e0e9207bdfe2b5de317b3cf38763c115ae",
+    "cdnApkHttpDownload": "PASS",
+    "cdnSidecarHttpDownload": "PASS"
+  },
+  "boundaries": [
+    "No source mutation or source commit occurred.",
+    "No managed project, account, signer, credential, cache, permission, device, installation, launch, runtime, export, BLE, collection, replay, receipt-mutation, Watch, or private-app-root action occurred.",
+    "Raw EAS and upload responses, EAS archive URL, and CDN routing URLs are private mode-600 records; this sanitized receipt contains no URL.",
+    "The original Phone64 stages/artifact remain historical and were not used for Phone65 submission."
+  ]
+}
