@@ -1,0 +1,15 @@
+# IBI acquisition-readiness proposal review — sanitized completion
+
+Neil authorized one bounded read-only acquisition-readiness review on 21 October 2026 at 22:49:43 Europe/Oslo. The supplied paper selection/window proposal was reviewed against already recovered historical source/build/dependency evidence and retained SDK research. The review addresses input fidelity, native sequence semantics and existing-but-unexported metadata. It does not restart the substrate audit or archaeology.
+
+A private compact decision table and concrete prospective correction proposal were prepared. The private document distinguishes already sufficient descriptive evidence, existing-artifact recovery, narrowly warranted source/test proposals and provider clarification. It identifies owners and next actions without authorizing their execution. A short unsent provider question is included; provider contact did not occur. Existing metadata additions are conditional on a named use, not made routine prerequisites. Receipt time is not relabelled as engine availability.
+
+The descriptive claim boundary of the attached proposal is supported at documentation level only. No selected derivative, dispositions, scientific thresholds, windows, feature calculation, RMSSD qualification/calculation, exclusion policy, baseline update, learning/ownership change, Loop A, N1 or admission-gate execution was performed. The clarification agent retains analytical selection, window adequacy and exclusion-bias decisions. Minor remains acquisition/substrate owner. Endpoint/final-batch remains pending, connected but separately owned; no new diagnosis or duplicate investigation occurred.
+
+Source/test correction is a proposal only. No implementation, tests, builds, installations, device/app/Watch/Bluetooth action, sensing, recording, new collection, replay/recovery, pending append, receipt/ACK mutation, real-record export or automatic task transfer was executed. Retained SDK statements were reused; no new general SDK research or architecture review occurred. The original proposal, original recording/export, previous analysis/admission, original provenance and completed results are unchanged. Historical corruption was not claimed.
+
+All private proposal/decision evidence, physiological findings, raw records, SDK-specific details, per-record metadata/timestamps, source/run and recording hashes remain off GitHub/project-shared/public destinations. Only this sanitized completion and corresponding control entries are published under standing preservation. Source preservation is not canonical recording backup.
+
+T2.2, accepted baseline adapter/RMSSD companion, October reconciliation, S4 and prior failures remain unchanged. Closeout remains source-owned receipt → Master → no affected/authorized private proposal → Alignment last → bounded documentation commits → controlled both-repository write preflight/restored-login-only/non-force mirror → independent exact remote head/tree/blob readback.
+
+Watch69 `NOT QUALIFIED`; Watch68 v1 `UNCLASSIFIED / NOT VERIFIED`; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
