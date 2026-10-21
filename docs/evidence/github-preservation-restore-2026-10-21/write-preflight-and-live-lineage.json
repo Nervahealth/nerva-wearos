@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-21T11:35:54.461844+00:00",
+  "account": "Nervahealth",
+  "route": "existing_repo_write_login",
+  "injected_tokens_removed": true,
+  "both_repos_write": true,
+  "probe": "unreferenced nonsensitive Git blobs; zero ref updates",
+  "live_heads": [
+    {
+      "owner": "phone",
+      "repository": "Nervahealth/nerva-mobile",
+      "branch": "preservation/phone-control-and-source-2026-10-03",
+      "remote_head": "b1d199a5c754ffe6cf094d5b1d77d0772db8d189",
+      "remote_tree": "0b0a58749f8736ada4881914defedae2515a2c3b",
+      "local_head": "5923fd029940f13e0d65f0fb2e17c5209abc892c",
+      "local_tree": "ff0b60a3eddf3995c3e9290efce71a51818b280e"
+    },
+    {
+      "owner": "watch",
+      "repository": "Nervahealth/nerva-wearos",
+      "branch": "preservation/watch68-partial-source-2026-10-03",
+      "remote_head": "e1d29a5887325e9d112e2a07388955bb38072267",
+      "remote_tree": "66cb5ad99c0a885894645173b597c82fb12895dc",
+      "local_head": "73a2f53465cedd65669b9146c4012ed0bd82d8fa",
+      "local_tree": "a693b580a3ecd0669222765af6fbdea38f5ccf32"
+    },
+    {
+      "owner": "controls",
+      "repository": "Nervahealth/nerva-mobile",
+      "branch": "preservation/watch69-control-records-2026-10-03",
+      "remote_head": "39522836fca24a7b1f13f20d7574904b61dce957",
+      "remote_tree": "725d54b80641b5f9a440be67aabb5451e553e9fc",
+      "local_head": "4d465cd18b7be8bb97f7c895c272562aad0a69b5",
+      "local_tree": "ad4bb8df2f67ada6aa92f198c07bc0dc32369ea5"
+    }
+  ],
+  "phone64": "STOP / NO RETRY",
+  "phone65_build": "SEPARATE / NOT AUTHORIZED"
+}

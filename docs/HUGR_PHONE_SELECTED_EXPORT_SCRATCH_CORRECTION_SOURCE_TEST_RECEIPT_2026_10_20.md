@@ -92,3 +92,10 @@ The actual five-minute ZIP is still absent. Its later independent verification m
 Recording/custody PASS, prior synthetic duration/export results and this source correction are separate from **real research-data handoff NOT COMPLETE**. No qualified RMSSD, native beat-chronology claim, baseline/learning ownership, Loop A or physiological-validity conclusion follows. S4, accepted adapter/companion, T2.2, October reconciliation and prior failures/corrections remain unchanged.
 
 Watch69 `NOT QUALIFIED`; Watch68 v1 `UNCLASSIFIED / NOT VERIFIED`; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
+
+
+## Later authority — GitHub write recovery preparation, 21 October 2026
+
+Neil separately authorized restoring GitHub preservation while keeping Phone64 STOP/no retry and leaving a Phone65 build/admission for separate authority. A fresh official Nervahealth CLI authorization and actual nonsensitive Git-blob write preflights succeeded on BOTH repositories with injected token variables removed. The current source/control branch heads/trees still matched the exact reset-recovered remote baselines. The reviewed controlled helper now uses those remote ancestors and persistent-write-login-first plus write-login-only mode; eight offline control-helper regressions pass. The earlier denied/default/task route was not blindly retried.
+
+See `docs/HUGR_GITHUB_PRESERVATION_RESTORED_AND_PHONE65_BUILD_GATE_2026_10_21.md` for current publication/checkpoint status. This later authority does not change the focused scratch test evidence, known wider-native-suite limitation, phone version, runtime, Watch83 or any physical/data gate. All earlier failures/local-only snapshots remain history; no real five-minute package has appeared. Final bounded publication and exact remote readback are separate from mere restored credential access.
