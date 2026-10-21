@@ -1,0 +1,15 @@
+# Minor acquisition-evidence handoff — sanitized completion
+
+Neil authorized a concise existing-findings handoff to Minor, the acquisition/substrate owner, on 21 October 2026 at 21:28:17 Europe/Oslo and supplied the private completed-admission handoff as supporting input. The private request, requirements/evidence table and next bounded analysis-side step are prepared. This consolidates supplied findings; it does not rerun or independently requalify the supplied admission gate.
+
+The table asks for existing artifact/source/version-applicable SDK evidence first and distinguishes documentation not located, a guarantee explicitly not provided, and historical capture not retained. It distinguishes claim-specific retrospective, prospective and historical-online reconstruction requirements, with narrower descriptive fallbacks when historical evidence is unrecoverable. Producer/SDK binding, within-list order/pairing, cross-callback continuity/overlap, pre-normalisation fidelity, timestamp meaning and availability are acquisition facts requested from Minor. Endpoint/final-batch investigation remains with Minor and is referenced without duplication.
+
+The scientific mixed-status selection/window policy remains analysis-owned. The next conditional step is a paper-only, evidence-qualified policy proposal preserving explicit exclusions and avoiding assumed adjacency across excluded errors or unknown boundaries. No policy, threshold, selection, qualification or calculation has been enacted. An existing all-record admission result must not be promoted into permanent whole-recording rejection; it remains unchanged and no clean-subset qualification is inferred.
+
+The original supplied private note, existing recording/export bundle, verifier result and completed reports remain unchanged. No new payload analysis, SDK research, architecture archaeology, implementation, gate change/rerun, RMSSD calculation/qualification, baseline update, learning/ownership change, Loop A integration, device/app/Watch/Bluetooth action, collection, replay, recovery, ACK/receipt mutation or automatic task transfer. T2.2, accepted baseline adapter/RMSSD companion, October reconciliation and S4 remain unchanged.
+
+Private findings, input/handoff content, recording bytes, source/run and recording hashes, SDK-candidate specifics, decoded records, status distributions, source timestamps and private reports are not staged to GitHub/project-shared/public storage. Only this sanitized completion and matching control entries are preserved. GitHub source preservation is not canonical recording backup.
+
+Standing closeout: source-owned sanitized receipt → Master → no affected/authorized private proposal → Alignment last → bounded documentation commits → controlled both-repository write preflight/restored-login-only/non-force mirror → independent exact remote head/tree/changed-blob readback. Remote completion is established only by its separate checkpoint, not inferred from local preparation.
+
+Watch69 `NOT QUALIFIED`; Watch68 v1 `UNCLASSIFIED / NOT VERIFIED`; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
