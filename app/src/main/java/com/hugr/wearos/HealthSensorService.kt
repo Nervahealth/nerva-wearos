@@ -631,24 +631,33 @@ class HealthSensorService : Service() {
             recordFirstCausal(CausalEventCode.FIRST_CALLBACK, CausalStreamCode.CARDIAC, arg0 = dataPoints.size.toLong())
             cardiacCallbackId = (cardiacCallbackId + 1) and 0x7FFF_FFFF
             val points = dataPoints.map { point ->
-                val ibiValues = (point.getValue(ValueKey.HeartRateSet.IBI_LIST) as? List<*>)
-                    ?.mapNotNull { (it as? Number)?.toInt() }
-                    ?: emptyList()
-                val ibiStatuses = (point.getValue(ValueKey.HeartRateSet.IBI_STATUS_LIST) as? List<*>)
-                    ?.mapNotNull { (it as? Number)?.toInt() }
-                    ?: emptyList()
+                // Both raw IBI fields are evaluated exactly once before any
+                // cast/normalization. The snapshot preserves NULL/non-list,
+                // access failures, raw lengths and only genuine Int values.
+                val inputShape = CardiacInputShape.capture(
+                    valuesGetter = { point.getValue(ValueKey.HeartRateSet.IBI_LIST) },
+                    statusesGetter = { point.getValue(ValueKey.HeartRateSet.IBI_STATUS_LIST) },
+                )
                 SamsungCardiacPoint(
                     sourceTimestamp = point.timestamp,
                     heartRate = (point.getValue(ValueKey.HeartRateSet.HEART_RATE) as? Number)?.toInt() ?: 0,
                     heartRateStatus = (point.getValue(ValueKey.HeartRateSet.HEART_RATE_STATUS) as? Number)?.toInt() ?: -1,
-                    ibiValuesMs = ibiValues,
-                    ibiStatuses = ibiStatuses
+                    // Legacy V1 values are derived below from inputShape's
+                    // bounded positional slots, never from raw SDK lists.
+                    ibiValuesMs = emptyList(),
+                    ibiStatuses = emptyList(),
+                    inputShape = inputShape,
                 )
             }
             val records = flattenCardiacBatch(cardiacCallbackId, points)
-            val deliveryMode = if (isScreenOn) "REALTIME" else "FLUSH"
+            // Metadata is captured once so anchor and every V2 chunk have
+            // identical delivery/shape flags for this callback.
+            val screenOnAtCallback = isScreenOn
+            val batchSizeAtCallback = dataPoints.size
+            val deliveryMode = if (screenOnAtCallback) "REALTIME" else "FLUSH"
+            val emittedInputShapePoints = mutableSetOf<Int>()
             for (record in records) {
-                if (appendRequiredSourceRecord(
+                val appended = appendRequiredSourceRecord(
                     SourceStreamCode.CARDIAC,
                     record.sourceTimestamp,
                     SourcePayloadCodec.cardiac(
@@ -662,10 +671,37 @@ class HealthSensorService : Service() {
                         listCount = record.listCount,
                         contractAnomaly = record.contractAnomaly,
                         deliveryMode = deliveryMode,
-                        batchSize = dataPoints.size,
-                        screenOn = isScreenOn,
+                        batchSize = batchSizeAtCallback,
+                        screenOn = screenOnAtCallback,
                     ),
-                ) == null) return
+                ) ?: return
+                if (record.kind == CardiacEvidenceKind.HEART_RATE && emittedInputShapePoints.add(record.pointIndex)) {
+                    // appendRequiredSourceRecord returned the actual canonical
+                    // V1 HR identity. Each V2 INPUT_SHAPE chunk inherits that
+                    // timestamp and is never broadcast as HR/IBI measurement.
+                    val shape = points[record.pointIndex].inputShape
+                    for (chunk in shape.chunks(
+                        callbackId = record.callbackId,
+                        pointIndex = record.pointIndex,
+                        pointCount = record.pointCount,
+                        anchorRecordIndex = appended.recordIndex,
+                    )) {
+                        if (appendRequiredSourceRecord(
+                            SourceStreamCode.CARDIAC,
+                            appended.sourceTimestampMs,
+                            SourcePayloadCodec.cardiacInputShape(
+                                chunk = chunk,
+                                deliveryMode = deliveryMode,
+                                batchSize = batchSizeAtCallback,
+                                screenOn = screenOnAtCallback,
+                            ),
+                        ) == null) return
+                    }
+                }
+                // Malformed positional input remains exact canonical evidence above.
+                // Its V1 projection can contain explicit fillers, not native observations;
+                // never broadcast those cells into legacy measurement/telemetry consumers.
+                if (record.contractAnomaly) continue
                 val intent = Intent("com.hugr.wearos.CARDIAC_EVIDENCE_DATA").apply {
                     setPackage(packageName)
                     putExtra("kind", record.kind.wireCode)
@@ -679,8 +715,8 @@ class HealthSensorService : Service() {
                     putExtra("listCount", record.listCount)
                     putExtra("contractAnomaly", record.contractAnomaly)
                     putExtra("deliveryMode", deliveryMode)
-                    putExtra("batchSize", dataPoints.size)
-                    putExtra("screenOn", isScreenOn)
+                    putExtra("batchSize", batchSizeAtCallback)
+                    putExtra("screenOn", screenOnAtCallback)
                 }
                 sendBroadcast(intent)
             }

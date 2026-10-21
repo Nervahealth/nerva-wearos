@@ -32,7 +32,9 @@ class CardiacEvidenceTest {
         )
         assertEquals(3, records.size)
         assertTrue(records.all { it.contractAnomaly })
-        assertEquals(-1, records.last().status)
+        // Missing raw statuses project as zero filler only under the common
+        // anomaly flag; no generated -1 can resemble a native status.
+        assertEquals(0, records.last().status)
         assertEquals(770, records.last().value)
     }
 }

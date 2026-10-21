@@ -115,6 +115,26 @@ internal object SourcePayloadCodec {
             .array()
     }
 
+    /**
+     * Additive CARDIAC V2 positional-input-shape evidence. It intentionally
+     * does not share the V1 cardiac encoder: VERSION=1 and its historical
+     * 25-byte bytes remain immutable.
+     */
+    fun cardiacInputShape(
+        chunk: CardiacInputShapeChunk,
+        deliveryMode: String,
+        batchSize: Int,
+        screenOn: Boolean,
+    ): ByteArray = CardiacInputShapeCodec.encode(
+        chunk = chunk,
+        deliveryFlags = deliveryFlags(deliveryMode, batchSize, screenOn).toInt() and 0xFF,
+        batchSize = batchSize,
+    )
+
+    /** Test/reader hook for strict local V2 structural decoding. */
+    fun decodeCardiacInputShape(payload: ByteArray): DecodedCardiacInputShapeChunk =
+        CardiacInputShapeCodec.decode(payload)
+
     fun deviceHealth(
         batteryPercent: Int,
         flags: Int,
