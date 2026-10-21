@@ -1,0 +1,319 @@
+{
+  "time": "2026-10-21T11:39:49.172376+00:00",
+  "phase": "checkpoint",
+  "remote_source_control_preservation": "COMPLETE_AT_THIS_EXACT_CHECKPOINT",
+  "method": "independent fresh read-only GitHub requests; complete recursive root tree and all changed blobs byte-equal to local Git",
+  "credential_values_recorded": false,
+  "branches": [
+    {
+      "owner": "phone",
+      "repository": "Nervahealth/nerva-mobile",
+      "branch": "preservation/phone-control-and-source-2026-10-03",
+      "local_head": "598b873b97021c5060e04f1d54100446d7655682",
+      "remote_head": "8e34ad251f81587eb13f86d91ca2a75444c5ad9c",
+      "exact_tree": "2643639b3c77e270b467acd05af87af602f94dea",
+      "full_tree_entries": 1203,
+      "changed_blob_count": 15,
+      "changed_blobs": [
+        {
+          "path": "docs/HUGR_GITHUB_PRESERVATION_RESTORED_AND_PHONE65_BUILD_GATE_2026_10_21.md",
+          "git_blob": "224db6b8b228dc56cffe303a6038130fd3567964",
+          "bytes": 9085,
+          "sha256": "b9de43b9f023002b35bad3aab3d2233651adf547c034a5e61fbf671531006c6d",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/HUGR_PHONE64_PRIVATE_FIVE_MINUTE_EXPORT_GATE_2026_10_20.md",
+          "git_blob": "de419ee49b19eb98428b3dcc6b23892c9f153b9a",
+          "bytes": 15585,
+          "sha256": "4e7d0c5290d874e1d5d8c868f0768d705d7eeb876566d6bc82a172c35eb64738",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/HUGR_PHONE64_SELECTED_COMPLETED_RUN_EXPORT_BUILD_ADMISSION_2026_10_20.md",
+          "git_blob": "654e730a40a6b21be50f11bcdf70d5f070815ea0",
+          "bytes": 25905,
+          "sha256": "462cc95888b639117253d6bc9da5e432c4bd222cf76cb178e0ab3d5213f3f0ae",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/HUGR_PHONE_SELECTED_EXPORT_SCRATCH_CORRECTION_SOURCE_TEST_RECEIPT_2026_10_20.md",
+          "git_blob": "619da713a2d77c78a46a4cf5605d0e1e3e4fc589",
+          "bytes": 13892,
+          "sha256": "31ca629db22fccf2bf84cb5900c28d12819ee949763119c0902130b0636a16f8",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/github-preservation-restore-2026-10-21/mirror-helper-regression.log",
+          "git_blob": "8b4bc592d3b958665b2994e2bfb2681df2378499",
+          "bytes": 1633,
+          "sha256": "11a7c6c798b655d1677ebd46a6c81122d27646fa5b1fa9f1507933024a16b9dc",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/github-preservation-restore-2026-10-21/write-preflight-and-live-lineage.json",
+          "git_blob": "b4ade1f701f241719d3d4b68ed2ef261c3188e91",
+          "bytes": 1578,
+          "sha256": "6096091242df0f5ec354e89bd15ff3e9e503af61117e611a1a9cc0706860464c",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/phone-export-scratch-correction-2026-10-20/authoritative-recovery.json",
+          "git_blob": "82fa7441221658fe833932d0d846390bf56bcd82",
+          "bytes": 1083,
+          "sha256": "5b013255a446d4cdc217b60ddaa2f83039d6256d1c2fa6582e5275247703cb5d",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/phone-export-scratch-correction-2026-10-20/final-scratch-test-summary.json",
+          "git_blob": "9ad38aaae3a043112ff12efcb8efb15ec4dd02fc",
+          "bytes": 2631,
+          "sha256": "8a6eb275c3846873171bd8b9b408f0673b2408d22fa667a67fd95f82711b9f88",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/phone-export-scratch-correction-2026-10-20/inventory.md",
+          "git_blob": "d0967e5e63c5f13b79e626f8905518ab45a9a6c8",
+          "bytes": 3363,
+          "sha256": "c940db80f172e0accec1b526f0a59cf4493acaab2b72d91d3fc1ecf541c11638",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/phone-export-scratch-correction-2026-10-20/scope-and-protected-source.json",
+          "git_blob": "cfa5f7d00eae85a0ced5bfde265468bba4cb232a",
+          "bytes": 22634,
+          "sha256": "3c614c5535e27949a8298d1b6e4bfd7502e73eb8920a76c24c0d586d195eb16a",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/SelectedCompletedRunExporter.kt",
+          "git_blob": "cc5ba9060e1279b4b9961905b3e5d603d873fad3",
+          "bytes": 34942,
+          "sha256": "efbc65d5ad3d6e4c38568de2bf9f7d081cb2de4aa9b7a13e83fcf948dc522964",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/SelectedRunExportScratchSpace.kt",
+          "git_blob": "88285a631adb3f3446c5fb732bc4a895abcbc339",
+          "bytes": 6067,
+          "sha256": "2db8734a5f26b25e8984b8c53d3b36005d753c15e679da74c15094939e0281cc",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/SelectedCompletedRunExportTest.kt",
+          "git_blob": "6e0bb1d9940252db16f6428e8ef661256537962c",
+          "bytes": 28159,
+          "sha256": "f57bd9340f909251743faf4c22ec04c7d2a213968693d5a0fc793eaafe478c9d",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/SelectedRunExportScratchSpaceTest.kt",
+          "git_blob": "5b758b92cc38eaaf51140d51d89dee3e5b54ca55",
+          "bytes": 8458,
+          "sha256": "1aea8227d006e5f9fc0203d99c979a07ab6a29effe5ac3ac3292811ba070b38e",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "tests/selectedCompletedRunExportContracts.test.ts",
+          "git_blob": "e44e5d35d8350dc44dcaa7037e67cb257c5baf5f",
+          "bytes": 3949,
+          "sha256": "38fc0db9d3e8eb17ad5c57be07ebe0bf49f4fb6ebabfa9f3ae61434225952225",
+          "exact_bytes_match": true
+        }
+      ],
+      "readback": "PASS",
+      "local_and_remote_commit_ids_distinct": true
+    },
+    {
+      "owner": "watch",
+      "repository": "Nervahealth/nerva-wearos",
+      "branch": "preservation/watch68-partial-source-2026-10-03",
+      "local_head": "94bca77969b49a32916f18ebaaf8563c4db2c846",
+      "remote_head": "ca9e74d4c9b2668d7540f4cad6d0c77ee5d7f475",
+      "exact_tree": "f54abdc15e57f25d60753d6884951707410c8e02",
+      "full_tree_entries": 371,
+      "changed_blob_count": 9,
+      "changed_blobs": [
+        {
+          "path": "docs/HUGR_GITHUB_PRESERVATION_RESTORED_AND_PHONE65_BUILD_GATE_2026_10_21.md",
+          "git_blob": "224db6b8b228dc56cffe303a6038130fd3567964",
+          "bytes": 9085,
+          "sha256": "b9de43b9f023002b35bad3aab3d2233651adf547c034a5e61fbf671531006c6d",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/HUGR_PHONE64_PRIVATE_FIVE_MINUTE_EXPORT_GATE_2026_10_20.md",
+          "git_blob": "de419ee49b19eb98428b3dcc6b23892c9f153b9a",
+          "bytes": 15585,
+          "sha256": "4e7d0c5290d874e1d5d8c868f0768d705d7eeb876566d6bc82a172c35eb64738",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/HUGR_PHONE64_SELECTED_COMPLETED_RUN_EXPORT_BUILD_ADMISSION_2026_10_20.md",
+          "git_blob": "654e730a40a6b21be50f11bcdf70d5f070815ea0",
+          "bytes": 25905,
+          "sha256": "462cc95888b639117253d6bc9da5e432c4bd222cf76cb178e0ab3d5213f3f0ae",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/HUGR_PHONE_SELECTED_EXPORT_SCRATCH_CORRECTION_SOURCE_TEST_RECEIPT_2026_10_20.md",
+          "git_blob": "619da713a2d77c78a46a4cf5605d0e1e3e4fc589",
+          "bytes": 13892,
+          "sha256": "31ca629db22fccf2bf84cb5900c28d12819ee949763119c0902130b0636a16f8",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/github-preservation-restore-2026-10-21/write-preflight-and-live-lineage.json",
+          "git_blob": "b4ade1f701f241719d3d4b68ed2ef261c3188e91",
+          "bytes": 1578,
+          "sha256": "6096091242df0f5ec354e89bd15ff3e9e503af61117e611a1a9cc0706860464c",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/phone-export-scratch-correction-2026-10-20/authoritative-recovery.json",
+          "git_blob": "82fa7441221658fe833932d0d846390bf56bcd82",
+          "bytes": 1083,
+          "sha256": "5b013255a446d4cdc217b60ddaa2f83039d6256d1c2fa6582e5275247703cb5d",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/phone-export-scratch-correction-2026-10-20/final-scratch-test-summary.json",
+          "git_blob": "9ad38aaae3a043112ff12efcb8efb15ec4dd02fc",
+          "bytes": 2631,
+          "sha256": "8a6eb275c3846873171bd8b9b408f0673b2408d22fa667a67fd95f82711b9f88",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/phone-export-scratch-correction-2026-10-20/inventory.md",
+          "git_blob": "d0967e5e63c5f13b79e626f8905518ab45a9a6c8",
+          "bytes": 3363,
+          "sha256": "c940db80f172e0accec1b526f0a59cf4493acaab2b72d91d3fc1ecf541c11638",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/phone-export-scratch-correction-2026-10-20/scope-and-protected-source.json",
+          "git_blob": "cfa5f7d00eae85a0ced5bfde265468bba4cb232a",
+          "bytes": 22634,
+          "sha256": "3c614c5535e27949a8298d1b6e4bfd7502e73eb8920a76c24c0d586d195eb16a",
+          "exact_bytes_match": true
+        }
+      ],
+      "readback": "PASS",
+      "local_and_remote_commit_ids_distinct": true
+    },
+    {
+      "owner": "controls",
+      "repository": "Nervahealth/nerva-mobile",
+      "branch": "preservation/watch69-control-records-2026-10-03",
+      "local_head": "99ca952621124477a2d548a80665ed26244fd497",
+      "remote_head": "44aa4382d8b6f51bcbf884ad885e2f6cf9da1204",
+      "exact_tree": "e6767c5c486bc8e68505eb5022d6aacb2dbdd9da",
+      "full_tree_entries": 1086,
+      "changed_blob_count": 14,
+      "changed_blobs": [
+        {
+          "path": "HUGR_MASTER_TASK_LIST.md",
+          "git_blob": "1142b3f03c512d02268567894154410012542028",
+          "bytes": 763728,
+          "sha256": "563c55317167ccb14256a8a6224416501613a2d84750275e5703817e4caa683e",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "HUGR_SHARED_ALIGNMENT_CONTROL_SURFACE.md",
+          "git_blob": "1b4e158bb53380414d9fb019ef9fae9f6174c1c8",
+          "bytes": 489725,
+          "sha256": "a9a47e7c3a2c2e4776242df040519f8e5e42a85241ba6d849693dff938d4cd5a",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/HUGR_GITHUB_PRESERVATION_RESTORED_AND_PHONE65_BUILD_GATE_2026_10_21.md",
+          "git_blob": "224db6b8b228dc56cffe303a6038130fd3567964",
+          "bytes": 9085,
+          "sha256": "b9de43b9f023002b35bad3aab3d2233651adf547c034a5e61fbf671531006c6d",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/HUGR_PHONE64_PRIVATE_FIVE_MINUTE_EXPORT_GATE_2026_10_20.md",
+          "git_blob": "de419ee49b19eb98428b3dcc6b23892c9f153b9a",
+          "bytes": 15585,
+          "sha256": "4e7d0c5290d874e1d5d8c868f0768d705d7eeb876566d6bc82a172c35eb64738",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/HUGR_PHONE64_SELECTED_COMPLETED_RUN_EXPORT_BUILD_ADMISSION_2026_10_20.md",
+          "git_blob": "654e730a40a6b21be50f11bcdf70d5f070815ea0",
+          "bytes": 25905,
+          "sha256": "462cc95888b639117253d6bc9da5e432c4bd222cf76cb178e0ab3d5213f3f0ae",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/HUGR_PHONE_SELECTED_EXPORT_SCRATCH_CORRECTION_SOURCE_TEST_RECEIPT_2026_10_20.md",
+          "git_blob": "619da713a2d77c78a46a4cf5605d0e1e3e4fc589",
+          "bytes": 13892,
+          "sha256": "31ca629db22fccf2bf84cb5900c28d12819ee949763119c0902130b0636a16f8",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/github-preservation-restore-2026-10-21/mirror-helper-regression.log",
+          "git_blob": "8b4bc592d3b958665b2994e2bfb2681df2378499",
+          "bytes": 1633,
+          "sha256": "11a7c6c798b655d1677ebd46a6c81122d27646fa5b1fa9f1507933024a16b9dc",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/github-preservation-restore-2026-10-21/write-preflight-and-live-lineage.json",
+          "git_blob": "b4ade1f701f241719d3d4b68ed2ef261c3188e91",
+          "bytes": 1578,
+          "sha256": "6096091242df0f5ec354e89bd15ff3e9e503af61117e611a1a9cc0706860464c",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/phone-export-scratch-correction-2026-10-20/authoritative-recovery.json",
+          "git_blob": "82fa7441221658fe833932d0d846390bf56bcd82",
+          "bytes": 1083,
+          "sha256": "5b013255a446d4cdc217b60ddaa2f83039d6256d1c2fa6582e5275247703cb5d",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/phone-export-scratch-correction-2026-10-20/final-scratch-test-summary.json",
+          "git_blob": "9ad38aaae3a043112ff12efcb8efb15ec4dd02fc",
+          "bytes": 2631,
+          "sha256": "8a6eb275c3846873171bd8b9b408f0673b2408d22fa667a67fd95f82711b9f88",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/phone-export-scratch-correction-2026-10-20/inventory.md",
+          "git_blob": "d0967e5e63c5f13b79e626f8905518ab45a9a6c8",
+          "bytes": 3363,
+          "sha256": "c940db80f172e0accec1b526f0a59cf4493acaab2b72d91d3fc1ecf541c11638",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "docs/evidence/phone-export-scratch-correction-2026-10-20/scope-and-protected-source.json",
+          "git_blob": "cfa5f7d00eae85a0ced5bfde265468bba4cb232a",
+          "bytes": 22634,
+          "sha256": "3c614c5535e27949a8298d1b6e4bfd7502e73eb8920a76c24c0d586d195eb16a",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "scripts/hugr_preserve_mirrors.py",
+          "git_blob": "00d25b9fd4da3b29050e63d5ae4008abcc22446e",
+          "bytes": 12822,
+          "sha256": "f15a0536b654f8851510d0f90b98a88c8ca1b1c94700f35197fb0150bd012075",
+          "exact_bytes_match": true
+        },
+        {
+          "path": "scripts/tests/test_hugr_preserve_mirrors_reset_lineage.py",
+          "git_blob": "74b2e966ade3f84f8becfb9b5c0382278c73456b",
+          "bytes": 6332,
+          "sha256": "41be646d14b1d0258719b3d1d691e4d6502a1813f8d3d5897b33c884fbdf8105",
+          "exact_bytes_match": true
+        }
+      ],
+      "readback": "PASS",
+      "local_and_remote_commit_ids_distinct": true
+    }
+  ],
+  "device_or_build_action": false,
+  "real_research_data_handoff": "NOT COMPLETE"
+}

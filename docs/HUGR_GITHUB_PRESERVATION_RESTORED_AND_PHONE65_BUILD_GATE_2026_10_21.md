@@ -6,7 +6,7 @@ Date: 21 October 2026. Source owner: Phone `docs/HUGR_GITHUB_PRESERVATION_RESTOR
 
 Neil authorized restoring GitHub source preservation, then a separately authorized corrected Phone65-only build/admission if this remains the recommended path. This task grants GitHub credential/lineage/control-helper restoration and bounded source/control preservation. It does not grant a Phone65 submission, APK build, device interaction, Phone64 retry, app launch, private export, new collection, Watch action or N1.
 
-**Actual both-repository write capability RESTORED. Pending bounded branch publication and independent exact readback at this preparation checkpoint. No Phone65 build authorized or submitted. Phone64 STOP / NO RETRY.**
+**GitHub source/control preservation RESTORED AND COMPLETE at the independently verified checkpoint below. Both repositories accepted real writes; all three existing branch heads/root trees and every changed blob were independently read back exactly. Final documentation-closeout commits follow this checkpoint and require the same final readback. No Phone65 build authorized or submitted. Phone64 STOP / NO RETRY.**
 
 The source/test correction remains earned only to its stated scope. Phone64 is installed and version-confirmed on Honor; its one-Prepare private export stopped before Save/Share, and no usable real ZIP has been received. No report of a later device action is inferred from elapsed time.
 
@@ -43,6 +43,23 @@ The pending installation authority/result/Settings-confirmation, private-export 
 Independent read-only scope review found exactly five authorized Phone source/test paths, all124 protected unaffected Phone file hashes matching, unchanged version/build metadata, Watch docs only, exact fallback hash and no detected credential/private-record artifact in the bounded tracked payload. Existing tests are reused, not broadly rerun.
 
 Closeout order: source-owned receipt and affected source receipt addendum → Master Task List → no affected private proposal → Alignment last → bounded commits → controlled both-repository preflight/non-force publication → independent fresh remote head/tree/changed-blob byte readback. An initial exact preserved checkpoint will be recorded before the final closure record; the external final readback maps local commits to remote commits without pretending their IDs are identical.
+
+
+## Independently verified published checkpoint — 21 October 2026
+
+The controlled successor executed with `--repository-write-login-only --apply`, first planning clean linear histories and re-proving writes on both repositories. It published the20October pending bounded correction/installation/export controls and21October restoration preparation using non-force updates on the existing preservation branches. No main branch or Watch runtime was changed.
+
+A separate read-only program, not importing the mirror helper, then freshly fetched each branch head, the Git commit/root-tree object, a complete non-truncated recursive tree, and EVERY changed blob since its exact recovered baseline. Root trees matched local Git, blob Git identities/SHA-256/byte counts matched, and blob bytes equaled `git show`. Each ref was reread after blob comparison to rule out concurrent movement during the readback. All three branches passed. These remote commit IDs differ from local commit IDs because the controlled mirror records local lineage while creating remote commits; exact trees/bytes are the preservation identity.
+
+| Owner | Local published checkpoint | Verified remote checkpoint | Exact tree | Changed blobs read back |
+|---|---|---|---|---:|
+| phone | `598b873b97021c5060e04f1d54100446d7655682` | `8e34ad251f81587eb13f86d91ca2a75444c5ad9c` | `2643639b3c77e270b467acd05af87af602f94dea` | 15 |
+| watch | `94bca77969b49a32916f18ebaaf8563c4db2c846` | `ca9e74d4c9b2668d7540f4cad6d0c77ee5d7f475` | `f54abdc15e57f25d60753d6884951707410c8e02` | 9 |
+| controls | `99ca952621124477a2d548a80665ed26244fd497` | `44aa4382d8b6f51bcbf884ad885e2f6cf9da1204` | `e6767c5c486bc8e68505eb5022d6aacb2dbdd9da` | 14 |
+
+The full sanitized checkpoint proof is `docs/evidence/github-preservation-restore-2026-10-21/checkpoint-independent-remote-readback.json`. This later proof resolves the earlier pending GitHub gap for the in-scope Phone64 installation/export/STOP and scratch-correction records only; earlier local-only receipts/fallback snapshots are retained as history and are not retroactively rewritten. No claim is made about another clarification agent’s uninspected repository or private canonical-data backup.
+
+Final receipt/controls commits will be non-force mirrored and independently read back by the same procedure. The final external readback maps the latest local/remote heads and exact trees without an impossible self-referential commit-ID claim. Credentials remain outside repositories. Restoration does not waive future both-repository/lineage/readback checks.
 
 ## Recommended next gate — separate authorization required
 
