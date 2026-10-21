@@ -1,0 +1,17 @@
+# Minor acquisition response — sanitized completion and ownership correction
+
+Neil clarified on 21 October 2026 at 21:34:51 Europe/Oslo that Minor is this acquisition/substrate agent, not a separate recipient. The preceding private request was a prompt from the separate clarification agent. This dated clarification supersedes the earlier ambiguous role assignment without deleting its history. The separate clarification agent retains scientific mixed-status selection/window/exclusion/adjacency decisions; Minor supplies acquisition facts only.
+
+A private acquisition response has been completed from the supplied admission review and retained historical artifacts/source/metadata. The response distinguishes supported build-source evidence, operator/device capture, retained SDK statements, pre-normalisation fidelity, native ordering/continuity, timestamp referent/calibration, and persisted-versus-exported Phone evidence. It includes exact private locators and missing-documentation-versus-missing-capture distinctions. No gate rerun, implementation or scientific policy was performed.
+
+Two concrete undelivered-draft evidence errors were corrected: an old local commit's absence was not absence of its exact retained source tree; and metadata sidecars present in the uploaded private review had been overlooked. The exact tree and sidecar distinctions were recovered through narrow read-only checks. The first draft is retained privately as history and the delivered response supersedes those passages. This is evidence reconciliation, not new acquisition engineering or requalification of the completed gate.
+
+Endpoint/final-batch remains pending and acquisition-owned; it was referenced without a duplicate investigation or new diagnosis. The clarification agent's next analytical proposal remains conditional and paper-only. No subset, exclusions, status thresholds, window policy, RMSSD qualification/calculation, baseline update, learning/ownership change, Loop A or N1 action was enacted. The all-record admission result remains unchanged and is not promoted into permanent recording rejection.
+
+The original uploaded review, instructions, canonical/export bytes, completed results and reports are unchanged. Private recording identities/hashes, physiological findings, payloads, statuses/timestamps, SDK-specific findings, source evidence response, actual report/receipt sidecars and raw metadata stay outside GitHub/project-shared/public destinations. Only this sanitized completion and control entries are preserved. No automatic transfer or external message occurred. GitHub source preservation is not canonical recording backup.
+
+No device/app/Watch/Bluetooth action, collection, recording, sensing, replay, recovery, pending-append mutation, ACK/receipt change, source engineering, build, new SDK search, architecture archaeology or admission-gate execution. T2.2, accepted baseline adapter/RMSSD companion, October reconciliation, S4 and earlier failures remain unchanged.
+
+Standing closeout: source-owned sanitized receipt → Master → no affected/authorized private proposal → Alignment last → bounded documentation-only commits → controlled both-repository write preflight/restored-login-only/non-force mirror → independent exact remote head/tree/changed-blob readback. Publication completion is established separately, not inferred from the private report.
+
+Watch69 `NOT QUALIFIED`; Watch68 v1 `UNCLASSIFIED / NOT VERIFIED`; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
