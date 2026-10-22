@@ -301,9 +301,414 @@ class FreshRunReceiptTest {
         SourceStreamCode.SKIN_TEMP -> SourcePayloadCodec.skinTemperature(33.5f,24f,0,"REALTIME",1,true)
         SourceStreamCode.DEVICE_HEALTH -> SourcePayloadCodec.deviceHealth(80,14,27,1,77,5,0,0,0,0,0,517,0,false,0,0,0,0)
     }
-    private fun fixtureDuration(): Long = System.getenv("HUGR_FRESH_DURATION_MS")?.toLongOrNull()
+    private fun cardiacPositionalV2FixtureEnabled(): Boolean = System.getenv("HUGR_CARDIAC_POSITIONAL_V2")=="1"
+    private val syntheticPositionalMinimumBaseRecords = 4_178
+
+    /**
+     * Counts are deliberately fixture-local. Values and statuses below are
+     * synthetic codec inputs, not a physiological model or an SDK guarantee.
+     * The only accepted position evidence is the current production capture,
+     * V1 projection and V2 encoder invoked below.
+     */
+    private class SyntheticPositionalInventory {
+        var baselineProjectionRecords = 0L
+        var v2Groups = 0L
+        var v2Chunks = 0L
+        var truncatedGroups = 0L
+        var batch45Groups = 0L
+        var fieldNullGroups = 0L
+        var fieldNonListGroups = 0L
+        var slotTypeMarkerGroups = 0L
+    }
+
+    private data class SyntheticJournalInventory(
+        val canonicalRecords: Long,
+        val sourceBytes: Long,
+        val perStream: Map<SourceStreamCode, Long>,
+        val v1HeartRateRecords: Long,
+        val v1IbiProjectionRecords: Long,
+        val v1AnomalousProjectionRecords: Long,
+        val v2Groups: Long,
+        val v2Chunks: Long,
+        val v2TruncatedGroups: Long,
+        val v2Batch45Groups: Long,
+        val v2FieldNullGroups: Long,
+        val v2FieldNonListGroups: Long,
+        val v2SlotTypeMarkerGroups: Long,
+        val manifests: List<SourceSegmentManifest>,
+    )
+
+    /** A deliberately non-list synthetic marker; it must never be stringified or coerced. */
+    private class SyntheticNonListMarker
+
+    private fun setSyntheticFixtureTime(r: Rig, baselineRecordsBefore: Long, baselineTarget: Int) {
+        require(baselineRecordsBefore in 0 until baselineTarget.toLong())
+        val offset = if (baselineTarget == 1) 0L else {
+            baselineRecordsBefore * (r.initial.durationMs - 1L) / (baselineTarget - 1L)
+        }
+        r.elapsed = r.initial.startElapsedMs + offset
+        r.wall = r.initial.startWallMs + offset
+        require(r.elapsed - r.initial.startElapsedMs in 0 until r.initial.durationMs)
+    }
+
+    private fun appendSyntheticNonCardiac(r: Rig, inventory: SyntheticPositionalInventory, stream: SourceStreamCode) {
+        require(stream != SourceStreamCode.CARDIAC)
+        requireNotNull(r.session.append(stream, r.wall, fixturePayload(stream)))
+        inventory.baselineProjectionRecords += 1L
+    }
+
+    /**
+     * Mirrors the current callback path: capture raw shape once, append actual
+     * V1 HR/IBI projection, then anchor all current V2 chunks to the actual
+     * appended HR record. V2 records are source metadata, never beat records.
+     */
+    private fun appendSyntheticPositionalCardiac(
+        r: Rig,
+        inventory: SyntheticPositionalInventory,
+        label: String,
+        callbackId: Int,
+        valuesGetter: () -> Any?,
+        statusesGetter: () -> Any?,
+        deliveryMode: String = "REALTIME",
+        batchSize: Int = 1,
+        screenOn: Boolean = true,
+    ) {
+        val shape = CardiacInputShape.capture(valuesGetter, statusesGetter)
+        val point = SamsungCardiacPoint(
+            sourceTimestamp = r.wall,
+            // These fixture literals are synthetic codec fields, not HR claims.
+            heartRate = 60 + (callbackId % 17),
+            heartRateStatus = if (callbackId % 7 == 0) -1 else 0,
+            ibiValuesMs = emptyList(),
+            ibiStatuses = emptyList(),
+            inputShape = shape,
+        )
+        val projection = flattenCardiacBatch(callbackId, listOf(point))
+        require(projection.size == shape.capturedSlotCount + 1)
+        projection.forEach { record ->
+            val appended = requireNotNull(
+                r.session.append(
+                    SourceStreamCode.CARDIAC,
+                    record.sourceTimestamp,
+                    SourcePayloadCodec.cardiac(
+                        kind = record.kind.wireCode,
+                        value = record.value,
+                        status = record.status,
+                        callbackId = record.callbackId,
+                        pointIndex = record.pointIndex,
+                        pointCount = record.pointCount,
+                        listIndex = record.listIndex,
+                        listCount = record.listCount,
+                        contractAnomaly = record.contractAnomaly,
+                        deliveryMode = deliveryMode,
+                        batchSize = batchSize,
+                        screenOn = screenOn,
+                    ),
+                ),
+            )
+            inventory.baselineProjectionRecords += 1L
+            if (record.kind != CardiacEvidenceKind.HEART_RATE) return@forEach
+            val decoded = shape.chunks(
+                callbackId = record.callbackId,
+                pointIndex = record.pointIndex,
+                pointCount = record.pointCount,
+                anchorRecordIndex = appended.recordIndex,
+            ).map { chunk ->
+                val payload = SourcePayloadCodec.cardiacInputShape(chunk, deliveryMode, batchSize, screenOn)
+                requireNotNull(r.session.append(SourceStreamCode.CARDIAC, appended.sourceTimestampMs, payload))
+                SourcePayloadCodec.decodeCardiacInputShape(payload)
+            }
+            require(decoded.all { it.anchorRecordIndex == appended.recordIndex })
+            CardiacInputShapeCodec.validateCompleteGroup(decoded)
+            inventory.v2Groups += 1L
+            inventory.v2Chunks += decoded.size.toLong()
+            if (shape.truncated) inventory.truncatedGroups += 1L
+            if (batchSize == 45) inventory.batch45Groups += 1L
+            if (shape.valuesField.state == CardiacInputFieldState.NULL_OR_ABSENT ||
+                shape.statusesField.state == CardiacInputFieldState.NULL_OR_ABSENT
+            ) inventory.fieldNullGroups += 1L
+            if (shape.valuesField.state == CardiacInputFieldState.NON_LIST ||
+                shape.statusesField.state == CardiacInputFieldState.NON_LIST
+            ) inventory.fieldNonListGroups += 1L
+            if (shape.slots.any {
+                    it.valueKind !in setOf(CardiacInputSlotKind.INT32, CardiacInputSlotKind.ABSENT) ||
+                        it.statusKind !in setOf(CardiacInputSlotKind.INT32, CardiacInputSlotKind.ABSENT)
+                }
+            ) inventory.slotTypeMarkerGroups += 1L
+        }
+        // The labels are intentionally only fixture labels; no data value is
+        // assigned physiology or SDK provenance by this test.
+        require(label.startsWith("synthetic_"))
+    }
+
+    private fun appendSyntheticNormalCardiac(r: Rig, inventory: SyntheticPositionalInventory, callbackId: Int, slots: Int) {
+        require(slots in 1..5)
+        appendSyntheticPositionalCardiac(
+            r, inventory, "synthetic_normal_${slots}_ibi_slots", callbackId,
+            valuesGetter = { List(slots) { 700 + callbackId + it } },
+            statusesGetter = { List(slots) { if ((callbackId + it) % 4 == 0) -1 else 0 } },
+        )
+    }
+
+    /** Produces an exact baseline V1-projection count plus additive V2 metadata chunks. */
+    private fun appendSyntheticPositionalWorkload(r: Rig, baselineTarget: Int): SyntheticPositionalInventory {
+        require(baselineTarget >= syntheticPositionalMinimumBaseRecords) {
+            "Synthetic positional fixture needs $syntheticPositionalMinimumBaseRecords V1-projection records"
+        }
+        val inventory = SyntheticPositionalInventory()
+        var callbackId = 1
+        fun atNextBaselineRecord(block: () -> Unit) {
+            setSyntheticFixtureTime(r, inventory.baselineProjectionRecords, baselineTarget)
+            block()
+            require(inventory.baselineProjectionRecords <= baselineTarget.toLong())
+        }
+        (1..5).forEach { slots -> atNextBaselineRecord { appendSyntheticNormalCardiac(r, inventory, callbackId++, slots) } }
+        atNextBaselineRecord {
+            appendSyntheticPositionalCardiac(
+                r, inventory, "synthetic_batch45_three_chunks", callbackId++,
+                valuesGetter = { List(45) { 800 + it } },
+                statusesGetter = { List(45) { if (it % 11 == 0) -1 else 0 } },
+                deliveryMode = "FLUSH", batchSize = 45, screenOn = false,
+            )
+        }
+        atNextBaselineRecord {
+            appendSyntheticPositionalCardiac(
+                r, inventory, "synthetic_field_null_with_paired_status_slots", callbackId++,
+                valuesGetter = { null }, statusesGetter = { listOf(0, -1) },
+            )
+        }
+        atNextBaselineRecord {
+            appendSyntheticPositionalCardiac(
+                r, inventory, "synthetic_field_non_list_with_paired_status_slots", callbackId++,
+                valuesGetter = { SyntheticNonListMarker() }, statusesGetter = { listOf(0, -1) },
+            )
+        }
+        atNextBaselineRecord {
+            appendSyntheticPositionalCardiac(
+                r, inventory, "synthetic_member_type_and_null_markers", callbackId++,
+                valuesGetter = { listOf<Any?>(710, 711L, "synthetic-other-type", null) },
+                statusesGetter = { listOf<Any?>(0, 2.5, false, -1) },
+            )
+        }
+        atNextBaselineRecord {
+            appendSyntheticPositionalCardiac(
+                r, inventory, "synthetic_oversized_4097_original_4096_captured", callbackId++,
+                valuesGetter = { List(4_097) { 900 + it } },
+                statusesGetter = { List(4_097) { if (it % 19 == 0) -1 else 0 } },
+            )
+        }
+        SourceStreamCode.entries.filter { it != SourceStreamCode.CARDIAC }.forEach { stream ->
+            atNextBaselineRecord { appendSyntheticNonCardiac(r, inventory, stream) }
+        }
+        require(inventory.baselineProjectionRecords == syntheticPositionalMinimumBaseRecords.toLong())
+        require(inventory.v2Chunks == 216L) // 5 normal + 3 batch45 + 3 marked groups + 205 capped oversize chunks.
+        require(inventory.truncatedGroups == 1L && inventory.batch45Groups == 1L)
+        require(inventory.fieldNullGroups == 1L && inventory.fieldNonListGroups == 1L)
+        require(inventory.slotTypeMarkerGroups >= 1L)
+
+        // A cycle has V1 projections 2+3+4+5+6 plus four real non-CARDIAC codec fields = 24.
+        while (baselineTarget.toLong() - inventory.baselineProjectionRecords >= 24L) {
+            (1..5).forEach { slots -> atNextBaselineRecord { appendSyntheticNormalCardiac(r, inventory, callbackId++, slots) } }
+            SourceStreamCode.entries.filter { it != SourceStreamCode.CARDIAC }.forEach { stream ->
+                atNextBaselineRecord { appendSyntheticNonCardiac(r, inventory, stream) }
+            }
+        }
+        for (slots in 5 downTo 1) {
+            while (baselineTarget.toLong() - inventory.baselineProjectionRecords >= slots + 1L) {
+                atNextBaselineRecord { appendSyntheticNormalCardiac(r, inventory, callbackId++, slots) }
+            }
+        }
+        var residualStream = SourceStreamCode.EDA
+        while (inventory.baselineProjectionRecords < baselineTarget) {
+            atNextBaselineRecord { appendSyntheticNonCardiac(r, inventory, residualStream) }
+            residualStream = when (residualStream) {
+                SourceStreamCode.EDA -> SourceStreamCode.ACCEL
+                SourceStreamCode.ACCEL -> SourceStreamCode.SKIN_TEMP
+                SourceStreamCode.SKIN_TEMP -> SourceStreamCode.DEVICE_HEALTH
+                else -> SourceStreamCode.EDA
+            }
+        }
+        require(inventory.baselineProjectionRecords == baselineTarget.toLong())
+        return inventory
+    }
+
+    /** Re-reads current source-journal bytes before ACK deletion; no summary count is a fixture claim. */
+    private fun inspectSyntheticPositionalJournal(
+        r: Rig,
+        inventory: SyntheticPositionalInventory,
+        manifests: List<SourceSegmentManifest>,
+    ): SyntheticJournalInventory {
+        val perStream = SourceStreamCode.entries.associateWith { 0L }.toMutableMap()
+        val expectedSequence = SourceStreamCode.entries.associateWith { 1L }.toMutableMap()
+        val heartRateAnchors = HashSet<Long>()
+        val pendingInputShape = mutableListOf<DecodedCardiacInputShapeChunk>()
+        var expectedIndex = 1L
+        var v1HeartRate = 0L; var v1Ibi = 0L; var v1Anomalous = 0L
+        var v2Groups = 0L; var v2Chunks = 0L; var v2Truncated = 0L; var v2Batch45 = 0L
+        var v2FieldNull = 0L; var v2FieldNonList = 0L; var v2SlotMarkers = 0L
+        fun finishInputShapeGroup() {
+            if (pendingInputShape.isEmpty()) return
+            CardiacInputShapeCodec.validateCompleteGroup(pendingInputShape)
+            val first = pendingInputShape.first()
+            v2Groups += 1L
+            if (first.truncated) v2Truncated += 1L
+            if (first.batchSize == 45) v2Batch45 += 1L
+            if (first.valuesFieldState == CardiacInputFieldState.NULL_OR_ABSENT ||
+                first.statusesFieldState == CardiacInputFieldState.NULL_OR_ABSENT
+            ) v2FieldNull += 1L
+            if (first.valuesFieldState == CardiacInputFieldState.NON_LIST ||
+                first.statusesFieldState == CardiacInputFieldState.NON_LIST
+            ) v2FieldNonList += 1L
+            if (pendingInputShape.any { chunk -> chunk.slots.any { slot ->
+                    slot.valueKind !in setOf(CardiacInputSlotKind.INT32, CardiacInputSlotKind.ABSENT) ||
+                        slot.statusKind !in setOf(CardiacInputSlotKind.INT32, CardiacInputSlotKind.ABSENT)
+                } }
+            ) v2SlotMarkers += 1L
+            pendingInputShape.clear()
+        }
+        manifests.forEach { manifest ->
+            var cursor = manifest.firstRecordIndex - 1L
+            while (cursor < manifest.lastRecordIndex) {
+                val block = r.journal.readRecordsAfter(r.initial.sourceId, cursor, manifest.lastRecordIndex, 25_000)
+                require(block.isNotEmpty()) { "Synthetic fixture journal range missing" }
+                block.forEach { record ->
+                    require(record.recordIndex == expectedIndex++)
+                    require(record.watchBootSessionId == r.initial.sourceId)
+                    require(record.sourceSequence == expectedSequence.getValue(record.stream))
+                    expectedSequence[record.stream] = record.sourceSequence + 1L
+                    perStream[record.stream] = perStream.getValue(record.stream) + 1L
+                    if (record.stream != SourceStreamCode.CARDIAC) {
+                        finishInputShapeGroup()
+                    } else when ((record.payload.firstOrNull()?.toInt() ?: -1) and 0xFF) {
+                        1 -> {
+                            finishInputShapeGroup()
+                            require(record.payload.size == 25)
+                            if ((record.payload[2].toInt() and 0x08) != 0) v1Anomalous += 1L
+                            when (record.payload[1].toInt() and 0xFF) {
+                                CardiacEvidenceKind.HEART_RATE.wireCode -> {
+                                    heartRateAnchors += record.recordIndex; v1HeartRate += 1L
+                                }
+                                CardiacEvidenceKind.IBI.wireCode -> v1Ibi += 1L
+                                else -> error("Unknown synthetic V1 CARDIAC kind")
+                            }
+                        }
+                        2 -> {
+                            val decoded = SourcePayloadCodec.decodeCardiacInputShape(record.payload)
+                            require(decoded.anchorRecordIndex in heartRateAnchors) {
+                                "Synthetic V2 input-shape metadata lacks actual V1 HR anchor"
+                            }
+                            pendingInputShape += decoded
+                            v2Chunks += 1L
+                        }
+                        else -> error("Unknown synthetic CARDIAC payload version")
+                    }
+                }
+                cursor = block.last().recordIndex
+            }
+        }
+        finishInputShapeGroup()
+        require(expectedIndex - 1L == r.journal.latestRecordIndex())
+        require(manifests.sumOf { it.recordCount } == r.journal.latestRecordIndex())
+        require(manifests.zipWithNext().all { (a,b) -> a.lastRecordIndex + 1L == b.firstRecordIndex })
+        require(perStream.values.all { it > 0L })
+        require(v2Groups == inventory.v2Groups && v2Chunks == inventory.v2Chunks)
+        require(v2Truncated == inventory.truncatedGroups && v2Batch45 == inventory.batch45Groups)
+        require(v2FieldNull == inventory.fieldNullGroups && v2FieldNonList == inventory.fieldNonListGroups)
+        require(v2SlotMarkers == inventory.slotTypeMarkerGroups)
+        return SyntheticJournalInventory(
+            canonicalRecords = expectedIndex - 1L,
+            sourceBytes = manifests.sumOf { it.byteCount },
+            perStream = perStream.toMap(),
+            v1HeartRateRecords = v1HeartRate,
+            v1IbiProjectionRecords = v1Ibi,
+            v1AnomalousProjectionRecords = v1Anomalous,
+            v2Groups = v2Groups,
+            v2Chunks = v2Chunks,
+            v2TruncatedGroups = v2Truncated,
+            v2Batch45Groups = v2Batch45,
+            v2FieldNullGroups = v2FieldNull,
+            v2FieldNonListGroups = v2FieldNonList,
+            v2SlotTypeMarkerGroups = v2SlotMarkers,
+            manifests = manifests,
+        )
+    }
+
+    private fun writeSyntheticPositionalFixtureSummary(
+        dir: File,
+        r: Rig,
+        baselineTarget: Int,
+        observed: SyntheticJournalInventory,
+    ) {
+        require(observed.canonicalRecords == baselineTarget.toLong() + observed.v2Chunks)
+        val expectedBaseRateNumerator = 801_505L
+        val expectedBaseRateDurationMs = WatchFreshRunDurationPolicy.EIGHT_HOURS_MS
+        val text = buildString {
+            append("{\n")
+            append("  \"fixture_kind\": \"synthetic_current_source_journal_cardiac_positional_v2\",\n")
+            append("  \"synthetic_only\": true,\n")
+            append("  \"not_real_records_or_sdk_guarantee\": true,\n")
+            append("  \"actual_source_identity\": {\"watch_boot_session_id\": \"").append(r.initial.sourceId)
+                .append("\", \"fresh_run_id\": \"").append(r.initial.runId).append("\"},\n")
+            append("  \"duration_ms\": ").append(r.initial.durationMs).append(",\n")
+            append("  \"workload_derivation\": {\n")
+            append("    \"baseline_v1_projection_records_from_HUGR_FRESH_RECORD_COUNT\": ").append(baselineTarget).append(",\n")
+            append("    \"legacy_reference_records\": ").append(expectedBaseRateNumerator).append(",\n")
+            append("    \"legacy_reference_duration_ms\": ").append(expectedBaseRateDurationMs).append(",\n")
+            append("    \"legacy_reference_records_per_second_rational\": \"").append(expectedBaseRateNumerator)
+                .append("/").append(expectedBaseRateDurationMs / 1_000L).append("\",\n")
+            append("    \"additive_v2_metadata_records\": ").append(observed.v2Chunks).append(",\n")
+            append("    \"actual_canonical_records\": ").append(observed.canonicalRecords).append("\n")
+            append("  },\n")
+            append("  \"source_journal_observed_before_ack_deletion\": {\n")
+            append("    \"canonical_records\": ").append(observed.canonicalRecords).append(",\n")
+            append("    \"segment_bytes\": ").append(observed.sourceBytes).append(",\n")
+            append("    \"streams\": {")
+            SourceStreamCode.entries.forEachIndexed { index, stream ->
+                if (index > 0) append(", ")
+                append("\"").append(stream.name).append("\": ").append(observed.perStream.getValue(stream))
+            }
+            append("},\n")
+            append("    \"manifests\": [\n")
+            observed.manifests.forEachIndexed { index, manifest ->
+                append("      {\"first_record_index\": ").append(manifest.firstRecordIndex)
+                    .append(", \"last_record_index\": ").append(manifest.lastRecordIndex)
+                    .append(", \"record_count\": ").append(manifest.recordCount)
+                    .append(", \"byte_count\": ").append(manifest.byteCount)
+                    .append(", \"sha256\": \"").append(manifest.sha256Hex).append("\"}")
+                if (index < observed.manifests.lastIndex) append(',')
+                append('\n')
+            }
+            append("    ]\n")
+            append("  },\n")
+            append("  \"v1_projection_observed\": {\"heart_rate_records\": ").append(observed.v1HeartRateRecords)
+                .append(", \"ibi_projection_records\": ").append(observed.v1IbiProjectionRecords)
+                .append(", \"anomalous_projection_records\": ").append(observed.v1AnomalousProjectionRecords)
+                .append("},\n")
+            append("  \"v2_input_shape_metadata_observed\": {\"groups\": ").append(observed.v2Groups)
+                .append(", \"chunks\": ").append(observed.v2Chunks)
+                .append(", \"truncated_4097_original_4096_captured_groups\": ").append(observed.v2TruncatedGroups)
+                .append(", \"batch45_three_chunk_groups\": ").append(observed.v2Batch45Groups)
+                .append(", \"null_field_groups\": ").append(observed.v2FieldNullGroups)
+                .append(", \"non_list_field_groups\": ").append(observed.v2FieldNonListGroups)
+                .append(", \"slot_null_or_type_marker_groups\": ").append(observed.v2SlotTypeMarkerGroups)
+                .append("},\n")
+            append("  \"canonical_sequence_state_safety\": {\"record_indices_contiguous\": true, \"per_stream_sequences_contiguous\": true, \"all_five_streams_present\": true, \"v2_anchors_actual_v1_hr_records\": true, \"v2_groups_complete\": true, \"v2_metadata_is_not_beats\": true}\n")
+            append("}\n")
+        }
+        File(dir, "synthetic-cardiac-positional-v2-summary.json").writeText(text)
+    }
+
+    private fun fixtureDuration(): Long = (System.getenv("DURATION_MS") ?: System.getenv("HUGR_FRESH_DURATION_MS"))?.toLongOrNull()
         ?: WatchFreshRunDurationPolicy.FIVE_MINUTES_MS
-    private fun fixtureRecordCount(): Int = System.getenv("HUGR_FRESH_RECORD_COUNT")?.toIntOrNull() ?: 10
+    private fun defaultSyntheticPositionalBaselineCount(durationMs: Long): Int = when(durationMs) {
+        WatchFreshRunDurationPolicy.FIVE_MINUTES_MS -> 8_349
+        WatchFreshRunDurationPolicy.THIRTY_MINUTES_MS -> 50_095
+        WatchFreshRunDurationPolicy.TWO_HOURS_MS -> 200_375
+        WatchFreshRunDurationPolicy.EIGHT_HOURS_MS -> 801_505
+        else -> error("Closed duration ladder rejected before fixture count")
+    }
+    private fun fixtureRecordCount(): Int = (System.getenv("RECORD_COUNT") ?: System.getenv("HUGR_FRESH_RECORD_COUNT"))?.toIntOrNull()
+        ?: if(cardiacPositionalV2FixtureEnabled()) defaultSyntheticPositionalBaselineCount(fixtureDuration()) else 10
     private fun writeFixtureWire(dir: File, journal: SourceJournal, manifests: List<SourceSegmentManifest>) {
         File(dir,"canonical-records.base64").bufferedWriter().use { canonical ->
             File(dir,"source-wire-notifications.base64").bufferedWriter().use { wire ->
@@ -345,14 +750,16 @@ class FreshRunReceiptTest {
         })
     }
     @Test fun `produce real Watch canonical joined fixture streaming acceptance finalized completion restart`() {
-        if(System.getenv("HUGR_FRESH_VERIFY_FIXTURE")=="1") return
-        val output=System.getenv("HUGR_FRESH_FIXTURE_DIR")?:return;val duration=fixtureDuration();val count=fixtureRecordCount()
+        org.junit.Assume.assumeTrue("SKIPPED_GENERATION_DURING_ACK_ONLY_PHASE", System.getenv("HUGR_FRESH_VERIFY_FIXTURE")!="1")
+        val configured=System.getenv("HUGR_FRESH_FIXTURE_DIR")
+        org.junit.Assume.assumeTrue("SKIPPED_MISSING_EXPLICIT_SYNTHETIC_WATCH_FIXTURE", !configured.isNullOrBlank())
+        val output=requireNotNull(configured);val duration=fixtureDuration();val count=fixtureRecordCount()
         require(WatchFreshRunDurationPolicy.accepts(duration)&&count>0&&count<=WatchFreshRunDurationPolicy.MAX_CANONICAL_RECORDS)
         val dir=File(output);dir.mkdirs()
         // Preserve the historical writer's V1 five-minute/ten-record sequence
         // byte-for-byte. Ladder cases use V2 and a bounded journal reread rather
         // than retaining duplicate in-memory record arrays.
-        if(duration==WatchFreshRunDurationPolicy.FIVE_MINUTES_MS&&count==10){
+        if(duration==WatchFreshRunDurationPolicy.FIVE_MINUTES_MS&&count==10&&!cardiacPositionalV2FixtureEnabled()){
             val r=Rig();try{
                 r.begin();File(dir,"started.tsv").writeBytes(r.session.snapshot().bytes())
                 r.batchValid();val first=r.seal();r.ack(first);File(dir,"streaming-acked.tsv").writeBytes(r.session.snapshot().bytes())
@@ -365,7 +772,8 @@ class FreshRunReceiptTest {
         }
         val r=Rig(durationMs=duration,version=FreshRunReceiptVersion.V2);try{
             r.begin();File(dir,"started.tsv").writeBytes(r.session.snapshot().bytes())
-            repeat(count){index->
+            val positional = if(cardiacPositionalV2FixtureEnabled()) appendSyntheticPositionalWorkload(r,count) else null
+            if(positional==null) repeat(count){index->
                 val offset=if(count==1)0L else index.toLong()*(duration-1L)/(count-1L)
                 r.elapsed=r.initial.startElapsedMs+offset;r.wall=r.initial.startWallMs+offset
                 val stream=SourceStreamCode.entries[index%SourceStreamCode.entries.size]
@@ -375,14 +783,16 @@ class FreshRunReceiptTest {
             r.elapsed=r.initial.startElapsedMs+duration;r.wall=r.initial.startWallMs+duration
             r.session.finalizeRecording();val before=r.session.snapshot();val manifests=before.manifests
             require(manifests.isNotEmpty());File(dir,"finalized.tsv").writeBytes(before.bytes());r.journal.forceSync();copyReplica(r.root,File(dir,"watch-verifier-root"))
+            if(positional!=null) require(manifests.size>=2) { "Synthetic positional fixture requires at least two virtual-time source manifests" }
             writeFixtureWire(dir,r.journal,manifests)
+            positional?.let { writeSyntheticPositionalFixtureSummary(dir,r,count,inspectSyntheticPositionalJournal(r,it,manifests)) }
             manifests.filter{m->before.acks.none{it.last==m.lastRecordIndex}}.forEach{r.ack(it)}
             val completed=r.store.current()!!;File(dir,"completed.tsv").writeBytes(completed.bytes());File(dir,"restart.tsv").writeBytes(FreshRunReceiptStore(File(r.root,"fresh_ordinary_runs_v3")).current()!!.bytes())
             File(dir,"source-id.txt").writeText("${r.initial.sourceId}\n");File(dir,"receipt-digest.txt").writeText(FreshRunReceipt.digest(completed.bytes())+"\n")
         }finally{r.close()}
     }
     @Test fun `verify Phone exact ACK frames against preserved real Watch pre final ACK replica`() {
-        if(System.getenv("HUGR_FRESH_VERIFY_FIXTURE")!="1") return
+        org.junit.Assume.assumeTrue("SKIPPED_MISSING_EXPLICIT_SYNTHETIC_ACK_VERIFY_PHASE", System.getenv("HUGR_FRESH_VERIFY_FIXTURE")=="1")
         val dir=File(requireNotNull(System.getenv("HUGR_FRESH_FIXTURE_DIR")))
         val root=File(dir,"watch-verifier-root")
         val store=FreshRunReceiptStore(File(root,"fresh_ordinary_runs_v3"))
