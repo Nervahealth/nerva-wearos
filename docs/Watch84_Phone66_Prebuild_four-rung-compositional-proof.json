@@ -1,0 +1,445 @@
+{
+  "status": "PASS",
+  "scope": "FINAL_V2_NATIVE_FOUR_RUNG_AND_INDEPENDENT_READER",
+  "evidenceMode": "COMPOSITIONAL_REUSE_PLUS_CURRENT_PROVIDER_EIGHT_HOUR",
+  "rungs": {
+    "5min": {
+      "status": "PASS",
+      "fixture": {
+        "duration_ms": 300000,
+        "record_count": 9433,
+        "parent_bytes": 777664,
+        "parent_sha256": "f9cca7d362c26ab936a975efc0b9bc6222803033aa7980f9ddf2ce75b02ef58b"
+      },
+      "nativeJoinedExport": {
+        "result": {
+          "completedReportRestartOffline": "PASS",
+          "durationMs": 300000,
+          "exportSeconds": 2.165316791,
+          "manifestCount": 4,
+          "originalStateByteUnchanged": true,
+          "parentBytes": 777664,
+          "parentSha256": "f9cca7d362c26ab936a975efc0b9bc6222803033aa7980f9ddf2ce75b02ef58b",
+          "recordCount": 9433,
+          "runId": "cce3e6da-f53b-4f23-b671-94fda9aa5b30",
+          "sourceSession": "8c011227-ca31-446e-a6a6-c13452ff4092",
+          "syntheticOnly": true,
+          "watchAcceptedAckCount": 4,
+          "zipBytes": 186032,
+          "zipPath": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/gate5min-robolectric-workingdir-continuation/hugr-selected-run-8c011227-ca31-446e-a6a6-c13452ff4092-cce3e6da-f53b-4f23-b671-94fda9aa5b30-5024b995-fc96-4ff8-a702-53ac79fe9bf6.zip",
+          "zipSha256": "e38ba3eea35818d2f01674f30ec2fb814e48e6e5b2760e92fe56cb295e8527f9"
+        }
+      },
+      "executionDisposition": "REUSED_NOT_RERUN",
+      "savedEvidence": [
+        {
+          "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/five-minute-proof.json",
+          "sha256": "69408d679924b61fd70df76575ea5b7d3c17d6e0771d564734d58248a63d5e46"
+        },
+        {
+          "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/five-minute-independent-reader-proof.json",
+          "sha256": "f2280d389c2de95a2a39bf92b5c29677f482637d34adc9a732b48b1564ab288c"
+        }
+      ]
+    },
+    "30min": {
+      "status": "PASS",
+      "fixture": {
+        "baseline_record_count": 50095,
+        "duration_ms": 1800000,
+        "fixture": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-30m-2h-8h-workingdir-continuation/fixtures/30min",
+        "manifest_count": 29,
+        "parent_bytes": 4891463,
+        "parent_sha256": "58971a17ababb5ac2fb25e48968140e1ae4d8424fe0568c2b8661753b16c52ac",
+        "phone_exact_acks": {
+          "ack_count": 29,
+          "path": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-30m-2h-8h-workingdir-continuation/fixtures/30min/phone-exact-acks.base64",
+          "sha256": "979e12e84438a4fc6c847c2bed0a77d1343ef6ac96c43241a469f3253cf9bca0"
+        },
+        "record_count": 59877,
+        "required_exact_manifest_count": null,
+        "run_id": "8657e6a9-8b40-4324-91e7-f969ce045122",
+        "source_session": "f5acae98-f63b-43bc-8232-496cb6cdf83e",
+        "summary_sha256": "d2e4e612aa2642bbfc7231f5325280d102239a68086d87d40ca8c66922fab114",
+        "v2_shape_checks": {
+          "baseline": true,
+          "batch45": true,
+          "canonical": true,
+          "fixture_kind": true,
+          "manifest_count": true,
+          "non_list_shape": true,
+          "normal_shapes": true,
+          "null_shape": true,
+          "slot_marker_shape": true,
+          "synthetic_only": true,
+          "truncated_4097": true
+        },
+        "watch_accepted_ack_count": 29
+      },
+      "nativeJoinedExport": {
+        "result": {
+          "syntheticOnly": true,
+          "sourceSession": "f5acae98-f63b-43bc-8232-496cb6cdf83e",
+          "runId": "8657e6a9-8b40-4324-91e7-f969ce045122",
+          "durationMs": 1800000,
+          "recordCount": 59877,
+          "manifestCount": 29,
+          "watchAcceptedAckCount": 29,
+          "parentBytes": 4891463,
+          "parentSha256": "58971a17ababb5ac2fb25e48968140e1ae4d8424fe0568c2b8661753b16c52ac",
+          "zipPath": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-after-node-spec-readback/joined-native-export/30min/hugr-selected-run-f5acae98-f63b-43bc-8232-496cb6cdf83e-8657e6a9-8b40-4324-91e7-f969ce045122-08ef83e1-6a3c-4893-b929-a1e62ba00c6b.zip",
+          "zipBytes": 1175514,
+          "zipSha256": "91ea4b3ea89852eedf03d5e0a8f7d5dfb2fee45ef163d3545f5672001ba3d4c5",
+          "exportSeconds": 8.543039596,
+          "originalStateByteUnchanged": true,
+          "completedReportRestartOffline": "PASS"
+        }
+      },
+      "executionDisposition": "REUSED_NOT_RERUN",
+      "savedEvidence": [
+        {
+          "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/30min-native-export-result.json",
+          "sha256": "036c810cd8dd0ec2d59bfb085d8cc47592567b0ab57fdfe51717ed5f66681484"
+        },
+        {
+          "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/forward-ladder-summary.json",
+          "sha256": "f9cc035822749f6cf1d515adb7170ee97967232208d9bfdb6b3b7066652ec05c"
+        },
+        {
+          "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/30min-independent-inventory.json",
+          "sha256": "e3753592539ce1a539aaffe23c0aa32aca58beff0fe6fc7f0df4fd4c41e17e44"
+        }
+      ]
+    },
+    "2hr": {
+      "status": "PASS",
+      "fixture": {
+        "baseline_record_count": 200375,
+        "duration_ms": 7200000,
+        "fixture": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-after-node-spec-readback/fixtures/2hr",
+        "manifest_count": 119,
+        "parent_bytes": 19700305,
+        "parent_sha256": "e2048ae2fb5e3f13ca5ccf1a6773e8a155235ec07218ac93687d9aa8fdb3d617",
+        "phone_exact_acks": {
+          "ack_count": 119,
+          "path": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-after-node-spec-readback/fixtures/2hr/phone-exact-acks.base64",
+          "sha256": "0fe9e26e60c45fb33520416f47770b74189b19bfa20b6e4602037f42883beb1d"
+        },
+        "record_count": 241465,
+        "required_exact_manifest_count": null,
+        "run_id": "7a73591a-cecb-4ec3-b20b-776442c54082",
+        "source_session": "ac88ee07-c351-421a-a0b1-a42aa54a0396",
+        "summary_sha256": "58b866ef2f66862930e64765d0631164af1865cbdfacab3414e4ccab0151543b",
+        "v2_shape_checks": {
+          "baseline": true,
+          "batch45": true,
+          "canonical": true,
+          "fixture_kind": true,
+          "manifest_count": true,
+          "non_list_shape": true,
+          "normal_shapes": true,
+          "null_shape": true,
+          "slot_marker_shape": true,
+          "synthetic_only": true,
+          "truncated_4097": true
+        },
+        "watch_accepted_ack_count": 119
+      },
+      "nativeJoinedExport": {
+        "result": {
+          "syntheticOnly": true,
+          "sourceSession": "ac88ee07-c351-421a-a0b1-a42aa54a0396",
+          "runId": "7a73591a-cecb-4ec3-b20b-776442c54082",
+          "durationMs": 7200000,
+          "recordCount": 241465,
+          "manifestCount": 119,
+          "watchAcceptedAckCount": 119,
+          "parentBytes": 19700305,
+          "parentSha256": "e2048ae2fb5e3f13ca5ccf1a6773e8a155235ec07218ac93687d9aa8fdb3d617",
+          "zipPath": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-after-node-spec-readback/joined-native-export/2hr/hugr-selected-run-ac88ee07-c351-421a-a0b1-a42aa54a0396-7a73591a-cecb-4ec3-b20b-776442c54082-22fb759b-1dcc-4ff4-8856-e2033807c041.zip",
+          "zipBytes": 4733054,
+          "zipSha256": "36dc7769456978bf50feb46453109b676212d999ced3584658e11f879dc7d46c",
+          "exportSeconds": 43.32651549,
+          "originalStateByteUnchanged": true,
+          "completedReportRestartOffline": "PASS"
+        }
+      },
+      "executionDisposition": "REUSED_NOT_RERUN",
+      "savedEvidence": [
+        {
+          "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/2hr-native-export-result.json",
+          "sha256": "a67c430322d39bc8413c20860b90a3df71600836931c88f4a09a9ad4c57b65a8"
+        },
+        {
+          "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/forward-ladder-summary.json",
+          "sha256": "f9cc035822749f6cf1d515adb7170ee97967232208d9bfdb6b3b7066652ec05c"
+        },
+        {
+          "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/2hr-independent-inventory.json",
+          "sha256": "14f34f40f2b53fe67d9b7ce5510122e4d9e698dba731ec1c2c9ad1cb5ec76a2c"
+        }
+      ]
+    },
+    "8hr": {
+      "status": "PASS",
+      "fixture": {
+        "baseline_record_count": 801505,
+        "duration_ms": 28800000,
+        "fixture": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-after-node-spec-readback/fixtures/8hr",
+        "manifest_count": 478,
+        "parent_bytes": 78936626,
+        "parent_sha256": "ba9b8877fbdceaf98fedfee66661bef16836864d4793df33c4025efcbbbee03d",
+        "record_count": 967830,
+        "required_exact_manifest_count": 478,
+        "run_id": "56ad1706-30bc-4a8b-a6be-49da6e4f5586",
+        "source_session": "5fd98da3-6532-4eaf-89c0-9aa6318fd6de",
+        "summary_sha256": "fb5f4d5c1ff685e0aa84a26f432f95d8b5bcc4b26b9efa3722ea7f978312434e",
+        "v2_shape_checks": {
+          "baseline": true,
+          "batch45": true,
+          "canonical": true,
+          "fixture_kind": true,
+          "manifest_count": true,
+          "non_list_shape": true,
+          "normal_shapes": true,
+          "null_shape": true,
+          "slot_marker_shape": true,
+          "synthetic_only": true,
+          "truncated_4097": true
+        },
+        "watch_accepted_ack_count": 478
+      },
+      "nativeJoinedExport": {
+        "result": {
+          "syntheticOnly": true,
+          "sourceSession": "5fd98da3-6532-4eaf-89c0-9aa6318fd6de",
+          "runId": "56ad1706-30bc-4a8b-a6be-49da6e4f5586",
+          "durationMs": 28800000,
+          "recordCount": 967830,
+          "manifestCount": 478,
+          "watchAcceptedAckCount": 478,
+          "parentBytes": 78936626,
+          "parentSha256": "ba9b8877fbdceaf98fedfee66661bef16836864d4793df33c4025efcbbbee03d",
+          "zipPath": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/terminal-investigation/bounded-paging-retained-chain/joined-export/hugr-selected-run-5fd98da3-6532-4eaf-89c0-9aa6318fd6de-56ad1706-30bc-4a8b-a6be-49da6e4f5586-e06b7f86-ead0-4f79-9247-f515ec03531c.zip",
+          "zipBytes": 18910232,
+          "zipSha256": "08a4628648905988a27670c301936334ef18bfa4212d2130d46cbce23ef0eb31",
+          "exportSeconds": 183.012118532,
+          "originalStateByteUnchanged": true,
+          "completedReportRestartOffline": "PASS"
+        }
+      },
+      "executionDisposition": "CURRENT_PAGED_PROVIDER_TERMINAL_PASS",
+      "savedEvidence": [
+        {
+          "path": "/home/ubuntu/HUGR_EIGHT_HOUR_TERMINAL_INVESTIGATION_2026_10_22/HUGR_BOUNDED_PAGING_NATIVE_RESULT_PASS_2026_10_22.zip",
+          "sha256": "2387da71ec917cc7a53a0858fe27d2b897879c46ef0208dfa2999ee702d439d7"
+        }
+      ],
+      "originalFailedReceiptNotReset": true
+    }
+  },
+  "independentReader": {
+    "status": "PASS",
+    "rungs": {
+      "5min": {
+        "status": "PASS",
+        "executionDisposition": "REUSED_NOT_RERUN",
+        "result": {
+          "canonical_bytes": 777664,
+          "canonical_record_count": 9433,
+          "canonical_sha256": "f9cca7d362c26ab936a975efc0b9bc6222803033aa7980f9ddf2ce75b02ef58b",
+          "decoder_sha256": "6f75f95afc94c0ccfb3f50aa2077dea351312805d7da0ddb1cf1295b395dd66f",
+          "duration_ms": 300000,
+          "elapsed_seconds": 0.522,
+          "fixture": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/fixtures/5min",
+          "inventory": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/gate5min-robolectric-workingdir-continuation/gate5min-independent-reader-proof-inventory/inventory.json",
+          "inventory_sha256": "dbad42e77f1208dc62699bfcccac6827cf22d0350114036dc09f5885e43646a0",
+          "limit": "Synthetic source/custody/shape consistency only; no device, SDK callback, native adjacency, or physiology qualification.",
+          "manifest_count": 4,
+          "output": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/gate5min-robolectric-workingdir-continuation",
+          "reader": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/runtime/independent-reader/verify_hugr_export.py",
+          "reader_sha256": "d2c1a1d48c4a79ffc70a012db6b98a04eb57b4f5878f35d356c0a0badbc7a457",
+          "run_id": "cce3e6da-f53b-4f23-b671-94fda9aa5b30",
+          "rung": "5min",
+          "schema": "hugr.native-x86.independent-export-readback.v1",
+          "source_session": "8c011227-ca31-446e-a6a6-c13452ff4092",
+          "status": "PASS_SYNTHETIC_ONLY",
+          "stderr": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/gate5min-robolectric-workingdir-continuation/gate5min-independent-reader-proof-stderr.txt",
+          "stdout": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/gate5min-robolectric-workingdir-continuation/gate5min-independent-reader-proof-stdout.txt",
+          "timestamp_utc": "2026-10-22T15:11:32.022988Z",
+          "watch_accepted_ack_count": 4,
+          "zip_path": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/gate5min-robolectric-workingdir-continuation/hugr-selected-run-8c011227-ca31-446e-a6a6-c13452ff4092-cce3e6da-f53b-4f23-b671-94fda9aa5b30-5024b995-fc96-4ff8-a702-53ac79fe9bf6.zip",
+          "zip_sha256": "e38ba3eea35818d2f01674f30ec2fb814e48e6e5b2760e92fe56cb295e8527f9",
+          "zip_unchanged": true
+        },
+        "savedEvidence": [
+          {
+            "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/five-minute-proof.json",
+            "sha256": "69408d679924b61fd70df76575ea5b7d3c17d6e0771d564734d58248a63d5e46"
+          },
+          {
+            "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/five-minute-independent-reader-proof.json",
+            "sha256": "f2280d389c2de95a2a39bf92b5c29677f482637d34adc9a732b48b1564ab288c"
+          }
+        ]
+      },
+      "30min": {
+        "status": "PASS",
+        "executionDisposition": "REUSED_NOT_RERUN",
+        "result": {
+          "command": [
+            "/usr/bin/python3",
+            "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/runtime/forward-reviewed-inputs/independent-reader/verify_hugr_export.py",
+            "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-after-node-spec-readback/joined-native-export/30min/hugr-selected-run-f5acae98-f63b-43bc-8232-496cb6cdf83e-8657e6a9-8b40-4324-91e7-f969ce045122-08ef83e1-6a3c-4893-b929-a1e62ba00c6b.zip",
+            "--expected-source",
+            "f5acae98-f63b-43bc-8232-496cb6cdf83e",
+            "--expected-run",
+            "8657e6a9-8b40-4324-91e7-f969ce045122",
+            "--expected-canonical-bytes",
+            "4891463",
+            "--expected-canonical-sha256",
+            "58971a17ababb5ac2fb25e48968140e1ae4d8424fe0568c2b8661753b16c52ac",
+            "--output-dir",
+            "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-after-node-spec-readback/joined-native-export/30min/independent-inventory"
+          ],
+          "decoder_sha256": "6f75f95afc94c0ccfb3f50aa2077dea351312805d7da0ddb1cf1295b395dd66f",
+          "elapsed_seconds": 6.275,
+          "inventory": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-after-node-spec-readback/joined-native-export/30min/independent-inventory/inventory.json",
+          "inventory_sha256": "e3753592539ce1a539aaffe23c0aa32aca58beff0fe6fc7f0df4fd4c41e17e44",
+          "limitation": "Synthetic source/custody/shape fidelity only; no SDK callback, hardware, native adjacency, or physiology qualification.",
+          "rung": "30min",
+          "status": "PASS_SYNTHETIC_ONLY",
+          "stderr": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-after-node-spec-readback/joined-native-export/30min/independent-reader-stderr.txt",
+          "stdout": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-after-node-spec-readback/joined-native-export/30min/independent-reader-stdout.txt",
+          "verifier_sha256": "d2c1a1d48c4a79ffc70a012db6b98a04eb57b4f5878f35d356c0a0badbc7a457",
+          "zip_unchanged": true
+        },
+        "savedEvidence": [
+          {
+            "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/30min-native-export-result.json",
+            "sha256": "036c810cd8dd0ec2d59bfb085d8cc47592567b0ab57fdfe51717ed5f66681484"
+          },
+          {
+            "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/forward-ladder-summary.json",
+            "sha256": "f9cc035822749f6cf1d515adb7170ee97967232208d9bfdb6b3b7066652ec05c"
+          },
+          {
+            "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/30min-independent-inventory.json",
+            "sha256": "e3753592539ce1a539aaffe23c0aa32aca58beff0fe6fc7f0df4fd4c41e17e44"
+          }
+        ]
+      },
+      "2hr": {
+        "status": "PASS",
+        "executionDisposition": "REUSED_NOT_RERUN",
+        "result": {
+          "command": [
+            "/usr/bin/python3",
+            "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/runtime/forward-reviewed-inputs/independent-reader/verify_hugr_export.py",
+            "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-after-node-spec-readback/joined-native-export/2hr/hugr-selected-run-ac88ee07-c351-421a-a0b1-a42aa54a0396-7a73591a-cecb-4ec3-b20b-776442c54082-22fb759b-1dcc-4ff4-8856-e2033807c041.zip",
+            "--expected-source",
+            "ac88ee07-c351-421a-a0b1-a42aa54a0396",
+            "--expected-run",
+            "7a73591a-cecb-4ec3-b20b-776442c54082",
+            "--expected-canonical-bytes",
+            "19700305",
+            "--expected-canonical-sha256",
+            "e2048ae2fb5e3f13ca5ccf1a6773e8a155235ec07218ac93687d9aa8fdb3d617",
+            "--output-dir",
+            "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-after-node-spec-readback/joined-native-export/2hr/independent-inventory"
+          ],
+          "decoder_sha256": "6f75f95afc94c0ccfb3f50aa2077dea351312805d7da0ddb1cf1295b395dd66f",
+          "elapsed_seconds": 11.332,
+          "inventory": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-after-node-spec-readback/joined-native-export/2hr/independent-inventory/inventory.json",
+          "inventory_sha256": "14f34f40f2b53fe67d9b7ce5510122e4d9e698dba731ec1c2c9ad1cb5ec76a2c",
+          "limitation": "Synthetic source/custody/shape fidelity only; no SDK callback, hardware, native adjacency, or physiology qualification.",
+          "rung": "2hr",
+          "status": "PASS_SYNTHETIC_ONLY",
+          "stderr": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-after-node-spec-readback/joined-native-export/2hr/independent-reader-stderr.txt",
+          "stdout": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/outputs/forward-after-node-spec-readback/joined-native-export/2hr/independent-reader-stdout.txt",
+          "verifier_sha256": "d2c1a1d48c4a79ffc70a012db6b98a04eb57b4f5878f35d356c0a0badbc7a457",
+          "zip_unchanged": true
+        },
+        "savedEvidence": [
+          {
+            "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/2hr-native-export-result.json",
+            "sha256": "a67c430322d39bc8413c20860b90a3df71600836931c88f4a09a9ad4c57b65a8"
+          },
+          {
+            "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/forward-ladder-summary.json",
+            "sha256": "f9cc035822749f6cf1d515adb7170ee97967232208d9bfdb6b3b7066652ec05c"
+          },
+          {
+            "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/native-x86-terminal-result/2hr-independent-inventory.json",
+            "sha256": "14f34f40f2b53fe67d9b7ce5510122e4d9e698dba731ec1c2c9ad1cb5ec76a2c"
+          }
+        ]
+      },
+      "8hr": {
+        "status": "PASS",
+        "executionDisposition": "CURRENT_RETAINED_EIGHT_HOUR",
+        "result": {
+          "command": [
+            "/usr/bin/python3",
+            "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/runtime/independent-reader/verify_hugr_export.py",
+            "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/terminal-investigation/bounded-paging-retained-chain/joined-export/hugr-selected-run-5fd98da3-6532-4eaf-89c0-9aa6318fd6de-56ad1706-30bc-4a8b-a6be-49da6e4f5586-e06b7f86-ead0-4f79-9247-f515ec03531c.zip",
+            "--expected-source",
+            "5fd98da3-6532-4eaf-89c0-9aa6318fd6de",
+            "--expected-run",
+            "56ad1706-30bc-4a8b-a6be-49da6e4f5586",
+            "--expected-canonical-bytes",
+            "78936626",
+            "--expected-canonical-sha256",
+            "ba9b8877fbdceaf98fedfee66661bef16836864d4793df33c4025efcbbbee03d",
+            "--output-dir",
+            "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/terminal-investigation/bounded-paging-retained-chain/joined-export/independent-inventory"
+          ],
+          "decoder_sha256": "6f75f95afc94c0ccfb3f50aa2077dea351312805d7da0ddb1cf1295b395dd66f",
+          "elapsed_seconds": 44.522,
+          "inventory": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/terminal-investigation/bounded-paging-retained-chain/joined-export/independent-inventory/inventory.json",
+          "inventory_sha256": "1307218a70a2898dd50ff444818c3332e5d9fbc63b246f6859b76fb9ef298168",
+          "limitation": "Synthetic source/custody/shape fidelity only; no SDK callback, hardware, native adjacency, or physiology qualification.",
+          "rung": "8hr",
+          "status": "PASS_SYNTHETIC_ONLY",
+          "stderr": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/terminal-investigation/bounded-paging-retained-chain/joined-export/independent-reader-stderr.txt",
+          "stdout": "/home/ubuntu/hugr-native-x86-synthetic-2026-10-22/terminal-investigation/bounded-paging-retained-chain/joined-export/independent-reader-stdout.txt",
+          "verifier_sha256": "d2c1a1d48c4a79ffc70a012db6b98a04eb57b4f5878f35d356c0a0badbc7a457",
+          "zip_unchanged": true
+        },
+        "savedEvidence": [
+          {
+            "path": "/home/ubuntu/HUGR_EIGHT_HOUR_TERMINAL_INVESTIGATION_2026_10_22/HUGR_BOUNDED_PAGING_NATIVE_RESULT_PASS_2026_10_22.zip",
+            "sha256": "2387da71ec917cc7a53a0858fe27d2b897879c46ef0208dfa2999ee702d439d7"
+          }
+        ]
+      }
+    },
+    "writerOrNativeHarnessOnly": false
+  },
+  "allFourRungs": true,
+  "originalFailure": {
+    "preserved": true,
+    "latchReset": false
+  },
+  "currentProvider": {
+    "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/BoundedSelectedSnapshot.kt",
+    "sha256": "b70139d77363ab357cd8a09ca98c2400b846db0274585f190d7709e721ecc9c1",
+    "nativeEquivalence": {
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "coreCumulativeMs": 135997,
+    "deadlineMs": 180000
+  },
+  "review": {
+    "path": "/home/ubuntu/HUGR_EIGHT_HOUR_TERMINAL_INVESTIGATION_2026_10_22/final-candidate-release-evidence-review.md",
+    "sha256": "8cc2476a7462e9d617d97843cde8ef196b6e299ab4931fb2e052ef63cfc4b85d"
+  },
+  "limitations": [
+    "Synthetic composed software evidence, not Honor or physiology.",
+    "Lower rungs reused, not rerun.",
+    "Native API27 cursor path not rerun; native API28 exercised."
+  ]
+}
