@@ -1,0 +1,21 @@
+# Watch84 separately authorized replacement — 23 October 2026
+
+The user authorized restoration of exactly `androidx.wear.tiles:tiles-proto:1.2.0`, `androidx.wear.protolayout:protolayout-proto:1.0.0`, `androidx.concurrent:concurrent-futures:1.1.0` and `androidx.resourceinspection:resourceinspection-annotation:1.0.1` from authoritative public artifact sources into the isolated retained Watch build cache, followed by **one Watch84-only replacement build and artifact admission**. No further automatic build attempt is authorized.
+
+This is a distinct replacement, not a retry of the original driver's marked stage. The original failed stage, durable `build-attempt.json`, failure output and daemon evidence remain intact. Original marker SHA-256: `4178829a99df868af34b4c3e380248e2e9f5a4c1852f2708c430d4902b60be34`; original source commit `3787cc43cf4506feb0fcde5db65e35952e6ea4b3`, root tree `c7ced0c36befdf606ddbf69ff528d35c8fe9e31d`. The original `app` subtree and `app/build.gradle` Git identities are checked against the replacement build source, byte-for-byte, before execution. Only documentation advancement is permitted in the controlled branch; no application source, configuration, pinned version, SDK or signing identity changes.
+
+The existing original one-build driver will be imported unchanged and used with a **fresh replacement stage, fresh attempt marker and fresh artifact directory**, bound to this approval and the original marker. Its original stage guard is not reset or bypassed. The sole Gradle invocation retains its offline configuration and existing 3,600-second ceiling. Existing artifact and scientific acceptance conditions remain unchanged.
+
+The four restored JARs must have exact POM identities, authoritative HTTPS origins, all available published integrity metadata checked, locally calculated SHA-256/byte counts, valid archive checks and exact cache readback. Unavailable repository digest/signature metadata is disclosed; an absent checksum is not fabricated or treated as signature verification. Only those four cache payloads are restored. No dependency version or repository/build-configuration change is authorized.
+
+Phone66 remains the previously admitted artifact: `health.hugr.app`, code `66`, `2.0.66-positional-v2-duration-ladder-candidate`, 152,097,114 bytes, SHA-256 `8978c8d64e19420b47ebd45b9a7898b07749114644ddb5df5aecde6ed653accf`. Its single finished build and passed evidence are reused. No Phone build or routine lower-rung rerun will occur.
+
+Passed synthetic source/compatibility, four-rung compositional evidence, bounded paging, terminal/report/restart/offline/export and independent-reader results remain valid for their stated scope. The native API-27-specific case was not rerun and remains disclosed. Current Watch84 package/version remain `com.hugr.wearos`, code `84`, `0.84.0-positional-v2-duration-ladder-candidate`; existing Watch signer SHA-256 `fc91d26565d61b0a1c67db4dd0d358c8377c65b2fcb1ede00283b6c7b90c1706`.
+
+On another blocker, preserve its exact cause and reached phase, stop, and propose only the smallest remedy. No automatic second replacement, APK substitution, force-push or main merge. Artifact inspection may examine the same produced APK without rebuilding; no artifact is admitted until every required identity/signature/archive/compiled-byte check passes.
+
+Installation, launch, Bluetooth/Connect, physical recording, private-record access/export, IDC changes and cutoff/drain changes are not authorized. Samsung native-sequence and final-batch questions remain separate. T2.2, accepted adapter/RMSSD companion, October reconciliation, S4 and all physiological evidence remain unchanged. Watch69 **NOT QUALIFIED**; Watch68 v1 **UNCLASSIFIED / NOT VERIFIED**; Watch58 **TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED**.
+
+This source-owned authority is followed by Master and Alignment last, bounded documentation commits, controlled non-force preservation with both-repository preflight, and independent exact head/tree/blob readback. No private VIS-COUNT proposal is affected. No APK, private recording, provider correspondence or credential is staged for GitHub.
+
+END_OF_WATCH84_REPLACEMENT_BUILD_AUTHORITY
