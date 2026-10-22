@@ -1,0 +1,19 @@
+{
+  "status": "ONE_REPLACEMENT_INVOKED_NO_AUTOMATIC_RETRY",
+  "time": "2026-10-22T23:04:33+00:00",
+  "originalStage": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/watch84-build-stage",
+  "originalMarkerSha256": "4178829a99df868af34b4c3e380248e2e9f5a4c1852f2708c430d4902b60be34",
+  "originalSourceHead": "3787cc43cf4506feb0fcde5db65e35952e6ea4b3",
+  "originalSourceTree": "c7ced0c36befdf606ddbf69ff528d35c8fe9e31d",
+  "originalAppTree": "5a14a3c09d5037e9b4c24f680de76e630d333139",
+  "replacementSource": {
+    "root": "/home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch",
+    "branch": "preservation/watch68-partial-source-2026-10-03",
+    "head": "7c876eca62c54420e26b8a1991e6e376eb0a7ac4",
+    "tree": "4edcc3de23347744418c17d4e2ae9d3e4e659ed5",
+    "status": ""
+  },
+  "dependencyProofSha256": "073b65cad842e5cfb421041b7efce3527e5bcba4dadc166656af8b896546fee0",
+  "originalDriverSha256": "33275fdadb85f8d15751c9f3926b726d57c06e51f4901575bd5ba617ad0827f3",
+  "phoneRebuildAuthorized": false
+}

@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "originalMarkerSha256": "4178829a99df868af34b4c3e380248e2e9f5a4c1852f2708c430d4902b60be34",
+  "replacementMarkerSha256": "17df64fe1de5904edc362d5ff1123e5d4f021a35d6d4efda7aee8353bf1d3fb4",
+  "originalMarkerUnchanged": true,
+  "replacementMarkerPreserved": true,
+  "noReplacementFinalApk": true,
+  "allFourRestoredCacheBytesExact": true,
+  "driverUsesExactRestoredCache": true,
+  "originalApplicationTreeUnchanged": true,
+  "phone66UnchangedSha256": "8978c8d64e19420b47ebd45b9a7898b07749114644ddb5df5aecde6ed653accf"
+}

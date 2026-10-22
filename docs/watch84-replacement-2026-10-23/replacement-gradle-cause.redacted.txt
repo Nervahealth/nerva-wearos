@@ -1,0 +1,13 @@
+* What went wrong:
+Execution failed for task ':app:checkDebugDuplicateClasses'.
+> Could not resolve all files for configuration ':app:debugRuntimeClasspath'.
+   > Failed to transform tiles-proto-1.2.0.jar (androidx.wear.tiles:tiles-proto:1.2.0) to match attributes {artifactType=enumerated-runtime-classes, org.gradle.category=library, org.gradle.dependency.bundling=external, org.gradle.jvm.version=8, org.gradle.libraryelements=jar, org.gradle.status=release, org.gradle.usage=java-runtime}.
+      > Could not download tiles-proto-1.2.0.jar (androidx.wear.tiles:tiles-proto:1.2.0): No cached version available for offline mode
+   > Failed to transform protolayout-proto-1.0.0.jar (androidx.wear.protolayout:protolayout-proto:1.0.0) to match attributes {artifactType=enumerated-runtime-classes, org.gradle.category=library, org.gradle.dependency.bundling=external, org.gradle.jvm.version=8, org.gradle.libraryelements=jar, org.gradle.status=release, org.gradle.usage=java-runtime}.
+      > Could not download protolayout-proto-1.0.0.jar (androidx.wear.protolayout:protolayout-proto:1.0.0): No cached version available for offline mode
+   > Failed to transform concurrent-futures-1.1.0.jar (androidx.concurrent:concurrent-futures:1.1.0) to match attributes {artifactType=enumerated-runtime-classes, org.gradle.category=library, org.gradle.dependency.bundling=external, org.gradle.jvm.version=7, org.gradle.libraryelements=jar, org.gradle.status=release, org.gradle.usage=java-runtime}.
+      > Could not download concurrent-futures-1.1.0.jar (androidx.concurrent:concurrent-futures:1.1.0): No cached version available for offline mode
+   > Failed to transform resourceinspection-annotation-1.0.1.jar (androidx.resourceinspection:resourceinspection-annotation:1.0.1) to match attributes {artifactType=enumerated-runtime-classes, org.gradle.category=library, org.gradle.dependency.bundling=external, org.gradle.jvm.version=8, org.gradle.libraryelements=jar, org.gradle.status=release, org.gradle.usage=java-runtime}.
+      > Could not download resourceinspection-annotation-1.0.1.jar (androidx.resourceinspection:resourceinspection-annotation:1.0.1): No cached version available for offline mode
+
+
