@@ -37,6 +37,25 @@ internal data class DiagnosticEvent(
     val code: String, val reason: Int,
 )
 
+/**
+ * Payload-free evidence that an ATT callback reached its response attempt but the platform
+ * returned false, there was no current GATT server, or the reply was accepted after ten seconds.
+ * This is not delivery, radio, Phone-ACK,
+ * or retained-source evidence.
+ */
+internal data class AttResponseOperationDiagnostic(
+    val operationKind: String,
+    val access: String,
+    val pageIndex: Long?,
+    val callbackOrdinal: Long,
+    val callbackEntryElapsedMs: Long,
+    val preResponseElapsedMs: Long,
+    val responseElapsedMs: Long,
+    val responseOutcome: AttResponseOutcome,
+)
+
+internal enum class AttResponseOutcome { TRUE, FALSE, NULL }
+
 internal object SavedDiagnosticFormat {
     const val MAX_REPORT_BYTES = 24 * 1024
     const val MAX_CAUSES = 4
@@ -93,6 +112,24 @@ internal object SavedDiagnosticFormat {
             bytes.copyOf(MAX_REPORT_BYTES - suffix.toByteArray(Charsets.UTF_8).size)
                 .toString(Charsets.UTF_8) + suffix
         }
+    }
+
+    /** Separate from receipt/source reports: deliberately excludes UUID, hash, payload and address. */
+    fun renderAttResponseOperation(observation: AttResponseOperationDiagnostic): String = buildString {
+        append("HUGR SAVED ATT RESPONSE DIAGNOSTIC v1\n")
+        append("Operational response attempt — NOT delivery, radio, Phone-ACK, or recording verification\n")
+        append("operation=${safe(observation.operationKind)} access=${safe(observation.access)} pageIndex=")
+        append(observation.pageIndex ?: "none")
+        append(" callbackOrdinal=${observation.callbackOrdinal}\n")
+        append("callbackEntryElapsedMs=${observation.callbackEntryElapsedMs} ")
+        append("preResponseElapsedMs=${observation.preResponseElapsedMs} ")
+        append("responseElapsedMs=${observation.responseElapsedMs}\n")
+        append("responseOutcome=${observation.responseOutcome.name}\n")
+        val delayMs = (observation.responseElapsedMs - observation.callbackEntryElapsedMs).coerceAtLeast(0L)
+        append("clock=PROCESS_MONOTONIC_NANOTIME callbackToResponseMs=$delayMs lateForPhoneOperation=${delayMs >= 10_000L}\n")
+        append("A true platform result after the Phone operation deadline is not timely delivery or Phone acceptance.\n")
+        append("Payloads, UUIDs, hashes, source samples, addresses, receipt contents, and exception messages are omitted.\n")
+        append("--- END REPORT ---\n")
     }
 
     private fun safe(value: String): String = value.take(160).map {

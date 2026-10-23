@@ -1,0 +1,138 @@
+{
+  "verdict": "SOURCE_TEST_COMPLETED_PASS_PHYSICAL_CAUSE_UNPROVEN",
+  "phoneCasesPassed": 10,
+  "permanentPhoneModuleTestsPassed": 9,
+  "watchJUnitTestsPassed": 1,
+  "watchOperationCasesExecuted": 16,
+  "watchTimings": [
+    {
+      "ordinal": 1,
+      "kind": "SOURCE_CCCD_ENABLE",
+      "responded": true,
+      "callbackEntryToResponseMs": 7.805934
+    },
+    {
+      "ordinal": 2,
+      "kind": "R1_ZERO_WRITE",
+      "responded": true,
+      "callbackEntryToResponseMs": 5.674044
+    },
+    {
+      "ordinal": 3,
+      "kind": "R1_ZERO_READ",
+      "responded": true,
+      "callbackEntryToResponseMs": 0.269139
+    },
+    {
+      "ordinal": 4,
+      "kind": "R1_NONZERO_WRITE",
+      "responded": true,
+      "callbackEntryToResponseMs": 0.133248
+    },
+    {
+      "ordinal": 5,
+      "kind": "R1_NONZERO_READ",
+      "responded": true,
+      "callbackEntryToResponseMs": 0.104827
+    },
+    {
+      "ordinal": 6,
+      "kind": "SOURCE_RESUME_VALID",
+      "responded": true,
+      "callbackEntryToResponseMs": 2.794578
+    },
+    {
+      "ordinal": 7,
+      "kind": "SOURCE_ACK_INVALID_HASH",
+      "responded": true,
+      "callbackEntryToResponseMs": 25.686376
+    },
+    {
+      "ordinal": 8,
+      "kind": "SOURCE_ACK_INVALID_SESSION",
+      "responded": true,
+      "callbackEntryToResponseMs": 4.47659
+    },
+    {
+      "ordinal": 9,
+      "kind": "SOURCE_ACK_INVALID_ENDPOINT",
+      "responded": true,
+      "callbackEntryToResponseMs": 4.043189
+    },
+    {
+      "ordinal": 10,
+      "kind": "OVERLAP_R1_NONZERO",
+      "responded": true,
+      "callbackEntryToResponseMs": 2.484652
+    },
+    {
+      "ordinal": 11,
+      "kind": "OVERLAP_ACK_INVALID_HASH",
+      "responded": true,
+      "callbackEntryToResponseMs": 6.362324
+    },
+    {
+      "ordinal": 12,
+      "kind": "SOURCE_ACK_VALID",
+      "responded": true,
+      "callbackEntryToResponseMs": 17.953844
+    },
+    {
+      "ordinal": 13,
+      "kind": "SOURCE_ACK_DUPLICATE_POST_ACCEPT",
+      "responded": true,
+      "callbackEntryToResponseMs": 4.003264
+    },
+    {
+      "ordinal": 14,
+      "kind": "R1_ZERO_INJECTED_SESSION_LOCK_DELAY",
+      "responded": true,
+      "callbackEntryToResponseMs": 10102.383168
+    },
+    {
+      "ordinal": 15,
+      "kind": "R1_FALSE_SEND_RESPONSE",
+      "responded": true,
+      "callbackEntryToResponseMs": 1.373975
+    },
+    {
+      "ordinal": 16,
+      "kind": "R1_NULL_SERVER",
+      "responded": false
+    }
+  ],
+  "injectedDelayMs": 10102.383168,
+  "changedSource": {
+    "watch": [
+      "app/src/main/java/com/hugr/wearos/BleGattService.kt",
+      "app/src/main/java/com/hugr/wearos/SavedDiagnosticReport.kt",
+      "app/src/main/java/com/hugr/wearos/WatchDiagnosticRuntime.kt"
+    ],
+    "phone": [
+      "lib/bluetooth.ts",
+      "lib/freshRunFailureBoundary.ts",
+      "lib/recoveryDiagnosticModel.ts",
+      "tests/freshRunFailureBoundary.test.ts"
+    ]
+  },
+  "priorEvidenceUnchanged": true,
+  "newApks": 0,
+  "deadlineChanges": 0,
+  "sourceHashes": {
+    "watch": {
+      "BleGattService.kt": "befaa8c59a3a7e2c989e281b081ce08a5e7056bd3ab822b0aba15c28f83f7fc9",
+      "SavedDiagnosticReport.kt": "b74a713fe4131daf730604791140e763953ee733166d42915ad0e5078b812ec6",
+      "WatchDiagnosticRuntime.kt": "6a7bcc9f0cfa47e8b3cc003fdbddf82070a49657361797b8263b896f40131a41"
+    },
+    "phone": {
+      "lib/bluetooth.ts": "8f021cbb73f04133fd414b35d9fa9466aede9036266a31ca1e7c50cea478b428",
+      "lib/build45SourceIngestion.ts": "00279966fcaeab96c5055850a30a2b611bc21bd3ba62fbe6bde6eede1c47e50b",
+      "lib/build45SourceProtocol.ts": "1f1f6cb49a0c159860fe35cf90f710c5f058fc0ad90a52c495b1d88ccb34a2de",
+      "lib/durationLadderContract.ts": "79eff1f1a61d3f06f315071f9fe438288dad91f57915ea393e02d03b184a3d59",
+      "lib/freshRunFailureBoundary.ts": "9eb6ae9fd2f99f3d842fad59b1e3fe6a4d0bde248443e5416a3b2195c443593f",
+      "lib/phoneRunAckEvidence.ts": "08938eb4d7067461edf5b68af379e84395e81a523ce69f1cf9c7d69c289d45fd",
+      "lib/recoveryDiagnosticModel.ts": "40ce89f4bbf5c6c56f4fc6c0280d908721c2d7ef215077f67f8618b712677a34",
+      "lib/watchRunReceiptTransport.ts": "564d3ec33ad095508de67252453991e7c8928757695b7e3c36ec07033111ef80"
+    }
+  }
+}

@@ -66,6 +66,25 @@ internal object WatchDiagnosticRuntime {
             Log.e("HUGR-Diagnostic", "Operational diagnostic persistence failed; original failure handling continues")
         }
     }
+
+    /**
+     * Invoked only after sendResponse returned false, could not be attempted because the server
+     * was null, or returned after the ten-second Phone operation limit. The caller posts this method
+     * after the ATT response attempt; this method does not
+     * change response, ACK, source, retry, or transport behavior.
+     */
+    fun captureAttResponseOutcome(context: Context, observation: AttResponseOperationDiagnostic) {
+        require(observation.responseOutcome != AttResponseOutcome.TRUE ||
+            observation.responseElapsedMs - observation.callbackEntryElapsedMs >= 10_000L)
+        try {
+            store(context).save(SavedDiagnosticFormat.renderAttResponseOperation(observation))
+            lastSaveFailed = false
+            Log.w("HUGR-Diagnostic", "Saved payload-free ATT response outcome=${observation.responseOutcome.name}")
+        } catch (_: Throwable) {
+            lastSaveFailed = true
+            Log.e("HUGR-Diagnostic", "ATT response diagnostic persistence failed after response attempt")
+        }
+    }
 }
 
 /** Best effort for Java/Kotlin uncaught exceptions; never suppresses Android crash termination. */

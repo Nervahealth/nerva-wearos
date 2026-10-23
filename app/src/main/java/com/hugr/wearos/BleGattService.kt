@@ -190,6 +190,7 @@ class BleGattService : Service() {
     @Volatile private var pendingSourceResumeRequest: SourceResumeRequest? = null
     private val sourceResumeExecutor = Executors.newSingleThreadExecutor()
     private val sourceResumePreparationGeneration = AtomicLong(-1L)
+    private val attResponseCallbackOrdinal = AtomicLong(0L)
     private val pendingLiveSourceRecords = ArrayList<WatchSourceRecord>()
     private var liveSourceFlushScheduled = false
     private val healthHandler = Handler(Looper.getMainLooper())
@@ -1152,9 +1153,10 @@ class BleGattService : Service() {
             characteristic: BluetoothGattCharacteristic?
         ) {
             if (characteristic?.uuid == RUN_RECEIPT_CHARACTERISTIC_UUID) {
+                val operation = beginAttResponseOperation("RUN_RECEIPT", "READ")
                 val validDevice = device != null && connectedDevice?.address == device.address
                 val frame = if (validDevice && offset == 0) runCatching { freshPager.frame(negotiatedMtu) }.getOrNull() else null
-                gattServer?.sendResponse(device, requestId, if (frame != null) BluetoothGatt.GATT_SUCCESS else BluetoothGatt.GATT_FAILURE, offset, frame ?: byteArrayOf())
+                sendAttResponse(operation, device, requestId, if (frame != null) BluetoothGatt.GATT_SUCCESS else BluetoothGatt.GATT_FAILURE, offset, frame ?: byteArrayOf())
                 return
             }
             if (freshReceiptOnly) { gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset, byteArrayOf()); return }
@@ -1216,7 +1218,11 @@ class BleGattService : Service() {
             offset: Int,
             value: ByteArray?
         ) {
+            val sourceControlOperation = if (characteristic?.uuid == SOURCE_CONTROL_CHARACTERISTIC_UUID) {
+                beginAttResponseOperation("SOURCE_CONTROL", "WRITE")
+            } else null
             if (characteristic?.uuid == RUN_RECEIPT_CHARACTERISTIC_UUID) {
+                val operation = beginAttResponseOperation("RUN_RECEIPT", "WRITE", receiptPageIndex(value))
                 var confirm = false
                 val accepted = runCatching {
                     require(freshMode && device != null && connectedDevice?.address == device.address && !preparedWrite && offset == 0 && responseNeeded)
@@ -1225,7 +1231,7 @@ class BleGattService : Service() {
                     if (raw.startsWith("R1:")) freshPager.request(raw)
                     else { require(freshPager.confirms(raw)); confirm = true }
                 }.isSuccess
-                gattServer?.sendResponse(device, requestId, if (accepted) BluetoothGatt.GATT_SUCCESS else BluetoothGatt.GATT_FAILURE, offset, byteArrayOf())
+                sendAttResponse(operation, device, requestId, if (accepted) BluetoothGatt.GATT_SUCCESS else BluetoothGatt.GATT_FAILURE, offset, byteArrayOf())
                 if (accepted && confirm) {
                     freshConfirmed = true
                     // Delay shutdown until the synchronous ATT response has had a delivery opportunity.
@@ -1319,7 +1325,11 @@ class BleGattService : Service() {
             }
 
             if (responseNeeded) {
-                gattServer?.sendResponse(device, requestId, writeResponseStatus, offset, value)
+                if (sourceControlOperation != null) {
+                    sendAttResponse(sourceControlOperation, device, requestId, writeResponseStatus, offset, value)
+                } else {
+                    gattServer?.sendResponse(device, requestId, writeResponseStatus, offset, value)
+                }
             }
         }
 
@@ -1697,6 +1707,58 @@ class BleGattService : Service() {
     // ─── Build 45 durable source record and replay path ──────────────────────────
 
     private fun maximumAttPayloadBytes(): Int = (negotiatedMtu - ATT_PROTOCOL_OVERHEAD_BYTES).coerceAtLeast(20)
+
+    private fun beginAttResponseOperation(
+        operationKind: String,
+        access: String,
+        pageIndex: Long? = null,
+    ): AttResponseOperationDiagnostic = AttResponseOperationDiagnostic(
+        operationKind = operationKind,
+        access = access,
+        pageIndex = pageIndex,
+        callbackOrdinal = attResponseCallbackOrdinal.incrementAndGet(),
+        callbackEntryElapsedMs = System.nanoTime() / 1_000_000L,
+        preResponseElapsedMs = 0L,
+        responseElapsedMs = 0L,
+        responseOutcome = AttResponseOutcome.TRUE,
+    )
+
+    /**
+     * The ATT status and payload are still produced by the original call site. False/null and
+     * late accepted results are diagnostic evidence only. Persistence is posted after the call and never retries,
+     * fabricates a response, changes source/ACK state, or performs I/O ahead of ATT response.
+     */
+    private fun sendAttResponse(
+        operation: AttResponseOperationDiagnostic,
+        device: BluetoothDevice?,
+        requestId: Int,
+        status: Int,
+        offset: Int,
+        value: ByteArray?,
+    ) {
+        val preResponse = System.nanoTime() / 1_000_000L
+        val sent: Boolean? = gattServer?.sendResponse(device, requestId, status, offset, value)
+        val responseElapsed = System.nanoTime() / 1_000_000L
+        val outcome = when (sent) {
+            true -> AttResponseOutcome.TRUE
+            false -> AttResponseOutcome.FALSE
+            null -> AttResponseOutcome.NULL
+        }
+        if (outcome != AttResponseOutcome.TRUE || responseElapsed - operation.callbackEntryElapsedMs >= 10_000L) {
+            val observed = operation.copy(
+                preResponseElapsedMs = preResponse,
+                responseElapsedMs = responseElapsed,
+                responseOutcome = outcome,
+            )
+            transportHandler.post { WatchDiagnosticRuntime.captureAttResponseOutcome(this, observed) }
+        }
+    }
+
+    private fun receiptPageIndex(value: ByteArray?): Long? = value
+        ?.toString(Charsets.US_ASCII)
+        ?.takeIf { it.startsWith("R1:") }
+        ?.substringAfter("R1:")
+        ?.toLongOrNull()
 
     private fun abortTransportLineage(reason: String) {
         if (freshMode) { stopFresh("TRANSPORT_FAILED"); return }

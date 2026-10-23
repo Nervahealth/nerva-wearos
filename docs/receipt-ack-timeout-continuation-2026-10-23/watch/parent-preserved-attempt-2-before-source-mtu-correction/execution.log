@@ -1,0 +1,22 @@
+JUnit version 4.13.2
+WARNING: No manifest file found at ./AndroidManifest.xml.
+Falling back to the Android OS resources only.
+To remove this warning, annotate your test class with @Config(manifest=Config.NONE).
+If you're using Android Gradle Plugin, add testOptions.unitTests.includeAndroidResources = true to your build.gradle
+.Intent = Intent { act=com.hugr.wearos.STATUS_UPDATE pkg=org.robolectric.default (has extras) }; Matching wrappers: []
+Intent = Intent { act=com.hugr.wearos.STATUS_UPDATE pkg=org.robolectric.default (has extras) }; Matching wrappers: []
+Intent = Intent { act=com.hugr.wearos.STATUS_UPDATE pkg=org.robolectric.default (has extras) }; Matching wrappers: []
+Intent = Intent { act=com.hugr.wearos.STATUS_UPDATE pkg=org.robolectric.default (has extras) }; Matching wrappers: []
+E
+Time: 10.268
+There was 1 failure:
+1) actual source CCCD resume ACK receipt contention and ATT outcome diagnostics are bounded(com.hugr.wearos.ReceiptAckTimeoutActualCallbackContinuationTest)
+java.lang.AssertionError: actual source gate at bounded wait connected=true mtuCallback=true attPayload=125 sourceCccd=true released=false
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at com.hugr.wearos.ReceiptAckTimeoutActualCallbackContinuationTest.awaitProductionSourceResume(ReceiptAckTimeoutActualCallbackContinuationTest.kt:292)
+	at com.hugr.wearos.ReceiptAckTimeoutActualCallbackContinuationTest.actual source CCCD resume ACK receipt contention and ATT outcome diagnostics are bounded(ReceiptAckTimeoutActualCallbackContinuationTest.kt:167)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
