@@ -1,0 +1,997 @@
+      name          : 'encode'
+      type          : '(Lcom/hugr/wearos/CardiacInputShapeChunk;II)[B'
+      access        : 0x0011 (PUBLIC FINAL)
+      code          -
+      registers     : 14
+      ins           : 4
+      outs          : 3
+      insns size    : 332 16-bit code units
+028a10:                                        |[028a10] com.hugr.wearos.CardiacInputShapeCodec.encode:(Lcom/hugr/wearos/CardiacInputShapeChunk;II)[B
+028a20: 1a00 dc12                              |0000: const-string v0, "chunk" // string@12dc
+028a24: 7120 3e0f 0b00                         |0002: invoke-static {v11, v0}, Lkotlin/jvm/internal/Intrinsics;.checkNotNullParameter:(Ljava/lang/Object;Ljava/lang/String;)V // method@0f3e
+028a2a: dd00 0cc0                              |0005: and-int/lit8 v0, v12, #int -64 // #c0
+028a2e: 1201                                   |0007: const/4 v1, #int 0 // #0
+028a30: 3900 0400                              |0008: if-nez v0, 000c // +0004
+028a34: 1210                                   |000a: const/4 v0, #int 1 // #1
+028a36: 2802                                   |000b: goto 000d // +0002
+028a38: 0110                                   |000c: move v0, v1
+028a3a: 3800 3101                              |000d: if-eqz v0, 013e // +0131
+028a3e: dd00 0c07                              |000f: and-int/lit8 v0, v12, #int 7 // #07
+028a42: 6e10 3803 0b00                         |0011: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getShape:()Lcom/hugr/wearos/CardiacInputShape; // method@0338
+028a48: 0c02                                   |0014: move-result-object v2
+028a4a: 6e10 1d03 0200                         |0015: invoke-virtual {v2}, Lcom/hugr/wearos/CardiacInputShape;.getContractAnomaly:()Z // method@031d
+028a50: 0a02                                   |0018: move-result v2
+028a52: 3802 0500                              |0019: if-eqz v2, 001e // +0005
+028a56: 1302 0800                              |001b: const/16 v2, #int 8 // #8
+028a5a: 2802                                   |001d: goto 001f // +0002
+028a5c: 0112                                   |001e: move v2, v1
+028a5e: b620                                   |001f: or-int/2addr v0, v2
+028a60: 6e10 3803 0b00                         |0020: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getShape:()Lcom/hugr/wearos/CardiacInputShape; // method@0338
+028a66: 0c02                                   |0023: move-result-object v2
+028a68: 6e10 2303 0200                         |0024: invoke-virtual {v2}, Lcom/hugr/wearos/CardiacInputShape;.getTruncated:()Z // method@0323
+028a6e: 0a02                                   |0027: move-result v2
+028a70: 3802 0500                              |0028: if-eqz v2, 002d // +0005
+028a74: 1302 1000                              |002a: const/16 v2, #int 16 // #10
+028a78: 2802                                   |002c: goto 002e // +0002
+028a7a: 0112                                   |002d: move v2, v1
+028a7c: b620                                   |002e: or-int/2addr v0, v2
+028a7e: 6e10 3703 0b00                         |002f: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getPointIndex:()I // method@0337
+028a84: 0a02                                   |0032: move-result v2
+028a86: 1403 ffff 0000                         |0033: const v3, #float 9.18341e-41 // #0000ffff
+028a8c: 3632 0b00                              |0036: if-gt v2, v3, 0041 // +000b
+028a90: 6e10 3603 0b00                         |0038: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getPointCount:()I // method@0336
+028a96: 0a02                                   |003b: move-result v2
+028a98: 3732 0300                              |003c: if-le v2, v3, 003f // +0003
+028a9c: 2803                                   |003e: goto 0041 // +0003
+028a9e: 0112                                   |003f: move v2, v1
+028aa0: 2803                                   |0040: goto 0043 // +0003
+028aa2: 1302 2000                              |0041: const/16 v2, #int 32 // #20
+028aa6: b620                                   |0043: or-int/2addr v0, v2
+028aa8: 6e10 3403 0b00                         |0044: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getChunkSlotCount:()I // method@0334
+028aae: 0a02                                   |0047: move-result v2
+028ab0: da02 020a                              |0048: mul-int/lit8 v2, v2, #int 10 // #0a
+028ab4: d802 022d                              |004a: add-int/lit8 v2, v2, #int 45 // #2d
+028ab8: 7110 380e 0200                         |004c: invoke-static {v2}, Ljava/nio/ByteBuffer;.allocate:(I)Ljava/nio/ByteBuffer; // method@0e38
+028abe: 0c02                                   |004f: move-result-object v2
+028ac0: 6204 4506                              |0050: sget-object v4, Ljava/nio/ByteOrder;.LITTLE_ENDIAN:Ljava/nio/ByteOrder; // field@0645
+028ac4: 6e20 3f0e 4200                         |0052: invoke-virtual {v2, v4}, Ljava/nio/ByteBuffer;.order:(Ljava/nio/ByteOrder;)Ljava/nio/ByteBuffer; // method@0e3f
+028aca: 0c02                                   |0055: move-result-object v2
+028acc: 1224                                   |0056: const/4 v4, #int 2 // #2
+028ace: 6e20 410e 4200                         |0057: invoke-virtual {v2, v4}, Ljava/nio/ByteBuffer;.put:(B)Ljava/nio/ByteBuffer; // method@0e41
+028ad4: 0c02                                   |005a: move-result-object v2
+028ad6: 1234                                   |005b: const/4 v4, #int 3 // #3
+028ad8: 6e20 410e 4200                         |005c: invoke-virtual {v2, v4}, Ljava/nio/ByteBuffer;.put:(B)Ljava/nio/ByteBuffer; // method@0e41
+028ade: 0c02                                   |005f: move-result-object v2
+028ae0: 8d04                                   |0060: int-to-byte v4, v0
+028ae2: 6e20 410e 4200                         |0061: invoke-virtual {v2, v4}, Ljava/nio/ByteBuffer;.put:(B)Ljava/nio/ByteBuffer; // method@0e41
+028ae8: 0c02                                   |0064: move-result-object v2
+028aea: 7130 490f 1d03                         |0065: invoke-static {v13, v1, v3}, Lkotlin/ranges/RangesKt;.coerceIn:(III)I // method@0f49
+028af0: 0a01                                   |0068: move-result v1
+028af2: 8f11                                   |0069: int-to-short v1, v1
+028af4: 6e20 470e 1200                         |006a: invoke-virtual {v2, v1}, Ljava/nio/ByteBuffer;.putShort:(S)Ljava/nio/ByteBuffer; // method@0e47
+028afa: 0c01                                   |006d: move-result-object v1
+028afc: 6e10 3303 0b00                         |006e: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getCallbackId:()I // method@0333
+028b02: 0a02                                   |0071: move-result v2
+028b04: 6e20 450e 2100                         |0072: invoke-virtual {v1, v2}, Ljava/nio/ByteBuffer;.putInt:(I)Ljava/nio/ByteBuffer; // method@0e45
+028b0a: 0c01                                   |0075: move-result-object v1
+028b0c: 6e10 3703 0b00                         |0076: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getPointIndex:()I // method@0337
+028b12: 0a02                                   |0079: move-result v2
+028b14: 6e20 450e 2100                         |007a: invoke-virtual {v1, v2}, Ljava/nio/ByteBuffer;.putInt:(I)Ljava/nio/ByteBuffer; // method@0e45
+028b1a: 0c01                                   |007d: move-result-object v1
+028b1c: 6e10 3603 0b00                         |007e: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getPointCount:()I // method@0336
+028b22: 0a02                                   |0081: move-result v2
+028b24: 6e20 450e 2100                         |0082: invoke-virtual {v1, v2}, Ljava/nio/ByteBuffer;.putInt:(I)Ljava/nio/ByteBuffer; // method@0e45
+028b2a: 0c01                                   |0085: move-result-object v1
+028b2c: 6e10 3203 0b00                         |0086: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getAnchorRecordIndex:()J // method@0332
+028b32: 0b02                                   |0089: move-result-wide v2
+028b34: 6e30 460e 2103                         |008a: invoke-virtual {v1, v2, v3}, Ljava/nio/ByteBuffer;.putLong:(J)Ljava/nio/ByteBuffer; // method@0e46
+028b3a: 0c01                                   |008d: move-result-object v1
+028b3c: 6e10 3803 0b00                         |008e: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getShape:()Lcom/hugr/wearos/CardiacInputShape; // method@0338
+028b42: 0c02                                   |0091: move-result-object v2
+028b44: 6e10 2403 0200                         |0092: invoke-virtual {v2}, Lcom/hugr/wearos/CardiacInputShape;.getValuesField:()Lcom/hugr/wearos/CardiacInputRawFieldSnapshot; // method@0324
+028b4a: 0c02                                   |0095: move-result-object v2
+028b4c: 6e10 f102 0200                         |0096: invoke-virtual {v2}, Lcom/hugr/wearos/CardiacInputRawFieldSnapshot;.getState:()Lcom/hugr/wearos/CardiacInputFieldState; // method@02f1
+028b52: 0c02                                   |0099: move-result-object v2
+028b54: 6e10 e302 0200                         |009a: invoke-virtual {v2}, Lcom/hugr/wearos/CardiacInputFieldState;.getWireCode:()I // method@02e3
+028b5a: 0a02                                   |009d: move-result v2
+028b5c: 8d22                                   |009e: int-to-byte v2, v2
+028b5e: 6e20 410e 2100                         |009f: invoke-virtual {v1, v2}, Ljava/nio/ByteBuffer;.put:(B)Ljava/nio/ByteBuffer; // method@0e41
+028b64: 0c01                                   |00a2: move-result-object v1
+028b66: 6e10 3803 0b00                         |00a3: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getShape:()Lcom/hugr/wearos/CardiacInputShape; // method@0338
+028b6c: 0c02                                   |00a6: move-result-object v2
+028b6e: 6e10 2203 0200                         |00a7: invoke-virtual {v2}, Lcom/hugr/wearos/CardiacInputShape;.getStatusesField:()Lcom/hugr/wearos/CardiacInputRawFieldSnapshot; // method@0322
+028b74: 0c02                                   |00aa: move-result-object v2
+028b76: 6e10 f102 0200                         |00ab: invoke-virtual {v2}, Lcom/hugr/wearos/CardiacInputRawFieldSnapshot;.getState:()Lcom/hugr/wearos/CardiacInputFieldState; // method@02f1
+028b7c: 0c02                                   |00ae: move-result-object v2
+028b7e: 6e10 e302 0200                         |00af: invoke-virtual {v2}, Lcom/hugr/wearos/CardiacInputFieldState;.getWireCode:()I // method@02e3
+028b84: 0a02                                   |00b2: move-result v2
+028b86: 8d22                                   |00b3: int-to-byte v2, v2
+028b88: 6e20 410e 2100                         |00b4: invoke-virtual {v1, v2}, Ljava/nio/ByteBuffer;.put:(B)Ljava/nio/ByteBuffer; // method@0e41
+028b8e: 0c01                                   |00b7: move-result-object v1
+028b90: 6e10 3803 0b00                         |00b8: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getShape:()Lcom/hugr/wearos/CardiacInputShape; // method@0338
+028b96: 0c02                                   |00bb: move-result-object v2
+028b98: 6e10 2003 0200                         |00bc: invoke-virtual {v2}, Lcom/hugr/wearos/CardiacInputShape;.getOriginalValuesLength:()I // method@0320
+028b9e: 0a02                                   |00bf: move-result v2
+028ba0: 6e20 450e 2100                         |00c0: invoke-virtual {v1, v2}, Ljava/nio/ByteBuffer;.putInt:(I)Ljava/nio/ByteBuffer; // method@0e45
+028ba6: 0c01                                   |00c3: move-result-object v1
+028ba8: 6e10 3803 0b00                         |00c4: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getShape:()Lcom/hugr/wearos/CardiacInputShape; // method@0338
+028bae: 0c02                                   |00c7: move-result-object v2
+028bb0: 6e10 1f03 0200                         |00c8: invoke-virtual {v2}, Lcom/hugr/wearos/CardiacInputShape;.getOriginalStatusesLength:()I // method@031f
+028bb6: 0a02                                   |00cb: move-result v2
+028bb8: 6e20 450e 2100                         |00cc: invoke-virtual {v1, v2}, Ljava/nio/ByteBuffer;.putInt:(I)Ljava/nio/ByteBuffer; // method@0e45
+028bbe: 0c01                                   |00cf: move-result-object v1
+028bc0: 6e10 3803 0b00                         |00d0: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getShape:()Lcom/hugr/wearos/CardiacInputShape; // method@0338
+028bc6: 0c02                                   |00d3: move-result-object v2
+028bc8: 6e10 1c03 0200                         |00d4: invoke-virtual {v2}, Lcom/hugr/wearos/CardiacInputShape;.getCapturedSlotCount:()I // method@031c
+028bce: 0a02                                   |00d7: move-result v2
+028bd0: 6e20 450e 2100                         |00d8: invoke-virtual {v1, v2}, Ljava/nio/ByteBuffer;.putInt:(I)Ljava/nio/ByteBuffer; // method@0e45
+028bd6: 0c01                                   |00db: move-result-object v1
+028bd8: 6e10 3503 0b00                         |00dc: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getChunkStartIndex:()I // method@0335
+028bde: 0a02                                   |00df: move-result v2
+028be0: 6e20 450e 2100                         |00e0: invoke-virtual {v1, v2}, Ljava/nio/ByteBuffer;.putInt:(I)Ljava/nio/ByteBuffer; // method@0e45
+028be6: 0c01                                   |00e3: move-result-object v1
+028be8: 6e10 3403 0b00                         |00e4: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getChunkSlotCount:()I // method@0334
+028bee: 0a02                                   |00e7: move-result v2
+028bf0: 8f22                                   |00e8: int-to-short v2, v2
+028bf2: 6e20 470e 2100                         |00e9: invoke-virtual {v1, v2}, Ljava/nio/ByteBuffer;.putShort:(S)Ljava/nio/ByteBuffer; // method@0e47
+028bf8: 0c01                                   |00ec: move-result-object v1
+028bfa: 0000                                   |00ed: nop // spacer
+028bfc: 6e10 3903 0b00                         |00ee: invoke-virtual {v11}, Lcom/hugr/wearos/CardiacInputShapeChunk;.getSlots:()Ljava/util/List; // method@0339
+028c02: 0c02                                   |00f1: move-result-object v2
+028c04: 1f02 3902                              |00f2: check-cast v2, Ljava/lang/Iterable; // type@0239
+028c08: 1203                                   |00f4: const/4 v3, #int 0 // #0
+028c0a: 7210 010e 0200                         |00f5: invoke-interface {v2}, Ljava/lang/Iterable;.iterator:()Ljava/util/Iterator; // method@0e01
+028c10: 0c04                                   |00f8: move-result-object v4
+028c12: 7210 750e 0400                         |00f9: invoke-interface {v4}, Ljava/util/Iterator;.hasNext:()Z // method@0e75
+028c18: 0a05                                   |00fc: move-result v5
+028c1a: 3805 3600                              |00fd: if-eqz v5, 0133 // +0036
+028c1e: 7210 760e 0400                         |00ff: invoke-interface {v4}, Ljava/util/Iterator;.next:()Ljava/lang/Object; // method@0e76
+028c24: 0c05                                   |0102: move-result-object v5
+028c26: 0756                                   |0103: move-object v6, v5
+028c28: 1f06 9f00                              |0104: check-cast v6, Lcom/hugr/wearos/CardiacInputSlot; // type@009f
+028c2c: 1207                                   |0106: const/4 v7, #int 0 // #0
+028c2e: 6e10 5103 0600                         |0107: invoke-virtual {v6}, Lcom/hugr/wearos/CardiacInputSlot;.getValueKind:()Lcom/hugr/wearos/CardiacInputSlotKind; // method@0351
+028c34: 0c08                                   |010a: move-result-object v8
+028c36: 6e10 5d03 0800                         |010b: invoke-virtual {v8}, Lcom/hugr/wearos/CardiacInputSlotKind;.getWireCode:()I // method@035d
+028c3c: 0a08                                   |010e: move-result v8
+028c3e: 8d88                                   |010f: int-to-byte v8, v8
+028c40: 6e20 410e 8100                         |0110: invoke-virtual {v1, v8}, Ljava/nio/ByteBuffer;.put:(B)Ljava/nio/ByteBuffer; // method@0e41
+028c46: 0c08                                   |0113: move-result-object v8
+028c48: 6e10 4f03 0600                         |0114: invoke-virtual {v6}, Lcom/hugr/wearos/CardiacInputSlot;.getStatusKind:()Lcom/hugr/wearos/CardiacInputSlotKind; // method@034f
+028c4e: 0c09                                   |0117: move-result-object v9
+028c50: 6e10 5d03 0900                         |0118: invoke-virtual {v9}, Lcom/hugr/wearos/CardiacInputSlotKind;.getWireCode:()I // method@035d
+028c56: 0a09                                   |011b: move-result v9
+028c58: 8d99                                   |011c: int-to-byte v9, v9
+028c5a: 6e20 410e 9800                         |011d: invoke-virtual {v8, v9}, Ljava/nio/ByteBuffer;.put:(B)Ljava/nio/ByteBuffer; // method@0e41
+028c60: 0c08                                   |0120: move-result-object v8
+028c62: 6e10 5003 0600                         |0121: invoke-virtual {v6}, Lcom/hugr/wearos/CardiacInputSlot;.getValueBits:()I // method@0350
+028c68: 0a09                                   |0124: move-result v9
+028c6a: 6e20 450e 9800                         |0125: invoke-virtual {v8, v9}, Ljava/nio/ByteBuffer;.putInt:(I)Ljava/nio/ByteBuffer; // method@0e45
+028c70: 0c08                                   |0128: move-result-object v8
+028c72: 6e10 4e03 0600                         |0129: invoke-virtual {v6}, Lcom/hugr/wearos/CardiacInputSlot;.getStatusBits:()I // method@034e
+028c78: 0a09                                   |012c: move-result v9
+028c7a: 6e20 450e 9800                         |012d: invoke-virtual {v8, v9}, Ljava/nio/ByteBuffer;.putInt:(I)Ljava/nio/ByteBuffer; // method@0e45
+028c80: 0000                                   |0130: nop // spacer
+028c82: 0000                                   |0131: nop // spacer
+028c84: 28c7                                   |0132: goto 00f9 // -0039
+028c86: 0000                                   |0133: nop // spacer
+028c88: 6e10 390e 0100                         |0134: invoke-virtual {v1}, Ljava/nio/ByteBuffer;.array:()[B // method@0e39
+028c8e: 0c02                                   |0137: move-result-object v2
+028c90: 1a03 3e12                              |0138: const-string v3, "array(...)" // string@123e
+028c94: 7120 3d0f 3200                         |013a: invoke-static {v2, v3}, Lkotlin/jvm/internal/Intrinsics;.checkNotNullExpressionValue:(Ljava/lang/Object;Ljava/lang/String;)V // method@0f3d
+028c9a: 1102                                   |013d: return-object v2
+028c9c: 1200                                   |013e: const/4 v0, #int 0 // #0
+028c9e: 0000                                   |013f: nop // spacer
+028ca0: 2200 3602                              |0140: new-instance v0, Ljava/lang/IllegalArgumentException; // type@0236
+028ca4: 1a01 e50f                              |0142: const-string v1, "Unknown cardiac input-shape flags" // string@0fe5
+028ca8: 6e10 120e 0100                         |0144: invoke-virtual {v1}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+028cae: 0c01                                   |0147: move-result-object v1
+028cb0: 7020 fa0d 1000                         |0148: invoke-direct {v0, v1}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+028cb6: 2700                                   |014b: throw v0
+      catches       : (none)
+      positions     :
+        0x0005 line=369
+        0x000f line=370
+        0x0011 line=371
+        0x001f line=370
+        0x0020 line=372
+        0x002e line=370
+        0x002f line=373
+        0x0043 line=370
+        0x0044 line=374
+        0x0056 line=375
+        0x005b line=376
+        0x0060 line=377
+        0x0065 line=378
+        0x006e line=379
+        0x0076 line=380
+        0x007e line=381
+        0x0086 line=382
+        0x008e line=383
+        0x00a3 line=384
+        0x00b8 line=385
+        0x00c4 line=386
+        0x00d0 line=387
+        0x00dc line=388
+        0x00e4 line=389
+        0x00ed line=374
+        0x00ee line=390
+        0x00f5 line=567
+        0x0107 line=391
+        0x0114 line=392
+        0x0121 line=393
+        0x0129 line=394
+        0x0130 line=395
+        0x0131 line=567
+        0x0133 line=568
+        0x0134 line=396
+        0x013e line=566
+        0x013f line=369
+      locals        :
+        0x0106 - 0x0131 reg=6 slot Lcom/hugr/wearos/CardiacInputSlot;
+        0x0107 - 0x0131 reg=7 $i$a$-forEach-CardiacInputShapeCodec$encode$2 I
+        0x0103 - 0x0132 reg=5 element$iv Ljava/lang/Object;
+        0x00f4 - 0x0134 reg=2 $this$forEach$iv Ljava/lang/Iterable;
+        0x00f5 - 0x0134 reg=3 $i$f$forEach I
+        0x0044 - 0x013e reg=0 flags I
+        0x00ee - 0x013e reg=1 buffer Ljava/nio/ByteBuffer;
+        0x013f - 0x0140 reg=0 $i$a$-require-CardiacInputShapeCodec$encode$1 I
+        0x0000 - 0x014c reg=10 this Lcom/hugr/wearos/CardiacInputShapeCodec;
+        0x0000 - 0x014c reg=11 chunk Lcom/hugr/wearos/CardiacInputShapeChunk;
+        0x0000 - 0x014c reg=12 deliveryFlags I
+        0x0000 - 0x014c reg=13 batchSize I
+
+    #2              : (in Lcom/hugr/wearos/CardiacInputShapeCodec;)
+      name          : 'decode'
+      type          : '([B)Lcom/hugr/wearos/DecodedCardiacInputShapeChunk;'
+      access        : 0x0011 (PUBLIC FINAL)
+      code          -
+      registers     : 42
+      ins           : 2
+      outs          : 15
+      insns size    : 890 16-bit code units
+028cb8:                                        |[028cb8] com.hugr.wearos.CardiacInputShapeCodec.decode:([B)Lcom/hugr/wearos/DecodedCardiacInputShapeChunk;
+028cc8: 0800 2800                              |0000: move-object/from16 v0, v40
+028ccc: 0801 2900                              |0002: move-object/from16 v1, v41
+028cd0: 1a02 cb18                              |0004: const-string v2, "payload" // string@18cb
+028cd4: 7120 3e0f 2100                         |0006: invoke-static {v1, v2}, Lkotlin/jvm/internal/Intrinsics;.checkNotNullParameter:(Ljava/lang/Object;Ljava/lang/String;)V // method@0f3e
+028cda: 2112                                   |0009: array-length v2, v1
+028cdc: 1213                                   |000a: const/4 v3, #int 1 // #1
+028cde: 1305 2d00                              |000b: const/16 v5, #int 45 // #2d
+028ce2: 3452 0400                              |000d: if-lt v2, v5, 0011 // +0004
+028ce6: 0132                                   |000f: move v2, v3
+028ce8: 2802                                   |0010: goto 0012 // +0002
+028cea: 1202                                   |0011: const/4 v2, #int 0 // #0
+028cec: 3802 5a03                              |0012: if-eqz v2, 036c // +035a
+028cf0: 7701 490e 2900                         |0014: invoke-static/range {v41}, Ljava/nio/ByteBuffer;.wrap:([B)Ljava/nio/ByteBuffer; // method@0e49
+028cf6: 0c02                                   |0017: move-result-object v2
+028cf8: 6206 4506                              |0018: sget-object v6, Ljava/nio/ByteOrder;.LITTLE_ENDIAN:Ljava/nio/ByteOrder; // field@0645
+028cfc: 6e20 3f0e 6200                         |001a: invoke-virtual {v2, v6}, Ljava/nio/ByteBuffer;.order:(Ljava/nio/ByteOrder;)Ljava/nio/ByteBuffer; // method@0e3f
+028d02: 0c02                                   |001d: move-result-object v2
+028d04: 6e10 3a0e 0200                         |001e: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.get:()B // method@0e3a
+028d0a: 0a06                                   |0021: move-result v6
+028d0c: d566 ff00                              |0022: and-int/lit16 v6, v6, #int 255 // #00ff
+028d10: 6e10 3a0e 0200                         |0024: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.get:()B // method@0e3a
+028d16: 0a07                                   |0027: move-result v7
+028d18: d577 ff00                              |0028: and-int/lit16 v7, v7, #int 255 // #00ff
+028d1c: 1228                                   |002a: const/4 v8, #int 2 // #2
+028d1e: 3386 0700                              |002b: if-ne v6, v8, 0032 // +0007
+028d22: 1238                                   |002d: const/4 v8, #int 3 // #3
+028d24: 3387 0400                              |002e: if-ne v7, v8, 0032 // +0004
+028d28: 0138                                   |0030: move v8, v3
+028d2a: 2802                                   |0031: goto 0033 // +0002
+028d2c: 1208                                   |0032: const/4 v8, #int 0 // #0
+028d2e: 3808 0703                              |0033: if-eqz v8, 033a // +0307
+028d32: 6e10 3a0e 0200                         |0035: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.get:()B // method@0e3a
+028d38: 0a08                                   |0038: move-result v8
+028d3a: d588 ff00                              |0039: and-int/lit16 v8, v8, #int 255 // #00ff
+028d3e: dd09 08c0                              |003b: and-int/lit8 v9, v8, #int -64 // #c0
+028d42: 3909 0400                              |003d: if-nez v9, 0041 // +0004
+028d46: 0139                                   |003f: move v9, v3
+028d48: 2802                                   |0040: goto 0042 // +0002
+028d4a: 1209                                   |0041: const/4 v9, #int 0 // #0
+028d4c: 3809 ea02                              |0042: if-eqz v9, 032c // +02ea
+028d50: 6e10 3e0e 0200                         |0044: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.getShort:()S // method@0e3e
+028d56: 0a09                                   |0047: move-result v9
+028d58: 140a ffff 0000                         |0048: const v10, #float 9.18341e-41 // #0000ffff
+028d5e: 950f 090a                              |004b: and-int v15, v9, v10
+028d62: dd09 0804                              |004d: and-int/lit8 v9, v8, #int 4 // #04
+028d66: 3809 0400                              |004f: if-eqz v9, 0053 // +0004
+028d6a: 0139                                   |0051: move v9, v3
+028d6c: 2802                                   |0052: goto 0054 // +0002
+028d6e: 1209                                   |0053: const/4 v9, #int 0 // #0
+028d70: 373f 0400                              |0054: if-le v15, v3, 0058 // +0004
+028d74: 013b                                   |0056: move v11, v3
+028d76: 2802                                   |0057: goto 0059 // +0002
+028d78: 120b                                   |0058: const/4 v11, #int 0 // #0
+028d7a: 33b9 0400                              |0059: if-ne v9, v11, 005d // +0004
+028d7e: 0139                                   |005b: move v9, v3
+028d80: 2802                                   |005c: goto 005e // +0002
+028d82: 1209                                   |005d: const/4 v9, #int 0 // #0
+028d84: 3809 c002                              |005e: if-eqz v9, 031e // +02c0
+028d88: 6e10 3c0e 0200                         |0060: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.getInt:()I // method@0e3c
+028d8e: 0a18                                   |0063: move-result v24
+028d90: 6e10 3c0e 0200                         |0064: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.getInt:()I // method@0e3c
+028d96: 0a0e                                   |0067: move-result v14
+028d98: 6e10 3c0e 0200                         |0068: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.getInt:()I // method@0e3c
+028d9e: 0a0d                                   |006b: move-result v13
+028da0: 6e10 3d0e 0200                         |006c: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.getLong:()J // method@0e3d
+028da6: 0b19                                   |006f: move-result-wide v25
+028da8: 6209 0901                              |0070: sget-object v9, Lcom/hugr/wearos/CardiacInputFieldState;.Companion:Lcom/hugr/wearos/CardiacInputFieldState$Companion; // field@0109
+028dac: 6e10 3a0e 0200                         |0072: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.get:()B // method@0e3a
+028db2: 0a0b                                   |0075: move-result v11
+028db4: d5bb ff00                              |0076: and-int/lit16 v11, v11, #int 255 // #00ff
+028db8: 6e20 de02 b900                         |0078: invoke-virtual {v9, v11}, Lcom/hugr/wearos/CardiacInputFieldState$Companion;.fromWireCode:(I)Lcom/hugr/wearos/CardiacInputFieldState; // method@02de
+028dbe: 0c0c                                   |007b: move-result-object v12
+028dc0: 6209 0901                              |007c: sget-object v9, Lcom/hugr/wearos/CardiacInputFieldState;.Companion:Lcom/hugr/wearos/CardiacInputFieldState$Companion; // field@0109
+028dc4: 6e10 3a0e 0200                         |007e: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.get:()B // method@0e3a
+028dca: 0a0b                                   |0081: move-result v11
+028dcc: d5bb ff00                              |0082: and-int/lit16 v11, v11, #int 255 // #00ff
+028dd0: 6e20 de02 b900                         |0084: invoke-virtual {v9, v11}, Lcom/hugr/wearos/CardiacInputFieldState$Companion;.fromWireCode:(I)Lcom/hugr/wearos/CardiacInputFieldState; // method@02de
+028dd6: 0c0b                                   |0087: move-result-object v11
+028dd8: 6e10 3c0e 0200                         |0088: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.getInt:()I // method@0e3c
+028dde: 0a09                                   |008b: move-result v9
+028de0: 6e10 3c0e 0200                         |008c: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.getInt:()I // method@0e3c
+028de6: 0a03                                   |008f: move-result v3
+028de8: 6e10 3c0e 0200                         |0090: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.getInt:()I // method@0e3c
+028dee: 0a05                                   |0093: move-result v5
+028df0: 6e10 3c0e 0200                         |0094: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.getInt:()I // method@0e3c
+028df6: 0a04                                   |0097: move-result v4
+028df8: 6e10 3e0e 0200                         |0098: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.getShort:()S // method@0e3e
+028dfe: 0a11                                   |009b: move-result v17
+028e00: 021c 0700                              |009c: move/from16 v28, v7
+028e04: 9507 110a                              |009e: and-int v7, v17, v10
+028e08: 3a18 0500                              |00a0: if-ltz v24, 00a5 // +0005
+028e0c: 1311 0100                              |00a2: const/16 v17, #int 1 // #1
+028e10: 2803                                   |00a4: goto 00a7 // +0003
+028e12: 1311 0000                              |00a5: const/16 v17, #int 0 // #0
+028e16: 3811 6902                              |00a7: if-eqz v17, 0310 // +0269
+028e1a: 3a0e 0900                              |00a9: if-ltz v14, 00b2 // +0009
+028e1e: 3d0d 0700                              |00ab: if-lez v13, 00b2 // +0007
+028e22: 35de 0500                              |00ad: if-ge v14, v13, 00b2 // +0005
+028e26: 1311 0100                              |00af: const/16 v17, #int 1 // #1
+028e2a: 2803                                   |00b1: goto 00b4 // +0003
+028e2c: 1311 0000                              |00b2: const/16 v17, #int 0 // #0
+028e30: 3811 4e02                              |00b4: if-eqz v17, 0302 // +024e
+028e34: dd11 0820                              |00b6: and-int/lit8 v17, v8, #int 32 // #20
+028e38: 021d 0600                              |00b8: move/from16 v29, v6
+028e3c: 3811 0400                              |00ba: if-eqz v17, 00be // +0004
+028e40: 1216                                   |00bc: const/4 v6, #int 1 // #1
+028e42: 2802                                   |00bd: goto 00bf // +0002
+028e44: 1206                                   |00be: const/4 v6, #int 0 // #0
+028e46: 36ae 0700                              |00bf: if-gt v14, v10, 00c6 // +0007
+028e4a: 37ad 0300                              |00c1: if-le v13, v10, 00c4 // +0003
+028e4e: 2803                                   |00c3: goto 00c6 // +0003
+028e50: 120a                                   |00c4: const/4 v10, #int 0 // #0
+028e52: 2802                                   |00c5: goto 00c7 // +0002
+028e54: 121a                                   |00c6: const/4 v10, #int 1 // #1
+028e56: 33a6 0400                              |00c7: if-ne v6, v10, 00cb // +0004
+028e5a: 1216                                   |00c9: const/4 v6, #int 1 // #1
+028e5c: 2802                                   |00ca: goto 00cc // +0002
+028e5e: 1206                                   |00cb: const/4 v6, #int 0 // #0
+028e60: 3806 2802                              |00cc: if-eqz v6, 02f4 // +0228
+028e64: 1611 0000                              |00ce: const-wide/16 v17, #int 0 // #0
+028e68: 3106 1911                              |00d0: cmp-long v6, v25, v17
+028e6c: 3d06 0400                              |00d2: if-lez v6, 00d6 // +0004
+028e70: 1216                                   |00d4: const/4 v6, #int 1 // #1
+028e72: 2802                                   |00d5: goto 00d7 // +0002
+028e74: 1206                                   |00d6: const/4 v6, #int 0 // #0
+028e76: 3806 0f02                              |00d7: if-eqz v6, 02e6 // +020f
+028e7a: 1a06 c81b                              |00d9: const-string v6, "values" // string@1bc8
+028e7e: 7040 4303 c069                         |00db: invoke-direct {v0, v12, v9, v6}, Lcom/hugr/wearos/CardiacInputShapeCodec;.requireFieldLength:(Lcom/hugr/wearos/CardiacInputFieldState;ILjava/lang/String;)V // method@0343
+028e84: 1a06 321b                              |00de: const-string v6, "statuses" // string@1b32
+028e88: 7040 4303 b063                         |00e0: invoke-direct {v0, v11, v3, v6}, Lcom/hugr/wearos/CardiacInputShapeCodec;.requireFieldLength:(Lcom/hugr/wearos/CardiacInputFieldState;ILjava/lang/String;)V // method@0343
+028e8e: 1206                                   |00e3: const/4 v6, #int 0 // #0
+028e90: 7120 460f 6900                         |00e4: invoke-static {v9, v6}, Lkotlin/ranges/RangesKt;.coerceAtLeast:(II)I // method@0f46
+028e96: 0a0a                                   |00e7: move-result v10
+028e98: 7120 460f 6300                         |00e8: invoke-static {v3, v6}, Lkotlin/ranges/RangesKt;.coerceAtLeast:(II)I // method@0f46
+028e9e: 0a00                                   |00eb: move-result v0
+028ea0: 7120 080e 0a00                         |00ec: invoke-static {v10, v0}, Ljava/lang/Math;.max:(II)I // method@0e08
+028ea6: 0a00                                   |00ef: move-result v0
+028ea8: 130a 0010                              |00f0: const/16 v10, #int 4096 // #1000
+028eac: 7120 0a0e a000                         |00f2: invoke-static {v0, v10}, Ljava/lang/Math;.min:(II)I // method@0e0a
+028eb2: 0a06                                   |00f5: move-result v6
+028eb4: 3365 0500                              |00f6: if-ne v5, v6, 00fb // +0005
+028eb8: 1311 0100                              |00f8: const/16 v17, #int 1 // #1
+028ebc: 2803                                   |00fa: goto 00fd // +0003
+028ebe: 1311 0000                              |00fb: const/16 v17, #int 0 // #0
+028ec2: 3811 d901                              |00fd: if-eqz v17, 02d6 // +01d9
+028ec6: 37a0 0400                              |00ff: if-le v0, v10, 0103 // +0004
+028eca: 121a                                   |0101: const/4 v10, #int 1 // #1
+028ecc: 2802                                   |0102: goto 0104 // +0002
+028ece: 120a                                   |0103: const/4 v10, #int 0 // #0
+028ed0: dd11 0810                              |0104: and-int/lit8 v17, v8, #int 16 // #10
+028ed4: 021e 0000                              |0106: move/from16 v30, v0
+028ed8: 3811 0400                              |0108: if-eqz v17, 010c // +0004
+028edc: 1210                                   |010a: const/4 v0, #int 1 // #1
+028ede: 2802                                   |010b: goto 010d // +0002
+028ee0: 1200                                   |010c: const/4 v0, #int 0 // #0
+028ee2: 33a0 0400                              |010d: if-ne v0, v10, 0111 // +0004
+028ee6: 1210                                   |010f: const/4 v0, #int 1 // #1
+028ee8: 2802                                   |0110: goto 0112 // +0002
+028eea: 1200                                   |0111: const/4 v0, #int 0 // #0
+028eec: 3800 b601                              |0112: if-eqz v0, 02c8 // +01b6
+028ef0: 3a04 0a00                              |0114: if-ltz v4, 011e // +000a
+028ef4: dc00 0414                              |0116: rem-int/lit8 v0, v4, #int 20 // #14
+028ef8: 3900 0600                              |0118: if-nez v0, 011e // +0006
+028efc: 3654 0400                              |011a: if-gt v4, v5, 011e // +0004
+028f00: 1210                                   |011c: const/4 v0, #int 1 // #1
+028f02: 2802                                   |011d: goto 011f // +0002
+028f04: 1200                                   |011e: const/4 v0, #int 0 // #0
+028f06: 3800 9b01                              |011f: if-eqz v0, 02ba // +019b
+028f0a: 3805 0700                              |0121: if-eqz v5, 0128 // +0007
+028f0e: 3554 0300                              |0123: if-ge v4, v5, 0126 // +0003
+028f12: 2803                                   |0125: goto 0128 // +0003
+028f14: 1200                                   |0126: const/4 v0, #int 0 // #0
+028f16: 2802                                   |0127: goto 0129 // +0002
+028f18: 1210                                   |0128: const/4 v0, #int 1 // #1
+028f1a: 3800 8301                              |0129: if-eqz v0, 02ac // +0183
+028f1e: 9100 0504                              |012b: sub-int v0, v5, v4
+028f22: 021f 0600                              |012d: move/from16 v31, v6
+028f26: 1306 1400                              |012f: const/16 v6, #int 20 // #14
+028f2a: 7120 0a0e 0600                         |0131: invoke-static {v6, v0}, Ljava/lang/Math;.min:(II)I // method@0e0a
+028f30: 0a00                                   |0134: move-result v0
+028f32: 3307 0400                              |0135: if-ne v7, v0, 0139 // +0004
+028f36: 1216                                   |0137: const/4 v6, #int 1 // #1
+028f38: 2802                                   |0138: goto 013a // +0002
+028f3a: 1206                                   |0139: const/4 v6, #int 0 // #0
+028f3c: 3806 6201                              |013a: if-eqz v6, 029c // +0162
+028f40: 2116                                   |013c: array-length v6, v1
+028f42: da11 070a                              |013d: mul-int/lit8 v17, v7, #int 10 // #0a
+028f46: 0220 0000                              |013f: move/from16 v32, v0
+028f4a: 1310 2d00                              |0141: const/16 v16, #int 45 // #2d
+028f4e: d800 112d                              |0143: add-int/lit8 v0, v17, #int 45 // #2d
+028f52: 3306 0400                              |0145: if-ne v6, v0, 0149 // +0004
+028f56: 1210                                   |0147: const/4 v0, #int 1 // #1
+028f58: 2802                                   |0148: goto 014a // +0002
+028f5a: 1200                                   |0149: const/4 v0, #int 0 // #0
+028f5c: 3800 4401                              |014a: if-eqz v0, 028e // +0144
+028f60: 2200 5602                              |014c: new-instance v0, Ljava/util/ArrayList; // type@0256
+028f64: 7020 5f0e 7000                         |014e: invoke-direct {v0, v7}, Ljava/util/ArrayList;.<init>:(I)V // method@0e5f
+028f6a: 1206                                   |0151: const/4 v6, #int 0 // #0
+028f6c: 3576 a200                              |0152: if-ge v6, v7, 01f4 // +00a2
+028f70: 0216 0600                              |0154: move/from16 v22, v6
+028f74: 1321 0000                              |0156: const/16 v33, #int 0 // #0
+028f78: 9022 0416                              |0158: add-int v34, v4, v22
+028f7c: 6201 3901                              |015a: sget-object v1, Lcom/hugr/wearos/CardiacInputSlotKind;.Companion:Lcom/hugr/wearos/CardiacInputSlotKind$Companion; // field@0139
+028f80: 0223 0d00                              |015c: move/from16 v35, v13
+028f84: 6e10 3a0e 0200                         |015e: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.get:()B // method@0e3a
+028f8a: 0a0d                                   |0161: move-result v13
+028f8c: d5dd ff00                              |0162: and-int/lit16 v13, v13, #int 255 // #00ff
+028f90: 6e20 5803 d100                         |0164: invoke-virtual {v1, v13}, Lcom/hugr/wearos/CardiacInputSlotKind$Companion;.fromWireCode:(I)Lcom/hugr/wearos/CardiacInputSlotKind; // method@0358
+028f96: 0c01                                   |0167: move-result-object v1
+028f98: 620d 3901                              |0168: sget-object v13, Lcom/hugr/wearos/CardiacInputSlotKind;.Companion:Lcom/hugr/wearos/CardiacInputSlotKind$Companion; // field@0139
+028f9c: 0224 0e00                              |016a: move/from16 v36, v14
+028fa0: 6e10 3a0e 0200                         |016c: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.get:()B // method@0e3a
+028fa6: 0a0e                                   |016f: move-result v14
+028fa8: d5ee ff00                              |0170: and-int/lit16 v14, v14, #int 255 // #00ff
+028fac: 6e20 5803 ed00                         |0172: invoke-virtual {v13, v14}, Lcom/hugr/wearos/CardiacInputSlotKind$Companion;.fromWireCode:(I)Lcom/hugr/wearos/CardiacInputSlotKind; // method@0358
+028fb2: 0c0d                                   |0175: move-result-object v13
+028fb4: 6e10 3c0e 0200                         |0176: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.getInt:()I // method@0e3c
+028fba: 0a0e                                   |0179: move-result v14
+028fbc: 0225 0f00                              |017a: move/from16 v37, v15
+028fc0: 6e10 3c0e 0200                         |017c: invoke-virtual {v2}, Ljava/nio/ByteBuffer;.getInt:()I // method@0e3c
+028fc6: 0a0f                                   |017f: move-result v15
+028fc8: 0826 0200                              |0180: move-object/from16 v38, v2
+028fcc: 6202 3a01                              |0182: sget-object v2, Lcom/hugr/wearos/CardiacInputSlotKind;.INT32:Lcom/hugr/wearos/CardiacInputSlotKind; // field@013a
+028fd0: 3221 0700                              |0184: if-eq v1, v2, 018b // +0007
+028fd4: 390e 0300                              |0186: if-nez v14, 0189 // +0003
+028fd8: 2803                                   |0188: goto 018b // +0003
+028fda: 1202                                   |0189: const/4 v2, #int 0 // #0
+028fdc: 2802                                   |018a: goto 018c // +0002
+028fde: 1212                                   |018b: const/4 v2, #int 1 // #1
+028fe0: 3802 5800                              |018c: if-eqz v2, 01e4 // +0058
+028fe4: 6202 3a01                              |018e: sget-object v2, Lcom/hugr/wearos/CardiacInputSlotKind;.INT32:Lcom/hugr/wearos/CardiacInputSlotKind; // field@013a
+028fe8: 322d 0700                              |0190: if-eq v13, v2, 0197 // +0007
+028fec: 390f 0300                              |0192: if-nez v15, 0195 // +0003
+028ff0: 2803                                   |0194: goto 0197 // +0003
+028ff2: 1202                                   |0195: const/4 v2, #int 0 // #0
+028ff4: 2802                                   |0196: goto 0198 // +0002
+028ff6: 1212                                   |0197: const/4 v2, #int 1 // #1
+028ff8: 3802 3c00                              |0198: if-eqz v2, 01d4 // +003c
+028ffc: 6202 2d01                              |019a: sget-object v2, Lcom/hugr/wearos/CardiacInputShapeCodec;.INSTANCE:Lcom/hugr/wearos/CardiacInputShapeCodec; // field@012d
+029000: 1a15 c21b                              |019c: const-string v21, "value" // string@1bc2
+029004: 0810 0200                              |019e: move-object/from16 v16, v2
+029008: 0811 0c00                              |01a0: move-object/from16 v17, v12
+02900c: 0212 0900                              |01a2: move/from16 v18, v9
+029010: 0213 2200                              |01a4: move/from16 v19, v34
+029014: 0814 0100                              |01a6: move-object/from16 v20, v1
+029018: 7606 4403 1000                         |01a8: invoke-direct/range {v16, v17, v18, v19, v20, v21}, Lcom/hugr/wearos/CardiacInputShapeCodec;.requireSlotPosition:(Lcom/hugr/wearos/CardiacInputFieldState;IILcom/hugr/wearos/CardiacInputSlotKind;Ljava/lang/String;)V // method@0344
+02901e: 1a15 2d1b                              |01ab: const-string v21, "status" // string@1b2d
+029022: 0811 0b00                              |01ad: move-object/from16 v17, v11
+029026: 0212 0300                              |01af: move/from16 v18, v3
+02902a: 0814 0d00                              |01b1: move-object/from16 v20, v13
+02902e: 7606 4403 1000                         |01b3: invoke-direct/range {v16, v17, v18, v19, v20, v21}, Lcom/hugr/wearos/CardiacInputShapeCodec;.requireSlotPosition:(Lcom/hugr/wearos/CardiacInputFieldState;IILcom/hugr/wearos/CardiacInputSlotKind;Ljava/lang/String;)V // method@0344
+029034: 0702                                   |01b6: move-object v2, v0
+029036: 1f02 5802                              |01b7: check-cast v2, Ljava/util/Collection; // type@0258
+02903a: 0227 0500                              |01b9: move/from16 v39, v5
+02903e: 2205 9f00                              |01bb: new-instance v5, Lcom/hugr/wearos/CardiacInputSlot; // type@009f
+029042: 705f 4603 15ed                         |01bd: invoke-direct {v5, v1, v13, v14, v15}, Lcom/hugr/wearos/CardiacInputSlot;.<init>:(Lcom/hugr/wearos/CardiacInputSlotKind;Lcom/hugr/wearos/CardiacInputSlotKind;II)V // method@0346
+029048: 7220 6a0e 5200                         |01c0: invoke-interface {v2, v5}, Ljava/util/Collection;.add:(Ljava/lang/Object;)Z // method@0e6a
+02904e: 0000                                   |01c3: nop // spacer
+029050: d806 0601                              |01c4: add-int/lit8 v6, v6, #int 1 // #01
+029054: 0801 2900                              |01c6: move-object/from16 v1, v41
+029058: 020d 2300                              |01c8: move/from16 v13, v35
+02905c: 020e 2400                              |01ca: move/from16 v14, v36
+029060: 020f 2500                              |01cc: move/from16 v15, v37
+029064: 0802 2600                              |01ce: move-object/from16 v2, v38
+029068: 0205 2700                              |01d0: move/from16 v5, v39
+02906c: 2900 80ff                              |01d2: goto/16 0152 // -0080
+029070: 0227 0500                              |01d4: move/from16 v39, v5
+029074: 1202                                   |01d6: const/4 v2, #int 0 // #0
+029076: 0000                                   |01d7: nop // spacer
+029078: 2202 3602                              |01d8: new-instance v2, Ljava/lang/IllegalArgumentException; // type@0236
+02907c: 1a05 1708                              |01da: const-string v5, "Cardiac input-shape non-INT32 status filler is non-zero" // string@0817
+029080: 6e10 120e 0500                         |01dc: invoke-virtual {v5}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+029086: 0c05                                   |01df: move-result-object v5
+029088: 7020 fa0d 5200                         |01e0: invoke-direct {v2, v5}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+02908e: 2702                                   |01e3: throw v2
+029090: 0227 0500                              |01e4: move/from16 v39, v5
+029094: 1202                                   |01e6: const/4 v2, #int 0 // #0
+029096: 0000                                   |01e7: nop // spacer
+029098: 2202 3602                              |01e8: new-instance v2, Ljava/lang/IllegalArgumentException; // type@0236
+02909c: 1a05 1808                              |01ea: const-string v5, "Cardiac input-shape non-INT32 value filler is non-zero" // string@0818
+0290a0: 6e10 120e 0500                         |01ec: invoke-virtual {v5}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+0290a6: 0c05                                   |01ef: move-result-object v5
+0290a8: 7020 fa0d 5200                         |01f0: invoke-direct {v2, v5}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+0290ae: 2702                                   |01f3: throw v2
+0290b0: 0826 0200                              |01f4: move-object/from16 v38, v2
+0290b4: 0227 0500                              |01f6: move/from16 v39, v5
+0290b8: 0223 0d00                              |01f8: move/from16 v35, v13
+0290bc: 0224 0e00                              |01fa: move/from16 v36, v14
+0290c0: 0225 0f00                              |01fc: move/from16 v37, v15
+0290c4: 6210 1701                              |01fe: sget-object v16, Lcom/hugr/wearos/CardiacInputShape;.Companion:Lcom/hugr/wearos/CardiacInputShape$Companion; // field@0117
+0290c8: 0000                                   |0200: nop // spacer
+0290ca: 0000                                   |0201: nop // spacer
+0290cc: 0000                                   |0202: nop // spacer
+0290ce: 0000                                   |0203: nop // spacer
+0290d0: 0815 0000                              |0204: move-object/from16 v21, v0
+0290d4: 1f15 6202                              |0206: check-cast v21, Ljava/util/List; // type@0262
+0290d8: 0000                                   |0208: nop // spacer
+0290da: 0811 0c00                              |0209: move-object/from16 v17, v12
+0290de: 0212 0900                              |020b: move/from16 v18, v9
+0290e2: 0813 0b00                              |020d: move-object/from16 v19, v11
+0290e6: 0214 0300                              |020f: move/from16 v20, v3
+0290ea: 0216 0a00                              |0211: move/from16 v22, v10
+0290ee: 7407 0603 1000                         |0213: invoke-virtual/range {v16, v17, v18, v19, v20, v21, v22}, Lcom/hugr/wearos/CardiacInputShape$Companion;.anomalyForMetadata$app_debug:(Lcom/hugr/wearos/CardiacInputFieldState;ILcom/hugr/wearos/CardiacInputFieldState;ILjava/util/List;Z)Z // method@0306
+0290f4: 0a01                                   |0216: move-result v1
+0290f6: 3801 0900                              |0217: if-eqz v1, 0220 // +0009
+0290fa: dd02 0808                              |0219: and-int/lit8 v2, v8, #int 8 // #08
+0290fe: 3802 0300                              |021b: if-eqz v2, 021e // +0003
+029102: 2803                                   |021d: goto 0220 // +0003
+029104: 1202                                   |021e: const/4 v2, #int 0 // #0
+029106: 2802                                   |021f: goto 0221 // +0002
+029108: 1212                                   |0220: const/4 v2, #int 1 // #1
+02910a: 3802 5e00                              |0221: if-eqz v2, 027f // +005e
+02910e: 3904 2500                              |0223: if-nez v4, 0248 // +0025
+029112: 0202 2700                              |0225: move/from16 v2, v39
+029116: 3327 2300                              |0227: if-ne v7, v2, 024a // +0023
+02911a: dd05 0808                              |0229: and-int/lit8 v5, v8, #int 8 // #08
+02911e: 3805 0400                              |022b: if-eqz v5, 022f // +0004
+029122: 1215                                   |022d: const/4 v5, #int 1 // #1
+029124: 2802                                   |022e: goto 0230 // +0002
+029126: 1205                                   |022f: const/4 v5, #int 0 // #0
+029128: 3315 0500                              |0230: if-ne v5, v1, 0235 // +0005
+02912c: 1317 0100                              |0232: const/16 v23, #int 1 // #1
+029130: 2803                                   |0234: goto 0237 // +0003
+029132: 1317 0000                              |0235: const/16 v23, #int 0 // #0
+029136: 3817 0300                              |0237: if-eqz v23, 023a // +0003
+02913a: 2811                                   |0239: goto 024a // +0011
+02913c: 1205                                   |023a: const/4 v5, #int 0 // #0
+02913e: 0000                                   |023b: nop // spacer
+029140: 2205 3602                              |023c: new-instance v5, Ljava/lang/IllegalArgumentException; // type@0236
+029144: 1a06 0f08                              |023e: const-string v6, "Cardiac input-shape complete-group anomaly flag is inconsistent" // string@080f
+029148: 6e10 120e 0600                         |0240: invoke-virtual {v6}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+02914e: 0c06                                   |0243: move-result-object v6
+029150: 7020 fa0d 6500                         |0244: invoke-direct {v5, v6}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+029156: 2705                                   |0247: throw v5
+029158: 0202 2700                              |0248: move/from16 v2, v39
+02915c: 2205 b900                              |024a: new-instance v5, Lcom/hugr/wearos/DecodedCardiacInputShapeChunk; // type@00b9
+029160: 0000                                   |024c: nop // spacer
+029162: 0000                                   |024d: nop // spacer
+029164: 0000                                   |024e: nop // spacer
+029166: 0000                                   |024f: nop // spacer
+029168: 0000                                   |0250: nop // spacer
+02916a: 0000                                   |0251: nop // spacer
+02916c: 0000                                   |0252: nop // spacer
+02916e: 0000                                   |0253: nop // spacer
+029170: 0000                                   |0254: nop // spacer
+029172: 0000                                   |0255: nop // spacer
+029174: 0000                                   |0256: nop // spacer
+029176: 0000                                   |0257: nop // spacer
+029178: 0817 0000                              |0258: move-object/from16 v23, v0
+02917c: 1f17 6202                              |025a: check-cast v23, Ljava/util/List; // type@0262
+029180: 0196                                   |025c: move v6, v9
+029182: 0759                                   |025d: move-object v9, v5
+029184: 021b 0a00                              |025e: move/from16 v27, v10
+029188: 018a                                   |0260: move v10, v8
+02918a: 0821 0b00                              |0261: move-object/from16 v33, v11
+02918e: 020b 2500                              |0263: move/from16 v11, v37
+029192: 0822 0c00                              |0265: move-object/from16 v34, v12
+029196: 020c 1800                              |0267: move/from16 v12, v24
+02919a: 020d 2400                              |0269: move/from16 v13, v36
+02919e: 020e 2300                              |026b: move/from16 v14, v35
+0291a2: 050f 1900                              |026d: move-wide/from16 v15, v25
+0291a6: 0811 2200                              |026f: move-object/from16 v17, v34
+0291aa: 0812 2100                              |0271: move-object/from16 v18, v33
+0291ae: 0213 0600                              |0273: move/from16 v19, v6
+0291b2: 0214 0300                              |0275: move/from16 v20, v3
+0291b6: 0215 0200                              |0277: move/from16 v21, v2
+0291ba: 0216 0400                              |0279: move/from16 v22, v4
+0291be: 760f 1604 0900                         |027b: invoke-direct/range {v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23}, Lcom/hugr/wearos/DecodedCardiacInputShapeChunk;.<init>:(IIIIIJLcom/hugr/wearos/CardiacInputFieldState;Lcom/hugr/wearos/CardiacInputFieldState;IIIILjava/util/List;)V // method@0416
+0291c4: 1105                                   |027e: return-object v5
+0291c6: 0196                                   |027f: move v6, v9
+0291c8: 1205                                   |0280: const/4 v5, #int 0 // #0
+0291ca: 0000                                   |0281: nop // spacer
+0291cc: 2205 3602                              |0282: new-instance v5, Ljava/lang/IllegalArgumentException; // type@0236
+0291d0: 1a09 0908                              |0284: const-string v9, "Cardiac input-shape anomaly flag omits a declared malformed shape" // string@0809
+0291d4: 6e10 120e 0900                         |0286: invoke-virtual {v9}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+0291da: 0c09                                   |0289: move-result-object v9
+0291dc: 7020 fa0d 9500                         |028a: invoke-direct {v5, v9}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+0291e2: 2705                                   |028d: throw v5
+0291e4: 1200                                   |028e: const/4 v0, #int 0 // #0
+0291e6: 0000                                   |028f: nop // spacer
+0291e8: 2200 3602                              |0290: new-instance v0, Ljava/lang/IllegalArgumentException; // type@0236
+0291ec: 1a01 1a08                              |0292: const-string v1, "Cardiac input-shape payload length is inconsistent" // string@081a
+0291f0: 6e10 120e 0100                         |0294: invoke-virtual {v1}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+0291f6: 0c01                                   |0297: move-result-object v1
+0291f8: 7020 fa0d 1000                         |0298: invoke-direct {v0, v1}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+0291fe: 2700                                   |029b: throw v0
+029200: 0220 0000                              |029c: move/from16 v32, v0
+029204: 1200                                   |029e: const/4 v0, #int 0 // #0
+029206: 0000                                   |029f: nop // spacer
+029208: 2200 3602                              |02a0: new-instance v0, Ljava/lang/IllegalArgumentException; // type@0236
+02920c: 1a01 0d08                              |02a2: const-string v1, "Cardiac input-shape chunk range is incomplete or oversized" // string@080d
+029210: 6e10 120e 0100                         |02a4: invoke-virtual {v1}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+029216: 0c01                                   |02a7: move-result-object v1
+029218: 7020 fa0d 1000                         |02a8: invoke-direct {v0, v1}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+02921e: 2700                                   |02ab: throw v0
+029220: 1200                                   |02ac: const/4 v0, #int 0 // #0
+029222: 0000                                   |02ad: nop // spacer
+029224: 2200 3602                              |02ae: new-instance v0, Ljava/lang/IllegalArgumentException; // type@0236
+029228: 1a01 cc0d                              |02b0: const-string v1, "Nonempty shape cannot have a trailing empty chunk" // string@0dcc
+02922c: 6e10 120e 0100                         |02b2: invoke-virtual {v1}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+029232: 0c01                                   |02b5: move-result-object v1
+029234: 7020 fa0d 1000                         |02b6: invoke-direct {v0, v1}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+02923a: 2700                                   |02b9: throw v0
+02923c: 1200                                   |02ba: const/4 v0, #int 0 // #0
+02923e: 0000                                   |02bb: nop // spacer
+029240: 2200 3602                              |02bc: new-instance v0, Ljava/lang/IllegalArgumentException; // type@0236
+029244: 1a01 0e08                              |02be: const-string v1, "Cardiac input-shape chunk start is inconsistent" // string@080e
+029248: 6e10 120e 0100                         |02c0: invoke-virtual {v1}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+02924e: 0c01                                   |02c3: move-result-object v1
+029250: 7020 fa0d 1000                         |02c4: invoke-direct {v0, v1}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+029256: 2700                                   |02c7: throw v0
+029258: 1200                                   |02c8: const/4 v0, #int 0 // #0
+02925a: 0000                                   |02c9: nop // spacer
+02925c: 2200 3602                              |02ca: new-instance v0, Ljava/lang/IllegalArgumentException; // type@0236
+029260: 1a01 1c08                              |02cc: const-string v1, "Cardiac input-shape truncation flag is inconsistent" // string@081c
+029264: 6e10 120e 0100                         |02ce: invoke-virtual {v1}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+02926a: 0c01                                   |02d1: move-result-object v1
+02926c: 7020 fa0d 1000                         |02d2: invoke-direct {v0, v1}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+029272: 2700                                   |02d5: throw v0
+029274: 021e 0000                              |02d6: move/from16 v30, v0
+029278: 1200                                   |02d8: const/4 v0, #int 0 // #0
+02927a: 0000                                   |02d9: nop // spacer
+02927c: 2200 3602                              |02da: new-instance v0, Ljava/lang/IllegalArgumentException; // type@0236
+029280: 1a01 0c08                              |02dc: const-string v1, "Cardiac input-shape captured slot count is inconsistent" // string@080c
+029284: 6e10 120e 0100                         |02de: invoke-virtual {v1}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+02928a: 0c01                                   |02e1: move-result-object v1
+02928c: 7020 fa0d 1000                         |02e2: invoke-direct {v0, v1}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+029292: 2700                                   |02e5: throw v0
+029294: 1200                                   |02e6: const/4 v0, #int 0 // #0
+029296: 0000                                   |02e7: nop // spacer
+029298: 2200 3602                              |02e8: new-instance v0, Ljava/lang/IllegalArgumentException; // type@0236
+02929c: 1a01 0708                              |02ea: const-string v1, "Cardiac input-shape anchor record index is invalid" // string@0807
+0292a0: 6e10 120e 0100                         |02ec: invoke-virtual {v1}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+0292a6: 0c01                                   |02ef: move-result-object v1
+0292a8: 7020 fa0d 1000                         |02f0: invoke-direct {v0, v1}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+0292ae: 2700                                   |02f3: throw v0
+0292b0: 1200                                   |02f4: const/4 v0, #int 0 // #0
+0292b2: 0000                                   |02f5: nop // spacer
+0292b4: 2200 3602                              |02f6: new-instance v0, Ljava/lang/IllegalArgumentException; // type@0236
+0292b8: 1a01 1608                              |02f8: const-string v1, "Cardiac input-shape legacy coordinate saturation must be explicit" // string@0816
+0292bc: 6e10 120e 0100                         |02fa: invoke-virtual {v1}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+0292c2: 0c01                                   |02fd: move-result-object v1
+0292c4: 7020 fa0d 1000                         |02fe: invoke-direct {v0, v1}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+0292ca: 2700                                   |0301: throw v0
+0292cc: 1200                                   |0302: const/4 v0, #int 0 // #0
+0292ce: 0000                                   |0303: nop // spacer
+0292d0: 2200 3602                              |0304: new-instance v0, Ljava/lang/IllegalArgumentException; // type@0236
+0292d4: 1a01 1b08                              |0306: const-string v1, "Cardiac input-shape point identity is invalid" // string@081b
+0292d8: 6e10 120e 0100                         |0308: invoke-virtual {v1}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+0292de: 0c01                                   |030b: move-result-object v1
+0292e0: 7020 fa0d 1000                         |030c: invoke-direct {v0, v1}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+0292e6: 2700                                   |030f: throw v0
+0292e8: 1200                                   |0310: const/4 v0, #int 0 // #0
+0292ea: 0000                                   |0311: nop // spacer
+0292ec: 2200 3602                              |0312: new-instance v0, Ljava/lang/IllegalArgumentException; // type@0236
+0292f0: 1a01 0b08                              |0314: const-string v1, "Cardiac input-shape callbackId is negative" // string@080b
+0292f4: 6e10 120e 0100                         |0316: invoke-virtual {v1}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+0292fa: 0c01                                   |0319: move-result-object v1
+0292fc: 7020 fa0d 1000                         |031a: invoke-direct {v0, v1}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+029302: 2700                                   |031d: throw v0
+029304: 1200                                   |031e: const/4 v0, #int 0 // #0
+029306: 0000                                   |031f: nop // spacer
+029308: 2200 3602                              |0320: new-instance v0, Ljava/lang/IllegalArgumentException; // type@0236
+02930c: 1a01 0a08                              |0322: const-string v1, "Cardiac input-shape batch flag is inconsistent" // string@080a
+029310: 6e10 120e 0100                         |0324: invoke-virtual {v1}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+029316: 0c01                                   |0327: move-result-object v1
+029318: 7020 fa0d 1000                         |0328: invoke-direct {v0, v1}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+02931e: 2700                                   |032b: throw v0
+029320: 1200                                   |032c: const/4 v0, #int 0 // #0
+029322: 0000                                   |032d: nop // spacer
+029324: 2200 3602                              |032e: new-instance v0, Ljava/lang/IllegalArgumentException; // type@0236
+029328: 1a01 1908                              |0330: const-string v1, "Cardiac input-shape payload has unknown flags" // string@0819
+02932c: 6e10 120e 0100                         |0332: invoke-virtual {v1}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+029332: 0c01                                   |0335: move-result-object v1
+029334: 7020 fa0d 1000                         |0336: invoke-direct {v0, v1}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+02933a: 2700                                   |0339: throw v0
+02933c: 0826 0200                              |033a: move-object/from16 v38, v2
+029340: 021d 0600                              |033c: move/from16 v29, v6
+029344: 021c 0700                              |033e: move/from16 v28, v7
+029348: 1200                                   |0340: const/4 v0, #int 0 // #0
+02934a: 2201 4402                              |0341: new-instance v1, Ljava/lang/StringBuilder; // type@0244
+02934e: 7010 230e 0100                         |0343: invoke-direct {v1}, Ljava/lang/StringBuilder;.<init>:()V // method@0e23
+029354: 1a02 ec0f                              |0346: const-string v2, "Unsupported cardiac input-shape payload version/kind " // string@0fec
+029358: 6e20 280e 2100                         |0348: invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@0e28
+02935e: 0c01                                   |034b: move-result-object v1
+029360: 0202 1d00                              |034c: move/from16 v2, v29
+029364: 6e20 250e 2100                         |034e: invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;.append:(I)Ljava/lang/StringBuilder; // method@0e25
+02936a: 0c01                                   |0351: move-result-object v1
+02936c: 1a03 e206                              |0352: const-string v3, "/" // string@06e2
+029370: 6e20 280e 3100                         |0354: invoke-virtual {v1, v3}, Ljava/lang/StringBuilder;.append:(Ljava/lang/String;)Ljava/lang/StringBuilder; // method@0e28
+029376: 0c01                                   |0357: move-result-object v1
+029378: 0203 1c00                              |0358: move/from16 v3, v28
+02937c: 6e20 250e 3100                         |035a: invoke-virtual {v1, v3}, Ljava/lang/StringBuilder;.append:(I)Ljava/lang/StringBuilder; // method@0e25
+029382: 0c01                                   |035d: move-result-object v1
+029384: 6e10 2a0e 0100                         |035e: invoke-virtual {v1}, Ljava/lang/StringBuilder;.toString:()Ljava/lang/String; // method@0e2a
+02938a: 0c00                                   |0361: move-result-object v0
+02938c: 2201 3602                              |0362: new-instance v1, Ljava/lang/IllegalArgumentException; // type@0236
+029390: 6e10 120e 0000                         |0364: invoke-virtual {v0}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+029396: 0c00                                   |0367: move-result-object v0
+029398: 7020 fa0d 0100                         |0368: invoke-direct {v1, v0}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+02939e: 2701                                   |036b: throw v1
+0293a0: 1200                                   |036c: const/4 v0, #int 0 // #0
+0293a2: 0000                                   |036d: nop // spacer
+0293a4: 2200 3602                              |036e: new-instance v0, Ljava/lang/IllegalArgumentException; // type@0236
+0293a8: 1a01 0608                              |0370: const-string v1, "Cardiac input-shape V2 payload is shorter than its 45-byte header" // string@0806
+0293ac: 6e10 120e 0100                         |0372: invoke-virtual {v1}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+0293b2: 0c01                                   |0375: move-result-object v1
+0293b4: 7020 fa0d 1000                         |0376: invoke-direct {v0, v1}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+0293ba: 2700                                   |0379: throw v0
+      catches       : (none)
+      positions     :
+        0x0009 line=400
+        0x0014 line=401
+        0x001e line=402
+        0x0024 line=403
+        0x002a line=404
+        0x0035 line=407
+        0x003b line=408
+        0x0044 line=409
+        0x004d line=410
+        0x0060 line=411
+        0x0064 line=412
+        0x0068 line=413
+        0x006c line=414
+        0x0070 line=415
+        0x007c line=416
+        0x0088 line=417
+        0x008c line=418
+        0x0090 line=419
+        0x0094 line=420
+        0x0098 line=421
+        0x00a0 line=423
+        0x00a9 line=424
+        0x00b6 line=425
+        0x00ce line=426
+        0x00d9 line=427
+        0x00de line=428
+        0x00e3 line=429
+        0x00f0 line=430
+        0x00f6 line=431
+        0x00ff line=432
+        0x0104 line=433
+        0x0114 line=436
+        0x0121 line=439
+        0x012b line=440
+        0x0135 line=441
+        0x013c line=442
+        0x014c line=444
+        0x0151 line=445
+        0x0158 line=446
+        0x015a line=447
+        0x0168 line=448
+        0x0176 line=449
+        0x017a line=450
+        0x0180 line=451
+        0x018e line=454
+        0x019a line=457
+        0x01ab line=458
+        0x01b6 line=459
+        0x01c3 line=460
+        0x01c4 line=445
+        0x01d4 line=454
+        0x01d7 line=455
+        0x01d8 line=454
+        0x01e4 line=451
+        0x01e7 line=452
+        0x01e8 line=451
+        0x01f4 line=462
+        0x0200 line=463
+        0x0201 line=464
+        0x0202 line=465
+        0x0203 line=466
+        0x0204 line=467
+        0x0208 line=468
+        0x0209 line=462
+        0x0217 line=470
+        0x0223 line=473
+        0x0229 line=474
+        0x023b line=475
+        0x023c line=474
+        0x0248 line=473
+        0x024a line=478
+        0x024c line=479
+        0x024d line=480
+        0x024e line=481
+        0x024f line=482
+        0x0250 line=483
+        0x0251 line=484
+        0x0252 line=485
+        0x0253 line=486
+        0x0254 line=487
+        0x0255 line=488
+        0x0256 line=489
+        0x0257 line=490
+        0x0258 line=491
+        0x025c line=478
+        0x027f line=470
+        0x0281 line=471
+        0x0282 line=470
+        0x028e line=566
+        0x028f line=442
+        0x029c line=566
+        0x029f line=441
+        0x02ac line=566
+        0x02ad line=439
+        0x02ba line=436
+        0x02bb line=437
+        0x02bc line=436
+        0x02c8 line=433
+        0x02c9 line=434
+        0x02ca line=433
+        0x02d6 line=566
+        0x02d9 line=431
+        0x02e6 line=566
+        0x02e7 line=426
+        0x02f4 line=566
+        0x02f5 line=425
+        0x0302 line=566
+        0x0303 line=424
+        0x0310 line=566
+        0x0311 line=423
+        0x031e line=566
+        0x031f line=410
+        0x032c line=566
+        0x032d line=408
+        0x033a line=404
+        0x0341 line=405
+        0x0362 line=404
+        0x036c line=566
+        0x036d line=400
+      locals        :
+        0x002a - 0x009e reg=7 kind I
+        0x0024 - 0x00bf reg=6 version I
+        0x00f0 - 0x010d reg=0 originalMaximum I
+        0x00f6 - 0x012f reg=6 expectedCaptured I
+        0x0135 - 0x0143 reg=0 expectedChunkCount I
+        0x006c - 0x015e reg=13 pointCount I
+        0x0068 - 0x016c reg=14 pointIndex I
+        0x004d - 0x017c reg=15 batchSize I
+        0x001e - 0x0182 reg=2 buffer Ljava/nio/ByteBuffer;
+        0x0094 - 0x01bb reg=5 capturedSlotCount I
+        0x0168 - 0x01c4 reg=1 valueKind Lcom/hugr/wearos/CardiacInputSlotKind;
+        0x0176 - 0x01c4 reg=13 statusKind Lcom/hugr/wearos/CardiacInputSlotKind;
+        0x017a - 0x01c4 reg=14 valueBits I
+        0x0180 - 0x01c4 reg=15 statusBits I
+        0x0156 - 0x01c4 reg=22 localIndex I
+        0x0158 - 0x01c4 reg=33 $i$a$-repeat-CardiacInputShapeCodec$decode$15 I
+        0x015a - 0x01c4 reg=34 originalIndex I
+        0x01bb - 0x01d4 reg=39 capturedSlotCount I
+        0x01d4 - 0x01d6 reg=5 capturedSlotCount I
+        0x01d7 - 0x01d8 reg=2 $i$a$-require-CardiacInputShapeCodec$decode$15$2 I
+        0x01d6 - 0x01e4 reg=39 capturedSlotCount I
+        0x01e4 - 0x01e6 reg=5 capturedSlotCount I
+        0x01e7 - 0x01e8 reg=2 $i$a$-require-CardiacInputShapeCodec$decode$15$1 I
+        0x01d4 - 0x01f4 reg=1 valueKind Lcom/hugr/wearos/CardiacInputSlotKind;
+        0x01d4 - 0x01f4 reg=22 localIndex I
+        0x01d4 - 0x01f4 reg=33 $i$a$-repeat-CardiacInputShapeCodec$decode$15 I
+        0x01d4 - 0x01f4 reg=34 originalIndex I
+        0x015e - 0x01f4 reg=35 pointCount I
+        0x016c - 0x01f4 reg=36 pointIndex I
+        0x017c - 0x01f4 reg=37 batchSize I
+        0x0182 - 0x01f4 reg=38 buffer Ljava/nio/ByteBuffer;
+        0x01e6 - 0x01f4 reg=39 capturedSlotCount I
+        0x01d4 - 0x01f4 reg=13 statusKind Lcom/hugr/wearos/CardiacInputSlotKind;
+        0x01d4 - 0x01f4 reg=14 valueBits I
+        0x01d4 - 0x01f4 reg=15 statusBits I
+        0x01f4 - 0x01fe reg=2 buffer Ljava/nio/ByteBuffer;
+        0x01f4 - 0x01fe reg=5 capturedSlotCount I
+        0x01f4 - 0x01fe reg=13 pointCount I
+        0x01f4 - 0x01fe reg=14 pointIndex I
+        0x01f4 - 0x01fe reg=15 batchSize I
+        0x01fe - 0x0227 reg=39 capturedSlotCount I
+        0x023b - 0x023c reg=5 $i$a$-require-CardiacInputShapeCodec$decode$17 I
+        0x0227 - 0x0248 reg=2 capturedSlotCount I
+        0x0248 - 0x024a reg=39 capturedSlotCount I
+        0x008c - 0x025d reg=9 valuesLength I
+        0x0104 - 0x0260 reg=10 expectedTruncated Z
+        0x0088 - 0x0263 reg=11 statusesState Lcom/hugr/wearos/CardiacInputFieldState;
+        0x007c - 0x0267 reg=12 valuesState Lcom/hugr/wearos/CardiacInputFieldState;
+        0x024a - 0x027f reg=2 capturedSlotCount I
+        0x025d - 0x027f reg=6 valuesLength I
+        0x0260 - 0x027f reg=27 expectedTruncated Z
+        0x0263 - 0x027f reg=33 statusesState Lcom/hugr/wearos/CardiacInputFieldState;
+        0x0267 - 0x027f reg=34 valuesState Lcom/hugr/wearos/CardiacInputFieldState;
+        0x027f - 0x0280 reg=9 valuesLength I
+        0x0281 - 0x0282 reg=5 $i$a$-require-CardiacInputShapeCodec$decode$16 I
+        0x0151 - 0x028e reg=0 slots Ljava/util/ArrayList;
+        0x0217 - 0x028e reg=1 locallyRequiredAnomaly Z
+        0x0280 - 0x028e reg=6 valuesLength I
+        0x01fe - 0x028e reg=35 pointCount I
+        0x01fe - 0x028e reg=36 pointIndex I
+        0x01fe - 0x028e reg=37 batchSize I
+        0x01fe - 0x028e reg=38 buffer Ljava/nio/ByteBuffer;
+        0x027f - 0x028e reg=39 capturedSlotCount I
+        0x028f - 0x0290 reg=0 $i$a$-require-CardiacInputShapeCodec$decode$14 I
+        0x0143 - 0x029c reg=32 expectedChunkCount I
+        0x029c - 0x029e reg=0 expectedChunkCount I
+        0x029f - 0x02a0 reg=0 $i$a$-require-CardiacInputShapeCodec$decode$13 I
+        0x012f - 0x02ac reg=31 expectedCaptured I
+        0x029e - 0x02ac reg=32 expectedChunkCount I
+        0x02ad - 0x02ae reg=0 $i$a$-require-CardiacInputShapeCodec$decode$12 I
+        0x02bb - 0x02bc reg=0 $i$a$-require-CardiacInputShapeCodec$decode$11 I
+        0x02c9 - 0x02ca reg=0 $i$a$-require-CardiacInputShapeCodec$decode$10 I
+        0x027f - 0x02d6 reg=10 expectedTruncated Z
+        0x010d - 0x02d6 reg=30 originalMaximum I
+        0x02d6 - 0x02d8 reg=0 originalMaximum I
+        0x02d9 - 0x02da reg=0 $i$a$-require-CardiacInputShapeCodec$decode$9 I
+        0x02ac - 0x02e6 reg=6 expectedCaptured I
+        0x02d8 - 0x02e6 reg=30 originalMaximum I
+        0x02e7 - 0x02e8 reg=0 $i$a$-require-CardiacInputShapeCodec$decode$8 I
+        0x02f5 - 0x02f6 reg=0 $i$a$-require-CardiacInputShapeCodec$decode$7 I
+        0x00bf - 0x0302 reg=29 version I
+        0x0303 - 0x0304 reg=0 $i$a$-require-CardiacInputShapeCodec$decode$6 I
+        0x0311 - 0x0312 reg=0 $i$a$-require-CardiacInputShapeCodec$decode$5 I
+        0x0090 - 0x031e reg=3 statusesLength I
+        0x0098 - 0x031e reg=4 chunkStart I
+        0x028e - 0x031e reg=5 capturedSlotCount I
+        0x028e - 0x031e reg=9 valuesLength I
+        0x027f - 0x031e reg=11 statusesState Lcom/hugr/wearos/CardiacInputFieldState;
+        0x027f - 0x031e reg=12 valuesState Lcom/hugr/wearos/CardiacInputFieldState;
+        0x028e - 0x031e reg=13 pointCount I
+        0x028e - 0x031e reg=14 pointIndex I
+        0x0064 - 0x031e reg=24 callbackId I
+        0x0070 - 0x031e reg=25 anchorRecordIndex J
+        0x009e - 0x031e reg=28 kind I
+        0x00a0 - 0x031e reg=7 chunkSlotCount I
+        0x031f - 0x0320 reg=0 $i$a$-require-CardiacInputShapeCodec$decode$4 I
+        0x028e - 0x032c reg=15 batchSize I
+        0x032d - 0x032e reg=0 $i$a$-require-CardiacInputShapeCodec$decode$3 I
+        0x003b - 0x033a reg=8 flags I
+        0x028e - 0x0340 reg=2 buffer Ljava/nio/ByteBuffer;
+        0x0302 - 0x0340 reg=6 version I
+        0x031e - 0x0340 reg=7 kind I
+        0x0340 - 0x034e reg=29 version I
+        0x0340 - 0x035a reg=28 kind I
+        0x0341 - 0x0362 reg=0 $i$a$-require-CardiacInputShapeCodec$decode$2 I
+        0x034e - 0x036c reg=2 version I
+        0x035a - 0x036c reg=3 kind I
+        0x0340 - 0x036c reg=38 buffer Ljava/nio/ByteBuffer;
+        0x036d - 0x036e reg=0 $i$a$-require-CardiacInputShapeCodec$decode$1 I
+        0x0000 - 0x037a reg=40 this Lcom/hugr/wearos/CardiacInputShapeCodec;
+        0x0000 - 0x037a reg=41 payload [B
+
+    #1              : (in Lcom/hugr/wearos/CardiacInputShapeCodec;)

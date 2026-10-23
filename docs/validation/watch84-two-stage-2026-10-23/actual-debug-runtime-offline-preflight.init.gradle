@@ -1,0 +1,37 @@
+import groovy.json.JsonOutput
+
+gradle.projectsEvaluated {
+    def app = gradle.rootProject.findProject(':app')
+    if (app == null) throw new GradleException('WATCH84_ACTUAL_APP_PROJECT_ABSENT')
+    app.tasks.register('watch84ActualOfflineDebugRuntimeClasspathPreflight') {
+        group = 'verification'
+        description = 'No-build resolution of actual app debugRuntimeClasspath only.'
+        doLast {
+            def cfg = app.configurations.findByName('debugRuntimeClasspath')
+            if (cfg == null) throw new GradleException('WATCH84_DEBUG_RUNTIME_CLASSPATH_ABSENT')
+            def configAttributes = cfg.attributes.keySet().collect { k -> [name: k.name, value: String.valueOf(cfg.attributes.getAttribute(k))] }.sort { a, b -> a.name <=> b.name }
+            def result = cfg.incoming.resolutionResult
+            def components = result.allComponents.collect { c ->
+                [id: c.id.displayName, moduleVersion: c.moduleVersion == null ? null : c.moduleVersion.toString(), selectionReason: c.selectionReason == null ? null : c.selectionReason.description]
+            }.sort { a, b -> a.id <=> b.id }
+            def view = cfg.incoming.artifactView { v -> v.lenient(false) }
+            def artifacts = view.artifacts.artifacts.collect { a ->
+                [component: a.id.componentIdentifier.displayName, artifact: a.id.displayName, file: a.file.absolutePath, bytes: a.file.length()]
+            }.sort { a, b -> a.file <=> b.file }
+            def files = cfg.files.collect { f -> f.absolutePath }.sort()
+            def out = new File(gradle.startParameter.projectProperties.get('watch84ActualOfflineOutput'))
+            out.parentFile.mkdirs()
+            out.text = JsonOutput.prettyPrint(JsonOutput.toJson([
+                operation: 'ACTUAL_APP_DEBUG_RUNTIME_CLASSPATH_OFFLINE_PREFLIGHT_NO_BUILD',
+                project: app.path,
+                configuration: cfg.name,
+                canBeResolved: cfg.canBeResolved,
+                transitive: cfg.transitive,
+                configurationAttributes: configAttributes,
+                components: components,
+                artifacts: artifacts,
+                runtimeFiles: files
+            ])) + '\n'
+        }
+    }
+}

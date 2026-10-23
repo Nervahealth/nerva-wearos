@@ -1,0 +1,317 @@
+{
+  "actualDebugRuntimeClasspathOfflinePass": false,
+  "actualOfflineGradleCommandShape": [
+    "gradle-8.1",
+    "--offline",
+    "--no-daemon",
+    "--console=plain",
+    "--init-script",
+    "actual-debug-runtime-offline-preflight.init.gradle",
+    ":app:watch84ActualOfflineDebugRuntimeClasspathPreflight"
+  ],
+  "actualOfflinePreflightRun": {
+    "exitCode": 1,
+    "logLines": 23,
+    "logSha256": "b2d0179a287643e9fd56d71eb1076bb6db417a83624d300860256d502e5cb229",
+    "sanitizedLog": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/actual-debug-runtime-offline-gradle.sanitized.log",
+    "timedOut": false
+  },
+  "after": {
+    "application": {
+      "applicationAppGitTree": "5a14a3c09d5037e9b4c24f680de76e630d333139",
+      "applicationBuildConfiguration": {
+        "app/build.gradle": {
+          "bytes": 2327,
+          "sha256": "7c327aa9955b1d98211cf578b39258518098deaedf23a61618839711e216ed29"
+        },
+        "app/proguard-rules.pro": {
+          "bytes": 339,
+          "sha256": "a961778d9e8e2044cf234c539d8eb37d130014446bf4b5e6c1c2be956d787be9"
+        },
+        "build.gradle": {
+          "bytes": 583,
+          "sha256": "e4ba16900ddfeb8e76539a8802d35a8a63feb5f55a38f11e1dbf29296d61e9b9"
+        },
+        "gradle.properties": {
+          "bytes": 67,
+          "sha256": "3da0f4e45119b5b2d17772e491cd792eed9cdcd821e3e349e18acb1f1dac07cd"
+        },
+        "gradle/wrapper/gradle-wrapper.properties": {
+          "bytes": 221,
+          "sha256": "7910ff84a440deda932aa4900045b051cffee2ace139697f6cc3f25f3b4c6bb0"
+        },
+        "settings.gradle": {
+          "bytes": 168,
+          "sha256": "3f77fa9d56528d2c447d3988ee00ab31eb3e1726ae05d262bce7ce348aada358"
+        }
+      },
+      "applicationSourceContent": {
+        "bytes": 686153,
+        "files": 65,
+        "path": "/home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main",
+        "sha256": "a6ed5156129db66f107f1c12c4102eb1f75e1b66de2e8a43b7c1a2f2e523a05f"
+      },
+      "applicationSourceHead": "8f9e769e1f1f41f6620be0364b63b4c9b445e28b",
+      "applicationSourceTree": "872b123c4651821f02d0059053eaa8c898933e66",
+      "gitStatusPorcelainEmpty": true
+    },
+    "earlierAttemptMarkers": {
+      "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/watch84-build-stage/build-attempt.json": "4178829a99df868af34b4c3e380248e2e9f5a4c1852f2708c430d4902b60be34",
+      "/home/ubuntu/HUGR_WATCH84_REPLACEMENT_2026_10_23/replacement-stage/build-attempt.json": "17df64fe1de5904edc362d5ff1123e5d4f021a35d6d4efda7aee8353bf1d3fb4",
+      "/home/ubuntu/HUGR_WATCH84_REPLACEMENT_2026_10_23/replacement-stop.json": "bb61fd20ce867609066175ce2feffde719ce9e9e994b61b078ad3e304d550917"
+    }
+  },
+  "before": {
+    "application": {
+      "applicationAppGitTree": "5a14a3c09d5037e9b4c24f680de76e630d333139",
+      "applicationBuildConfiguration": {
+        "app/build.gradle": {
+          "bytes": 2327,
+          "sha256": "7c327aa9955b1d98211cf578b39258518098deaedf23a61618839711e216ed29"
+        },
+        "app/proguard-rules.pro": {
+          "bytes": 339,
+          "sha256": "a961778d9e8e2044cf234c539d8eb37d130014446bf4b5e6c1c2be956d787be9"
+        },
+        "build.gradle": {
+          "bytes": 583,
+          "sha256": "e4ba16900ddfeb8e76539a8802d35a8a63feb5f55a38f11e1dbf29296d61e9b9"
+        },
+        "gradle.properties": {
+          "bytes": 67,
+          "sha256": "3da0f4e45119b5b2d17772e491cd792eed9cdcd821e3e349e18acb1f1dac07cd"
+        },
+        "gradle/wrapper/gradle-wrapper.properties": {
+          "bytes": 221,
+          "sha256": "7910ff84a440deda932aa4900045b051cffee2ace139697f6cc3f25f3b4c6bb0"
+        },
+        "settings.gradle": {
+          "bytes": 168,
+          "sha256": "3f77fa9d56528d2c447d3988ee00ab31eb3e1726ae05d262bce7ce348aada358"
+        }
+      },
+      "applicationSourceContent": {
+        "bytes": 686153,
+        "files": 65,
+        "path": "/home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main",
+        "sha256": "a6ed5156129db66f107f1c12c4102eb1f75e1b66de2e8a43b7c1a2f2e523a05f"
+      },
+      "applicationSourceHead": "8f9e769e1f1f41f6620be0364b63b4c9b445e28b",
+      "applicationSourceTree": "872b123c4651821f02d0059053eaa8c898933e66",
+      "gitStatusPorcelainEmpty": true
+    },
+    "earlierAttemptMarkers": {
+      "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/watch84-build-stage/build-attempt.json": "4178829a99df868af34b4c3e380248e2e9f5a4c1852f2708c430d4902b60be34",
+      "/home/ubuntu/HUGR_WATCH84_REPLACEMENT_2026_10_23/replacement-stage/build-attempt.json": "17df64fe1de5904edc362d5ff1123e5d4f021a35d6d4efda7aee8353bf1d3fb4",
+      "/home/ubuntu/HUGR_WATCH84_REPLACEMENT_2026_10_23/replacement-stop.json": "bb61fd20ce867609066175ce2feffde719ce9e9e994b61b078ad3e304d550917"
+    }
+  },
+  "establishedIdentityBeforeOnlineResolution": {
+    "allFourEstablishedJarAndPomIdentitiesPass": true,
+    "dependencies": [
+      {
+        "coordinate": "androidx.wear.tiles:tiles-proto:1.2.0",
+        "jar": {
+          "bytes": 45726,
+          "path": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.tiles/tiles-proto/1.2.0/3090e207e4ebd46e46c159822ab293c9fc4a42c6/tiles-proto-1.2.0.jar",
+          "sha256": "6561349e6bc836166212c5b8fd51876c91c25519191ec32fbc4217def39b588a"
+        },
+        "poms": [
+          {
+            "effectiveCoordinates": {
+              "artifactId": "tiles-proto",
+              "groupId": "androidx.wear.tiles",
+              "version": "1.2.0"
+            },
+            "path": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.tiles/tiles-proto/1.2.0/8347f3a5071b61107eef68850731711b5587b506/tiles-proto-1.2.0.pom",
+            "sha256": "f32c585dc690103fc3a39fce01639073bad3c6a6c2a5dc9e2f2346557d781287"
+          }
+        ]
+      },
+      {
+        "coordinate": "androidx.wear.protolayout:protolayout-proto:1.0.0",
+        "jar": {
+          "bytes": 1739194,
+          "path": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.protolayout/protolayout-proto/1.0.0/abb132807aa40f10fb02639c770289e87366d550/protolayout-proto-1.0.0.jar",
+          "sha256": "28fc4c57860e46d029fa589c8bbbe0edb91cdf03932fffbba01c96c00e50a454"
+        },
+        "poms": [
+          {
+            "effectiveCoordinates": {
+              "artifactId": "protolayout-proto",
+              "groupId": "androidx.wear.protolayout",
+              "version": "1.0.0"
+            },
+            "path": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.protolayout/protolayout-proto/1.0.0/82d0557d8159ee52a9dc09683d33048def09ddf9/protolayout-proto-1.0.0.pom",
+            "sha256": "0f0d98ccd29ed8b0c49eae5e07451194ab6cb7bf8b1928a6d1d8cbf7f3dfcca8"
+          }
+        ]
+      },
+      {
+        "coordinate": "androidx.concurrent:concurrent-futures:1.1.0",
+        "jar": {
+          "bytes": 25987,
+          "path": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.concurrent/concurrent-futures/1.1.0/50b7fb98350d5f42a4e49704b03278542293ba48/concurrent-futures-1.1.0.jar",
+          "sha256": "0ce067c514a0d1049d1bebdf709e344ed3266fe9744275682937cdcb13334e9e"
+        },
+        "poms": [
+          {
+            "effectiveCoordinates": {
+              "artifactId": "concurrent-futures",
+              "groupId": "androidx.concurrent",
+              "version": "1.1.0"
+            },
+            "path": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.concurrent/concurrent-futures/1.1.0/1a2c7df73a77c58e30bd0b20cbc23e9854515438/concurrent-futures-1.1.0.pom",
+            "sha256": "748a34eb5d13d19d187adecaea82667fded5f1b0b98a655e13ed2e4a8b3d8ae6"
+          }
+        ]
+      },
+      {
+        "coordinate": "androidx.resourceinspection:resourceinspection-annotation:1.0.1",
+        "jar": {
+          "bytes": 2336,
+          "path": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.resourceinspection/resourceinspection-annotation/1.0.1/8c21f8ff5d96d5d52c948707f7e4d6ca6773feef/resourceinspection-annotation-1.0.1.jar",
+          "sha256": "8cff870ec6fb31db48a52f4a792335b4bf8de07e03bd37823181526433ccd5cb"
+        },
+        "poms": [
+          {
+            "effectiveCoordinates": {
+              "artifactId": "resourceinspection-annotation",
+              "groupId": "androidx.resourceinspection",
+              "version": "1.0.1"
+            },
+            "path": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.resourceinspection/resourceinspection-annotation/1.0.1/2c264bd97530601a68f3952fe040e2f7786ebc60/resourceinspection-annotation-1.0.1.pom",
+            "sha256": "b8eb4938ed95d7fcdaa2712ebca363e46a0f9228b8be7f23154def56846815dc"
+          }
+        ]
+      }
+    ]
+  },
+  "exactFourOnlineResolutionPass": true,
+  "finishedAt": "2026-10-23T00:02:14+00:00",
+  "onlineGradleCommandShape": [
+    "gradle-8.1",
+    "--no-daemon",
+    "--console=plain",
+    "--refresh-dependencies",
+    "resolveWatch84ExactFourOnly"
+  ],
+  "onlineResolution": {
+    "exactFourOnlineResolutionPass": true,
+    "repositoryModel": [
+      {
+        "declaration": "google()",
+        "effectiveIdentity": "Google Maven",
+        "effectiveUrl": "https://dl.google.com/dl/android/maven2/",
+        "metadataSources": "GRADLE_DEFAULT_UNMODIFIED"
+      },
+      {
+        "declaration": "mavenCentral()",
+        "effectiveIdentity": "MavenRepo",
+        "effectiveUrl": "https://repo.maven.apache.org/maven2/",
+        "metadataSources": "GRADLE_DEFAULT_UNMODIFIED"
+      },
+      {
+        "declaration": "maven { url 'https://developer.samsung.com/repo/maven/' }",
+        "effectiveIdentity": "maven",
+        "effectiveUrl": "https://developer.samsung.com/repo/maven/",
+        "metadataSources": "GRADLE_DEFAULT_UNMODIFIED"
+      }
+    ],
+    "resolved": [
+      {
+        "artifact": {
+          "bytes": 45726,
+          "path": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.tiles/tiles-proto/1.2.0/3090e207e4ebd46e46c159822ab293c9fc4a42c6/tiles-proto-1.2.0.jar",
+          "sha256": "6561349e6bc836166212c5b8fd51876c91c25519191ec32fbc4217def39b588a"
+        },
+        "coordinate": "androidx.wear.tiles:tiles-proto:1.2.0",
+        "jvm": 8,
+        "pomSha256": "f32c585dc690103fc3a39fce01639073bad3c6a6c2a5dc9e2f2346557d781287",
+        "resolvedComponent": "androidx.wear.tiles:tiles-proto:1.2.0"
+      },
+      {
+        "artifact": {
+          "bytes": 1739194,
+          "path": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.protolayout/protolayout-proto/1.0.0/abb132807aa40f10fb02639c770289e87366d550/protolayout-proto-1.0.0.jar",
+          "sha256": "28fc4c57860e46d029fa589c8bbbe0edb91cdf03932fffbba01c96c00e50a454"
+        },
+        "coordinate": "androidx.wear.protolayout:protolayout-proto:1.0.0",
+        "jvm": 8,
+        "pomSha256": "0f0d98ccd29ed8b0c49eae5e07451194ab6cb7bf8b1928a6d1d8cbf7f3dfcca8",
+        "resolvedComponent": "androidx.wear.protolayout:protolayout-proto:1.0.0"
+      },
+      {
+        "artifact": {
+          "bytes": 25987,
+          "path": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.concurrent/concurrent-futures/1.1.0/50b7fb98350d5f42a4e49704b03278542293ba48/concurrent-futures-1.1.0.jar",
+          "sha256": "0ce067c514a0d1049d1bebdf709e344ed3266fe9744275682937cdcb13334e9e"
+        },
+        "coordinate": "androidx.concurrent:concurrent-futures:1.1.0",
+        "jvm": 7,
+        "pomSha256": "748a34eb5d13d19d187adecaea82667fded5f1b0b98a655e13ed2e4a8b3d8ae6",
+        "resolvedComponent": "androidx.concurrent:concurrent-futures:1.1.0"
+      },
+      {
+        "artifact": {
+          "bytes": 2336,
+          "path": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.resourceinspection/resourceinspection-annotation/1.0.1/8c21f8ff5d96d5d52c948707f7e4d6ca6773feef/resourceinspection-annotation-1.0.1.jar",
+          "sha256": "8cff870ec6fb31db48a52f4a792335b4bf8de07e03bd37823181526433ccd5cb"
+        },
+        "coordinate": "androidx.resourceinspection:resourceinspection-annotation:1.0.1",
+        "jvm": 8,
+        "pomSha256": "b8eb4938ed95d7fcdaa2712ebca363e46a0f9228b8be7f23154def56846815dc",
+        "resolvedComponent": "androidx.resourceinspection:resourceinspection-annotation:1.0.1"
+      }
+    ],
+    "structuredResolution": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/online-exact-four-resolution.json",
+    "structuredResolutionSha256": "1425e5ee372272f3b8fb89cbbec54d7c59716ac92b94beeea0225426913234be"
+  },
+  "onlineResolutionRun": {
+    "exitCode": 0,
+    "logLines": 6,
+    "logSha256": "9e526c77d05c02cec36f735d038335908e0a1da4025f509f363c870b6487cedf",
+    "sanitizedLog": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/online-exact-four-gradle.sanitized.log",
+    "timedOut": false
+  },
+  "operation": "WATCH84_TWO_STAGE_EXACT_FOUR_DEPENDENCY_ONLY_RECOVERY",
+  "pinnedTools": {
+    "gradle": {
+      "path": "/home/ubuntu/jobs/job_SSW3Rmkp/toolchain/gradle/gradle-8.1/bin/gradle",
+      "sha256": "6cef1128c64a1170397d884668501e39fac228267f94d98aad57674a0bce2c9e",
+      "version": "8.1"
+    },
+    "gradleUserHome": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home",
+    "java": {
+      "path": "/usr/lib/jvm/java-17-openjdk-arm64/bin/java",
+      "sha256": "43c4d195769fe77e563f1e87b8c08ba1735e042296059b9069dc5e3fed043817"
+    },
+    "originalDriver": {
+      "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/watch84-preparation/watch84_fresh_stage_build_driver.py",
+      "sha256": "33275fdadb85f8d15751c9f3926b726d57c06e51f4901575bd5ba617ad0827f3"
+    },
+    "restorationProof": {
+      "path": "/home/ubuntu/HUGR_WATCH84_REPLACEMENT_2026_10_23/dependencies/dependency-restoration-proof.json",
+      "sha256": "073b65cad842e5cfb421041b7efce3527e5bcba4dadc166656af8b896546fee0"
+    }
+  },
+  "preservationPostcheck": "PASS",
+  "releaseAuthority": {
+    "path": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/authority-independent-remote-readback.json",
+    "sha256": "41f13308afb7c2fd767eaa313eaa06ebfe7f3c2239fb287452084a7b84058246",
+    "status": "PASS"
+  },
+  "schemaVersion": "1.0",
+  "scope": {
+    "credentialStrippedChildEnvironment": true,
+    "noArtifactAdmission": true,
+    "noBuild": true,
+    "noCompile": true,
+    "noPhone66OrDeviceOrIDCOrPrivateDataOperation": true,
+    "noSigning": true,
+    "noSourceOrBuildConfigurationModification": true
+  },
+  "startedAt": "2026-10-23T00:01:52+00:00",
+  "status": "STOP",
+  "stopCode": "ACTUAL_DEBUG_RUNTIME_CLASSPATH_OFFLINE_PREFLIGHT_STOP"
+}

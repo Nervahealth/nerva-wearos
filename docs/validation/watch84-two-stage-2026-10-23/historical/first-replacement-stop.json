@@ -1,0 +1,9 @@
+{
+  "status": "STOP",
+  "cause": "SOLE_ASSEMBLE_DEBUG_BUILD_STOP",
+  "elapsedSeconds": 26.255552557006013,
+  "buildAttemptMarkerExists": true,
+  "finalApkExists": false,
+  "originalMarkerUnchanged": true,
+  "noFurtherBuildAttemptAuthorized": true
+}

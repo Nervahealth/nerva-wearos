@@ -1,0 +1,8 @@
+{
+  "attemptMarkerExists": true,
+  "cause": "READ_ONLY_WATCH84_ARTIFACT_ADMISSION_STOP",
+  "elapsedSeconds": 80.0579645770049,
+  "finalApkExists": true,
+  "noFurtherBuildAuthorized": true,
+  "status": "STOP"
+}

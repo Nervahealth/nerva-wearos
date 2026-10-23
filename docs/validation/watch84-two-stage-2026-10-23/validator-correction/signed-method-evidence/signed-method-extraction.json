@@ -1,0 +1,35 @@
+{
+  "apk": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/artifacts/HUGR_Watch84w_0.84.0_positional-v2-duration-ladder-candidate.apk",
+  "apkBytes": 13008645,
+  "apkSha256": "e0525b5e09c2682de23ff8bc2a26bb10e765d2e308c0e96bf39576a80c0a20db",
+  "contentKeyedUniqueDexOwnerDisassemblies": 1,
+  "deadlineSeconds": 1200,
+  "focusedOriginalPredicateResults": {
+    "closedV2DurationAndLifetime": false,
+    "hardSampleCutoffGuardsAppend": false,
+    "rawShapeCodecExactV2Kind3HeaderSlotsAndFlags": false
+  },
+  "owners": {
+    "duration-policy": {
+      "descriptor": "Lcom/hugr/wearos/WatchFreshRunDurationPolicy;",
+      "dexEntry": "classes3.dex",
+      "dexSha256": "af2737bf7b3bb1695dcf1daec67fc65b9c995c246ec4b15c55947efb51fe1b01"
+    },
+    "fresh-session": {
+      "descriptor": "Lcom/hugr/wearos/FreshRunSession;",
+      "dexEntry": "classes3.dex",
+      "dexSha256": "af2737bf7b3bb1695dcf1daec67fc65b9c995c246ec4b15c55947efb51fe1b01"
+    },
+    "shape-codec": {
+      "descriptor": "Lcom/hugr/wearos/CardiacInputShapeCodec;",
+      "dexEntry": "classes3.dex",
+      "dexSha256": "af2737bf7b3bb1695dcf1daec67fc65b9c995c246ec4b15c55947efb51fe1b01"
+    },
+    "source-payload-codec": {
+      "descriptor": "Lcom/hugr/wearos/SourcePayloadCodec;",
+      "dexEntry": "classes3.dex",
+      "dexSha256": "af2737bf7b3bb1695dcf1daec67fc65b9c995c246ec4b15c55947efb51fe1b01"
+    }
+  },
+  "scope": "FOCUSED_READ_ONLY_SIGNED_DEX_METHOD_EXTRACTION_NOT_FULL_ADMISSION"
+}

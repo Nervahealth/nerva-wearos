@@ -1,0 +1,13 @@
+test_codec_rejects_boundary_call_substitution (test_watch84_signed_fixture_representation.Watch84SignedFixtureRepresentationTests.test_codec_rejects_boundary_call_substitution) ... ok
+test_codec_rejects_deleted_or_altered_decode_scalars_and_flag_guards (test_watch84_signed_fixture_representation.Watch84SignedFixtureRepresentationTests.test_codec_rejects_deleted_or_altered_decode_scalars_and_flag_guards) ... ok
+test_codec_rejects_deleted_or_altered_encode_scalars_and_guards (test_watch84_signed_fixture_representation.Watch84SignedFixtureRepresentationTests.test_codec_rejects_deleted_or_altered_encode_scalars_and_guards) ... ok
+test_duration_rejects_each_closed_rung_removal_or_alteration (test_watch84_signed_fixture_representation.Watch84SignedFixtureRepresentationTests.test_duration_rejects_each_closed_rung_removal_or_alteration) ... ok
+test_duration_rejects_rung_order_change_and_lifetime_guard_change (test_watch84_signed_fixture_representation.Watch84SignedFixtureRepresentationTests.test_duration_rejects_rung_order_change_and_lifetime_guard_change) ... ok
+test_exact_signed_fixture_passes_all_three_corrected_predicates (test_watch84_signed_fixture_representation.Watch84SignedFixtureRepresentationTests.test_exact_signed_fixture_passes_all_three_corrected_predicates) ... ok
+test_hard_cutoff_rejects_each_cutoff_guard_and_append_path_change (test_watch84_signed_fixture_representation.Watch84SignedFixtureRepresentationTests.test_hard_cutoff_rejects_each_cutoff_guard_and_append_path_change) ... ok
+test_hard_cutoff_rejects_guard_or_append_reordering (test_watch84_signed_fixture_representation.Watch84SignedFixtureRepresentationTests.test_hard_cutoff_rejects_guard_or_append_reordering) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.347s
+
+OK

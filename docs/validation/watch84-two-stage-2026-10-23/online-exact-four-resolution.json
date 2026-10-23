@@ -1,0 +1,201 @@
+{
+    "operation": "EXACT_FOUR_NONTRANSITIVE_DEPENDENCY_ONLY_ONLINE_RESOLUTION",
+    "repositoryModel": [
+        {
+            "declaration": "google()",
+            "effectiveIdentity": "Google Maven",
+            "effectiveUrl": "https://dl.google.com/dl/android/maven2/",
+            "metadataSources": "GRADLE_DEFAULT_UNMODIFIED"
+        },
+        {
+            "declaration": "mavenCentral()",
+            "effectiveIdentity": "MavenRepo",
+            "effectiveUrl": "https://repo.maven.apache.org/maven2/",
+            "metadataSources": "GRADLE_DEFAULT_UNMODIFIED"
+        },
+        {
+            "declaration": "maven { url 'https://developer.samsung.com/repo/maven/' }",
+            "effectiveIdentity": "maven",
+            "effectiveUrl": "https://developer.samsung.com/repo/maven/",
+            "metadataSources": "GRADLE_DEFAULT_UNMODIFIED"
+        }
+    ],
+    "resolved": [
+        {
+            "coordinate": "androidx.wear.tiles:tiles-proto:1.2.0",
+            "jvm": 8,
+            "configuration": "watch84_tilesProto",
+            "transitive": false,
+            "attributes": [
+                {
+                    "name": "org.gradle.category",
+                    "value": "library"
+                },
+                {
+                    "name": "org.gradle.dependency.bundling",
+                    "value": "external"
+                },
+                {
+                    "name": "org.gradle.jvm.environment",
+                    "value": "standard-jvm"
+                },
+                {
+                    "name": "org.gradle.jvm.version",
+                    "value": "8"
+                },
+                {
+                    "name": "org.gradle.libraryelements",
+                    "value": "jar"
+                },
+                {
+                    "name": "org.gradle.usage",
+                    "value": "java-runtime"
+                }
+            ],
+            "components": [
+                "androidx.wear.tiles:tiles-proto:1.2.0",
+                "project :"
+            ],
+            "artifacts": [
+                {
+                    "component": "androidx.wear.tiles:tiles-proto:1.2.0",
+                    "artifact": "tiles-proto-1.2.0.jar (androidx.wear.tiles:tiles-proto:1.2.0)",
+                    "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.tiles/tiles-proto/1.2.0/3090e207e4ebd46e46c159822ab293c9fc4a42c6/tiles-proto-1.2.0.jar",
+                    "bytes": 45726
+                }
+            ]
+        },
+        {
+            "coordinate": "androidx.wear.protolayout:protolayout-proto:1.0.0",
+            "jvm": 8,
+            "configuration": "watch84_protolayoutProto",
+            "transitive": false,
+            "attributes": [
+                {
+                    "name": "org.gradle.category",
+                    "value": "library"
+                },
+                {
+                    "name": "org.gradle.dependency.bundling",
+                    "value": "external"
+                },
+                {
+                    "name": "org.gradle.jvm.environment",
+                    "value": "standard-jvm"
+                },
+                {
+                    "name": "org.gradle.jvm.version",
+                    "value": "8"
+                },
+                {
+                    "name": "org.gradle.libraryelements",
+                    "value": "jar"
+                },
+                {
+                    "name": "org.gradle.usage",
+                    "value": "java-runtime"
+                }
+            ],
+            "components": [
+                "androidx.wear.protolayout:protolayout-proto:1.0.0",
+                "project :"
+            ],
+            "artifacts": [
+                {
+                    "component": "androidx.wear.protolayout:protolayout-proto:1.0.0",
+                    "artifact": "protolayout-proto-1.0.0.jar (androidx.wear.protolayout:protolayout-proto:1.0.0)",
+                    "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.protolayout/protolayout-proto/1.0.0/abb132807aa40f10fb02639c770289e87366d550/protolayout-proto-1.0.0.jar",
+                    "bytes": 1739194
+                }
+            ]
+        },
+        {
+            "coordinate": "androidx.concurrent:concurrent-futures:1.1.0",
+            "jvm": 7,
+            "configuration": "watch84_concurrentFutures",
+            "transitive": false,
+            "attributes": [
+                {
+                    "name": "org.gradle.category",
+                    "value": "library"
+                },
+                {
+                    "name": "org.gradle.dependency.bundling",
+                    "value": "external"
+                },
+                {
+                    "name": "org.gradle.jvm.environment",
+                    "value": "standard-jvm"
+                },
+                {
+                    "name": "org.gradle.jvm.version",
+                    "value": "7"
+                },
+                {
+                    "name": "org.gradle.libraryelements",
+                    "value": "jar"
+                },
+                {
+                    "name": "org.gradle.usage",
+                    "value": "java-runtime"
+                }
+            ],
+            "components": [
+                "androidx.concurrent:concurrent-futures:1.1.0",
+                "project :"
+            ],
+            "artifacts": [
+                {
+                    "component": "androidx.concurrent:concurrent-futures:1.1.0",
+                    "artifact": "concurrent-futures-1.1.0.jar (androidx.concurrent:concurrent-futures:1.1.0)",
+                    "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.concurrent/concurrent-futures/1.1.0/50b7fb98350d5f42a4e49704b03278542293ba48/concurrent-futures-1.1.0.jar",
+                    "bytes": 25987
+                }
+            ]
+        },
+        {
+            "coordinate": "androidx.resourceinspection:resourceinspection-annotation:1.0.1",
+            "jvm": 8,
+            "configuration": "watch84_resourceinspectionAnnotation",
+            "transitive": false,
+            "attributes": [
+                {
+                    "name": "org.gradle.category",
+                    "value": "library"
+                },
+                {
+                    "name": "org.gradle.dependency.bundling",
+                    "value": "external"
+                },
+                {
+                    "name": "org.gradle.jvm.environment",
+                    "value": "standard-jvm"
+                },
+                {
+                    "name": "org.gradle.jvm.version",
+                    "value": "8"
+                },
+                {
+                    "name": "org.gradle.libraryelements",
+                    "value": "jar"
+                },
+                {
+                    "name": "org.gradle.usage",
+                    "value": "java-runtime"
+                }
+            ],
+            "components": [
+                "androidx.resourceinspection:resourceinspection-annotation:1.0.1",
+                "project :"
+            ],
+            "artifacts": [
+                {
+                    "component": "androidx.resourceinspection:resourceinspection-annotation:1.0.1",
+                    "artifact": "resourceinspection-annotation-1.0.1.jar (androidx.resourceinspection:resourceinspection-annotation:1.0.1)",
+                    "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.resourceinspection/resourceinspection-annotation/1.0.1/8c21f8ff5d96d5d52c948707f7e4d6ca6773feef/resourceinspection-annotation-1.0.1.jar",
+                    "bytes": 2336
+                }
+            ]
+        }
+    ]
+}

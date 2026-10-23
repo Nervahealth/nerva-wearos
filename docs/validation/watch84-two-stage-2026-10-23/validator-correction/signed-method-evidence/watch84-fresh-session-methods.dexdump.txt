@@ -1,0 +1,159 @@
+      name          : 'acceptsSamples'
+      type          : '()Z'
+      access        : 0x20011 (PUBLIC FINAL DECLARED_SYNCHRONIZED)
+      code          -
+      registers     : 5
+      ins           : 1
+      outs          : 1
+      insns size    : 78 16-bit code units
+0392dc:                                        |[0392dc] com.hugr.wearos.FreshRunSession.acceptsSamples:()Z
+0392ec: 1d04                                   |0000: monitor-enter v4
+0392ee: 5540 c602                              |0001: iget-boolean v0, v4, Lcom/hugr/wearos/FreshRunSession;.accepting:Z // field@02c6
+0392f2: 3800 4500                              |0003: if-eqz v0, 0048 // +0045
+0392f6: 5540 c902                              |0005: iget-boolean v0, v4, Lcom/hugr/wearos/FreshRunSession;.ioFailed:Z // field@02c9
+0392fa: 3900 4100                              |0007: if-nez v0, 0048 // +0041
+0392fe: 5440 cb02                              |0009: iget-object v0, v4, Lcom/hugr/wearos/FreshRunSession;.receipt:Lcom/hugr/wearos/FreshRunReceipt; // field@02cb
+039302: 6e10 b305 0000                         |000b: invoke-virtual {v0}, Lcom/hugr/wearos/FreshRunReceipt;.getPhase:()Lcom/hugr/wearos/FreshRunPhase; // method@05b3
+039308: 0c00                                   |000e: move-result-object v0
+03930a: 6201 8402                              |000f: sget-object v1, Lcom/hugr/wearos/FreshRunPhase;.STARTED:Lcom/hugr/wearos/FreshRunPhase; // field@0284
+03930e: 3310 3700                              |0011: if-ne v0, v1, 0048 // +0037
+039312: 5440 c702                              |0013: iget-object v0, v4, Lcom/hugr/wearos/FreshRunSession;.elapsed:Lkotlin/jvm/functions/Function0; // field@02c7
+039316: 7210 350f 0000                         |0015: invoke-interface {v0}, Lkotlin/jvm/functions/Function0;.invoke:()Ljava/lang/Object; // method@0f35
+03931c: 0c00                                   |0018: move-result-object v0
+03931e: 1f00 3d02                              |0019: check-cast v0, Ljava/lang/Number; // type@023d
+039322: 6e10 0e0e 0000                         |001b: invoke-virtual {v0}, Ljava/lang/Number;.longValue:()J // method@0e0e
+039328: 0b00                                   |001e: move-result-wide v0
+03932a: 5442 cb02                              |001f: iget-object v2, v4, Lcom/hugr/wearos/FreshRunSession;.receipt:Lcom/hugr/wearos/FreshRunReceipt; // field@02cb
+03932e: 6e10 b705 0200                         |0021: invoke-virtual {v2}, Lcom/hugr/wearos/FreshRunReceipt;.getStartElapsedMs:()J // method@05b7
+039334: 0b02                                   |0024: move-result-wide v2
+039336: 3100 0002                              |0025: cmp-long v0, v0, v2
+03933a: 3a00 2100                              |0027: if-ltz v0, 0048 // +0021
+03933e: 5440 c702                              |0029: iget-object v0, v4, Lcom/hugr/wearos/FreshRunSession;.elapsed:Lkotlin/jvm/functions/Function0; // field@02c7
+039342: 7210 350f 0000                         |002b: invoke-interface {v0}, Lkotlin/jvm/functions/Function0;.invoke:()Ljava/lang/Object; // method@0f35
+039348: 0c00                                   |002e: move-result-object v0
+03934a: 1f00 3d02                              |002f: check-cast v0, Ljava/lang/Number; // type@023d
+03934e: 6e10 0e0e 0000                         |0031: invoke-virtual {v0}, Ljava/lang/Number;.longValue:()J // method@0e0e
+039354: 0b00                                   |0034: move-result-wide v0
+039356: 5442 cb02                              |0035: iget-object v2, v4, Lcom/hugr/wearos/FreshRunSession;.receipt:Lcom/hugr/wearos/FreshRunReceipt; // field@02cb
+03935a: 6e10 b705 0200                         |0037: invoke-virtual {v2}, Lcom/hugr/wearos/FreshRunReceipt;.getStartElapsedMs:()J // method@05b7
+039360: 0b02                                   |003a: move-result-wide v2
+039362: bc20                                   |003b: sub-long/2addr v0, v2
+039364: 5442 cb02                              |003c: iget-object v2, v4, Lcom/hugr/wearos/FreshRunSession;.receipt:Lcom/hugr/wearos/FreshRunReceipt; // field@02cb
+039368: 6e10 ae05 0200                         |003e: invoke-virtual {v2}, Lcom/hugr/wearos/FreshRunReceipt;.getDurationMs:()J // method@05ae
+03936e: 0b02                                   |0041: move-result-wide v2
+039370: 3100 0002                              |0042: cmp-long v0, v0, v2
+039374: 3b00 0400                              |0044: if-gez v0, 0048 // +0004
+039378: 1210                                   |0046: const/4 v0, #int 1 // #1
+03937a: 2802                                   |0047: goto 0049 // +0002
+03937c: 1200                                   |0048: const/4 v0, #int 0 // #0
+03937e: 1e04                                   |0049: monitor-exit v4
+039380: 0f00                                   |004a: return v0
+039382: 0d00                                   |004b: move-exception v0
+039384: 1e04                                   |004c: monitor-exit v4
+039386: 2700                                   |004d: throw v0
+      catches       : 1
+        0x0001 - 0x0042
+          <any> -> 0x004b
+      positions     :
+        0x0001 line=35
+        0x0013 line=36
+        0x004b line=34
+      locals        :
+        0x0000 - 0x0048 reg=4 this Lcom/hugr/wearos/FreshRunSession;
+
+    #2              : (in Lcom/hugr/wearos/FreshRunSession;)
+      name          : 'append'
+      type          : '(Lcom/hugr/wearos/SourceStreamCode;J[B)Lcom/hugr/wearos/WatchSourceRecord;'
+      access        : 0x20011 (PUBLIC FINAL DECLARED_SYNCHRONIZED)
+      code          -
+      registers     : 11
+      ins           : 5
+      outs          : 5
+      insns size    : 90 16-bit code units
+039568:                                        |[039568] com.hugr.wearos.FreshRunSession.append:(Lcom/hugr/wearos/SourceStreamCode;J[B)Lcom/hugr/wearos/WatchSourceRecord;
+039578: 1d06                                   |0000: monitor-enter v6
+03957a: 1a00 481b                              |0001: const-string v0, "stream" // string@1b48
+03957e: 7120 3e0f 0700                         |0003: invoke-static {v7, v0}, Lkotlin/jvm/internal/Intrinsics;.checkNotNullParameter:(Ljava/lang/Object;Ljava/lang/String;)V // method@0f3e
+039584: 1a00 cb18                              |0006: const-string v0, "payload" // string@18cb
+039588: 7120 3e0f 0a00                         |0008: invoke-static {v10, v0}, Lkotlin/jvm/internal/Intrinsics;.checkNotNullParameter:(Ljava/lang/Object;Ljava/lang/String;)V // method@0f3e
+03958e: 6e10 1806 0600                         |000b: invoke-virtual {v6}, Lcom/hugr/wearos/FreshRunSession;.acceptsSamples:()Z // method@0618
+039594: 0a00                                   |000e: move-result v0
+039596: 1201                                   |000f: const/4 v1, #int 0 // #0
+039598: 3900 0400                              |0010: if-nez v0, 0014 // +0004
+03959c: 1e06                                   |0012: monitor-exit v6
+03959e: 1101                                   |0013: return-object v1
+0395a0: 5460 cb02                              |0014: iget-object v0, v6, Lcom/hugr/wearos/FreshRunSession;.receipt:Lcom/hugr/wearos/FreshRunReceipt; // field@02cb
+0395a4: 6e10 be05 0000                         |0016: invoke-virtual {v0}, Lcom/hugr/wearos/FreshRunReceipt;.isV2:()Z // method@05be
+0395aa: 0a00                                   |0019: move-result v0
+0395ac: 3800 1600                              |001a: if-eqz v0, 0030 // +0016
+0395b0: 5460 ca02                              |001c: iget-object v0, v6, Lcom/hugr/wearos/FreshRunSession;.journal:Lcom/hugr/wearos/SourceJournal; // field@02ca
+0395b4: 6e10 ce0b 0000                         |001e: invoke-virtual {v0}, Lcom/hugr/wearos/SourceJournal;.latestRecordIndex:()J // method@0bce
+0395ba: 0b02                                   |0021: move-result-wide v2
+0395bc: 1704 8084 1e00                         |0022: const-wide/32 v4, #float 2.8026e-39 // #001e8480
+0395c2: 3100 0204                              |0025: cmp-long v0, v2, v4
+0395c6: 3a00 0900                              |0027: if-ltz v0, 0030 // +0009
+0395ca: 1a00 3f0e                              |0029: const-string v0, "RECEIPT_RECORD_CAPACITY" // string@0e3f
+0395ce: 6e20 1e06 0600                         |002b: invoke-virtual {v6, v0}, Lcom/hugr/wearos/FreshRunSession;.fail:(Ljava/lang/String;)V // method@061e
+0395d4: 1e06                                   |002e: monitor-exit v6
+0395d6: 1101                                   |002f: return-object v1
+0395d8: 0000                                   |0030: nop // spacer
+0395da: 5460 ca02                              |0031: iget-object v0, v6, Lcom/hugr/wearos/FreshRunSession;.journal:Lcom/hugr/wearos/SourceJournal; // field@02ca
+0395de: 6e5a b50b 7098                         |0033: invoke-virtual {v0, v7, v8, v9, v10}, Lcom/hugr/wearos/SourceJournal;.append:(Lcom/hugr/wearos/SourceStreamCode;J[B)Lcom/hugr/wearos/WatchSourceRecord; // method@0bb5
+0395e4: 0c00                                   |0036: move-result-object v0
+0395e6: 6e10 1b06 0600                         |0037: invoke-virtual {v6}, Lcom/hugr/wearos/FreshRunSession;.captureManifests:()V // method@061b
+0395ec: 1e06                                   |003a: monitor-exit v6
+0395ee: 1100                                   |003b: return-object v0
+0395f0: 0d00                                   |003c: move-exception v0
+0395f2: 6201 4b06                              |003d: sget-object v1, Lkotlin/Result;.Companion:Lkotlin/Result$Companion; // field@064b
+0395f6: 0761                                   |003f: move-object v1, v6
+0395f8: 1202                                   |0040: const/4 v2, #int 0 // #0
+0395fa: 1a03 380f                              |0041: const-string v3, "SOURCE_IO" // string@0f38
+0395fe: 6e20 1e06 3100                         |0043: invoke-virtual {v1, v3}, Lcom/hugr/wearos/FreshRunSession;.fail:(Ljava/lang/String;)V // method@061e
+039604: 6201 4c06                              |0046: sget-object v1, Lkotlin/Unit;.INSTANCE:Lkotlin/Unit; // field@064c
+039608: 7110 dd0e 0100                         |0048: invoke-static {v1}, Lkotlin/Result;.constructor-impl:(Ljava/lang/Object;)Ljava/lang/Object; // method@0edd
+03960e: 280b                                   |004b: goto 0056 // +000b
+039610: 0d01                                   |004c: move-exception v1
+039612: 6202 4b06                              |004d: sget-object v2, Lkotlin/Result;.Companion:Lkotlin/Result$Companion; // field@064b
+039616: 7110 e10e 0100                         |004f: invoke-static {v1}, Lkotlin/ResultKt;.createFailure:(Ljava/lang/Throwable;)Ljava/lang/Object; // method@0ee1
+03961c: 0c01                                   |0052: move-result-object v1
+03961e: 7110 dd0e 0100                         |0053: invoke-static {v1}, Lkotlin/Result;.constructor-impl:(Ljava/lang/Object;)Ljava/lang/Object; // method@0edd
+039624: 2700                                   |0056: throw v0
+039626: 0d07                                   |0057: move-exception v7
+039628: 1e06                                   |0058: monitor-exit v6
+03962a: 2707                                   |0059: throw v7
+      catches       : 5
+        0x0001 - 0x000f
+          <any> -> 0x0057
+        0x0014 - 0x002e
+          <any> -> 0x0057
+        0x0031 - 0x003a
+          Ljava/lang/Exception; -> 0x003c
+          <any> -> 0x0057
+        0x003d - 0x004b
+          <any> -> 0x004c
+        0x004d - 0x0057
+          <any> -> 0x0057
+      positions     :
+        0x000b line=45
+        0x0014 line=46
+        0x0029 line=47
+        0x002e line=48
+        0x0030 line=50
+        0x0031 line=51
+        0x0037 line=52
+        0x003a line=50
+        0x003c line=53
+        0x0040 line=146
+        0x0041 line=53
+        0x0057 line=44
+      locals        :
+        0x0000 - 0x0030 reg=6 this Lcom/hugr/wearos/FreshRunSession;
+        0x0037 - 0x003a reg=0 record Lcom/hugr/wearos/WatchSourceRecord;
+        0x0040 - 0x0046 reg=1 $this$append_u24lambda_u240 Lcom/hugr/wearos/FreshRunSession;
+        0x0041 - 0x0046 reg=2 $i$a$-runCatching-FreshRunSession$append$1 I
+        0x003d - 0x0057 reg=0 e Ljava/lang/Exception;
+        0x0000 - 0x0057 reg=7 stream Lcom/hugr/wearos/SourceStreamCode;
+        0x0000 - 0x0057 reg=8 timestamp J
+        0x0000 - 0x0057 reg=10 payload [B
+
+    #3              : (in Lcom/hugr/wearos/FreshRunSession;)

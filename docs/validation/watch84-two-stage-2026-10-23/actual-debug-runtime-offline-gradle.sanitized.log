@@ -1,0 +1,23 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. See https://docs.gradle.org/8.1/userguide/gradle_daemon.html#sec:disabling_the_daemon.
+Daemon will be stopped at the end of the build 
+> Task :app:watch84ActualOfflineDebugRuntimeClasspathPreflight FAILED
+
+FAILURE: Build failed with an exception.
+
+* Where:
+Initialization script '/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/actual-debug-runtime-offline-preflight.init.gradle' line: 15
+
+* What went wrong:
+Execution failed for task ':app:watch84ActualOfflineDebugRuntimeClasspathPreflight'.
+> No such property: description for class: org.gradle.api.internal.artifacts.ivyservice.resolveengine.result.ComponentSelectionReasons$DefaultComponentSelectionReason
+  Possible solutions: descriptions
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 12s
+1 actionable task: 1 executed

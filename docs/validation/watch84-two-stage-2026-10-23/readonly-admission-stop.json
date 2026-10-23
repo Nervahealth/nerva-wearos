@@ -1,0 +1,6 @@
+{
+  "apkUnchangedByInspector": true,
+  "cause": "WATCH84_COMPILED_PREDICATE_MISSING_OR_MISMATCH:rawShapeCodecExactV2Kind3HeaderSlotsAndFlags,closedV2DurationAndLifetime,hardSampleCutoffGuardsAppend",
+  "code": "READ_ONLY_WATCH84_ARTIFACT_ADMISSION_STOP",
+  "returnCode": 1
+}

@@ -1,0 +1,53 @@
+{
+  "apk": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/artifacts/HUGR_Watch84w_0.84.0_positional-v2-duration-ladder-candidate.apk",
+  "archive": {
+    "pageAlignment": "PASS",
+    "uniqueDexClasses": "PASS",
+    "zipCrc": "PASS"
+  },
+  "authoritativeWatch83Baseline": {
+    "artifactSha256": "c9a5cbdaf090563c6666c98ae628878e0399f1e586fc238a07a2389fc399386e",
+    "receipt": "/home/ubuntu/HUGR_DURATION_LADDER_EXTENSION_2026_10_19/validation/watch83-build-lane-result.json",
+    "signerSha256": "fc91d26565d61b0a1c67db4dd0d358c8377c65b2fcb1ede00283b6c7b90c1706",
+    "versionCode": 83,
+    "versionName": "0.83.0-duration-ladder-candidate"
+  },
+  "bytes": 13008645,
+  "compatibilityDex": {
+    "entry": "classes5.dex",
+    "sha256": "a2477754c9e4b10a9d91584ca2281b4190a9b0776411fec19970dd47f96ab784"
+  },
+  "compiledCardiacInputShape": {
+    "closedV2DurationAndLifetime": true,
+    "exactAckGuardPrecedesCompletion": true,
+    "hardSampleCutoffGuardsAppend": true,
+    "ladderAdmissionBindsV2Receipt": true,
+    "rawShapeCaptureOnceBeforeNormalization": true,
+    "rawShapeCodecExactV2Kind3HeaderSlotsAndFlags": true,
+    "rawShapeExplicitInt32OnlyAndBoundedSlots": true,
+    "rawShapeRejectsDeletedOrMismatchedProjectionAndGroup": true,
+    "shapeNotBroadcastAsPhysiologicalMeasurement": true,
+    "v1CompatibilityRetained": true
+  },
+  "dexInspection": {
+    "deadlineSeconds": 1200,
+    "fullDexDisassemblies": 1,
+    "historical300SecondInspectionBudget": "FORBIDDEN",
+    "historicalNaiveWholeApkMultiDexPerDescriptor": "FORBIDDEN",
+    "strategy": "content_keyed_unique_Dex_owner_full_disassembly"
+  },
+  "nonclaims": [
+    "No build, signing, submission, upload, installation, launch, device, recording, egress, private-root, or physiological-data action occurred.",
+    "Signed-DEX predicate presence/structure is not proof of runtime execution, Samsung callback behavior, duration completion, ACK delivery, or physiological qualification.",
+    "CARDIAC INPUT_SHAPE V2 is raw positional metadata; this admission makes no native-adjacency, IBI chronology, RMSSD, clinical, baseline, learning, Loop A, or N1 claim.",
+    "V1 compatibility is required; this tool does not authorize or qualify either V1 or V2 runtime behavior."
+  ],
+  "package": "com.hugr.wearos",
+  "samePackageStrictlyNewVersionAndWatch83Signer": "PASS",
+  "scope": "READ_ONLY_PROPOSED_WATCH84_COMPILED_ARTIFACT_ADMISSION_ONLY",
+  "sha256": "e0525b5e09c2682de23ff8bc2a26bb10e765d2e308c0e96bf39576a80c0a20db",
+  "signerSha256": "fc91d26565d61b0a1c67db4dd0d358c8377c65b2fcb1ede00283b6c7b90c1706",
+  "status": "PASS",
+  "versionCode": 84,
+  "versionName": "0.84.0-positional-v2-duration-ladder-candidate"
+}

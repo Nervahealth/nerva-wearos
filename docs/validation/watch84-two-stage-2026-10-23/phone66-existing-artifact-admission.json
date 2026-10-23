@@ -1,0 +1,93 @@
+{
+  "apk": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/phone66-artifacts/HUGR_Phone66p_2.0.66_positional-v2-duration-ladder-candidate.apk",
+  "archive": {
+    "pageAlignment": "PASS",
+    "uniqueDexClasses": "PASS",
+    "zipCrc": "PASS"
+  },
+  "authoritativePhone65Baseline": {
+    "artifactSha256": "49b5c06dc6796feb1ef777353ee567e0e9207bdfe2b5de317b3cf38763c115ae",
+    "contentKeyedExactOwnerDexInspection": "content-keyed exact-owner full disassembly; same1200secbudget",
+    "receipt": "/home/ubuntu/HUGR_PHONE65_EXPORT_SCRATCH_BUILD_2026_10_21/validation/phone65-managed-admission-lane.json",
+    "signerSha256": "a1780089becaf58563daa5dfa16c5626928a13ce56a7dc232732e64a8df4e811",
+    "typedCleanupBaseline": "actual Path callbacks rather than erased Object bridges; bridge dispatch/root guards explicitly verified; 13 negative tests; no predicate dropped",
+    "versionCode": 65,
+    "versionName": "2.0.65-selected-run-export-scratch-candidate"
+  },
+  "bytes": 152097114,
+  "compiledBoundedSelectedSnapshot": {
+    "boundedSelectedSnapshotExplicitSameAbsoluteDeadlineForwarding": true,
+    "boundedSelectedSnapshotFixed16384PageCapAndLimit": true,
+    "boundedSelectedSnapshotFixed8MiBForwardWindowPerPage": true,
+    "boundedSelectedSnapshotNoOffsetRowidOrAllRowMaterialization": true,
+    "boundedSelectedSnapshotPageProjectionIdentityAndStrictOrder": true,
+    "boundedSelectedSnapshotProviderUsesPagedCursorOnly": true,
+    "boundedSelectedSnapshotSinglePageLifecycleAndExactEofCount": true,
+    "boundedSelectedSnapshotThreeExactKeysetOrders": true
+  },
+  "compiledCardiacInputShapeV2": {
+    "cardiacV2BoundedSlotsChunksAndNoAdjacencyClaim": true,
+    "cardiacV2DiskIndexBoundedOneGroupAndBatched": true,
+    "cardiacV2ExactClassAndPassiveVerification": true,
+    "cardiacV2ExporterUsesReadonlyCopiedSnapshot": true,
+    "cardiacV2FreshScratchNoFollowNoWalAndCleanup": true,
+    "cardiacV2RecordIndexFreshCursorAndExactAnchor": true,
+    "v2SchemaVersionsAndNonMeasurementTerms": true
+  },
+  "compiledInheritedSafety": {
+    "durationClosedV1AndV2Ladder": true,
+    "durationFinalizationGraceAndOverflowGuard": true,
+    "exactAckAndReceiptInventoryGuardsRetained": true,
+    "pendingPublicationRefuses": true,
+    "pendingRollbackAndPartialWalRefuseBeforeCopy": true,
+    "privateCopiedSourceReadonlyNoRecovery": true,
+    "v1CompatibilityAndNoTestRuntime": true
+  },
+  "compiledScratchSafety": {
+    "boundedCleanupNoFollowRoot": true,
+    "cacheRootAndManagedLeavesNoFollowCanonical": true,
+    "creationCollisionRechecksManagedDirectories": true,
+    "exporterUsesCorrectScratchHelper": true,
+    "newWriteNoFollowCreateNewDurableAndRechecked": true,
+    "publicationCollisionGuardAndRecheck": true,
+    "scratchFailureTerms": true,
+    "typedCleanupCallbacksAndErasedBridges": true
+  },
+  "dexInspection": {
+    "deadlineSeconds": 1200,
+    "fullDexDisassemblies": 1,
+    "historical300SecondInspectionBudget": "FORBIDDEN",
+    "historicalNaiveWholeApkMultiDexPerDescriptor": "FORBIDDEN",
+    "strategy": "content_keyed_unique_Dex_owner_full_disassembly",
+    "typedCleanupOverloadAndBridgeSelection": "REQUIRED"
+  },
+  "liveJsV2": {
+    "bundleEntries": [
+      {
+        "bytes": 4309484,
+        "entry": "assets/index.android.bundle",
+        "sha256": "c0f2f3cc684dcf64b93a188c66de7fe7e85e317392ba33f9c8271b9439d3cabb"
+      }
+    ],
+    "notClaimedAsExecuted": true,
+    "notDexRuntimeExecution": true,
+    "orderedDispatchMarkerPresence": "PASS",
+    "representation": "APK_EMBEDDED_COMPILED_BUNDLE_PRESENCE"
+  },
+  "nonclaims": [
+    "No build, signing, account/project access, EAS submission, upload, installation, launch, device, private-root, recording, export, or physiological-data action occurred.",
+    "Compiled DEX/bundle presence or exact source-stage custody does not prove runtime execution, generic Expo lifecycle behavior, JavaScript execution, device behavior, duration completion, ACK delivery, or private export behavior.",
+    "When source-stage custody is used for LiveJS V2, it proves exact staged bytes only and is explicitly not claimed as DEX/runtime execution.",
+    "CARDIAC INPUT_SHAPE V2 is raw positional metadata; no native adjacency, IBI chronology, RMSSD, physiological, clinical, baseline, learning, Loop A, or N1 qualification is claimed.",
+    "V1 compatibility remains required; no V1 or V2 physiological qualification follows from admission."
+  ],
+  "package": "health.hugr.app",
+  "samePackageStrictlyNewVersionAndPhone65Signer": "PASS",
+  "scope": "READ_ONLY_PROPOSED_PHONE66_COMPILED_ARTIFACT_ADMISSION_ONLY",
+  "selectedExportManifest": "PASS",
+  "sha256": "8978c8d64e19420b47ebd45b9a7898b07749114644ddb5df5aecde6ed653accf",
+  "signerSha256": "a1780089becaf58563daa5dfa16c5626928a13ce56a7dc232732e64a8df4e811",
+  "status": "PASS",
+  "versionCode": 66,
+  "versionName": "2.0.66-positional-v2-duration-ladder-candidate"
+}

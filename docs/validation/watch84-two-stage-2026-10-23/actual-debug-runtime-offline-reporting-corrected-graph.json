@@ -1,0 +1,1674 @@
+{
+    "operation": "ACTUAL_APP_DEBUG_RUNTIME_CLASSPATH_OFFLINE_PREFLIGHT_NO_BUILD",
+    "project": ":app",
+    "configuration": "debugRuntimeClasspath",
+    "canBeResolved": true,
+    "transitive": true,
+    "configurationAttributes": [
+        {
+            "name": "com.android.build.api.attributes.AgpVersionAttr",
+            "value": "8.1.0"
+        },
+        {
+            "name": "com.android.build.api.attributes.BuildTypeAttr",
+            "value": "debug"
+        },
+        {
+            "name": "org.gradle.jvm.environment",
+            "value": "android"
+        },
+        {
+            "name": "org.gradle.usage",
+            "value": "java-runtime"
+        },
+        {
+            "name": "org.jetbrains.kotlin.platform.type",
+            "value": "androidJvm"
+        }
+    ],
+    "components": [
+        {
+            "id": "androidx.activity:activity-ktx:1.8.0",
+            "moduleVersion": "androidx.activity:activity-ktx:1.8.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "activity is in atomic group androidx.activity"
+                },
+                {
+                    "cause": "REQUESTED",
+                    "description": "Mirror fragment dependency graph for -ktx artifacts"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.8.0 and 1.5.1"
+                }
+            ]
+        },
+        {
+            "id": "androidx.activity:activity:1.8.0",
+            "moduleVersion": "androidx.activity:activity:1.8.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "activity-ktx is in atomic group androidx.activity"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.8.0, 1.7.0, 1.6.0 and 1.7.2"
+                }
+            ]
+        },
+        {
+            "id": "androidx.annotation:annotation-experimental:1.3.1",
+            "moduleVersion": "androidx.annotation:annotation-experimental:1.3.1",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.3.1, 1.3.0 and 1.0.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.annotation:annotation:1.5.0",
+            "moduleVersion": "androidx.annotation:annotation:1.5.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.5.0, 1.2.0, 1.3.0, 1.0.0 and 1.1.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.appcompat:appcompat-resources:1.6.1",
+            "moduleVersion": "androidx.appcompat:appcompat-resources:1.6.1",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                }
+            ]
+        },
+        {
+            "id": "androidx.appcompat:appcompat:1.6.1",
+            "moduleVersion": "androidx.appcompat:appcompat:1.6.1",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.6.1 and 1.1.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.arch.core:core-common:2.2.0",
+            "moduleVersion": "androidx.arch.core:core-common:2.2.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 2.2.0 and 2.1.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.arch.core:core-runtime:2.2.0",
+            "moduleVersion": "androidx.arch.core:core-runtime:2.2.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 2.2.0 and 2.1.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.collection:collection-ktx:1.1.0",
+            "moduleVersion": "androidx.collection:collection-ktx:1.1.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "Mirror fragment dependency graph for -ktx artifacts"
+                }
+            ]
+        },
+        {
+            "id": "androidx.collection:collection:1.2.0",
+            "moduleVersion": "androidx.collection:collection:1.2.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.2.0, 1.0.0 and 1.1.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.concurrent:concurrent-futures:1.1.0",
+            "moduleVersion": "androidx.concurrent:concurrent-futures:1.1.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.1.0 and 1.0.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.core:core-ktx:1.9.0",
+            "moduleVersion": "androidx.core:core-ktx:1.9.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "Mirror activity dependency graph for -ktx artifacts"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "REQUESTED",
+                    "description": "Mirror fragment dependency graph for -ktx artifacts"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.9.0, 1.8.0, 1.6.0 and 1.2.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.core:core:1.9.0",
+            "moduleVersion": "androidx.core:core:1.9.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.9.0, 1.6.0, 1.1.0, 1.0.0, 1.3.0, 1.8.0 and 1.7.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.cursoradapter:cursoradapter:1.0.0",
+            "moduleVersion": "androidx.cursoradapter:cursoradapter:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.customview:customview:1.0.0",
+            "moduleVersion": "androidx.customview:customview:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.documentfile:documentfile:1.0.0",
+            "moduleVersion": "androidx.documentfile:documentfile:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.drawerlayout:drawerlayout:1.0.0",
+            "moduleVersion": "androidx.drawerlayout:drawerlayout:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.dynamicanimation:dynamicanimation:1.0.0",
+            "moduleVersion": "androidx.dynamicanimation:dynamicanimation:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.emoji2:emoji2-views-helper:1.2.0",
+            "moduleVersion": "androidx.emoji2:emoji2-views-helper:1.2.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.emoji2:emoji2:1.2.0",
+            "moduleVersion": "androidx.emoji2:emoji2:1.2.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.fragment:fragment-ktx:1.6.2",
+            "moduleVersion": "androidx.fragment:fragment-ktx:1.6.2",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                }
+            ]
+        },
+        {
+            "id": "androidx.fragment:fragment:1.6.2",
+            "moduleVersion": "androidx.fragment:fragment:1.6.2",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.6.2, 1.3.6, 1.2.4 and 1.1.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.interpolator:interpolator:1.0.0",
+            "moduleVersion": "androidx.interpolator:interpolator:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.legacy:legacy-support-core-utils:1.0.0",
+            "moduleVersion": "androidx.legacy:legacy-support-core-utils:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.lifecycle:lifecycle-common:2.6.2",
+            "moduleVersion": "androidx.lifecycle:lifecycle-common:2.6.2",
+            "selectionReason": [
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 2.6.2, 2.4.0 and 2.6.1"
+                }
+            ]
+        },
+        {
+            "id": "androidx.lifecycle:lifecycle-livedata-core-ktx:2.6.2",
+            "moduleVersion": "androidx.lifecycle:lifecycle-livedata-core-ktx:2.6.2",
+            "selectionReason": [
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "REQUESTED",
+                    "description": "Mirror fragment dependency graph for -ktx artifacts"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 2.6.2 and 2.6.1"
+                }
+            ]
+        },
+        {
+            "id": "androidx.lifecycle:lifecycle-livedata-core:2.6.2",
+            "moduleVersion": "androidx.lifecycle:lifecycle-livedata-core:2.6.2",
+            "selectionReason": [
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 2.6.2 and 2.6.1"
+                }
+            ]
+        },
+        {
+            "id": "androidx.lifecycle:lifecycle-livedata:2.6.2",
+            "moduleVersion": "androidx.lifecycle:lifecycle-livedata:2.6.2",
+            "selectionReason": [
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 2.6.2 and 2.0.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.lifecycle:lifecycle-process:2.6.2",
+            "moduleVersion": "androidx.lifecycle:lifecycle-process:2.6.2",
+            "selectionReason": [
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 2.6.2 and 2.4.1"
+                }
+            ]
+        },
+        {
+            "id": "androidx.lifecycle:lifecycle-runtime-ktx:2.6.2",
+            "moduleVersion": "androidx.lifecycle:lifecycle-runtime-ktx:2.6.2",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "REQUESTED",
+                    "description": "Mirror activity dependency graph for -ktx artifacts"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 2.6.2 and 2.6.1"
+                }
+            ]
+        },
+        {
+            "id": "androidx.lifecycle:lifecycle-runtime:2.6.2",
+            "moduleVersion": "androidx.lifecycle:lifecycle-runtime:2.6.2",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 2.6.2, 2.5.1, 2.3.1 and 2.6.1"
+                }
+            ]
+        },
+        {
+            "id": "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2",
+            "moduleVersion": "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2",
+            "selectionReason": [
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 2.6.2 and 2.6.1"
+                }
+            ]
+        },
+        {
+            "id": "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2",
+            "moduleVersion": "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2",
+            "selectionReason": [
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 2.6.2 and 2.6.1"
+                }
+            ]
+        },
+        {
+            "id": "androidx.lifecycle:lifecycle-viewmodel:2.6.2",
+            "moduleVersion": "androidx.lifecycle:lifecycle-viewmodel:2.6.2",
+            "selectionReason": [
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 2.6.2, 2.5.1, 2.6.1 and 2.0.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.loader:loader:1.0.0",
+            "moduleVersion": "androidx.loader:loader:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.localbroadcastmanager:localbroadcastmanager:1.0.0",
+            "moduleVersion": "androidx.localbroadcastmanager:localbroadcastmanager:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.preference:preference:1.1.0",
+            "moduleVersion": "androidx.preference:preference:1.1.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.print:print:1.0.0",
+            "moduleVersion": "androidx.print:print:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.profileinstaller:profileinstaller:1.3.0",
+            "moduleVersion": "androidx.profileinstaller:profileinstaller:1.3.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.recyclerview:recyclerview:1.1.0",
+            "moduleVersion": "androidx.recyclerview:recyclerview:1.1.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.1.0 and 1.0.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.resourceinspection:resourceinspection-annotation:1.0.1",
+            "moduleVersion": "androidx.resourceinspection:resourceinspection-annotation:1.0.1",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.savedstate:savedstate-ktx:1.2.1",
+            "moduleVersion": "androidx.savedstate:savedstate-ktx:1.2.1",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "Mirror activity dependency graph for -ktx artifacts"
+                },
+                {
+                    "cause": "REQUESTED",
+                    "description": "Mirror fragment dependency graph for -ktx artifacts"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                }
+            ]
+        },
+        {
+            "id": "androidx.savedstate:savedstate:1.2.1",
+            "moduleVersion": "androidx.savedstate:savedstate:1.2.1",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.2.1 and 1.2.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.startup:startup-runtime:1.1.1",
+            "moduleVersion": "androidx.startup:startup-runtime:1.1.1",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.1.1 and 1.0.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0",
+            "moduleVersion": "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.tracing:tracing:1.0.0",
+            "moduleVersion": "androidx.tracing:tracing:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.vectordrawable:vectordrawable-animated:1.1.0",
+            "moduleVersion": "androidx.vectordrawable:vectordrawable-animated:1.1.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.vectordrawable:vectordrawable:1.1.0",
+            "moduleVersion": "androidx.vectordrawable:vectordrawable:1.1.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.versionedparcelable:versionedparcelable:1.1.1",
+            "moduleVersion": "androidx.versionedparcelable:versionedparcelable:1.1.1",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.1.1 and 1.1.0"
+                }
+            ]
+        },
+        {
+            "id": "androidx.viewpager:viewpager:1.0.0",
+            "moduleVersion": "androidx.viewpager:viewpager:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "androidx.wear.protolayout:protolayout-expression-pipeline:1.0.0",
+            "moduleVersion": "androidx.wear.protolayout:protolayout-expression-pipeline:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "protolayout-expression is in atomic group androidx.wear.protolayout"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "protolayout-proto is in atomic group androidx.wear.protolayout"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "protolayout is in atomic group androidx.wear.protolayout"
+                },
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.0.0 and 1.0.0-beta01"
+                }
+            ]
+        },
+        {
+            "id": "androidx.wear.protolayout:protolayout-expression:1.0.0",
+            "moduleVersion": "androidx.wear.protolayout:protolayout-expression:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "protolayout is in atomic group androidx.wear.protolayout"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "protolayout-proto is in atomic group androidx.wear.protolayout"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "protolayout-expression-pipeline is in atomic group androidx.wear.protolayout"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.0.0 and 1.0.0-beta01"
+                }
+            ]
+        },
+        {
+            "id": "androidx.wear.protolayout:protolayout-proto:1.0.0",
+            "moduleVersion": "androidx.wear.protolayout:protolayout-proto:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "protolayout is in atomic group androidx.wear.protolayout"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "protolayout-expression is in atomic group androidx.wear.protolayout"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "protolayout-expression-pipeline is in atomic group androidx.wear.protolayout"
+                }
+            ]
+        },
+        {
+            "id": "androidx.wear.protolayout:protolayout:1.0.0",
+            "moduleVersion": "androidx.wear.protolayout:protolayout:1.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "protolayout-expression is in atomic group androidx.wear.protolayout"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "protolayout-proto is in atomic group androidx.wear.protolayout"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "protolayout-expression-pipeline is in atomic group androidx.wear.protolayout"
+                }
+            ]
+        },
+        {
+            "id": "androidx.wear.tiles:tiles-proto:1.2.0",
+            "moduleVersion": "androidx.wear.tiles:tiles-proto:1.2.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "tiles is in atomic group androidx.wear.tiles"
+                }
+            ]
+        },
+        {
+            "id": "androidx.wear.tiles:tiles:1.2.0",
+            "moduleVersion": "androidx.wear.tiles:tiles:1.2.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "tiles-proto is in atomic group androidx.wear.tiles"
+                }
+            ]
+        },
+        {
+            "id": "androidx.wear.watchface:watchface-complications-data:1.2.0",
+            "moduleVersion": "androidx.wear.watchface:watchface-complications-data:1.2.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface is in atomic group androidx.wear.watchface"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-data is in atomic group androidx.wear.watchface"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-style is in atomic group androidx.wear.watchface"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-complications is in atomic group androidx.wear.watchface"
+                }
+            ]
+        },
+        {
+            "id": "androidx.wear.watchface:watchface-complications:1.2.0",
+            "moduleVersion": "androidx.wear.watchface:watchface-complications:1.2.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-style is in atomic group androidx.wear.watchface"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-data is in atomic group androidx.wear.watchface"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface is in atomic group androidx.wear.watchface"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-complications-data is in atomic group androidx.wear.watchface"
+                }
+            ]
+        },
+        {
+            "id": "androidx.wear.watchface:watchface-data:1.2.0",
+            "moduleVersion": "androidx.wear.watchface:watchface-data:1.2.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface is in atomic group androidx.wear.watchface"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-complications-data is in atomic group androidx.wear.watchface"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-style is in atomic group androidx.wear.watchface"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-complications is in atomic group androidx.wear.watchface"
+                }
+            ]
+        },
+        {
+            "id": "androidx.wear.watchface:watchface-style:1.2.0",
+            "moduleVersion": "androidx.wear.watchface:watchface-style:1.2.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface is in atomic group androidx.wear.watchface"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-complications-data is in atomic group androidx.wear.watchface"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-data is in atomic group androidx.wear.watchface"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-complications is in atomic group androidx.wear.watchface"
+                }
+            ]
+        },
+        {
+            "id": "androidx.wear.watchface:watchface:1.2.0",
+            "moduleVersion": "androidx.wear.watchface:watchface:1.2.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-complications-data is in atomic group androidx.wear.watchface"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-data is in atomic group androidx.wear.watchface"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-style is in atomic group androidx.wear.watchface"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "watchface-complications is in atomic group androidx.wear.watchface"
+                }
+            ]
+        },
+        {
+            "id": "androidx.wear:wear:1.3.0",
+            "moduleVersion": "androidx.wear:wear:1.3.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "com.google.guava:listenablefuture:1.0",
+            "moduleVersion": "com.google.guava:listenablefuture:1.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0",
+            "moduleVersion": "org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.9.0 and 1.8.20"
+                }
+            ]
+        },
+        {
+            "id": "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0",
+            "moduleVersion": "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "SELECTED_BY_RULE",
+                    "description": "selected by rule"
+                }
+            ]
+        },
+        {
+            "id": "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0",
+            "moduleVersion": "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "SELECTED_BY_RULE",
+                    "description": "selected by rule"
+                }
+            ]
+        },
+        {
+            "id": "org.jetbrains.kotlin:kotlin-stdlib:1.9.0",
+            "moduleVersion": "org.jetbrains.kotlin:kotlin-stdlib:1.9.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.9.0, 1.8.22, 1.7.10, 1.8.20, 1.8.10, 1.6.20 and 1.3.20"
+                }
+            ]
+        },
+        {
+            "id": "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1",
+            "moduleVersion": "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 1.7.1 and 1.6.4"
+                }
+            ]
+        },
+        {
+            "id": "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.1",
+            "moduleVersion": "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.1",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                }
+            ]
+        },
+        {
+            "id": "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.1",
+            "moduleVersion": "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.1",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                }
+            ]
+        },
+        {
+            "id": "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1",
+            "moduleVersion": "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONSTRAINT",
+                    "description": "constraint"
+                }
+            ]
+        },
+        {
+            "id": "org.jetbrains:annotations:23.0.0",
+            "moduleVersion": "org.jetbrains:annotations:23.0.0",
+            "selectionReason": [
+                {
+                    "cause": "REQUESTED",
+                    "description": "requested"
+                },
+                {
+                    "cause": "CONFLICT_RESOLUTION",
+                    "description": "between versions 23.0.0 and 13.0"
+                }
+            ]
+        },
+        {
+            "id": "project :app",
+            "moduleVersion": "hugr-wearos-app:app:unspecified",
+            "selectionReason": [
+                {
+                    "cause": "ROOT",
+                    "description": "root"
+                }
+            ]
+        }
+    ],
+    "artifacts": [
+        {
+            "component": "samsung-health-sensor-api-1.4.1.aar",
+            "artifact": "samsung-health-sensor-api-1.4.1.aar",
+            "file": "/home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/libs/samsung-health-sensor-api-1.4.1.aar",
+            "bytes": 61063
+        },
+        {
+            "component": "androidx.activity:activity-ktx:1.8.0",
+            "artifact": "activity-ktx-1.8.0.aar (androidx.activity:activity-ktx:1.8.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.activity/activity-ktx/1.8.0/5c08d15826742f3cf909dee2832c8ab46a1cf316/activity-ktx-1.8.0.aar",
+            "bytes": 24828
+        },
+        {
+            "component": "androidx.activity:activity:1.8.0",
+            "artifact": "activity-1.8.0.aar (androidx.activity:activity:1.8.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.activity/activity/1.8.0/4266e2118d565daa20212d1726e11f41e1a4d0ca/activity-1.8.0.aar",
+            "bytes": 169615
+        },
+        {
+            "component": "androidx.annotation:annotation-experimental:1.3.1",
+            "artifact": "annotation-experimental-1.3.1.aar (androidx.annotation:annotation-experimental:1.3.1)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.annotation/annotation-experimental/1.3.1/96a98340221569e1c2deb3da92de5ca6e3389a65/annotation-experimental-1.3.1.aar",
+            "bytes": 36833
+        },
+        {
+            "component": "androidx.annotation:annotation:1.5.0",
+            "artifact": "annotation-1.5.0.jar (androidx.annotation:annotation:1.5.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.annotation/annotation/1.5.0/857678d6b4ca7b28571ef7935c668bdb57e15027/annotation-1.5.0.jar",
+            "bytes": 53348
+        },
+        {
+            "component": "androidx.appcompat:appcompat-resources:1.6.1",
+            "artifact": "appcompat-resources-1.6.1.aar (androidx.appcompat:appcompat-resources:1.6.1)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.appcompat/appcompat-resources/1.6.1/3fe43025e50b556f319b1ff82a730d5a376a31e/appcompat-resources-1.6.1.aar",
+            "bytes": 66329
+        },
+        {
+            "component": "androidx.appcompat:appcompat:1.6.1",
+            "artifact": "appcompat-1.6.1.aar (androidx.appcompat:appcompat:1.6.1)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.appcompat/appcompat/1.6.1/6c7577004b7ebbee5ed87d512b578dd20e3c8c31/appcompat-1.6.1.aar",
+            "bytes": 1135853
+        },
+        {
+            "component": "androidx.appcompat:appcompat:1.6.1",
+            "artifact": "appcompat-1.6.1.aar (androidx.appcompat:appcompat:1.6.1)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.appcompat/appcompat/1.6.1/6c7577004b7ebbee5ed87d512b578dd20e3c8c31/appcompat-1.6.1.aar",
+            "bytes": 1135853
+        },
+        {
+            "component": "androidx.arch.core:core-common:2.2.0",
+            "artifact": "core-common-2.2.0.jar (androidx.arch.core:core-common:2.2.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.arch.core/core-common/2.2.0/5e1b8b81dfd5f52c56a8d53b18ca759c19a301f3/core-common-2.2.0.jar",
+            "bytes": 11657
+        },
+        {
+            "component": "androidx.arch.core:core-runtime:2.2.0",
+            "artifact": "core-runtime-2.2.0.aar (androidx.arch.core:core-runtime:2.2.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.arch.core/core-runtime/2.2.0/39705982680d78556b679ef9d5400d4f17509b0b/core-runtime-2.2.0.aar",
+            "bytes": 7577
+        },
+        {
+            "component": "androidx.collection:collection-ktx:1.1.0",
+            "artifact": "collection-ktx-1.1.0.jar (androidx.collection:collection-ktx:1.1.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.collection/collection-ktx/1.1.0/f807b2f366f7b75142a67d2f3c10031065b5168/collection-ktx-1.1.0.jar",
+            "bytes": 18629
+        },
+        {
+            "component": "androidx.collection:collection:1.2.0",
+            "artifact": "collection-1.2.0.jar (androidx.collection:collection:1.2.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.collection/collection/1.2.0/34dbc21d203cc4d4d623ac572a21acd4ccd716af/collection-1.2.0.jar",
+            "bytes": 40384
+        },
+        {
+            "component": "androidx.concurrent:concurrent-futures:1.1.0",
+            "artifact": "concurrent-futures-1.1.0.jar (androidx.concurrent:concurrent-futures:1.1.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.concurrent/concurrent-futures/1.1.0/50b7fb98350d5f42a4e49704b03278542293ba48/concurrent-futures-1.1.0.jar",
+            "bytes": 25987
+        },
+        {
+            "component": "androidx.core:core-ktx:1.9.0",
+            "artifact": "core-ktx-1.9.0.aar (androidx.core:core-ktx:1.9.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.core/core-ktx/1.9.0/b56f6b1bcb7882a9933c963907818da2094ae3a4/core-ktx-1.9.0.aar",
+            "bytes": 178051
+        },
+        {
+            "component": "androidx.core:core:1.9.0",
+            "artifact": "core-1.9.0.aar (androidx.core:core:1.9.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.core/core/1.9.0/aa21c91d72e5d2a8dcc00c029ec65fc8d804ce02/core-1.9.0.aar",
+            "bytes": 1115684
+        },
+        {
+            "component": "androidx.core:core:1.9.0",
+            "artifact": "core-1.9.0.aar (androidx.core:core:1.9.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.core/core/1.9.0/aa21c91d72e5d2a8dcc00c029ec65fc8d804ce02/core-1.9.0.aar",
+            "bytes": 1115684
+        },
+        {
+            "component": "androidx.cursoradapter:cursoradapter:1.0.0",
+            "artifact": "cursoradapter-1.0.0.aar (androidx.cursoradapter:cursoradapter:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.cursoradapter/cursoradapter/1.0.0/74014983a86b83cbce534dec4e7aa9312f5f5d82/cursoradapter-1.0.0.aar",
+            "bytes": 10591
+        },
+        {
+            "component": "androidx.customview:customview:1.0.0",
+            "artifact": "customview-1.0.0.aar (androidx.customview:customview:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.customview/customview/1.0.0/30f5ff6075d112f8076e733b24410e68159735b6/customview-1.0.0.aar",
+            "bytes": 33238
+        },
+        {
+            "component": "androidx.documentfile:documentfile:1.0.0",
+            "artifact": "documentfile-1.0.0.aar (androidx.documentfile:documentfile:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.documentfile/documentfile/1.0.0/66104345c90cd8c2fd5ad2d3aad692b280e10c32/documentfile-1.0.0.aar",
+            "bytes": 11221
+        },
+        {
+            "component": "androidx.drawerlayout:drawerlayout:1.0.0",
+            "artifact": "drawerlayout-1.0.0.aar (androidx.drawerlayout:drawerlayout:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.drawerlayout/drawerlayout/1.0.0/dd02c7e207136e1272b33815cc61e57676ed13a2/drawerlayout-1.0.0.aar",
+            "bytes": 32470
+        },
+        {
+            "component": "androidx.dynamicanimation:dynamicanimation:1.0.0",
+            "artifact": "dynamicanimation-1.0.0.aar (androidx.dynamicanimation:dynamicanimation:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.dynamicanimation/dynamicanimation/1.0.0/e980497a58fb319d471f3bb78d066b926a08ba8e/dynamicanimation-1.0.0.aar",
+            "bytes": 32597
+        },
+        {
+            "component": "androidx.emoji2:emoji2-views-helper:1.2.0",
+            "artifact": "emoji2-views-helper-1.2.0.aar (androidx.emoji2:emoji2-views-helper:1.2.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.emoji2/emoji2-views-helper/1.2.0/4a22802fc9e88ad232522f04a35d1fdc3e5b4df0/emoji2-views-helper-1.2.0.aar",
+            "bytes": 21917
+        },
+        {
+            "component": "androidx.emoji2:emoji2:1.2.0",
+            "artifact": "emoji2-1.2.0.aar (androidx.emoji2:emoji2:1.2.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.emoji2/emoji2/1.2.0/2c95c9aa87788e4d9ce692ecfc961db004e57480/emoji2-1.2.0.aar",
+            "bytes": 134505
+        },
+        {
+            "component": "androidx.fragment:fragment-ktx:1.6.2",
+            "artifact": "fragment-ktx-1.6.2.aar (androidx.fragment:fragment-ktx:1.6.2)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.fragment/fragment-ktx/1.6.2/28ad14836fdeab84c408f8bc0ce02bdeaf9c29fa/fragment-ktx-1.6.2.aar",
+            "bytes": 30127
+        },
+        {
+            "component": "androidx.fragment:fragment:1.6.2",
+            "artifact": "fragment-1.6.2.aar (androidx.fragment:fragment:1.6.2)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.fragment/fragment/1.6.2/ae9b6401f983c8479327acc1a5dfe48da7066a4e/fragment-1.6.2.aar",
+            "bytes": 354022
+        },
+        {
+            "component": "androidx.fragment:fragment:1.6.2",
+            "artifact": "fragment-1.6.2.aar (androidx.fragment:fragment:1.6.2)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.fragment/fragment/1.6.2/ae9b6401f983c8479327acc1a5dfe48da7066a4e/fragment-1.6.2.aar",
+            "bytes": 354022
+        },
+        {
+            "component": "androidx.interpolator:interpolator:1.0.0",
+            "artifact": "interpolator-1.0.0.aar (androidx.interpolator:interpolator:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.interpolator/interpolator/1.0.0/8a01fa254a23b9388571eb6334b03707c7d122d7/interpolator-1.0.0.aar",
+            "bytes": 7669
+        },
+        {
+            "component": "androidx.legacy:legacy-support-core-utils:1.0.0",
+            "artifact": "legacy-support-core-utils-1.0.0.aar (androidx.legacy:legacy-support-core-utils:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.legacy/legacy-support-core-utils/1.0.0/9b9570042115da8629519090dfeb71df75da59fc/legacy-support-core-utils-1.0.0.aar",
+            "bytes": 4104
+        },
+        {
+            "component": "androidx.lifecycle:lifecycle-common:2.6.2",
+            "artifact": "lifecycle-common-2.6.2.jar (androidx.lifecycle:lifecycle-common:2.6.2)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-common/2.6.2/10f354fdb64868baecd67128560c5a0d6312c495/lifecycle-common-2.6.2.jar",
+            "bytes": 52314
+        },
+        {
+            "component": "androidx.lifecycle:lifecycle-livedata-core-ktx:2.6.2",
+            "artifact": "lifecycle-livedata-core-ktx-2.6.2.aar (androidx.lifecycle:lifecycle-livedata-core-ktx:2.6.2)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-livedata-core-ktx/2.6.2/58c13cf1fa21b6516e58a8d291b11da864caffbf/lifecycle-livedata-core-ktx-2.6.2.aar",
+            "bytes": 20510
+        },
+        {
+            "component": "androidx.lifecycle:lifecycle-livedata-core:2.6.2",
+            "artifact": "lifecycle-livedata-core-2.6.2.aar (androidx.lifecycle:lifecycle-livedata-core:2.6.2)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-livedata-core/2.6.2/23f66885a260f0a2cd6540927ea8795484afd2da/lifecycle-livedata-core-2.6.2.aar",
+            "bytes": 11345
+        },
+        {
+            "component": "androidx.lifecycle:lifecycle-livedata:2.6.2",
+            "artifact": "lifecycle-livedata-2.6.2.aar (androidx.lifecycle:lifecycle-livedata:2.6.2)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-livedata/2.6.2/e7f6d9e232bf035af69c030917c1ccda8e840b57/lifecycle-livedata-2.6.2.aar",
+            "bytes": 18971
+        },
+        {
+            "component": "androidx.lifecycle:lifecycle-process:2.6.2",
+            "artifact": "lifecycle-process-2.6.2.aar (androidx.lifecycle:lifecycle-process:2.6.2)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-process/2.6.2/1cda99630dfe13ea65f63d05821187bfe87a5967/lifecycle-process-2.6.2.aar",
+            "bytes": 16105
+        },
+        {
+            "component": "androidx.lifecycle:lifecycle-runtime-ktx:2.6.2",
+            "artifact": "lifecycle-runtime-ktx-2.6.2.aar (androidx.lifecycle:lifecycle-runtime-ktx:2.6.2)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-runtime-ktx/2.6.2/33decb94ec41360796e2160159bdca7dde688d0f/lifecycle-runtime-ktx-2.6.2.aar",
+            "bytes": 61591
+        },
+        {
+            "component": "androidx.lifecycle:lifecycle-runtime:2.6.2",
+            "artifact": "lifecycle-runtime-2.6.2.aar (androidx.lifecycle:lifecycle-runtime:2.6.2)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-runtime/2.6.2/f0ef27053faa89b3ec06c4f118cea0a15edde35b/lifecycle-runtime-2.6.2.aar",
+            "bytes": 21738
+        },
+        {
+            "component": "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2",
+            "artifact": "lifecycle-viewmodel-ktx-2.6.2.aar (androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-viewmodel-ktx/2.6.2/a6214896fba4ed16b44b0c051e6ceea24be554/lifecycle-viewmodel-ktx-2.6.2.aar",
+            "bytes": 4793
+        },
+        {
+            "component": "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2",
+            "artifact": "lifecycle-viewmodel-savedstate-2.6.2.aar (androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-viewmodel-savedstate/2.6.2/483115c35b2926c3780dfdaf3f5d0342855e73b1/lifecycle-viewmodel-savedstate-2.6.2.aar",
+            "bytes": 39786
+        },
+        {
+            "component": "androidx.lifecycle:lifecycle-viewmodel:2.6.2",
+            "artifact": "lifecycle-viewmodel-2.6.2.aar (androidx.lifecycle:lifecycle-viewmodel:2.6.2)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-viewmodel/2.6.2/fa35bfdbbe0e7df1573e377cbdd15de35176141d/lifecycle-viewmodel-2.6.2.aar",
+            "bytes": 39793
+        },
+        {
+            "component": "androidx.lifecycle:lifecycle-viewmodel:2.6.2",
+            "artifact": "lifecycle-viewmodel-2.6.2.aar (androidx.lifecycle:lifecycle-viewmodel:2.6.2)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-viewmodel/2.6.2/fa35bfdbbe0e7df1573e377cbdd15de35176141d/lifecycle-viewmodel-2.6.2.aar",
+            "bytes": 39793
+        },
+        {
+            "component": "androidx.loader:loader:1.0.0",
+            "artifact": "loader-1.0.0.aar (androidx.loader:loader:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.loader/loader/1.0.0/8af8b6cec0da85c207d03e15840e0722cbc71e70/loader-1.0.0.aar",
+            "bytes": 33445
+        },
+        {
+            "component": "androidx.localbroadcastmanager:localbroadcastmanager:1.0.0",
+            "artifact": "localbroadcastmanager-1.0.0.aar (androidx.localbroadcastmanager:localbroadcastmanager:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.localbroadcastmanager/localbroadcastmanager/1.0.0/2734f31c8321e83ce6b60570d14777fc33cc2ece/localbroadcastmanager-1.0.0.aar",
+            "bytes": 6808
+        },
+        {
+            "component": "androidx.preference:preference:1.1.0",
+            "artifact": "preference-1.1.0.aar (androidx.preference:preference:1.1.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.preference/preference/1.1.0/b63ca09e6cd22939b1eabbc52de16dd2a0d26319/preference-1.1.0.aar",
+            "bytes": 257348
+        },
+        {
+            "component": "androidx.print:print:1.0.0",
+            "artifact": "print-1.0.0.aar (androidx.print:print:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.print/print/1.0.0/7722094652c48ebe27acc94d74a55e759e4635ff/print-1.0.0.aar",
+            "bytes": 15782
+        },
+        {
+            "component": "androidx.profileinstaller:profileinstaller:1.3.0",
+            "artifact": "profileinstaller-1.3.0.aar (androidx.profileinstaller:profileinstaller:1.3.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.profileinstaller/profileinstaller/1.3.0/624641814089cd7bebf427aafa68ac089fb38261/profileinstaller-1.3.0.aar",
+            "bytes": 47529
+        },
+        {
+            "component": "androidx.recyclerview:recyclerview:1.1.0",
+            "artifact": "recyclerview-1.1.0.aar (androidx.recyclerview:recyclerview:1.1.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.recyclerview/recyclerview/1.1.0/8b4f97752ddcbc712af46d208aebd46585cde63b/recyclerview-1.1.0.aar",
+            "bytes": 358254
+        },
+        {
+            "component": "androidx.resourceinspection:resourceinspection-annotation:1.0.1",
+            "artifact": "resourceinspection-annotation-1.0.1.jar (androidx.resourceinspection:resourceinspection-annotation:1.0.1)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.resourceinspection/resourceinspection-annotation/1.0.1/8c21f8ff5d96d5d52c948707f7e4d6ca6773feef/resourceinspection-annotation-1.0.1.jar",
+            "bytes": 2336
+        },
+        {
+            "component": "androidx.savedstate:savedstate-ktx:1.2.1",
+            "artifact": "savedstate-ktx-1.2.1.aar (androidx.savedstate:savedstate-ktx:1.2.1)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.savedstate/savedstate-ktx/1.2.1/b86d338d91b1c26193a42b1d87be9bb02123fa16/savedstate-ktx-1.2.1.aar",
+            "bytes": 3375
+        },
+        {
+            "component": "androidx.savedstate:savedstate:1.2.1",
+            "artifact": "savedstate-1.2.1.aar (androidx.savedstate:savedstate:1.2.1)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.savedstate/savedstate/1.2.1/e364fc9dec32aa569d855f85864e50250318a093/savedstate-1.2.1.aar",
+            "bytes": 20217
+        },
+        {
+            "component": "androidx.startup:startup-runtime:1.1.1",
+            "artifact": "startup-runtime-1.1.1.aar (androidx.startup:startup-runtime:1.1.1)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.startup/startup-runtime/1.1.1/9d4ba67056aff98b69eadc1477c19a1e67cb9470/startup-runtime-1.1.1.aar",
+            "bytes": 19371
+        },
+        {
+            "component": "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0",
+            "artifact": "swiperefreshlayout-1.0.0.aar (androidx.swiperefreshlayout:swiperefreshlayout:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.swiperefreshlayout/swiperefreshlayout/1.0.0/4fd265b80a2b0fbeb062ab2bc4b1487521507762/swiperefreshlayout-1.0.0.aar",
+            "bytes": 32883
+        },
+        {
+            "component": "androidx.tracing:tracing:1.0.0",
+            "artifact": "tracing-1.0.0.aar (androidx.tracing:tracing:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.tracing/tracing/1.0.0/69cef34711dffbc517e7a0a419ec4a98f84f496a/tracing-1.0.0.aar",
+            "bytes": 4444
+        },
+        {
+            "component": "androidx.vectordrawable:vectordrawable-animated:1.1.0",
+            "artifact": "vectordrawable-animated-1.1.0.aar (androidx.vectordrawable:vectordrawable-animated:1.1.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.vectordrawable/vectordrawable-animated/1.1.0/fcda1161354501471c30a4e077af6b5c4d4eddc6/vectordrawable-animated-1.1.0.aar",
+            "bytes": 34496
+        },
+        {
+            "component": "androidx.vectordrawable:vectordrawable:1.1.0",
+            "artifact": "vectordrawable-1.1.0.aar (androidx.vectordrawable:vectordrawable:1.1.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.vectordrawable/vectordrawable/1.1.0/eac7a364fff534035a2a6cb17770a1288315f69f/vectordrawable-1.1.0.aar",
+            "bytes": 33236
+        },
+        {
+            "component": "androidx.versionedparcelable:versionedparcelable:1.1.1",
+            "artifact": "versionedparcelable-1.1.1.aar (androidx.versionedparcelable:versionedparcelable:1.1.1)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.versionedparcelable/versionedparcelable/1.1.1/18e18071e7715679e0593c570217edeb5ca48b9e/versionedparcelable-1.1.1.aar",
+            "bytes": 31061
+        },
+        {
+            "component": "androidx.viewpager:viewpager:1.0.0",
+            "artifact": "viewpager-1.0.0.aar (androidx.viewpager:viewpager:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.viewpager/viewpager/1.0.0/1f90e13820f96c2fb868f9674079a551678d68b2/viewpager-1.0.0.aar",
+            "bytes": 53513
+        },
+        {
+            "component": "androidx.wear.protolayout:protolayout-expression-pipeline:1.0.0",
+            "artifact": "protolayout-expression-pipeline-1.0.0.aar (androidx.wear.protolayout:protolayout-expression-pipeline:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.protolayout/protolayout-expression-pipeline/1.0.0/862acc7a02699520e1b74d7754cb99c242431dc/protolayout-expression-pipeline-1.0.0.aar",
+            "bytes": 131288
+        },
+        {
+            "component": "androidx.wear.protolayout:protolayout-expression:1.0.0",
+            "artifact": "protolayout-expression-1.0.0.aar (androidx.wear.protolayout:protolayout-expression:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.protolayout/protolayout-expression/1.0.0/57030384bfdbb41ee31a6147d5bec200194b71d9/protolayout-expression-1.0.0.aar",
+            "bytes": 172702
+        },
+        {
+            "component": "androidx.wear.protolayout:protolayout-proto:1.0.0",
+            "artifact": "protolayout-proto-1.0.0.jar (androidx.wear.protolayout:protolayout-proto:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.protolayout/protolayout-proto/1.0.0/abb132807aa40f10fb02639c770289e87366d550/protolayout-proto-1.0.0.jar",
+            "bytes": 1739194
+        },
+        {
+            "component": "androidx.wear.protolayout:protolayout:1.0.0",
+            "artifact": "protolayout-1.0.0.aar (androidx.wear.protolayout:protolayout:1.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.protolayout/protolayout/1.0.0/112db76d2a423814efcd71787e227209ac5063f/protolayout-1.0.0.aar",
+            "bytes": 266657
+        },
+        {
+            "component": "androidx.wear.tiles:tiles-proto:1.2.0",
+            "artifact": "tiles-proto-1.2.0.jar (androidx.wear.tiles:tiles-proto:1.2.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.tiles/tiles-proto/1.2.0/3090e207e4ebd46e46c159822ab293c9fc4a42c6/tiles-proto-1.2.0.jar",
+            "bytes": 45726
+        },
+        {
+            "component": "androidx.wear.tiles:tiles:1.2.0",
+            "artifact": "tiles-1.2.0.aar (androidx.wear.tiles:tiles:1.2.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.tiles/tiles/1.2.0/9740bcf17004a6154d8e32a7cbaae7d64694f0d8/tiles-1.2.0.aar",
+            "bytes": 241001
+        },
+        {
+            "component": "androidx.wear.watchface:watchface-complications-data:1.2.0",
+            "artifact": "watchface-complications-data-1.2.0.aar (androidx.wear.watchface:watchface-complications-data:1.2.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.watchface/watchface-complications-data/1.2.0/643922208bf55d4d9486da2d9d7b38882a79905e/watchface-complications-data-1.2.0.aar",
+            "bytes": 403627
+        },
+        {
+            "component": "androidx.wear.watchface:watchface-complications:1.2.0",
+            "artifact": "watchface-complications-1.2.0.aar (androidx.wear.watchface:watchface-complications:1.2.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.watchface/watchface-complications/1.2.0/265da19a8c711967861425952bb007c06adeee50/watchface-complications-1.2.0.aar",
+            "bytes": 52806
+        },
+        {
+            "component": "androidx.wear.watchface:watchface-data:1.2.0",
+            "artifact": "watchface-data-1.2.0.aar (androidx.wear.watchface:watchface-data:1.2.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.watchface/watchface-data/1.2.0/6dc19c773f63f3f271a7e81a857af6598b67da6a/watchface-data-1.2.0.aar",
+            "bytes": 218879
+        },
+        {
+            "component": "androidx.wear.watchface:watchface-style:1.2.0",
+            "artifact": "watchface-style-1.2.0.aar (androidx.wear.watchface:watchface-style:1.2.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.watchface/watchface-style/1.2.0/ef3b3340a474d56264065e256d2b89e57a9f57be/watchface-style-1.2.0.aar",
+            "bytes": 195756
+        },
+        {
+            "component": "androidx.wear.watchface:watchface:1.2.0",
+            "artifact": "watchface-1.2.0.aar (androidx.wear.watchface:watchface:1.2.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.watchface/watchface/1.2.0/b8fee772c67085f3898a866e0c1b1e98b6232189/watchface-1.2.0.aar",
+            "bytes": 527576
+        },
+        {
+            "component": "androidx.wear:wear:1.3.0",
+            "artifact": "wear-1.3.0.aar (androidx.wear:wear:1.3.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear/wear/1.3.0/873d3b9854aa0d1b4f460e240051ec1b6363a53c/wear-1.3.0.aar",
+            "bytes": 315975
+        },
+        {
+            "component": "com.google.guava:listenablefuture:1.0",
+            "artifact": "listenablefuture-1.0.jar (com.google.guava:listenablefuture:1.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/com.google.guava/listenablefuture/1.0/c949a840a6acbc5268d088e47b04177bf90b3cad/listenablefuture-1.0.jar",
+            "bytes": 3149
+        },
+        {
+            "component": "org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0",
+            "artifact": "kotlin-stdlib-common-1.9.0.jar (org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-common/1.9.0/cd65c21cfd1eec4d44ef09f9f52b6d9f8a720636/kotlin-stdlib-common-1.9.0.jar",
+            "bytes": 225141
+        },
+        {
+            "component": "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0",
+            "artifact": "kotlin-stdlib-jdk7-1.9.0.jar (org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.9.0/f320478990d05e0cfaadd74f9619fd6027adbf37/kotlin-stdlib-jdk7-1.9.0.jar",
+            "bytes": 958
+        },
+        {
+            "component": "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0",
+            "artifact": "kotlin-stdlib-jdk8-1.9.0.jar (org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.9.0/e000bd084353d84c9e888f6fb341dc1f5b79d948/kotlin-stdlib-jdk8-1.9.0.jar",
+            "bytes": 963
+        },
+        {
+            "component": "org.jetbrains.kotlin:kotlin-stdlib:1.9.0",
+            "artifact": "kotlin-stdlib-1.9.0.jar (org.jetbrains.kotlin:kotlin-stdlib:1.9.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.9.0/8ee15ef0c67dc83d874f412d84378d7f0eb50b63/kotlin-stdlib-1.9.0.jar",
+            "bytes": 1708006
+        },
+        {
+            "component": "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1",
+            "artifact": "kotlinx-coroutines-android-1.7.1.jar (org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-coroutines-android/1.7.1/c2d86b569f10b7fc7e28d3f50c0eed97897d77a7/kotlinx-coroutines-android-1.7.1.jar",
+            "bytes": 20637
+        },
+        {
+            "component": "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.1",
+            "artifact": "kotlinx-coroutines-core-jvm-1.7.1.jar (org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.1)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-coroutines-core-jvm/1.7.1/63a0779cf668e2a47d13fda7c3b0c4f8dc7762f4/kotlinx-coroutines-core-jvm-1.7.1.jar",
+            "bytes": 1548432
+        },
+        {
+            "component": "org.jetbrains:annotations:23.0.0",
+            "artifact": "annotations-23.0.0.jar (org.jetbrains:annotations:23.0.0)",
+            "file": "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/org.jetbrains/annotations/23.0.0/8cc20c07506ec18e0834947b84a864bfc094484e/annotations-23.0.0.jar",
+            "bytes": 29371
+        }
+    ],
+    "runtimeFiles": [
+        "/home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/libs/samsung-health-sensor-api-1.4.1.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.activity/activity-ktx/1.8.0/5c08d15826742f3cf909dee2832c8ab46a1cf316/activity-ktx-1.8.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.activity/activity/1.8.0/4266e2118d565daa20212d1726e11f41e1a4d0ca/activity-1.8.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.annotation/annotation-experimental/1.3.1/96a98340221569e1c2deb3da92de5ca6e3389a65/annotation-experimental-1.3.1.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.annotation/annotation/1.5.0/857678d6b4ca7b28571ef7935c668bdb57e15027/annotation-1.5.0.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.appcompat/appcompat-resources/1.6.1/3fe43025e50b556f319b1ff82a730d5a376a31e/appcompat-resources-1.6.1.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.appcompat/appcompat/1.6.1/6c7577004b7ebbee5ed87d512b578dd20e3c8c31/appcompat-1.6.1.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.arch.core/core-common/2.2.0/5e1b8b81dfd5f52c56a8d53b18ca759c19a301f3/core-common-2.2.0.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.arch.core/core-runtime/2.2.0/39705982680d78556b679ef9d5400d4f17509b0b/core-runtime-2.2.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.collection/collection-ktx/1.1.0/f807b2f366f7b75142a67d2f3c10031065b5168/collection-ktx-1.1.0.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.collection/collection/1.2.0/34dbc21d203cc4d4d623ac572a21acd4ccd716af/collection-1.2.0.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.concurrent/concurrent-futures/1.1.0/50b7fb98350d5f42a4e49704b03278542293ba48/concurrent-futures-1.1.0.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.core/core-ktx/1.9.0/b56f6b1bcb7882a9933c963907818da2094ae3a4/core-ktx-1.9.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.core/core/1.9.0/aa21c91d72e5d2a8dcc00c029ec65fc8d804ce02/core-1.9.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.cursoradapter/cursoradapter/1.0.0/74014983a86b83cbce534dec4e7aa9312f5f5d82/cursoradapter-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.customview/customview/1.0.0/30f5ff6075d112f8076e733b24410e68159735b6/customview-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.documentfile/documentfile/1.0.0/66104345c90cd8c2fd5ad2d3aad692b280e10c32/documentfile-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.drawerlayout/drawerlayout/1.0.0/dd02c7e207136e1272b33815cc61e57676ed13a2/drawerlayout-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.dynamicanimation/dynamicanimation/1.0.0/e980497a58fb319d471f3bb78d066b926a08ba8e/dynamicanimation-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.emoji2/emoji2-views-helper/1.2.0/4a22802fc9e88ad232522f04a35d1fdc3e5b4df0/emoji2-views-helper-1.2.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.emoji2/emoji2/1.2.0/2c95c9aa87788e4d9ce692ecfc961db004e57480/emoji2-1.2.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.fragment/fragment-ktx/1.6.2/28ad14836fdeab84c408f8bc0ce02bdeaf9c29fa/fragment-ktx-1.6.2.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.fragment/fragment/1.6.2/ae9b6401f983c8479327acc1a5dfe48da7066a4e/fragment-1.6.2.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.interpolator/interpolator/1.0.0/8a01fa254a23b9388571eb6334b03707c7d122d7/interpolator-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.legacy/legacy-support-core-utils/1.0.0/9b9570042115da8629519090dfeb71df75da59fc/legacy-support-core-utils-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-common/2.6.2/10f354fdb64868baecd67128560c5a0d6312c495/lifecycle-common-2.6.2.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-livedata-core-ktx/2.6.2/58c13cf1fa21b6516e58a8d291b11da864caffbf/lifecycle-livedata-core-ktx-2.6.2.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-livedata-core/2.6.2/23f66885a260f0a2cd6540927ea8795484afd2da/lifecycle-livedata-core-2.6.2.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-livedata/2.6.2/e7f6d9e232bf035af69c030917c1ccda8e840b57/lifecycle-livedata-2.6.2.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-process/2.6.2/1cda99630dfe13ea65f63d05821187bfe87a5967/lifecycle-process-2.6.2.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-runtime-ktx/2.6.2/33decb94ec41360796e2160159bdca7dde688d0f/lifecycle-runtime-ktx-2.6.2.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-runtime/2.6.2/f0ef27053faa89b3ec06c4f118cea0a15edde35b/lifecycle-runtime-2.6.2.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-viewmodel-ktx/2.6.2/a6214896fba4ed16b44b0c051e6ceea24be554/lifecycle-viewmodel-ktx-2.6.2.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-viewmodel-savedstate/2.6.2/483115c35b2926c3780dfdaf3f5d0342855e73b1/lifecycle-viewmodel-savedstate-2.6.2.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-viewmodel/2.6.2/fa35bfdbbe0e7df1573e377cbdd15de35176141d/lifecycle-viewmodel-2.6.2.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.loader/loader/1.0.0/8af8b6cec0da85c207d03e15840e0722cbc71e70/loader-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.localbroadcastmanager/localbroadcastmanager/1.0.0/2734f31c8321e83ce6b60570d14777fc33cc2ece/localbroadcastmanager-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.preference/preference/1.1.0/b63ca09e6cd22939b1eabbc52de16dd2a0d26319/preference-1.1.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.print/print/1.0.0/7722094652c48ebe27acc94d74a55e759e4635ff/print-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.profileinstaller/profileinstaller/1.3.0/624641814089cd7bebf427aafa68ac089fb38261/profileinstaller-1.3.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.recyclerview/recyclerview/1.1.0/8b4f97752ddcbc712af46d208aebd46585cde63b/recyclerview-1.1.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.resourceinspection/resourceinspection-annotation/1.0.1/8c21f8ff5d96d5d52c948707f7e4d6ca6773feef/resourceinspection-annotation-1.0.1.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.savedstate/savedstate-ktx/1.2.1/b86d338d91b1c26193a42b1d87be9bb02123fa16/savedstate-ktx-1.2.1.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.savedstate/savedstate/1.2.1/e364fc9dec32aa569d855f85864e50250318a093/savedstate-1.2.1.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.startup/startup-runtime/1.1.1/9d4ba67056aff98b69eadc1477c19a1e67cb9470/startup-runtime-1.1.1.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.swiperefreshlayout/swiperefreshlayout/1.0.0/4fd265b80a2b0fbeb062ab2bc4b1487521507762/swiperefreshlayout-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.tracing/tracing/1.0.0/69cef34711dffbc517e7a0a419ec4a98f84f496a/tracing-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.vectordrawable/vectordrawable-animated/1.1.0/fcda1161354501471c30a4e077af6b5c4d4eddc6/vectordrawable-animated-1.1.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.vectordrawable/vectordrawable/1.1.0/eac7a364fff534035a2a6cb17770a1288315f69f/vectordrawable-1.1.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.versionedparcelable/versionedparcelable/1.1.1/18e18071e7715679e0593c570217edeb5ca48b9e/versionedparcelable-1.1.1.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.viewpager/viewpager/1.0.0/1f90e13820f96c2fb868f9674079a551678d68b2/viewpager-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.protolayout/protolayout-expression-pipeline/1.0.0/862acc7a02699520e1b74d7754cb99c242431dc/protolayout-expression-pipeline-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.protolayout/protolayout-expression/1.0.0/57030384bfdbb41ee31a6147d5bec200194b71d9/protolayout-expression-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.protolayout/protolayout-proto/1.0.0/abb132807aa40f10fb02639c770289e87366d550/protolayout-proto-1.0.0.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.protolayout/protolayout/1.0.0/112db76d2a423814efcd71787e227209ac5063f/protolayout-1.0.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.tiles/tiles-proto/1.2.0/3090e207e4ebd46e46c159822ab293c9fc4a42c6/tiles-proto-1.2.0.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.tiles/tiles/1.2.0/9740bcf17004a6154d8e32a7cbaae7d64694f0d8/tiles-1.2.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.watchface/watchface-complications-data/1.2.0/643922208bf55d4d9486da2d9d7b38882a79905e/watchface-complications-data-1.2.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.watchface/watchface-complications/1.2.0/265da19a8c711967861425952bb007c06adeee50/watchface-complications-1.2.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.watchface/watchface-data/1.2.0/6dc19c773f63f3f271a7e81a857af6598b67da6a/watchface-data-1.2.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.watchface/watchface-style/1.2.0/ef3b3340a474d56264065e256d2b89e57a9f57be/watchface-style-1.2.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear.watchface/watchface/1.2.0/b8fee772c67085f3898a866e0c1b1e98b6232189/watchface-1.2.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/androidx.wear/wear/1.3.0/873d3b9854aa0d1b4f460e240051ec1b6363a53c/wear-1.3.0.aar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/com.google.guava/listenablefuture/1.0/c949a840a6acbc5268d088e47b04177bf90b3cad/listenablefuture-1.0.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-common/1.9.0/cd65c21cfd1eec4d44ef09f9f52b6d9f8a720636/kotlin-stdlib-common-1.9.0.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.9.0/f320478990d05e0cfaadd74f9619fd6027adbf37/kotlin-stdlib-jdk7-1.9.0.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.9.0/e000bd084353d84c9e888f6fb341dc1f5b79d948/kotlin-stdlib-jdk8-1.9.0.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.9.0/8ee15ef0c67dc83d874f412d84378d7f0eb50b63/kotlin-stdlib-1.9.0.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-coroutines-android/1.7.1/c2d86b569f10b7fc7e28d3f50c0eed97897d77a7/kotlinx-coroutines-android-1.7.1.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-coroutines-core-jvm/1.7.1/63a0779cf668e2a47d13fda7c3b0c4f8dc7762f4/kotlinx-coroutines-core-jvm-1.7.1.jar",
+        "/home/ubuntu/jobs/job_SSW3Rmkp/gradle-user-home/caches/modules-2/files-2.1/org.jetbrains/annotations/23.0.0/8cc20c07506ec18e0834947b84a864bfc094484e/annotations-23.0.0.jar"
+    ]
+}

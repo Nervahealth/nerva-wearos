@@ -1,0 +1,61 @@
+      name          : 'cardiacInputShape'
+      type          : '(Lcom/hugr/wearos/CardiacInputShapeChunk;Ljava/lang/String;IZ)[B'
+      access        : 0x0011 (PUBLIC FINAL)
+      code          -
+      registers     : 7
+      ins           : 5
+      outs          : 4
+      insns size    : 25 16-bit code units
+05ee4c:                                        |[05ee4c] com.hugr.wearos.SourcePayloadCodec.cardiacInputShape:(Lcom/hugr/wearos/CardiacInputShapeChunk;Ljava/lang/String;IZ)[B
+05ee5c: 1a00 dc12                              |0000: const-string v0, "chunk" // string@12dc
+05ee60: 7120 3e0f 0300                         |0002: invoke-static {v3, v0}, Lkotlin/jvm/internal/Intrinsics;.checkNotNullParameter:(Ljava/lang/Object;Ljava/lang/String;)V // method@0f3e
+05ee66: 1a00 d113                              |0005: const-string v0, "deliveryMode" // string@13d1
+05ee6a: 7120 3e0f 0400                         |0007: invoke-static {v4, v0}, Lkotlin/jvm/internal/Intrinsics;.checkNotNullParameter:(Ljava/lang/Object;Ljava/lang/String;)V // method@0f3e
+05ee70: 6200 2d01                              |000a: sget-object v0, Lcom/hugr/wearos/CardiacInputShapeCodec;.INSTANCE:Lcom/hugr/wearos/CardiacInputShapeCodec; // field@012d
+05ee74: 0000                                   |000c: nop // spacer
+05ee76: 6e40 740c 4265                         |000d: invoke-virtual {v2, v4, v5, v6}, Lcom/hugr/wearos/SourcePayloadCodec;.deliveryFlags:(Ljava/lang/String;IZ)B // method@0c74
+05ee7c: 0a01                                   |0010: move-result v1
+05ee7e: d511 ff00                              |0011: and-int/lit16 v1, v1, #int 255 // #00ff
+05ee82: 0000                                   |0013: nop // spacer
+05ee84: 6e40 4203 3051                         |0014: invoke-virtual {v0, v3, v1, v5}, Lcom/hugr/wearos/CardiacInputShapeCodec;.encode:(Lcom/hugr/wearos/CardiacInputShapeChunk;II)[B // method@0342
+05ee8a: 0c00                                   |0017: move-result-object v0
+05ee8c: 1100                                   |0018: return-object v0
+      catches       : (none)
+      positions     :
+        0x000a line=128
+        0x000c line=129
+        0x000d line=130
+        0x0013 line=131
+        0x0014 line=128
+        0x0018 line=132
+      locals        :
+        0x0000 - 0x0019 reg=2 this Lcom/hugr/wearos/SourcePayloadCodec;
+        0x0000 - 0x0019 reg=3 chunk Lcom/hugr/wearos/CardiacInputShapeChunk;
+        0x0000 - 0x0019 reg=4 deliveryMode Ljava/lang/String;
+        0x0000 - 0x0019 reg=5 batchSize I
+        0x0000 - 0x0019 reg=6 screenOn Z
+
+    #3              : (in Lcom/hugr/wearos/SourcePayloadCodec;)
+      name          : 'decodeCardiacInputShape'
+      type          : '([B)Lcom/hugr/wearos/DecodedCardiacInputShapeChunk;'
+      access        : 0x0011 (PUBLIC FINAL)
+      code          -
+      registers     : 3
+      ins           : 2
+      outs          : 2
+      insns size    : 12 16-bit code units
+05f12c:                                        |[05f12c] com.hugr.wearos.SourcePayloadCodec.decodeCardiacInputShape:([B)Lcom/hugr/wearos/DecodedCardiacInputShapeChunk;
+05f13c: 1a00 cb18                              |0000: const-string v0, "payload" // string@18cb
+05f140: 7120 3e0f 0200                         |0002: invoke-static {v2, v0}, Lkotlin/jvm/internal/Intrinsics;.checkNotNullParameter:(Ljava/lang/Object;Ljava/lang/String;)V // method@0f3e
+05f146: 6200 2d01                              |0005: sget-object v0, Lcom/hugr/wearos/CardiacInputShapeCodec;.INSTANCE:Lcom/hugr/wearos/CardiacInputShapeCodec; // field@012d
+05f14a: 6e20 4103 2000                         |0007: invoke-virtual {v0, v2}, Lcom/hugr/wearos/CardiacInputShapeCodec;.decode:([B)Lcom/hugr/wearos/DecodedCardiacInputShapeChunk; // method@0341
+05f150: 0c00                                   |000a: move-result-object v0
+05f152: 1100                                   |000b: return-object v0
+      catches       : (none)
+      positions     :
+        0x0005 line=136
+      locals        :
+        0x0000 - 0x000c reg=1 this Lcom/hugr/wearos/SourcePayloadCodec;
+        0x0000 - 0x000c reg=2 payload [B
+
+    #4              : (in Lcom/hugr/wearos/SourcePayloadCodec;)

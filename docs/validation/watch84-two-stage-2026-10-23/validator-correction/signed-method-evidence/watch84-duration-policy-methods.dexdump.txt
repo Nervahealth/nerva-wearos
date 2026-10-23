@@ -1,0 +1,115 @@
+      name          : '<clinit>'
+      type          : '()V'
+      access        : 0x10008 (STATIC CONSTRUCTOR)
+      code          -
+      registers     : 3
+      ins           : 0
+      outs          : 2
+      insns size    : 61 16-bit code units
+06487c:                                        |[06487c] com.hugr.wearos.WatchFreshRunDurationPolicy.<clinit>:()V
+06488c: 2200 fc01                              |0000: new-instance v0, Lcom/hugr/wearos/WatchFreshRunDurationPolicy; // type@01fc
+064890: 7010 690d 0000                         |0002: invoke-direct {v0}, Lcom/hugr/wearos/WatchFreshRunDurationPolicy;.<init>:()V // method@0d69
+064896: 6900 0006                              |0005: sput-object v0, Lcom/hugr/wearos/WatchFreshRunDurationPolicy;.INSTANCE:Lcom/hugr/wearos/WatchFreshRunDurationPolicy; // field@0600
+06489a: 0000                                   |0007: nop // spacer
+06489c: 1240                                   |0008: const/4 v0, #int 4 // #4
+06489e: 2300 cf02                              |0009: new-array v0, v0, [Ljava/lang/Long; // type@02cf
+0648a2: 1701 e093 0400                         |000b: const-wide/32 v1, #float 4.2039e-40 // #000493e0
+0648a8: 7120 070e 2100                         |000e: invoke-static {v1, v2}, Ljava/lang/Long;.valueOf:(J)Ljava/lang/Long; // method@0e07
+0648ae: 0c01                                   |0011: move-result-object v1
+0648b0: 1202                                   |0012: const/4 v2, #int 0 // #0
+0648b2: 4d01 0002                              |0013: aput-object v1, v0, v2
+0648b6: 1701 4077 1b00                         |0015: const-wide/32 v1, #float 2.52234e-39 // #001b7740
+0648bc: 7120 070e 2100                         |0018: invoke-static {v1, v2}, Ljava/lang/Long;.valueOf:(J)Ljava/lang/Long; // method@0e07
+0648c2: 0c01                                   |001b: move-result-object v1
+0648c4: 1212                                   |001c: const/4 v2, #int 1 // #1
+0648c6: 4d01 0002                              |001d: aput-object v1, v0, v2
+0648ca: 0000                                   |001f: nop // spacer
+0648cc: 1701 00dd 6d00                         |0020: const-wide/32 v1, #float 1.00893e-38 // #006ddd00
+0648d2: 7120 070e 2100                         |0023: invoke-static {v1, v2}, Ljava/lang/Long;.valueOf:(J)Ljava/lang/Long; // method@0e07
+0648d8: 0c01                                   |0026: move-result-object v1
+0648da: 1222                                   |0027: const/4 v2, #int 2 // #2
+0648dc: 4d01 0002                              |0028: aput-object v1, v0, v2
+0648e0: 0000                                   |002a: nop // spacer
+0648e2: 1701 0074 b701                         |002b: const-wide/32 v1, #float 6.739e-38 // #01b77400
+0648e8: 7120 070e 2100                         |002e: invoke-static {v1, v2}, Ljava/lang/Long;.valueOf:(J)Ljava/lang/Long; // method@0e07
+0648ee: 0c01                                   |0031: move-result-object v1
+0648f0: 1232                                   |0032: const/4 v2, #int 3 // #3
+0648f2: 4d01 0002                              |0033: aput-object v1, v0, v2
+0648f6: 0000                                   |0035: nop // spacer
+0648f8: 7110 210f 0000                         |0036: invoke-static {v0}, Lkotlin/collections/SetsKt;.setOf:([Ljava/lang/Object;)Ljava/util/Set; // method@0f21
+0648fe: 0c00                                   |0039: move-result-object v0
+064900: 6900 0a06                              |003a: sput-object v0, Lcom/hugr/wearos/WatchFreshRunDurationPolicy;.admitted:Ljava/util/Set; // field@060a
+064904: 0e00                                   |003c: return-void
+      catches       : (none)
+      positions     :
+        0x0007 line=31
+        0x0008 line=32
+        0x0015 line=33
+        0x001f line=32
+        0x0020 line=34
+        0x002a line=32
+        0x002b line=35
+        0x0035 line=32
+        0x0036 line=31
+      locals        :
+
+    #1              : (in Lcom/hugr/wearos/WatchFreshRunDurationPolicy;)
+      name          : 'accepts'
+      type          : '(J)Z'
+      access        : 0x0011 (PUBLIC FINAL)
+      code          -
+      registers     : 5
+      ins           : 3
+      outs          : 2
+      insns size    : 11 16-bit code units
+064794:                                        |[064794] com.hugr.wearos.WatchFreshRunDurationPolicy.accepts:(J)Z
+0647a4: 6200 0a06                              |0000: sget-object v0, Lcom/hugr/wearos/WatchFreshRunDurationPolicy;.admitted:Ljava/util/Set; // field@060a
+0647a8: 7120 070e 4300                         |0002: invoke-static {v3, v4}, Ljava/lang/Long;.valueOf:(J)Ljava/lang/Long; // method@0e07
+0647ae: 0c01                                   |0005: move-result-object v1
+0647b0: 7220 a60e 1000                         |0006: invoke-interface {v0, v1}, Ljava/util/Set;.contains:(Ljava/lang/Object;)Z // method@0ea6
+0647b6: 0a00                                   |0009: move-result v0
+0647b8: 0f00                                   |000a: return v0
+      catches       : (none)
+      positions     :
+        0x0000 line=38
+      locals        :
+        0x0000 - 0x000b reg=2 this Lcom/hugr/wearos/WatchFreshRunDurationPolicy;
+        0x0000 - 0x000b reg=3 durationMs J
+
+    #1              : (in Lcom/hugr/wearos/WatchFreshRunDurationPolicy;)
+      name          : 'lifetimeMs'
+      type          : '(J)J'
+      access        : 0x0011 (PUBLIC FINAL)
+      code          -
+      registers     : 5
+      ins           : 3
+      outs          : 3
+      insns size    : 25 16-bit code units
+064838:                                        |[064838] com.hugr.wearos.WatchFreshRunDurationPolicy.lifetimeMs:(J)J
+064848: 6e30 6a0d 3204                         |0000: invoke-virtual {v2, v3, v4}, Lcom/hugr/wearos/WatchFreshRunDurationPolicy;.accepts:(J)Z // method@0d6a
+06484e: 0a00                                   |0003: move-result v0
+064850: 3800 0700                              |0004: if-eqz v0, 000b // +0007
+064854: 1700 a0bb 0d00                         |0006: const-wide/32 v0, #float 1.26117e-39 // #000dbba0
+06485a: bb30                                   |0009: add-long/2addr v0, v3
+06485c: 1000                                   |000a: return-wide v0
+06485e: 1200                                   |000b: const/4 v0, #int 0 // #0
+064860: 0000                                   |000c: nop // spacer
+064862: 2200 3602                              |000d: new-instance v0, Ljava/lang/IllegalArgumentException; // type@0236
+064866: 1a01 e10f                              |000f: const-string v1, "Unadmitted fresh V2 duration" // string@0fe1
+06486a: 6e10 120e 0100                         |0011: invoke-virtual {v1}, Ljava/lang/Object;.toString:()Ljava/lang/String; // method@0e12
+064870: 0c01                                   |0014: move-result-object v1
+064872: 7020 fa0d 1000                         |0015: invoke-direct {v0, v1}, Ljava/lang/IllegalArgumentException;.<init>:(Ljava/lang/String;)V // method@0dfa
+064878: 2700                                   |0018: throw v0
+      catches       : (none)
+      positions     :
+        0x0000 line=41
+        0x0006 line=42
+        0x000b line=54
+        0x000c line=41
+      locals        :
+        0x000c - 0x000d reg=0 $i$a$-require-WatchFreshRunDurationPolicy$lifetimeMs$1 I
+        0x0000 - 0x0019 reg=2 this Lcom/hugr/wearos/WatchFreshRunDurationPolicy;
+        0x0000 - 0x0019 reg=3 durationMs J
+
+  source_file_idx   : 4231 (WatchFreshRunDurationPolicy.kt)
+

@@ -1,0 +1,296 @@
+[
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/HUGR_WATCH84_PHONE66_COMPATIBLE_PAIR_ADMITTED_2026_10_23.md",
+    "target": "docs/HUGR_WATCH84_PHONE66_COMPATIBLE_PAIR_ADMITTED_2026_10_23.md",
+    "bytes": 10253,
+    "sha256": "63868bee69ea50d628c515684530204bb304e39df5618bcfe728d83adc00a84d"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/Watch84_Phone66_Review_Only_Installation_and_30_Minute_Card_2026_10_23.md",
+    "target": "docs/Watch84_Phone66_Review_Only_Installation_and_30_Minute_Card_2026_10_23.md",
+    "bytes": 7947,
+    "sha256": "b9ce876a8201c4ce1d1e054aad8923bf11799e46ac30b5ae8685aa7ed69e9d5d"
+  },
+  {
+    "owner": "phone",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/HUGR_WATCH84_PHONE66_COMPATIBLE_PAIR_ADMITTED_2026_10_23.md",
+    "target": "docs/HUGR_WATCH84_PHONE66_COMPATIBLE_PAIR_ADMITTED_2026_10_23.md",
+    "bytes": 10253,
+    "sha256": "63868bee69ea50d628c515684530204bb304e39df5618bcfe728d83adc00a84d"
+  },
+  {
+    "owner": "phone",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/Watch84_Phone66_Review_Only_Installation_and_30_Minute_Card_2026_10_23.md",
+    "target": "docs/Watch84_Phone66_Review_Only_Installation_and_30_Minute_Card_2026_10_23.md",
+    "bytes": 7947,
+    "sha256": "b9ce876a8201c4ce1d1e054aad8923bf11799e46ac30b5ae8685aa7ed69e9d5d"
+  },
+  {
+    "owner": "controls",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/HUGR_WATCH84_PHONE66_COMPATIBLE_PAIR_ADMITTED_2026_10_23.md",
+    "target": "docs/HUGR_WATCH84_PHONE66_COMPATIBLE_PAIR_ADMITTED_2026_10_23.md",
+    "bytes": 10253,
+    "sha256": "63868bee69ea50d628c515684530204bb304e39df5618bcfe728d83adc00a84d"
+  },
+  {
+    "owner": "controls",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/Watch84_Phone66_Review_Only_Installation_and_30_Minute_Card_2026_10_23.md",
+    "target": "docs/Watch84_Phone66_Review_Only_Installation_and_30_Minute_Card_2026_10_23.md",
+    "bytes": 7947,
+    "sha256": "b9ce876a8201c4ce1d1e054aad8923bf11799e46ac30b5ae8685aa7ed69e9d5d"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/earlier-attempt-custody.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/earlier-attempt-custody.json",
+    "bytes": 470,
+    "sha256": "442fb0b4f9b6979896beac697081d0f839d1c6983363402b1cdb1d3fe21264ff"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/watch84-two-stage-dependency-recovery-result.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/watch84-two-stage-dependency-recovery-result.json",
+    "bytes": 14815,
+    "sha256": "63f458797f9e5f575300387e7aef2cb2cb60669d1f59aa3b4cd06e4d0fcb03c5"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/Two_Stage_Recovery_Terminal_Summary_2026_10_23.md",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/Two_Stage_Recovery_Terminal_Summary_2026_10_23.md",
+    "bytes": 4028,
+    "sha256": "4c417ceb45ce3331bcc996fdc489411d0594d16e79ca63ad30b15d22683518da"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/online-exact-four-resolution.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/online-exact-four-resolution.json",
+    "bytes": 7787,
+    "sha256": "1425e5ee372272f3b8fb89cbbec54d7c59716ac92b94beeea0225426913234be"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/online-exact-four-gradle.sanitized.log",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/online-exact-four-gradle.sanitized.log",
+    "bytes": 311,
+    "sha256": "9e526c77d05c02cec36f735d038335908e0a1da4025f509f363c870b6487cedf"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/actual-debug-runtime-offline-preflight.init.gradle",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/actual-debug-runtime-offline-preflight.init.gradle",
+    "bytes": 2220,
+    "sha256": "961b660d81f4581ef7b0efd6e75ccc027efe5530be6c5a8a09b126bce81c7469"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/actual-debug-runtime-offline-gradle.sanitized.log",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/actual-debug-runtime-offline-gradle.sanitized.log",
+    "bytes": 1048,
+    "sha256": "b2d0179a287643e9fd56d71eb1076bb6db417a83624d300860256d502e5cb229"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/actual-debug-runtime-offline-reporting-corrected.init.gradle",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/actual-debug-runtime-offline-reporting-corrected.init.gradle",
+    "bytes": 2299,
+    "sha256": "4250c09a238640c7a14c6724d5fa4729b4261397a748c4922245f48726a2e1a9"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/actual-debug-runtime-offline-reporting-corrected-graph.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/actual-debug-runtime-offline-reporting-corrected-graph.json",
+    "bytes": 86452,
+    "sha256": "783d3280a81beb011847dfd25c4656a5feb1cd7d9ce0583ecbed36e7398d4eb9"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/actual-debug-runtime-offline-reporting-corrected-gradle.sanitized.log",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/actual-debug-runtime-offline-reporting-corrected-gradle.sanitized.log",
+    "bytes": 339,
+    "sha256": "98d15250aaa2392fc9bc40a561eee938a2defc81e4c9f95dec017a2f68404264"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/actual-offline-reporting-continuation-result.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/actual-offline-reporting-continuation-result.json",
+    "bytes": 95805,
+    "sha256": "1221e01c2a82aad13229c25e2cd4450165cbd65c6eaf0cb060fa58edb051f969"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/new-build-stage/build-attempt.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/new-build-stage/build-attempt.json",
+    "bytes": 412,
+    "sha256": "7fc1ce5ba83c3a161328cb300ab01a08316454b2765517a687087f339fd9f4a7"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/sole-gradle.sanitized.log",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/sole-gradle.sanitized.log",
+    "bytes": 7943,
+    "sha256": "0d62ff790020ffca617a321618138545be7813750932110138e7295eb5b8ae1d"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/readonly-admission-stop.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/readonly-admission-stop.json",
+    "bytes": 275,
+    "sha256": "6724e3417af5d562241e59c5ad295cad17ec878f3af98878879dd58b9535b694"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/new-build-stop.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/new-build-stop.json",
+    "bytes": 210,
+    "sha256": "699ae77d18c930c6c7453d77893b95fbfae9aa0000813f615b88b0a137fc07c8"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/run_same_apk_readonly_admission.py",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/run_same_apk_readonly_admission.py",
+    "bytes": 4182,
+    "sha256": "26eb9170e9be2225df203ae825d4ed11b335cb2ed4bde0422aa90a5339361749"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/final-readonly-admission/readonly-invocation.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/final-readonly-admission/readonly-invocation.json",
+    "bytes": 2358,
+    "sha256": "6b3ea2b38aa19f55b69ebc2af84f4dcb783179215d546b1976edbb7ca415cc60"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/final-readonly-admission/watch84-candidate-artifact-admission.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/final-readonly-admission/watch84-candidate-artifact-admission.json",
+    "bytes": 2693,
+    "sha256": "fb06a8199346ae19445c7b3d744a4d4bc38cb0e8a06a8fab346f25516db2fc99"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/final-readonly-admission/same-apk-continuation-result.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/final-readonly-admission/same-apk-continuation-result.json",
+    "bytes": 4832,
+    "sha256": "84e5e7d4ce2b80d0017de703c362af9e91d542de06717913b8c5c136a38bec53"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/validator-correction/admit_watch84_candidate_corrected.py",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/validator-correction/admit_watch84_candidate_corrected.py",
+    "bytes": 19111,
+    "sha256": "cab0b4d7a5c47e9ea0d6e3fb657228728cee8909c8b1e67b3203c8269cd58f8d"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/validator-correction/candidate_admission_common.py",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/validator-correction/candidate_admission_common.py",
+    "bytes": 18646,
+    "sha256": "043d4ed65f66963a59c920fc21dc2c89c2fe833691d78807db5f54cc765b5fef"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/validator-correction/READ_ONLY_DIAGNOSIS.md",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/validator-correction/READ_ONLY_DIAGNOSIS.md",
+    "bytes": 4578,
+    "sha256": "e69a610d6416db47a72655b2d27468055f2915d3fd64ad6c4342d10769ef7a28"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/validator-correction/focused-signed-fixture-tests.log",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/validator-correction/focused-signed-fixture-tests.log",
+    "bytes": 1810,
+    "sha256": "bfb6aaaa35085c8cce42ec2d900e761685053487143ff7dfff189f0a57e3186c"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/validator-correction/tests/test_watch84_signed_fixture_representation.py",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/validator-correction/tests/test_watch84_signed_fixture_representation.py",
+    "bytes": 9440,
+    "sha256": "7a41377b8b38908e0b5b92e89166dc9ccf725455cf759ddf68177016eab489c7"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/validator-correction/signed-method-evidence/signed-method-extraction.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/validator-correction/signed-method-evidence/signed-method-extraction.json",
+    "bytes": 1470,
+    "sha256": "6cebbfb11ee90e86652b9a71f7c87b3be5e2753346923d5a580ff2de8662cc24"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/validator-correction/signed-method-evidence/watch84-shape-codec-methods.dexdump.txt",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/validator-correction/signed-method-evidence/watch84-shape-codec-methods.dexdump.txt",
+    "bytes": 79283,
+    "sha256": "4ded4c97bb80255185483cb472b3fab0bcb4d2b91300365506c4804e1c52534d"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/validator-correction/signed-method-evidence/watch84-fresh-session-methods.dexdump.txt",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/validator-correction/signed-method-evidence/watch84-fresh-session-methods.dexdump.txt",
+    "bytes": 12340,
+    "sha256": "a5a035503a7f6d3b3686c94f797a831c4f4984acdf2c02d3b30fd4ed3cfa5e34"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/validator-correction/signed-method-evidence/watch84-duration-policy-methods.dexdump.txt",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/validator-correction/signed-method-evidence/watch84-duration-policy-methods.dexdump.txt",
+    "bytes": 7453,
+    "sha256": "f3d76bd05bf650580a567dd84dd99c53a52c18b90edb6ac5a8166c53bf2bc1a8"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/validator-correction/signed-method-evidence/watch84-source-payload-codec-methods.dexdump.txt",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/validator-correction/signed-method-evidence/watch84-source-payload-codec-methods.dexdump.txt",
+    "bytes": 4177,
+    "sha256": "2de654a309cf484114fa1ebf81df15ea8b2f860ceab5e21d161c4d041bb476d2"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/artifact-preparation/admit_watch84_candidate.py",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/original-validator/admit_watch84_candidate.py",
+    "bytes": 15714,
+    "sha256": "9870129cc578d53ad7df0d7f6cb284366e03abe7087a438cf0fd276a1d2fabc3"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/artifact-preparation/candidate_admission_common.py",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/original-validator/candidate_admission_common.py",
+    "bytes": 18646,
+    "sha256": "043d4ed65f66963a59c920fc21dc2c89c2fe833691d78807db5f54cc765b5fef"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/watch84-build-stage/build-attempt.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/historical/original-watch84-build-attempt.json",
+    "bytes": 412,
+    "sha256": "4178829a99df868af34b4c3e380248e2e9f5a4c1852f2708c430d4902b60be34"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_REPLACEMENT_2026_10_23/replacement-stage/build-attempt.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/historical/first-replacement-build-attempt.json",
+    "bytes": 412,
+    "sha256": "17df64fe1de5904edc362d5ff1123e5d4f021a35d6d4efda7aee8353bf1d3fb4"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_REPLACEMENT_2026_10_23/replacement-stop.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/historical/first-replacement-stop.json",
+    "bytes": 249,
+    "sha256": "bb61fd20ce867609066175ce2feffde719ce9e9e994b61b078ad3e304d550917"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_REPLACEMENT_2026_10_23/Watch84_Phone66_Installation_Proposal_and_Prepared_30_Minute_Card_2026_10_23.md",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/historical/held-installation-proposal.md",
+    "bytes": 8150,
+    "sha256": "3d60ee8428b53597e73b1afebad3c4b0e4845fb6d7a26b43ef7d62c7361ca0e3"
+  },
+  {
+    "owner": "watch",
+    "source": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/phone66-validation/phone66-candidate-compiled-proof/phone66-candidate-artifact-admission.json",
+    "target": "docs/validation/watch84-two-stage-2026-10-23/phone66-existing-artifact-admission.json",
+    "bytes": 4896,
+    "sha256": "c5982223165c147644dc6b22ed337d035a2c54e18e679d9a7849e44baa784c54"
+  }
+]

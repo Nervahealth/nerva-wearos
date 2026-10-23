@@ -1,0 +1,84 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. See https://docs.gradle.org/8.1/userguide/gradle_daemon.html#sec:disabling_the_daemon.
+Daemon will be stopped at the end of the build 
+
+> Configure project :app
+WARNING: The option setting 'android.aapt2FromMavenOverride=/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/compile-route/aapt2' is experimental.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses
+> Task :app:mergeDebugJniLibFolders
+> Task :app:compileDebugKotlin
+> Task :app:mergeExtDexDebug
+> Task :app:mergeLibDexDebug
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+
+> Task :app:compileDebugKotlin
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/BleGattService.kt:334:46 Unnecessary safe call on a non-null receiver of type Intent?
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/BleGattService.kt:341:17 The value 'DiagnosticStage.FOREGROUND_PROMOTION' assigned to 'var failedStage: DiagnosticStage defined in com.hugr.wearos.BleGattService.onStartCommand' is never used
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/BleGattService.kt:350:21 The value 'DiagnosticStage.SERVICE_START' assigned to 'var failedStage: DiagnosticStage defined in com.hugr.wearos.BleGattService.onStartCommand' is never used
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/BleGattService.kt:370:70 Unnecessary safe call on a non-null receiver of type Intent?
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/BleGattService.kt:378:79 Unnecessary safe call on a non-null receiver of type Intent?
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/BleGattService.kt:390:23 Unnecessary safe call on a non-null receiver of type Intent?
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/BleGattService.kt:392:17 Unnecessary safe call on a non-null receiver of type Intent?
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/BleGattService.kt:394:44 Unnecessary safe call on a non-null receiver of type Intent?
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/BleGattService.kt:440:19 Unnecessary safe call on a non-null receiver of type Intent?
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/BleGattService.kt:861:13 'setter for value: ByteArray!' is deprecated. Deprecated in Java
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/BleGattService.kt:873:13 'setter for value: ByteArray!' is deprecated. Deprecated in Java
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/BleGattService.kt:885:13 'setter for value: ByteArray!' is deprecated. Deprecated in Java
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/BleGattService.kt:1189:41 'getter for value: ByteArray!' is deprecated. Deprecated in Java
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/BleGattService.kt:1341:104 'getter for value: ByteArray!' is deprecated. Deprecated in Java
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/BleGattService.kt:1401:105 Unnecessary safe call on a non-null receiver of type BluetoothDevice?
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/HealthSensorService.kt:562:81 No cast needed
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/HealthSensorService.kt:595:71 No cast needed
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/HealthSensorService.kt:596:65 No cast needed
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/HealthSensorService.kt:597:67 No cast needed
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/HealthSensorService.kt:616:84 No cast needed
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/HealthSensorService.kt:740:94 No cast needed
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/HealthSensorService.kt:741:96 No cast needed
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/HealthSensorService.kt:742:78 No cast needed
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/HealthSensorService.kt:787:80 No cast needed
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/HealthSensorService.kt:788:80 No cast needed
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/HealthSensorService.kt:789:80 No cast needed
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/MainActivity.kt:514:15 'onRequestPermissionsResult(Int, Array<(out) String!>, IntArray): Unit' is deprecated. Deprecated in Java
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/RetainedStateInspector.kt:71:13 Variable 'recorderObjects' is never used
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/SourceJournal.kt:245:13 Lateinit is unnecessary: definitely initialized in constructors
+w: file:///home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/src/main/java/com/hugr/wearos/SourceReplayWindow.kt:48:9 Parameter 'durablePhoneRecordIndex' is never used
+
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugGlobalSynthetics
+> Task :app:processDebugJavaRes
+> Task :app:mergeProjectDexDebug
+> Task :app:mergeDebugJavaResource
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+
+BUILD SUCCESSFUL in 1m 12s
+32 actionable tasks: 15 executed, 17 up-to-date
