@@ -1,0 +1,17 @@
+{
+  "exitCode": 1,
+  "wallSeconds": 5.890128333994653,
+  "operationEvents": [
+    "operation_ordinal=1 kind=R1_ZERO_WRITE event=callback_entry",
+    "operation_ordinal=1 kind=R1_ZERO_WRITE event=pre_response",
+    "operation_ordinal=1 kind=R1_ZERO_WRITE event=response_attempt result=true status=0",
+    "operation_ordinal=2 kind=R1_ZERO_READ event=callback_entry",
+    "operation_ordinal=2 kind=R1_ZERO_READ event=pre_response",
+    "operation_ordinal=2 kind=R1_ZERO_READ event=response_attempt result=true status=257"
+  ],
+  "graphArtifactCount": 75,
+  "testCryptoMode": "OFF JDK crypto",
+  "originalStopsRetained": true,
+  "newAPKs": 0,
+  "legacyCompileStubLimitation": true
+}

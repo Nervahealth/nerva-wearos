@@ -1,0 +1,49 @@
+{
+  "exitCode": 1,
+  "outcome": "FAIL",
+  "elapsedMs": 10998.792,
+  "testClass": "com.hugr.wearos.ReceiptAckTimeoutActualCallbackReproductionTest",
+  "testsRun": 1,
+  "testOnlyChanges": [
+    "actual callback.onMtuChanged(syntheticPhone, 128) after actual connection-state callback",
+    "payload-free System.nanoTime timestamp on each observer event"
+  ],
+  "productionClasses": "frozen captured production-kotlin-debug-classes; unchanged",
+  "newApks": 0,
+  "gradleInvoked": false,
+  "networkUsed": false,
+  "conscryptMode": "OFF",
+  "operationEvents": [
+    "timestampNanos=121806629364041 operation_ordinal=1 kind=R1_ZERO_WRITE event=callback_entry",
+    "timestampNanos=121806637073328 operation_ordinal=1 kind=R1_ZERO_WRITE event=pre_response",
+    "timestampNanos=121806637972630 operation_ordinal=1 kind=R1_ZERO_WRITE event=response_attempt result=true status=0",
+    "timestampNanos=121806638100709 operation_ordinal=2 kind=R1_ZERO_READ event=callback_entry",
+    "timestampNanos=121806640648310 operation_ordinal=2 kind=R1_ZERO_READ event=pre_response",
+    "timestampNanos=121806640727446 operation_ordinal=2 kind=R1_ZERO_READ event=response_attempt result=true status=0",
+    "timestampNanos=121806640771170 operation_ordinal=3 kind=R1_NONZERO_WRITE event=callback_entry",
+    "timestampNanos=121806640863665 operation_ordinal=3 kind=R1_NONZERO_WRITE event=pre_response",
+    "timestampNanos=121806640897740 operation_ordinal=3 kind=R1_NONZERO_WRITE event=response_attempt result=true status=0",
+    "timestampNanos=121806640930551 operation_ordinal=4 kind=R1_NONZERO_READ event=callback_entry",
+    "timestampNanos=121806641012182 operation_ordinal=4 kind=R1_NONZERO_READ event=pre_response",
+    "timestampNanos=121806641043008 operation_ordinal=4 kind=R1_NONZERO_READ event=response_attempt result=true status=0",
+    "timestampNanos=121806641314165 operation_ordinal=5 kind=SOURCE_RESUME_VALID event=callback_entry",
+    "timestampNanos=121806644310855 operation_ordinal=5 kind=SOURCE_RESUME_VALID event=pre_response",
+    "timestampNanos=121806644387374 operation_ordinal=5 kind=SOURCE_RESUME_VALID event=response_attempt result=true status=0"
+  ],
+  "operationEventCount": 15,
+  "sourceSha256": {
+    "ReceiptAckTimeoutActualCallbackReproductionTest.kt": "0031bcacfc80612cd6f12daec6f9a9d6b36a593d63eeed1e07bb4ea05b4e0e30",
+    "inputs/ReceiptAckTimeoutActualCallbackReproductionTest.original.kt": "22e3fb724add3e707d73528b20e11a476bf152fb0a2e2f06133814757ee67d09",
+    "inputs/FreshRunDirectoryLinuxShadow.captured.kt": "f4aba04f1e441c2620a38c6ad84716bf06733bce43ff6f2f91c67d02909e8588",
+    "exact-command.json": "ef717894383573fb19be59aa830179dba0c67273c2f5726762295a5c887ba896",
+    "compile-and-run-offline.sh": "b5d1a2fa8259eb5f5cece3da3682987a3c0f3c6a7e29ec74f0d9fdbd004286af"
+  },
+  "originalPreparedFailureRetained": {
+    "path": "../direct-offline-continuation/frozen-runtime-closure-continuation/result.json",
+    "failure": "R1_ZERO_READ response status 257 before MTU negotiation"
+  },
+  "notes": [
+    "Synthetic direct-JVM/Robolectric callback reproduction only; no SDK, radio, device, or historical-cause claim.",
+    "Invalid ACK expected GATT_FAILURE; false response and null-server R1 paths remain asserted."
+  ]
+}

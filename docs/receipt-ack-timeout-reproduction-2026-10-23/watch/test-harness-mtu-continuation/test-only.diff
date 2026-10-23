@@ -1,0 +1,99 @@
+--- /home/ubuntu/HUGR_RECEIPT_ACK_TIMEOUT_REPRODUCTION_2026_10_23/watch/test-harness-mtu-continuation/inputs/ReceiptAckTimeoutActualCallbackReproductionTest.original.kt	2026-10-23 12:22:42.331609903 +0000
++++ /home/ubuntu/HUGR_RECEIPT_ACK_TIMEOUT_REPRODUCTION_2026_10_23/watch/test-harness-mtu-continuation/ReceiptAckTimeoutActualCallbackReproductionTest.kt	2026-10-23 12:46:43.874128838 +0000
+@@ -87,16 +87,28 @@
+         val logFile = File(requireNotNull(System.getProperty("hugr.repro.operationLog")))
+         ReceiptAckTimeoutResponseObserver.begin(logFile)
+         val session = FreshRunRuntime.admit(activity)
++        // TEST ONLY synthetic setup: begin the newly admitted session before service startup.
++        // This enables one synthetic journal append/finalize; it does not alter production code.
++        assertTrue("test setup begins newly admitted synthetic session", session.begin())
+         val serviceIntent = Intent(activity, BleGattService::class.java).apply {
+             action = FreshRunRuntime.ACTION_START_FRESH_FIVE_MINUTES
+         }
+         var serviceController: org.robolectric.android.controller.ServiceController<BleGattService>? = null
+         try {
+-            serviceController = Robolectric.buildService(BleGattService::class.java, serviceIntent).create().startCommand(0, 231023)
++            // TEST ONLY callback-local bootstrap. Calling startCommand would launch the full Health
++            // service in this no-Samsung-SDK JVM harness and fail/terminate the admitted session before
++            // the callback contract. Set only the callback prerequisites, then invoke actual production
++            // connection, MTU, resume, ACK, read and write callback methods below.
++            serviceController = Robolectric.buildService(BleGattService::class.java, serviceIntent).create()
+             val service = serviceController.get()
++            setField(service, "freshMode", true)
++            setField(service, "sourceJournal", session.journal)
+             val callback: BluetoothGattServerCallback = field(service, "gattServerCallback")
+             val syntheticPhone = adapter.getRemoteDevice("00:11:22:33:44:55")
+             callback.onConnectionStateChange(syntheticPhone, BluetoothGatt.GATT_SUCCESS, BluetoothProfile.STATE_CONNECTED)
++            // TEST ONLY: model the negotiated ATT MTU required by the source protocol's 44-byte
++            // receipt header. The preceding connection callback alone retains the source default 23.
++            callback.onMtuChanged(syntheticPhone, 128)
+             setField(service, "gattServer", ReflectionHelpers.newInstance(BluetoothGattServer::class.java))
+ 
+             val receiptCharacteristic = BluetoothGattCharacteristic(
+@@ -130,16 +142,26 @@
+             callback.onCharacteristicReadRequest(syntheticPhone, readNonzero, 0, receiptCharacteristic)
+             ReceiptAckTimeoutResponseObserver.assertOne(readNonzero, BluetoothGatt.GATT_SUCCESS)
+ 
+-            // Form a small synthetic finalized source segment using the exact production journal and
+-            // session transaction. No retained/device record fixture is used.
+-            session.journal.append(SourceStreamCode.DEVICE_HEALTH, 1L, byteArrayOf(1, 2, 3))
+-            session.finalizeRecording()
++            // Form one synthetic source record through the admitted session. Actual production resume
++            // below then seals the active segment and captures its manifest; no retained/device fixture.
++            assertNotNull("admitted synthetic session accepts setup sample", session.append(
++                SourceStreamCode.DEVICE_HEALTH, 1L, byteArrayOf(1, 2, 3),
++            ))
++            val expectedManifestEnd = session.journal.latestRecordIndex()
++
++            // Actual source-control resume invokes production handleSourceResume and its asynchronous
++            // prepare/apply lineage, including the source seal/capture that establishes ACK endpoint.
++            val resume = ReceiptAckTimeoutResponseObserver.enter("SOURCE_RESUME_VALID")
++            callback.onCharacteristicWriteRequest(
++                syntheticPhone, resume, sourceControlCharacteristic, false, true, 0,
++                SourceReplayProtocol.encodeResumeRequest(
++                    SourceResumeRequest(session.journal.watchBootSessionId, 0L),
++                ),
++            )
++            ReceiptAckTimeoutResponseObserver.assertOne(resume, BluetoothGatt.GATT_SUCCESS)
++            awaitProductionSourceResume(service, session.journal.watchBootSessionId, expectedManifestEnd)
+             val manifest = session.snapshot().manifests.single()
+-            setField(service, "activeReplaySessionId", session.journal.watchBootSessionId)
+-            setField(service, "durablePhoneRecordIndex", 0L)
+-            setField(service, "replayHighWaterRecordIndex", manifest.lastRecordIndex)
+-            setField(service, "queuedReplayManifestEndIndex", manifest.lastRecordIndex)
+-            setField(service, "replayActive", true)
++
+             val acknowledgement = SourceSegmentAcknowledgement(
+                 session.journal.watchBootSessionId,
+                 manifest.lastRecordIndex,
+@@ -254,6 +276,21 @@
+         field.isAccessible = true
+         field.set(target, value)
+     }
++
++    /** TEST ONLY: waits for the actual source-resume executor → main-handler production lineage. */
++    private fun awaitProductionSourceResume(service: BleGattService, sessionId: java.util.UUID, manifestEnd: Long) {
++        val deadlineNanos = System.nanoTime() + TimeUnit.SECONDS.toNanos(5L)
++        while (System.nanoTime() < deadlineNanos) {
++            Shadows.shadowOf(Looper.getMainLooper()).idle()
++            if (
++                field<java.util.UUID?>(service, "activeReplaySessionId") == sessionId &&
++                field<Long?>(service, "queuedReplayManifestEndIndex") == manifestEnd
++            ) return
++            Thread.sleep(10L)
++        }
++        assertEquals(sessionId, field<java.util.UUID?>(service, "activeReplaySessionId"))
++        assertEquals(manifestEnd, field<Long?>(service, "queuedReplayManifestEndIndex"))
++    }
+ }
+ 
+ /** TEST ONLY payload-free event sink consumed by the report driver after the test. */
+@@ -307,7 +344,7 @@
+ 
+     private fun emit(ordinal: Int, kind: String, event: String) {
+         synchronized(this) {
+-            log?.appendText("operation_ordinal=$ordinal kind=$kind event=$event\n")
++            log?.appendText("timestampNanos=${System.nanoTime()} operation_ordinal=$ordinal kind=$kind event=$event\n")
+         }
+     }
+ }

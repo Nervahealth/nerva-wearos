@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "task": "bounded source/test reproduction of Watch receipt R1 callback and source ACK callback/timeout exposure",
+  "authority": {
+    "authorizedAt": "2026-10-23T14:13:16+02:00",
+    "scope": "synthetic test reproduction only; no production correction/diagnostics/FIFO/timer behavior change; no build/sign/admission/device/network/private data"
+  },
+  "controlledSource": {
+    "authorizedHead": "19290a88239927aac0b8deba2793cea3b0687227",
+    "currentHead": "fc831eb67a9a649ffc996dee3713e5e4a429437c",
+    "status": "clean",
+    "appSourceAndTestDiffFromAuthorizedHead": "empty; later HEAD advancement was documentation-only, verified in CONTROLLED_SOURCE_AFTER.txt"
+  },
+  "harness": {
+    "kind": "copied disposable source-only harness",
+    "sourceRoot": "/home/ubuntu/HUGR_RECEIPT_ACK_TIMEOUT_REPRODUCTION_2026_10_23/watch/disposable-harness-source",
+    "actualCallbackTestSource": "/home/ubuntu/HUGR_RECEIPT_ACK_TIMEOUT_REPRODUCTION_2026_10_23/watch/runnable-test-source/ReceiptAckTimeoutActualCallbackReproductionTest.kt",
+    "driver": "/home/ubuntu/HUGR_RECEIPT_ACK_TIMEOUT_REPRODUCTION_2026_10_23/watch/run_offline_actual_callback_reproduction.sh",
+    "manifest": "/home/ubuntu/HUGR_RECEIPT_ACK_TIMEOUT_REPRODUCTION_2026_10_23/watch/COPIED_DISPOSABLE_HARNESS_HASH_MANIFEST_AFTER.txt"
+  },
+  "attempt": {
+    "invocation": ":app:testDebugUnitTest --tests com.hugr.wearos.ReceiptAckTimeoutActualCallbackReproductionTest",
+    "mode": "offline only; Gradle 8.1 / arm Java 17 / retained Android SDK and QEMU AAPT2 route; 900 second ceiling",
+    "outcome": "STOPPED_BEFORE_KOTLIN_COMPILATION_AND_TEST_EXECUTION",
+    "actualCallbacksInvoked": false,
+    "reason": "No cached version of org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20 available for offline mode; required transitively by androidx.wear.watchface:watchface:1.2.0 via kotlinx-coroutines 1.7.1.",
+    "networkResolutionOrInstall": "not attempted",
+    "stdoutLog": "/home/ubuntu/HUGR_RECEIPT_ACK_TIMEOUT_REPRODUCTION_2026_10_23/watch/TEST_EXECUTION_STDOUT_RAW.log"
+  },
+  "coverage": {
+    "actualProductionCallbackTargeted": true,
+    "executed": false,
+    "testSourceInvokes": [
+      "BleGattService.gattServerCallback.onCharacteristicWriteRequest R1:0",
+      "BleGattService.gattServerCallback.onCharacteristicReadRequest R1:0/nonzero page",
+      "BleGattService.gattServerCallback.onCharacteristicWriteRequest source ACK"
+    ],
+    "testSourceChecks": [
+      "exactly-once response status/result",
+      "source ACK durable acknowledgement before response attempt",
+      "invalid ACK failure response",
+      "concurrent nonzero R1/duplicate ACK response behavior",
+      "deliberate >10 second session-lock delay separated from natural timing",
+      "false sendResponse observability",
+      "null gattServer omission exposure"
+    ],
+    "naturalTimingMeasured": false,
+    "injectedDelayExecuted": false
+  },
+  "verdict": {
+    "historicalAttribution": "UNRESOLVED",
+    "expectedFaultInjection": "NOT_EXECUTED",
+    "unanticipatedTestFailure": "NONE; test did not compile/run because of the pre-test offline dependency blocker",
+    "smallestCorrectiveProposal": "None for implementation: no runtime reproduction result exists. If future authority permits, restore only the already-declared cached Kotlin stdlib artifact to an offline dependency cache, then execute this exact bounded test before proposing behavioral change."
+  }
+}

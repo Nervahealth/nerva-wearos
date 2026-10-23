@@ -1,0 +1,141 @@
+{
+  "status": "PARTIAL_NOT_JOINED_PASS",
+  "phoneCasesExecutedAndPassed": 7,
+  "phoneWallSeconds": 1.4618759589939145,
+  "watchJUnitOutcome": "FAIL_BEFORE_ACK_READINESS",
+  "actualWatchCallbackSuccesses": 5,
+  "watchTimings": [
+    {
+      "ordinal": 1,
+      "kind": "R1_ZERO_WRITE",
+      "callbackEntryToResponseAttemptMs": 8.608589,
+      "naturalSynthetic": true,
+      "injectedDelay": false
+    },
+    {
+      "ordinal": 2,
+      "kind": "R1_ZERO_READ",
+      "callbackEntryToResponseAttemptMs": 2.626737,
+      "naturalSynthetic": true,
+      "injectedDelay": false
+    },
+    {
+      "ordinal": 3,
+      "kind": "R1_NONZERO_WRITE",
+      "callbackEntryToResponseAttemptMs": 0.12657,
+      "naturalSynthetic": true,
+      "injectedDelay": false
+    },
+    {
+      "ordinal": 4,
+      "kind": "R1_NONZERO_READ",
+      "callbackEntryToResponseAttemptMs": 0.112457,
+      "naturalSynthetic": true,
+      "injectedDelay": false
+    },
+    {
+      "ordinal": 5,
+      "kind": "SOURCE_RESUME_VALID",
+      "callbackEntryToResponseAttemptMs": 3.073209,
+      "naturalSynthetic": true,
+      "injectedDelay": false
+    }
+  ],
+  "sourceAckAcceptanceReproduction": "NOT_REACHED",
+  "injected10_1sWatchDelay": "NOT_EXECUTED",
+  "historicalCause": "UNPROVED",
+  "productionChanges": 0,
+  "newApks": 0,
+  "files": [
+    {
+      "path": "phone/prepared-continuation/receipt_ack_timeout_reproduction.cjs",
+      "bytes": 32623,
+      "sha256": "0d9b7405b51d1391c60f3282f8b79ac37f3f85ac0b4dd2132ca7b8dc10d795b6"
+    },
+    {
+      "path": "phone/prepared-continuation/run_receipt_ack_timeout_reproduction.py",
+      "bytes": 8641,
+      "sha256": "edba9206c24606f4cb2642250ab9fe749d5e138e1d8a666e5a6ef2da3a850698"
+    },
+    {
+      "path": "phone/prepared-continuation/execution-attempt-1.log",
+      "bytes": 1100,
+      "sha256": "0096f5296b7b43de6b9cc69afde091be61ea44832d48113fe3f4fa0bcdac05d3"
+    },
+    {
+      "path": "phone/prepared-continuation/execution-attempt-1.json",
+      "bytes": 104,
+      "sha256": "76425a4f502622b4b12ea042f4205ac1615029abbd64aefe196994aa9330c30d"
+    },
+    {
+      "path": "phone/prepared-continuation/pinned-source-manifest.json",
+      "bytes": 1159,
+      "sha256": "9411dbea11201707e34aa5338dd7803da0a066ea1969b165251679211a0ae03a"
+    },
+    {
+      "path": "phone/prepared-continuation/review-to-current-content-equality.json",
+      "bytes": 724,
+      "sha256": "20895b45de0652cf9c531b6a97623b95a91199c1280db1031607eff295ce256b"
+    },
+    {
+      "path": "phone/prepared-continuation/executed-command.json",
+      "bytes": 218,
+      "sha256": "207af3d041500eeba0e9595bd0c105923f43df69b7df47fe8e8797bf42346a4c"
+    },
+    {
+      "path": "watch/test-harness-mtu-continuation/ReceiptAckTimeoutActualCallbackReproductionTest.kt",
+      "bytes": 19543,
+      "sha256": "0031bcacfc80612cd6f12daec6f9a9d6b36a593d63eeed1e07bb4ea05b4e0e30"
+    },
+    {
+      "path": "watch/test-harness-mtu-continuation/inputs/ReceiptAckTimeoutActualCallbackReproductionTest.original.kt",
+      "bytes": 17064,
+      "sha256": "22e3fb724add3e707d73528b20e11a476bf152fb0a2e2f06133814757ee67d09"
+    },
+    {
+      "path": "watch/test-harness-mtu-continuation/test-only.diff",
+      "bytes": 6574,
+      "sha256": "40a5233f53225b302a5f68c66379045de5c5ed7cc809b9cf4d7f9a49cbb8cd48"
+    },
+    {
+      "path": "watch/test-harness-mtu-continuation/compile-and-run-offline.sh",
+      "bytes": 5179,
+      "sha256": "b5d1a2fa8259eb5f5cece3da3682987a3c0f3c6a7e29ec74f0d9fdbd004286af"
+    },
+    {
+      "path": "watch/test-harness-mtu-continuation/exact-command.json",
+      "bytes": 19245,
+      "sha256": "ef717894383573fb19be59aa830179dba0c67273c2f5726762295a5c887ba896"
+    },
+    {
+      "path": "watch/test-harness-mtu-continuation/result.json",
+      "bytes": 3252,
+      "sha256": "7d068809c95da7e8c97fa1b24ed63e167483dfb19e5c173a6c3237d2688da25d"
+    },
+    {
+      "path": "watch/test-harness-mtu-continuation/execution.log",
+      "bytes": 1580,
+      "sha256": "3535c77febb846d48fe46f589ebb8e738118a97c50fbc384425e9e4b5e4859de"
+    },
+    {
+      "path": "watch/test-harness-mtu-continuation/payload-free-operation.log",
+      "bytes": 1500,
+      "sha256": "dc9ca3ab197c0f552943c53562d5c03147ead16f59d850091f431086394b4b65"
+    },
+    {
+      "path": "watch/RESULT.json",
+      "bytes": 3449,
+      "sha256": "13ed0d436fcb5afe0ca3015eef68a2b5c71920ccce7d8ad62ba6081915037497"
+    },
+    {
+      "path": "watch/direct-offline-continuation/RESULT.json",
+      "bytes": 3976,
+      "sha256": "8f84986c9d4b41a08f3ab624a68d1b136e1b1772d06042857e42e2be39a92c02"
+    },
+    {
+      "path": "watch/direct-offline-continuation/frozen-runtime-closure-continuation/result.json",
+      "bytes": 680,
+      "sha256": "e18c4363aeec3920e72978d5e0e6feccc65fb11e5444e5cc59e73ea73b2715cd"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "operation": "DIRECT_OFFLINE_CONTINUATION_OF_AUTHORIZED_RECEIPT_ACK_TIMEOUT_REPRODUCTION",
+  "scope": "test-only, local retained artifacts only; no production change, Gradle metadata/configuration change, network fetch, APK/AAB build, signing, install, device, private data, or credentials",
+  "status": "STOPPED_BEFORE_CALLBACK_INVOCATION",
+  "priorImmutableStop": {
+    "status": "PRESERVED",
+    "path": "/home/ubuntu/HUGR_RECEIPT_ACK_TIMEOUT_REPRODUCTION_2026_10_23/watch/RESULT.json",
+    "reason": "Gradle offline test runtime required unavailable kotlin-stdlib-jdk8:1.8.20; this continuation did not restore, fetch, pin, or configure it."
+  },
+  "directOfflineApproach": {
+    "productionRuntime": "captured exact precompiled production Kotlin debug classes and R.jar from HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch/app/build; no production source was compiled or altered",
+    "testRuntime": "prior precompiled test bytecode whose source is byte-identical to the prepared test, plus cached Robolectric 4.12.2, cached instrumented Android SDK 34 jar, JUnit 4.13.2, and cached Kotlin 1.9.0 jars",
+    "execution": "direct JUnitCore on retained ARM JDK 17; no Gradle invocation, dependency resolution, network, build, APK, or device operation",
+    "sourceClassBindingManifest": "source-classbinding-manifest.sha256",
+    "toolClasspathManifest": "tool-classpath-manifest-final.sha256"
+  },
+  "attempts": [
+    {
+      "name": "direct_junit_initial",
+      "result": "STOPPED_AT_ROBOLECTRIC_SDK_LOCAL_LAYOUT",
+      "log": "direct-junit-execution.log",
+      "detail": "Robolectric requested the cached SDK 34 filename at its dependency directory root; no test setup/callback entered."
+    },
+    {
+      "name": "direct_junit_sdk_layout_corrected",
+      "result": "STOPPED_AT_INCOMPLETE_TEST_RUNTIME_AND_HOST_JAVA_21_CLASSFILE",
+      "log": "direct-junit-rerun-execution.log",
+      "detail": "Missing AndroidX Test InstrumentationRegistry; same run also exposed Java 21 major-version 65 incompatibility in Robolectric 4.12.2 instrumentation. Test-only local layout/host selection was corrected afterward."
+    },
+    {
+      "name": "direct_junit_final_jdk17",
+      "result": "FAIL_AS_ACTUALLY_OBSERVED_SETUP_FAILURE_NO_CALLBACKS",
+      "log": "direct-junit-final-execution.log",
+      "exitCode": 1,
+      "detail": "Robolectric setup fails loading Conscrypt: no conscrypt_openjdk_jni-linux-aarch_64 in the retained conscrypt-openjdk-uber 2.5.2 runtime. JUnit reports 1 test / 1 failure after 1.741 s. The test body did not begin; no operation log was created and no production BleGattService callback was invoked."
+    }
+  ],
+  "testedCases": [],
+  "blockedCases": [
+    "actual R1:0 write/read callbacks",
+    "R1 nonzero page write/read callback",
+    "valid source ACK durability-before-response callback",
+    "invalid ACK rejection callback",
+    "concurrent R1/duplicate ACK callbacks",
+    "deliberately injected 10.1-second session-lock delay",
+    "false sendResponse observation",
+    "null-gattServer omission observation"
+  ],
+  "timing": {
+    "naturalMeasured": false,
+    "injected10_1SecondBlockingExecuted": false,
+    "separation": "The prepared test labels the 10.1-second session-lock condition as deliberate test-only injection, not natural time and not historical cause; it was not reached."
+  },
+  "interpretation": {
+    "productionCallbackOutcome": "NOT_EXECUTED",
+    "actualTestOutcome": "REAL_FAIL_AT_TEST_RUNTIME_SETUP; NOT A PASS",
+    "historicalNativeQueueOrPhysicalCause": "UNPROVED",
+    "productionCorrection": "NONE_PROPOSED"
+  },
+  "smallestRemainingPrerequisite": "A retained or otherwise separately authorized test-runtime source of the matching ARM64 Conscrypt JNI library required by cached conscrypt-openjdk-uber 2.5.2 (or a separately authorized compatible offline test-runtime closure). No production, Gradle, pin, APK, network, or device change is implicated or authorized."
+}

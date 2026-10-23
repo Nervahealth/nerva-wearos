@@ -1,0 +1,15 @@
+timestampNanos=121806629364041 operation_ordinal=1 kind=R1_ZERO_WRITE event=callback_entry
+timestampNanos=121806637073328 operation_ordinal=1 kind=R1_ZERO_WRITE event=pre_response
+timestampNanos=121806637972630 operation_ordinal=1 kind=R1_ZERO_WRITE event=response_attempt result=true status=0
+timestampNanos=121806638100709 operation_ordinal=2 kind=R1_ZERO_READ event=callback_entry
+timestampNanos=121806640648310 operation_ordinal=2 kind=R1_ZERO_READ event=pre_response
+timestampNanos=121806640727446 operation_ordinal=2 kind=R1_ZERO_READ event=response_attempt result=true status=0
+timestampNanos=121806640771170 operation_ordinal=3 kind=R1_NONZERO_WRITE event=callback_entry
+timestampNanos=121806640863665 operation_ordinal=3 kind=R1_NONZERO_WRITE event=pre_response
+timestampNanos=121806640897740 operation_ordinal=3 kind=R1_NONZERO_WRITE event=response_attempt result=true status=0
+timestampNanos=121806640930551 operation_ordinal=4 kind=R1_NONZERO_READ event=callback_entry
+timestampNanos=121806641012182 operation_ordinal=4 kind=R1_NONZERO_READ event=pre_response
+timestampNanos=121806641043008 operation_ordinal=4 kind=R1_NONZERO_READ event=response_attempt result=true status=0
+timestampNanos=121806641314165 operation_ordinal=5 kind=SOURCE_RESUME_VALID event=callback_entry
+timestampNanos=121806644310855 operation_ordinal=5 kind=SOURCE_RESUME_VALID event=pre_response
+timestampNanos=121806644387374 operation_ordinal=5 kind=SOURCE_RESUME_VALID event=response_attempt result=true status=0
