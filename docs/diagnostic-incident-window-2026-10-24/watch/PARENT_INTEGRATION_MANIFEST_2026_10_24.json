@@ -1,0 +1,103 @@
+{
+  "kind": "HUGR Watch diagnostic incident window parent integration manifest",
+  "authority": "HUGR_DIAGNOSTIC_INCIDENT_WINDOW_AND_EXISTING_RUN_READBACK_AUTHORITY_2026_10_24.md",
+  "taskLocalRoot": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch",
+  "controlledWatchRootForIntegration": "/home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch",
+  "controlledWatchHeadObservedReadOnly": "8ee73a7f2f6ea1955d00998b540303abb0f19ff9",
+  "controlledWorktreeStatusAfterTask": "clean (no controlled-source modification)",
+  "integrationInstruction": "Integrate exactly all six listed task-local targets as one coherent bounded diagnostic-window delta. The listed source and test hashes are final relative to the controlled original; do not select only the final continuation subset.",
+  "finalTest": {
+    "command": "./compile-and-run-offline.sh",
+    "productionCompilerExitCode": 0,
+    "testCompilerExitCode": 0,
+    "junit": "OK (18 tests)",
+    "elapsedMs": 15808.466,
+    "gradleInvoked": false,
+    "networkUsed": false,
+    "newApks": 0,
+    "deviceOrBluetoothAction": false,
+    "syntheticDirectJvmRobolectricOnly": true
+  },
+  "changedIntegrationTargets": [
+    {
+      "targetRelativePath": "app/src/main/java/com/hugr/wearos/IncidentDiagnosticWindow.kt",
+      "taskLocalPath": "production-source/IncidentDiagnosticWindow.kt",
+      "sha256": "d0701bb5dfdbbfdc2853b13d4f0722cdf209babd8121ace263d17b7a580b443d",
+      "controlledOriginal": "absent; task-local additive source",
+      "role": "payload-free bounded incident model and renderer; latches disconnect after settled-only success without rewriting a response outcome; explicit WRITE_FAILED publication state"
+    },
+    {
+      "targetRelativePath": "app/src/main/java/com/hugr/wearos/WatchDiagnosticRuntime.kt",
+      "taskLocalPath": "production-source/WatchDiagnosticRuntime.kt",
+      "sha256": "a10a1002311e0ba496fc3d12f82fcb8a19c714f2d12c9f67eaaecc1c10dcc5bc",
+      "controlledOriginalSha256": "6a7bcc9f0cfa47e8b3cc003fdbddf82070a49657361797b8263b896f40131a41",
+      "role": "post-ATT, single-worker, latest-window checkpointing including timely TRUE; same diagnostic-epoch file updates; explicit worker/submission loss and queue-clear handling without retry loop"
+    },
+    {
+      "targetRelativePath": "app/src/main/java/com/hugr/wearos/SavedDiagnosticReport.kt",
+      "taskLocalPath": "production-source/SavedDiagnosticReport.kt",
+      "sha256": "16ea4f56524812251bd50e00deebfb3fdab349beae21e4591c254bbb6e4dca47",
+      "controlledOriginalSha256": "b74a713fe4131daf730604791140e763953ee733166d42915ad0e5078b812ec6",
+      "role": "shared-root synchronized eight-report store; generic compatibility; incident same-file replacement only; file fsync, rename, directory fsync, and exact reopen/trailer integrity verification before ACK"
+    },
+    {
+      "targetRelativePath": "app/src/main/java/com/hugr/wearos/BleGattService.kt",
+      "taskLocalPath": "production-source/BleGattService.kt",
+      "sha256": "81f4333db339dae233875c4b9ea64c7c04741fcd8101f520c69f1503df77bc3a",
+      "controlledOriginalSha256": "befaa8c59a3a7e2c989e281b081ce08a5e7056bd3ab822b0aba15c28f83f7fc9",
+      "role": "existing task-local connection and actual post-sendResponse diagnostic seam; no pre-ATT persistence, transport-policy, deadline, source/ACK, request, poll, acquisition, or sensor change"
+    },
+    {
+      "targetRelativePath": "app/src/test/java/com/hugr/wearos/DiagnosticIncidentWindowTest.kt",
+      "taskLocalPath": "tests/DiagnosticIncidentWindowTest.kt",
+      "sha256": "e4da7351b11828d0ae67374c6decbf7e1dbd8e032cf8c16d7a277e03d285d737",
+      "controlledOriginal": "absent; task-local focused contract",
+      "role": "model/store contracts: settled-success disconnect save/reopen, WRITE_FAILED state, actual directory-sync and reopen acknowledgement path plus negative failures, and multi-instance shared-root capacity serialization"
+    },
+    {
+      "targetRelativePath": "app/src/test/java/com/hugr/wearos/ReceiptAckTimeoutActualCallbackContinuationTest.kt",
+      "taskLocalPath": "tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt",
+      "sha256": "a6db36f67f3dcb055ca3b89a801d1dd01c5d5148b520ff48a68eaf4074e98b49",
+      "controlledOriginalRelativePath": "docs/receipt-ack-timeout-continuation-2026-10-23/watch/ReceiptAckTimeoutActualCallbackContinuationTest.kt",
+      "role": "actual callback/ATT ordering contract; proves timely TRUE is persisted and separately reopened before false/null/late/disconnect, then confirms later outcomes coalesce into the same incident file"
+    }
+  ],
+  "finalEvidence": {
+    "resultJson": {
+      "path": "result.json",
+      "sha256": "8e7b376a5bde2cab2cc32dbd3cf85837693f21dba7079fa19e7806506b2a5b34"
+    },
+    "executionLog": {
+      "path": "execution.log",
+      "sha256": "9ad8f6f1d5d63dd92831e550f1aab1c8833c4d783792afe7706c109d6304809e"
+    },
+    "productionCompilerLog": {
+      "path": "production-compiler.log",
+      "sha256": "35841c6d767cd2b3d0724359e474070752c5b5248f818ed1b96433bda2814aaf"
+    },
+    "testCompilerLog": {
+      "path": "test-compiler.log",
+      "sha256": "47b342d4b718b46d400819c0e5e768cb0b2c3535612c4736cc3ee87888af27b8"
+    },
+    "payloadFreeOperationLog": {
+      "path": "payload-free-operation.log",
+      "sha256": "6ac9a4d37cb45bce79b60c6f93ed2d02d3593cc3a97f598e7aef0d10a6e422cd"
+    }
+  },
+  "preservedPriorOutputs": [
+    "pre-requirement-correction-snapshot-2026-10-24T1001CEST/SHA256SUMS",
+    "passed-attempt-5-before-publication-state-correction/SHA256SUMS",
+    "passed-attempt-6-before-viewer-publication-finalization/SHA256SUMS",
+    "passed-attempt-7-before-worker-submission-hardening/SHA256SUMS",
+    "passed-attempt-8-before-disconnect-success-reopen-test/SHA256SUMS"
+  ],
+  "excluded": [
+    "controlled worktree edits",
+    "Git/docs changes outside this task-local manifest/report",
+    "Gradle",
+    "APK/sign/install",
+    "device/Bluetooth/native capture",
+    "payloads/private data",
+    "transport policy/deadline/order/new requests/polls/sensor changes"
+  ]
+}

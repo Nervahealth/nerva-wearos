@@ -1,0 +1,88 @@
+{
+  "heads": {
+    "phone": "67b0c39014bdc6f53f2db4c642cffd1533cdc838",
+    "watch": "8ee73a7f2f6ea1955d00998b540303abb0f19ff9",
+    "controls": "332d19dd8e109e4ac2aada7948cc23881a69b86c"
+  },
+  "priorEvidence": [
+    {
+      "path": "/home/ubuntu/HUGR_RECEIPT_ACK_TIMEOUT_CONTINUATION_2026_10_23/completed-source-test-evidence.json",
+      "bytes": 4181,
+      "sha256": "32fa76ecb5d6fca2acb7f81fc748ce9fc23f005213303135925e24dd10cd226a"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_RECEIPT_ACK_TIMEOUT_CONTINUATION_2026_10_23/HUGR_RECEIPT_ACK_TIMEOUT_CONTINUATION_COMPLETED_RESULT_2026_10_23.md",
+      "bytes": 13222,
+      "sha256": "20222f65ee4175e1b34e455b665177491c4a44c471cb0cbe9c1805742c286dfa"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/readonly-admission-stop.json",
+      "bytes": 275,
+      "sha256": "6724e3417af5d562241e59c5ad295cad17ec878f3af98878879dd58b9535b694"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/earlier-attempt-custody.json",
+      "bytes": 470,
+      "sha256": "442fb0b4f9b6979896beac697081d0f839d1c6983363402b1cdb1d3fe21264ff"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/new-build-stage/build-attempt.json",
+      "bytes": 412,
+      "sha256": "7fc1ce5ba83c3a161328cb300ab01a08316454b2765517a687087f339fd9f4a7"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/final-readonly-admission/watch84-candidate-artifact-admission.json",
+      "bytes": 2693,
+      "sha256": "fb06a8199346ae19445c7b3d744a4d4bc38cb0e8a06a8fab346f25516db2fc99"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/phone66-validation/phone66-candidate-compiled-proof/phone66-candidate-artifact-admission.json",
+      "bytes": 4896,
+      "sha256": "c5982223165c147644dc6b22ed337d035a2c54e18e679d9a7849e44baa784c54"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_WATCH84_TWO_STAGE_RECOVERY_2026_10_23/artifacts/HUGR_Watch84w_0.84.0_positional-v2-duration-ladder-candidate.apk",
+      "bytes": 13008645,
+      "sha256": "e0525b5e09c2682de23ff8bc2a26bb10e765d2e308c0e96bf39576a80c0a20db"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_WATCH84_PHONE66_LADDER_2026_10_22/phone66-artifacts/HUGR_Phone66p_2.0.66_positional-v2-duration-ladder-candidate.apk",
+      "bytes": 152097114,
+      "sha256": "8978c8d64e19420b47ebd45b9a7898b07749114644ddb5df5aecde6ed653accf"
+    }
+  ],
+  "sourceAllowed": {
+    "watch": [
+      "app/src/main/java/com/hugr/wearos/BleGattService.kt",
+      "app/src/main/java/com/hugr/wearos/IncidentDiagnosticWindow.kt",
+      "app/src/main/java/com/hugr/wearos/SavedDiagnosticReport.kt",
+      "app/src/main/java/com/hugr/wearos/WatchDiagnosticRuntime.kt",
+      "app/src/test/java/com/hugr/wearos/DiagnosticIncidentWindowTest.kt",
+      "app/src/test/java/com/hugr/wearos/ReceiptAckTimeoutActualCallbackContinuationTest.kt"
+    ],
+    "phone": [
+      "lib/bluetooth.ts",
+      "lib/receiptIncidentDiagnostic.ts",
+      "lib/receiptIncidentDiagnosticModel.ts",
+      "modules/hugr-source-journal/android/src/main/AndroidManifest.xml",
+      "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedReceiptDiagnosticsActivity.kt",
+      "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedSourceEvidenceActivity.kt",
+      "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt",
+      "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptDiagnosticPrivateExport.kt",
+      "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptIncidentDiagnosticStore.kt",
+      "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/ReceiptIncidentDiagnosticStoreTest.kt",
+      "modules/hugr-source-journal/index.ts",
+      "tests/receiptIncidentDiagnosticModel.test.ts",
+      "tests/receiptIncidentNativeStore.source.test.ts",
+      "tests/run_receipt_incident_bluetooth_source_bound.cjs",
+      "tests/run_receipt_incident_diagnostics_tests.sh",
+      "tests/run_receipt_incident_native_offline.sh",
+      "tests/run_receipt_incident_publication_contract.cjs"
+    ],
+    "controls": []
+  },
+  "priorAppTrees": {
+    "watch": "013c1a1fbea5321b39cd6c5a25ee462737cd43c6",
+    "phone": "d62df0dc3454c54aaf00bc705777d8e03ac794e1"
+  }
+}

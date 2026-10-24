@@ -1,0 +1,174 @@
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:22:17: error: unresolved reference: WatchIncidentDiagnosticWindow
+        window: WatchIncidentDiagnosticWindow,
+                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:26:15: error: unresolved reference: IncidentOperationKind
+        kind: IncidentOperationKind = IncidentOperationKind.R1_WRITE,
+              ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:26:39: error: unresolved reference: IncidentOperationKind
+        kind: IncidentOperationKind = IncidentOperationKind.R1_WRITE,
+                                      ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:27:8: error: unresolved reference: IncidentOperationToken
+    ): IncidentOperationToken? = window.enter(
+       ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:29:18: error: unresolved reference: IncidentAccess
+        access = IncidentAccess.WRITE,
+                 ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:37:17: error: unresolved reference: WatchIncidentDiagnosticWindow
+        window: WatchIncidentDiagnosticWindow,
+                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:38:16: error: unresolved reference: IncidentOperationToken
+        token: IncidentOperationToken?,
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:40:18: error: unresolved reference: IncidentResponseOutcome
+        outcome: IncidentResponseOutcome = IncidentResponseOutcome.TRUE,
+                 ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:40:44: error: unresolved reference: IncidentResponseOutcome
+        outcome: IncidentResponseOutcome = IncidentResponseOutcome.TRUE,
+                                           ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:50:22: error: unresolved reference: WatchIncidentDiagnosticWindow
+        val window = WatchIncidentDiagnosticWindow(UUID.randomUUID(), clock::now)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:58:22: error: unresolved reference: IncidentResponseOutcome
+        assertEquals(IncidentResponseOutcome.TRUE, snapshot.rows.single().responseOutcome)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:59:24: error: unresolved reference: IncidentDiagnosticFormat
+        val rendered = IncidentDiagnosticFormat.render(snapshot)
+                       ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:67:22: error: unresolved reference: WatchIncidentDiagnosticWindow
+        val window = WatchIncidentDiagnosticWindow(UUID.randomUUID(), clock::now)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:73:43: error: unresolved reference: IncidentResponseOutcome
+        settle(window, falseToken, clock, IncidentResponseOutcome.FALSE, status = 0, length = 0)
+                                          ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:76:37: error: unresolved reference: IncidentResponseOutcome
+        settle(window, late, clock, IncidentResponseOutcome.TRUE, status = 0, length = 4)
+                                    ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:78:42: error: unresolved reference: IncidentResponseOutcome
+        settle(window, nullToken, clock, IncidentResponseOutcome.NULL, status = 257, length = 0)
+                                         ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:82:66: error: unresolved reference: it
+        assertEquals(listOf(1L, 2L, 3L, 4L), snapshot.rows.map { it.ordinal })
+                                                                 ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:83:22: error: unresolved reference: IncidentResponseOutcome
+        assertEquals(IncidentResponseOutcome.TRUE, snapshot.rows[0].responseOutcome)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:84:22: error: unresolved reference: IncidentResponseOutcome
+        assertEquals(IncidentResponseOutcome.FALSE, snapshot.rows[1].responseOutcome)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:85:22: error: unresolved reference: IncidentResponseOutcome
+        assertEquals(IncidentResponseOutcome.TRUE, snapshot.rows[2].responseOutcome)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:86:22: error: unresolved reference: IncidentResponseOutcome
+        assertEquals(IncidentResponseOutcome.NULL, snapshot.rows[3].responseOutcome)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:87:22: error: unresolved reference: IncidentDiagnosticFormat
+        val report = IncidentDiagnosticFormat.render(snapshot)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:94:22: error: unresolved reference: WatchIncidentDiagnosticWindow
+        val window = WatchIncidentDiagnosticWindow(UUID.randomUUID(), clock::now)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:104:55: error: unresolved reference: it
+        assertEquals(listOf(5, 5), current.rows.map { it.nativeRequestId })
+                                                      ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:105:57: error: unresolved reference: it
+        assertEquals(listOf(0L, 0L), current.rows.map { it.r1PageIndex })
+                                                        ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:107:22: error: unresolved reference: IncidentDiagnosticFormat
+        val report = IncidentDiagnosticFormat.render(current)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:113:22: error: unresolved reference: WatchIncidentDiagnosticWindow
+        val window = WatchIncidentDiagnosticWindow(UUID.randomUUID(), clock::now)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:114:16: error: unresolved reference: WatchIncidentDiagnosticWindow
+        repeat(WatchIncidentDiagnosticWindow.PRE_FREEZE_ROWS) { index ->
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:121:22: error: unresolved reference: WatchIncidentDiagnosticWindow
+        assertEquals(WatchIncidentDiagnosticWindow.PRE_FREEZE_ROWS, snapshot.rows.size)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:122:40: error: unresolved reference: it
+        assertTrue(snapshot.rows.all { it.responseOutcome == IncidentResponseOutcome.PENDING })
+                                       ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:122:62: error: unresolved reference: IncidentResponseOutcome
+        assertTrue(snapshot.rows.all { it.responseOutcome == IncidentResponseOutcome.PENDING })
+                                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:123:20: error: unresolved reference: IncidentDiagnosticFormat
+        assertTrue(IncidentDiagnosticFormat.render(snapshot).contains("TRACE_WINDOW_OVERFLOW:1"))
+                   ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:128:22: error: unresolved reference: WatchIncidentDiagnosticWindow
+        val window = WatchIncidentDiagnosticWindow(UUID.randomUUID(), clock::now)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:130:41: error: unresolved reference: IncidentResponseOutcome
+        settle(window, decisive, clock, IncidentResponseOutcome.FALSE)
+                                        ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:131:16: error: unresolved reference: WatchIncidentDiagnosticWindow
+        repeat(WatchIncidentDiagnosticWindow.POST_FREEZE_RESERVE) { index ->
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:135:22: error: unresolved reference: WatchIncidentDiagnosticWindow
+        assertEquals(WatchIncidentDiagnosticWindow.POST_FREEZE_RESERVE + 1, window.snapshot().rows.size)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:136:16: error: unresolved reference: WatchIncidentDiagnosticWindow
+        repeat(WatchIncidentDiagnosticWindow.PRE_FREEZE_ROWS) { index ->
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:140:22: error: unresolved reference: WatchIncidentDiagnosticWindow
+        assertEquals(WatchIncidentDiagnosticWindow.MAX_OPERATION_ROWS, beforeOverflow.rows.size)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:159:26: error: unresolved reference: IncidentPublicationResult
+            assertEquals(IncidentPublicationResult.ACKNOWLEDGED_ATOMIC, store.saveIncident(incident, epoch))
+                         ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:159:79: error: unresolved reference: saveIncident
+            assertEquals(IncidentPublicationResult.ACKNOWLEDGED_ATOMIC, store.saveIncident(incident, epoch))
+                                                                              ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:161:59: error: unresolved reference: incidentReports
+            assertEquals(incident, reopened.read(reopened.incidentReports().single()))
+                                                          ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:162:34: error: unresolved reference: saveIncident
+            repeat(7) { reopened.saveIncident(incident, UUID.randomUUID()) }
+                                 ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:164:26: error: unresolved reference: IncidentPublicationResult
+            assertEquals(IncidentPublicationResult.CAPACITY_EXHAUSTED, reopened.saveIncident(incident, UUID.randomUUID()))
+                         ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:164:81: error: unresolved reference: saveIncident
+            assertEquals(IncidentPublicationResult.CAPACITY_EXHAUSTED, reopened.saveIncident(incident, UUID.randomUUID()))
+                                                                                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:166:33: error: unresolved reference: incidentReports
+            assertTrue(reopened.incidentReports().all { reopened.read(it).startsWith("HUGR SAVED ATT INCIDENT") })
+                                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:166:71: error: unresolved reference: it
+            assertTrue(reopened.incidentReports().all { reopened.read(it).startsWith("HUGR SAVED ATT INCIDENT") })
+                                                                      ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:178:32: error: unresolved reference: saveIncident
+            val result = store.saveIncident("incident\n--- END REPORT ---\n", UUID.randomUUID())
+                               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:179:26: error: unresolved reference: IncidentPublicationResult
+            assertEquals(IncidentPublicationResult.ACKNOWLEDGED_ATOMIC_REPLACED_GENERIC, result)
+                         ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:181:30: error: unresolved reference: incidentReports
+            assertTrue(store.incidentReports().isNotEmpty())
+                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:190:22: error: unresolved reference: WatchIncidentDiagnosticWindow
+        val window = WatchIncidentDiagnosticWindow(UUID.randomUUID(), clock::now)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:191:34: error: unresolved reference: IncidentOperationKind
+        val token = window.enter(IncidentOperationKind.SOURCE_ACK, IncidentAccess.WRITE, 17, 9, null, 0)
+                                 ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:191:68: error: unresolved reference: IncidentAccess
+        val token = window.enter(IncidentOperationKind.SOURCE_ACK, IncidentAccess.WRITE, 17, 9, null, 0)
+                                                                   ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:193:30: error: unresolved reference: IncidentResponseOutcome
+        window.settle(token, IncidentResponseOutcome.FALSE, 0, 64, clock.now())
+                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:194:22: error: unresolved reference: IncidentDiagnosticFormat
+        val report = IncidentDiagnosticFormat.render(window.snapshot())
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:289:65: error: unresolved reference: incidentReports
+            val reports = WatchDiagnosticRuntime.store(service).incidentReports()
+                                                                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:290:67: error: unresolved reference: it
+                .map { WatchDiagnosticRuntime.store(service).read(it) }
+                                                                  ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:295:54: error: unresolved reference: incidentReports
+        return WatchDiagnosticRuntime.store(service).incidentReports()
+                                                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:296:63: error: unresolved reference: it
+            .map { WatchDiagnosticRuntime.store(service).read(it) }
+                                                              ^

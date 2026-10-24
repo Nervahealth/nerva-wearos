@@ -1,0 +1,45 @@
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt:335:46: warning: unnecessary safe call on a non-null receiver of type Intent?
+                        val duration = intent?.getLongExtra(FreshRunRuntime.EXTRA_FRESH_DURATION_MS, -1L) ?: -1L
+                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt:342:17: warning: the value 'DiagnosticStage.FOREGROUND_PROMOTION' assigned to 'var failedStage: DiagnosticStage defined in com.hugr.wearos.BleGattService.onStartCommand' is never used
+                failedStage = DiagnosticStage.FOREGROUND_PROMOTION
+                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt:351:21: warning: the value 'DiagnosticStage.SERVICE_START' assigned to 'var failedStage: DiagnosticStage defined in com.hugr.wearos.BleGattService.onStartCommand' is never used
+                    failedStage = DiagnosticStage.SERVICE_START
+                    ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt:371:70: warning: unnecessary safe call on a non-null receiver of type Intent?
+        if (EvidenceEgressGattStartPolicy.isExplicitEgressStop(intent?.action)) {
+                                                                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt:379:79: warning: unnecessary safe call on a non-null receiver of type Intent?
+        val requestedMode = EvidenceEgressGattStartPolicy.requestedMode(intent?.action)
+                                                                              ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt:391:23: warning: unnecessary safe call on a non-null receiver of type Intent?
+                intent?.getBooleanExtra(EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY, false) == true
+                      ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt:393:17: warning: unnecessary safe call on a non-null receiver of type Intent?
+                ?.getStringExtra(EXTRA_FINALIZED_DELIVERY_SOURCE_SESSION_ID)
+                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt:395:44: warning: unnecessary safe call on a non-null receiver of type Intent?
+            val requestedAttemptId = intent?.getStringExtra(EXTRA_FINALIZED_RECOVERY_ATTEMPT_ID)
+                                           ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt:441:19: warning: unnecessary safe call on a non-null receiver of type Intent?
+            intent?.getBooleanExtra(EXTRA_FINALIZED_DELIVERY_RECOVERY_ONLY, false) == true
+                  ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt:862:13: warning: 'setter for value: ByteArray!' is deprecated. Deprecated in Java
+            value = byteArrayOf(0x01) // 0x01 = active
+            ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt:874:13: warning: 'setter for value: ByteArray!' is deprecated. Deprecated in Java
+            value = byteArrayOf(WATCHTOWER_V2_MARKER.toByte())
+            ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt:886:13: warning: 'setter for value: ByteArray!' is deprecated. Deprecated in Java
+            value = byteArrayOf(SourceReplayProtocol.MARKER.toByte(), SourceReplayProtocol.VERSION.toByte())
+            ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt:1200:41: warning: 'getter for value: ByteArray!' is deprecated. Deprecated in Java
+                else -> characteristic?.value ?: byteArrayOf(0)
+                                        ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt:1395:104: warning: 'getter for value: ByteArray!' is deprecated. Deprecated in Java
+                gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, descriptor?.value)
+                                                                                                       ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt:1455:105: warning: unnecessary safe call on a non-null receiver of type BluetoothDevice?
+            if (!success) Log.e(TAG, "BLE notification completion failed: status=$status device=${device?.address}")
+                                                                                                        ^

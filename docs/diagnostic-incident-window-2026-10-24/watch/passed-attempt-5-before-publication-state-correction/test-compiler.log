@@ -1,0 +1,18 @@
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:90:35: warning: 'setEnabled(Boolean): Unit' is deprecated. Deprecated in Java
+        Shadows.shadowOf(adapter).setEnabled(true)
+                                  ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:347:24: warning: parameter 'context' is never used
+    fun openGattServer(context: Context, callback: BluetoothGattServerCallback): BluetoothGattServer {
+                       ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:402:9: warning: parameter 'device' is never used
+        device: BluetoothDevice?,
+        ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:403:9: warning: parameter 'characteristic' is never used
+        characteristic: BluetoothGattCharacteristic?,
+        ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:404:9: warning: parameter 'confirm' is never used
+        confirm: Boolean,
+        ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:405:9: warning: parameter 'value' is never used
+        value: ByteArray?,
+        ^

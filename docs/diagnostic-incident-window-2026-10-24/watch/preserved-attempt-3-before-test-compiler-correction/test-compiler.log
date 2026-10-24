@@ -1,0 +1,516 @@
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:22:17: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        window: WatchIncidentDiagnosticWindow,
+                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:26:15: error: cannot access 'IncidentOperationKind': it is internal in 'com.hugr.wearos'
+        kind: IncidentOperationKind = IncidentOperationKind.R1_WRITE,
+              ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:26:39: error: cannot access 'IncidentOperationKind': it is internal in 'com.hugr.wearos'
+        kind: IncidentOperationKind = IncidentOperationKind.R1_WRITE,
+                                      ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:26:61: error: cannot access 'IncidentOperationKind': it is internal in 'com.hugr.wearos'
+        kind: IncidentOperationKind = IncidentOperationKind.R1_WRITE,
+                                                            ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:27:8: error: cannot access 'IncidentOperationToken': it is internal in 'com.hugr.wearos'
+    ): IncidentOperationToken? = window.enter(
+       ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:27:41: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+    ): IncidentOperationToken? = window.enter(
+                                        ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:29:18: error: cannot access 'IncidentAccess': it is internal in 'com.hugr.wearos'
+        access = IncidentAccess.WRITE,
+                 ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:29:33: error: cannot access 'IncidentAccess': it is internal in 'com.hugr.wearos'
+        access = IncidentAccess.WRITE,
+                                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:37:17: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        window: WatchIncidentDiagnosticWindow,
+                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:38:16: error: cannot access 'IncidentOperationToken': it is internal in 'com.hugr.wearos'
+        token: IncidentOperationToken?,
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:40:18: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        outcome: IncidentResponseOutcome = IncidentResponseOutcome.TRUE,
+                 ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:40:44: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        outcome: IncidentResponseOutcome = IncidentResponseOutcome.TRUE,
+                                           ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:40:68: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        outcome: IncidentResponseOutcome = IncidentResponseOutcome.TRUE,
+                                                                   ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:44:16: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        window.preResponse(token, status, length)
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:45:16: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        window.settle(token, outcome, status, length, clock.now())
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:50:22: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        val window = WatchIncidentDiagnosticWindow(UUID.randomUUID(), clock::now)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:51:16: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        window.onConnected()
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:55:31: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        val snapshot = window.snapshot()
+                              ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:56:30: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertFalse(snapshot.frozen)
+                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:57:34: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(1, snapshot.rows.size)
+                                 ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:58:22: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.TRUE, snapshot.rows.single().responseOutcome)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:58:46: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.TRUE, snapshot.rows.single().responseOutcome)
+                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:58:61: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.TRUE, snapshot.rows.single().responseOutcome)
+                                                            ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:58:75: error: cannot access 'IncidentOperationRow': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.TRUE, snapshot.rows.single().responseOutcome)
+                                                                          ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:59:24: error: cannot access 'IncidentDiagnosticFormat': it is internal in 'com.hugr.wearos'
+        val rendered = IncidentDiagnosticFormat.render(snapshot)
+                       ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:59:49: error: cannot access 'IncidentDiagnosticFormat': it is internal in 'com.hugr.wearos'
+        val rendered = IncidentDiagnosticFormat.render(snapshot)
+                                                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:67:22: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        val window = WatchIncidentDiagnosticWindow(UUID.randomUUID(), clock::now)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:68:16: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        window.onConnected()
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:73:43: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        settle(window, falseToken, clock, IncidentResponseOutcome.FALSE, status = 0, length = 0)
+                                          ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:73:67: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        settle(window, falseToken, clock, IncidentResponseOutcome.FALSE, status = 0, length = 0)
+                                                                  ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:76:37: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        settle(window, late, clock, IncidentResponseOutcome.TRUE, status = 0, length = 4)
+                                    ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:76:61: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        settle(window, late, clock, IncidentResponseOutcome.TRUE, status = 0, length = 4)
+                                                            ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:78:42: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        settle(window, nullToken, clock, IncidentResponseOutcome.NULL, status = 257, length = 0)
+                                         ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:78:66: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        settle(window, nullToken, clock, IncidentResponseOutcome.NULL, status = 257, length = 0)
+                                                                 ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:79:31: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        val snapshot = window.snapshot()
+                              ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:80:29: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertTrue(snapshot.frozen)
+                            ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:81:35: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(2L, snapshot.decisiveOrdinal)
+                                  ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:82:55: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(listOf(1L, 2L, 3L, 4L), snapshot.rows.map { it.ordinal })
+                                                      ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:82:69: error: cannot access 'IncidentOperationRow': it is internal in 'com.hugr.wearos'
+        assertEquals(listOf(1L, 2L, 3L, 4L), snapshot.rows.map { it.ordinal })
+                                                                    ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:83:22: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.TRUE, snapshot.rows[0].responseOutcome)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:83:46: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.TRUE, snapshot.rows[0].responseOutcome)
+                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:83:61: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.TRUE, snapshot.rows[0].responseOutcome)
+                                                            ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:83:69: error: cannot access 'IncidentOperationRow': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.TRUE, snapshot.rows[0].responseOutcome)
+                                                                    ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:84:22: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.FALSE, snapshot.rows[1].responseOutcome)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:84:46: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.FALSE, snapshot.rows[1].responseOutcome)
+                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:84:62: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.FALSE, snapshot.rows[1].responseOutcome)
+                                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:84:70: error: cannot access 'IncidentOperationRow': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.FALSE, snapshot.rows[1].responseOutcome)
+                                                                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:85:22: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.TRUE, snapshot.rows[2].responseOutcome)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:85:46: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.TRUE, snapshot.rows[2].responseOutcome)
+                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:85:61: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.TRUE, snapshot.rows[2].responseOutcome)
+                                                            ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:85:69: error: cannot access 'IncidentOperationRow': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.TRUE, snapshot.rows[2].responseOutcome)
+                                                                    ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:86:22: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.NULL, snapshot.rows[3].responseOutcome)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:86:46: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.NULL, snapshot.rows[3].responseOutcome)
+                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:86:61: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.NULL, snapshot.rows[3].responseOutcome)
+                                                            ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:86:69: error: cannot access 'IncidentOperationRow': it is internal in 'com.hugr.wearos'
+        assertEquals(IncidentResponseOutcome.NULL, snapshot.rows[3].responseOutcome)
+                                                                    ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:87:22: error: cannot access 'IncidentDiagnosticFormat': it is internal in 'com.hugr.wearos'
+        val report = IncidentDiagnosticFormat.render(snapshot)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:87:47: error: cannot access 'IncidentDiagnosticFormat': it is internal in 'com.hugr.wearos'
+        val report = IncidentDiagnosticFormat.render(snapshot)
+                                              ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:94:22: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        val window = WatchIncidentDiagnosticWindow(UUID.randomUUID(), clock::now)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:95:16: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        window.onConnected()
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:98:30: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        val initial = window.snapshot()
+                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:99:16: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        window.onConnected()
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:102:30: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        val current = window.snapshot()
+                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:103:33: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(2, current.rows.size)
+                                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:104:44: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(listOf(5, 5), current.rows.map { it.nativeRequestId })
+                                           ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:104:58: error: cannot access 'IncidentOperationRow': it is internal in 'com.hugr.wearos'
+        assertEquals(listOf(5, 5), current.rows.map { it.nativeRequestId })
+                                                         ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:105:46: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(listOf(0L, 0L), current.rows.map { it.r1PageIndex })
+                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:105:60: error: cannot access 'IncidentOperationRow': it is internal in 'com.hugr.wearos'
+        assertEquals(listOf(0L, 0L), current.rows.map { it.r1PageIndex })
+                                                           ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:106:28: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertTrue(initial.connectionEpoch != current.connectionEpoch)
+                           ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:106:55: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertTrue(initial.connectionEpoch != current.connectionEpoch)
+                                                      ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:107:22: error: cannot access 'IncidentDiagnosticFormat': it is internal in 'com.hugr.wearos'
+        val report = IncidentDiagnosticFormat.render(current)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:107:47: error: cannot access 'IncidentDiagnosticFormat': it is internal in 'com.hugr.wearos'
+        val report = IncidentDiagnosticFormat.render(current)
+                                              ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:113:22: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        val window = WatchIncidentDiagnosticWindow(UUID.randomUUID(), clock::now)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:114:16: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        repeat(WatchIncidentDiagnosticWindow.PRE_FREEZE_ROWS) { index ->
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:114:46: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        repeat(WatchIncidentDiagnosticWindow.PRE_FREEZE_ROWS) { index ->
+                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:115:24: error: cannot access 'IncidentOperationToken': it is internal in 'com.hugr.wearos'
+            assertTrue(enter(window, index + 1) != null)
+                       ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:115:49: error: no method 'equals(Any?): Boolean' available
+            assertTrue(enter(window, index + 1) != null)
+                                                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:118:31: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        val snapshot = window.snapshot()
+                              ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:119:29: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertTrue(snapshot.frozen)
+                            ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:120:35: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(1L, snapshot.overflowCount)
+                                  ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:121:22: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        assertEquals(WatchIncidentDiagnosticWindow.PRE_FREEZE_ROWS, snapshot.rows.size)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:121:52: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        assertEquals(WatchIncidentDiagnosticWindow.PRE_FREEZE_ROWS, snapshot.rows.size)
+                                                   ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:121:78: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(WatchIncidentDiagnosticWindow.PRE_FREEZE_ROWS, snapshot.rows.size)
+                                                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:122:29: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertTrue(snapshot.rows.all { it.responseOutcome == IncidentResponseOutcome.PENDING })
+                            ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:122:40: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        assertTrue(snapshot.rows.all { it.responseOutcome == IncidentResponseOutcome.PENDING })
+                                       ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:122:43: error: cannot access 'IncidentOperationRow': it is internal in 'com.hugr.wearos'
+        assertTrue(snapshot.rows.all { it.responseOutcome == IncidentResponseOutcome.PENDING })
+                                          ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:122:59: error: no method 'equals(Any?): Boolean' available
+        assertTrue(snapshot.rows.all { it.responseOutcome == IncidentResponseOutcome.PENDING })
+                                                          ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:122:62: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        assertTrue(snapshot.rows.all { it.responseOutcome == IncidentResponseOutcome.PENDING })
+                                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:122:86: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        assertTrue(snapshot.rows.all { it.responseOutcome == IncidentResponseOutcome.PENDING })
+                                                                                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:123:20: error: cannot access 'IncidentDiagnosticFormat': it is internal in 'com.hugr.wearos'
+        assertTrue(IncidentDiagnosticFormat.render(snapshot).contains("TRACE_WINDOW_OVERFLOW:1"))
+                   ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:123:45: error: cannot access 'IncidentDiagnosticFormat': it is internal in 'com.hugr.wearos'
+        assertTrue(IncidentDiagnosticFormat.render(snapshot).contains("TRACE_WINDOW_OVERFLOW:1"))
+                                            ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:128:22: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        val window = WatchIncidentDiagnosticWindow(UUID.randomUUID(), clock::now)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:130:41: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        settle(window, decisive, clock, IncidentResponseOutcome.FALSE)
+                                        ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:130:65: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        settle(window, decisive, clock, IncidentResponseOutcome.FALSE)
+                                                                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:131:16: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        repeat(WatchIncidentDiagnosticWindow.POST_FREEZE_RESERVE) { index ->
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:131:46: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        repeat(WatchIncidentDiagnosticWindow.POST_FREEZE_RESERVE) { index ->
+                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:135:22: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        assertEquals(WatchIncidentDiagnosticWindow.POST_FREEZE_RESERVE + 1, window.snapshot().rows.size)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:135:52: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        assertEquals(WatchIncidentDiagnosticWindow.POST_FREEZE_RESERVE + 1, window.snapshot().rows.size)
+                                                   ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:135:84: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        assertEquals(WatchIncidentDiagnosticWindow.POST_FREEZE_RESERVE + 1, window.snapshot().rows.size)
+                                                                                   ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:135:95: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(WatchIncidentDiagnosticWindow.POST_FREEZE_RESERVE + 1, window.snapshot().rows.size)
+                                                                                              ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:136:16: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        repeat(WatchIncidentDiagnosticWindow.PRE_FREEZE_ROWS) { index ->
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:136:46: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        repeat(WatchIncidentDiagnosticWindow.PRE_FREEZE_ROWS) { index ->
+                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:139:37: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        val beforeOverflow = window.snapshot()
+                                    ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:140:22: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        assertEquals(WatchIncidentDiagnosticWindow.MAX_OPERATION_ROWS, beforeOverflow.rows.size)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:140:52: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        assertEquals(WatchIncidentDiagnosticWindow.MAX_OPERATION_ROWS, beforeOverflow.rows.size)
+                                                   ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:140:87: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(WatchIncidentDiagnosticWindow.MAX_OPERATION_ROWS, beforeOverflow.rows.size)
+                                                                                      ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:141:41: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(1L, beforeOverflow.rows.first().ordinal)
+                                        ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:141:54: error: cannot access 'IncidentOperationRow': it is internal in 'com.hugr.wearos'
+        assertEquals(1L, beforeOverflow.rows.first().ordinal)
+                                                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:143:33: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        assertEquals(1L, window.snapshot().rows.first().ordinal)
+                                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:143:44: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertEquals(1L, window.snapshot().rows.first().ordinal)
+                                           ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:143:57: error: cannot access 'IncidentOperationRow': it is internal in 'com.hugr.wearos'
+        assertEquals(1L, window.snapshot().rows.first().ordinal)
+                                                        ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:144:27: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        assertTrue(window.snapshot().overflowCount >= 1L)
+                          ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:144:38: error: cannot access 'IncidentWindowSnapshot': it is internal in 'com.hugr.wearos'
+        assertTrue(window.snapshot().overflowCount >= 1L)
+                                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:150:25: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            val store = SavedDiagnosticStore(root)
+                        ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:151:27: error: cannot access 'SavedDiagnosticFormat': it is internal in 'com.hugr.wearos'
+            val generic = SavedDiagnosticFormat.render(
+                          ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:151:49: error: cannot access 'SavedDiagnosticFormat': it is internal in 'com.hugr.wearos'
+            val generic = SavedDiagnosticFormat.render(
+                                                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:152:17: error: cannot access 'DiagnosticContext': it is internal in 'com.hugr.wearos'
+                DiagnosticContext(1, "test", UUID.randomUUID()),
+                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:153:17: error: cannot access 'DiagnosticStage': it is internal in 'com.hugr.wearos'
+                DiagnosticStage.SOURCE_CONTROL, DiagnosticOutcome.OTHER_STOP, null, 1, 1,
+                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:153:33: error: cannot access 'DiagnosticStage': it is internal in 'com.hugr.wearos'
+                DiagnosticStage.SOURCE_CONTROL, DiagnosticOutcome.OTHER_STOP, null, 1, 1,
+                                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:153:49: error: cannot access 'DiagnosticOutcome': it is internal in 'com.hugr.wearos'
+                DiagnosticStage.SOURCE_CONTROL, DiagnosticOutcome.OTHER_STOP, null, 1, 1,
+                                                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:153:67: error: cannot access 'DiagnosticOutcome': it is internal in 'com.hugr.wearos'
+                DiagnosticStage.SOURCE_CONTROL, DiagnosticOutcome.OTHER_STOP, null, 1, 1,
+                                                                  ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:155:37: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            val genericFile = store.save(generic, UUID.randomUUID())
+                                    ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:156:41: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            assertEquals(generic, store.read(genericFile))
+                                        ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:159:26: error: cannot access 'IncidentPublicationResult': it is internal in 'com.hugr.wearos'
+            assertEquals(IncidentPublicationResult.ACKNOWLEDGED_ATOMIC, store.saveIncident(incident, epoch))
+                         ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:159:52: error: cannot access 'IncidentPublicationResult': it is internal in 'com.hugr.wearos'
+            assertEquals(IncidentPublicationResult.ACKNOWLEDGED_ATOMIC, store.saveIncident(incident, epoch))
+                                                   ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:159:79: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            assertEquals(IncidentPublicationResult.ACKNOWLEDGED_ATOMIC, store.saveIncident(incident, epoch))
+                                                                              ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:160:28: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            val reopened = SavedDiagnosticStore(root)
+                           ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:161:45: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            assertEquals(incident, reopened.read(reopened.incidentReports().single()))
+                                            ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:161:59: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            assertEquals(incident, reopened.read(reopened.incidentReports().single()))
+                                                          ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:162:34: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            repeat(7) { reopened.saveIncident(incident, UUID.randomUUID()) }
+                                 ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:163:38: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            assertEquals(8, reopened.reports().size)
+                                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:164:26: error: cannot access 'IncidentPublicationResult': it is internal in 'com.hugr.wearos'
+            assertEquals(IncidentPublicationResult.CAPACITY_EXHAUSTED, reopened.saveIncident(incident, UUID.randomUUID()))
+                         ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:164:52: error: cannot access 'IncidentPublicationResult': it is internal in 'com.hugr.wearos'
+            assertEquals(IncidentPublicationResult.CAPACITY_EXHAUSTED, reopened.saveIncident(incident, UUID.randomUUID()))
+                                                   ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:164:81: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            assertEquals(IncidentPublicationResult.CAPACITY_EXHAUSTED, reopened.saveIncident(incident, UUID.randomUUID()))
+                                                                                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:165:38: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            assertEquals(8, reopened.reports().size)
+                                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:166:33: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            assertTrue(reopened.incidentReports().all { reopened.read(it).startsWith("HUGR SAVED ATT INCIDENT") })
+                                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:166:66: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            assertTrue(reopened.incidentReports().all { reopened.read(it).startsWith("HUGR SAVED ATT INCIDENT") })
+                                                                 ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:175:25: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            val store = SavedDiagnosticStore(root)
+                        ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:176:20: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            repeat(SavedDiagnosticStore.MAX_REPORTS) { store.save("generic-$it\n--- END REPORT ---\n", UUID.randomUUID()) }
+                   ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:176:41: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            repeat(SavedDiagnosticStore.MAX_REPORTS) { store.save("generic-$it\n--- END REPORT ---\n", UUID.randomUUID()) }
+                                        ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:176:62: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            repeat(SavedDiagnosticStore.MAX_REPORTS) { store.save("generic-$it\n--- END REPORT ---\n", UUID.randomUUID()) }
+                                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:178:32: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            val result = store.saveIncident("incident\n--- END REPORT ---\n", UUID.randomUUID())
+                               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:179:26: error: cannot access 'IncidentPublicationResult': it is internal in 'com.hugr.wearos'
+            assertEquals(IncidentPublicationResult.ACKNOWLEDGED_ATOMIC_REPLACED_GENERIC, result)
+                         ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:179:52: error: cannot access 'IncidentPublicationResult': it is internal in 'com.hugr.wearos'
+            assertEquals(IncidentPublicationResult.ACKNOWLEDGED_ATOMIC_REPLACED_GENERIC, result)
+                                                   ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:180:26: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            assertEquals(SavedDiagnosticStore.MAX_REPORTS, store.reports().size)
+                         ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:180:47: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            assertEquals(SavedDiagnosticStore.MAX_REPORTS, store.reports().size)
+                                              ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:180:66: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            assertEquals(SavedDiagnosticStore.MAX_REPORTS, store.reports().size)
+                                                                 ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:181:30: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            assertTrue(store.incidentReports().isNotEmpty())
+                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:190:22: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        val window = WatchIncidentDiagnosticWindow(UUID.randomUUID(), clock::now)
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:191:28: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        val token = window.enter(IncidentOperationKind.SOURCE_ACK, IncidentAccess.WRITE, 17, 9, null, 0)
+                           ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:191:34: error: cannot access 'IncidentOperationKind': it is internal in 'com.hugr.wearos'
+        val token = window.enter(IncidentOperationKind.SOURCE_ACK, IncidentAccess.WRITE, 17, 9, null, 0)
+                                 ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:191:56: error: cannot access 'IncidentOperationKind': it is internal in 'com.hugr.wearos'
+        val token = window.enter(IncidentOperationKind.SOURCE_ACK, IncidentAccess.WRITE, 17, 9, null, 0)
+                                                       ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:191:68: error: cannot access 'IncidentAccess': it is internal in 'com.hugr.wearos'
+        val token = window.enter(IncidentOperationKind.SOURCE_ACK, IncidentAccess.WRITE, 17, 9, null, 0)
+                                                                   ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:191:83: error: cannot access 'IncidentAccess': it is internal in 'com.hugr.wearos'
+        val token = window.enter(IncidentOperationKind.SOURCE_ACK, IncidentAccess.WRITE, 17, 9, null, 0)
+                                                                                  ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:192:16: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        window.preResponse(token, 0, 64)
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:193:16: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        window.settle(token, IncidentResponseOutcome.FALSE, 0, 64, clock.now())
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:193:30: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        window.settle(token, IncidentResponseOutcome.FALSE, 0, 64, clock.now())
+                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:193:54: error: cannot access 'IncidentResponseOutcome': it is internal in 'com.hugr.wearos'
+        window.settle(token, IncidentResponseOutcome.FALSE, 0, 64, clock.now())
+                                                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:194:22: error: cannot access 'IncidentDiagnosticFormat': it is internal in 'com.hugr.wearos'
+        val report = IncidentDiagnosticFormat.render(window.snapshot())
+                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:194:47: error: cannot access 'IncidentDiagnosticFormat': it is internal in 'com.hugr.wearos'
+        val report = IncidentDiagnosticFormat.render(window.snapshot())
+                                              ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt:194:61: error: cannot access 'WatchIncidentDiagnosticWindow': it is internal in 'com.hugr.wearos'
+        val report = IncidentDiagnosticFormat.render(window.snapshot())
+                                                            ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:289:27: error: cannot access 'WatchDiagnosticRuntime': it is internal in 'com.hugr.wearos'
+            val reports = WatchDiagnosticRuntime.store(service).incidentReports()
+                          ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:289:50: error: cannot access 'WatchDiagnosticRuntime': it is internal in 'com.hugr.wearos'
+            val reports = WatchDiagnosticRuntime.store(service).incidentReports()
+                                                 ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:289:65: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            val reports = WatchDiagnosticRuntime.store(service).incidentReports()
+                                                                ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:290:24: error: cannot access 'WatchDiagnosticRuntime': it is internal in 'com.hugr.wearos'
+                .map { WatchDiagnosticRuntime.store(service).read(it) }
+                       ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:290:47: error: cannot access 'WatchDiagnosticRuntime': it is internal in 'com.hugr.wearos'
+                .map { WatchDiagnosticRuntime.store(service).read(it) }
+                                              ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:290:62: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+                .map { WatchDiagnosticRuntime.store(service).read(it) }
+                                                             ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:295:16: error: cannot access 'WatchDiagnosticRuntime': it is internal in 'com.hugr.wearos'
+        return WatchDiagnosticRuntime.store(service).incidentReports()
+               ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:295:39: error: cannot access 'WatchDiagnosticRuntime': it is internal in 'com.hugr.wearos'
+        return WatchDiagnosticRuntime.store(service).incidentReports()
+                                      ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:295:54: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+        return WatchDiagnosticRuntime.store(service).incidentReports()
+                                                     ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:296:20: error: cannot access 'WatchDiagnosticRuntime': it is internal in 'com.hugr.wearos'
+            .map { WatchDiagnosticRuntime.store(service).read(it) }
+                   ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:296:43: error: cannot access 'WatchDiagnosticRuntime': it is internal in 'com.hugr.wearos'
+            .map { WatchDiagnosticRuntime.store(service).read(it) }
+                                          ^
+HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:296:58: error: cannot access 'SavedDiagnosticStore': it is internal in 'com.hugr.wearos'
+            .map { WatchDiagnosticRuntime.store(service).read(it) }
+                                                         ^

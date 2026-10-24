@@ -2,6 +2,8 @@ package com.hugr.wearos
 
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.channels.FileChannel
+import java.nio.file.StandardOpenOption
 import java.security.MessageDigest
 import java.util.UUID
 
@@ -137,39 +139,133 @@ internal object SavedDiagnosticFormat {
     }.joinToString("")
 }
 
-/** Eight published reports maximum; fsync + atomic rename, integrity checked before display. */
-internal class SavedDiagnosticStore(private val root: File) {
-    companion object { const val MAX_REPORTS = 8; private const val TRAILER = "REPORT_SHA256=" }
-    @Synchronized fun save(text: String, reportId: UUID = UUID.randomUUID()): File {
-        val bytes = text.toByteArray(Charsets.UTF_8)
-        require(bytes.size <= SavedDiagnosticFormat.MAX_REPORT_BYTES)
-        check(root.isDirectory || root.mkdirs()) { "Diagnostic directory unavailable" }
-        val id = reportId.toString()
-        val temporary = File(root, "$id.tmp")
-        val final = File(root, "$id.txt")
-        FileOutputStream(temporary).use {
-            it.write(bytes)
-            it.write("$TRAILER${sha(bytes)}\n".toByteArray(Charsets.UTF_8))
-            it.flush()
-            it.fd.sync()
-        }
-        check(temporary.renameTo(final)) { "Diagnostic publication failed" }
-        reports().drop(MAX_REPORTS).forEach { it.delete() } // only this isolated diagnostic root
-        return final
-    }
-    @Synchronized fun reports(): List<File> = root.listFiles()?.filter {
-        it.isFile && it.name.matches(Regex("[0-9a-f-]{36}\\.txt"))
-    }?.sortedWith(compareByDescending<File> { it.lastModified() }.thenByDescending { it.name }) ?: emptyList()
+/**
+ * Eight published reports maximum; file fsync + atomic rename + directory sync and exact reopen
+ * integrity verification before acknowledgement. Generic operational reports retain their UUID
+ * `.txt` name. A frozen incident uses a labelled sibling name so generic cleanup cannot silently
+ * rotate it away; the existing viewer reads both.
+ */
+internal class SavedDiagnosticStore(
+    private val root: File,
+    private val syncDirectory: (File) -> Unit = { directory -> forceDirectorySync(directory) },
+    private val exactReopenVerifier: (File, String) -> Unit = { file, expected ->
+        verifyExactReopen(file, expected)
+    },
+) {
+    companion object {
+        const val MAX_REPORTS = 8
+        private const val TRAILER = "REPORT_SHA256="
+        private val GENERIC_NAME = Regex("[0-9a-f-]{36}\\.txt")
+        private val INCIDENT_NAME = Regex("[0-9a-f-]{36}\\.incident\\.txt")
+        private val ROOT_LOCKS = mutableMapOf<String, Any>()
 
-    @Synchronized fun read(file: File): String {
+        private fun sharedRootLock(root: File): Any = synchronized(ROOT_LOCKS) {
+            ROOT_LOCKS.getOrPut(root.absoluteFile.normalize().path) { Any() }
+        }
+
+        /** Force the parent directory after rename so the namespace entry is durable as well. */
+        private fun forceDirectorySync(directory: File) {
+            FileChannel.open(directory.toPath(), StandardOpenOption.READ).use { channel -> channel.force(true) }
+        }
+
+        /** Freshly re-read the body and trailer before returning an atomic acknowledgement. */
+        private fun verifyExactReopen(file: File, expected: String) {
+            val encoded = file.readText(Charsets.UTF_8)
+            val at = encoded.lastIndexOf(TRAILER)
+            check(at >= 0 && encoded.endsWith('\n')) { "Incomplete diagnostic after publication" }
+            val body = encoded.substring(0, at)
+            check(body == expected) { "Published diagnostic body changed before acknowledgement" }
+            check(encoded.substring(at + TRAILER.length).trim() == sha(body.toByteArray(Charsets.UTF_8))) {
+                "Published diagnostic integrity mismatch"
+            }
+        }
+
+        private fun sha(bytes: ByteArray) = MessageDigest.getInstance("SHA-256").digest(bytes)
+            .joinToString("") { "%02x".format(it) }
+    }
+
+    private val rootLock = sharedRootLock(root)
+
+    /** Existing generic compatibility entry point; generic rotation cannot delete frozen incidents. */
+    fun save(text: String, reportId: UUID = UUID.randomUUID()): File = synchronized(rootLock) {
+        val final = File(root, "${reportId}.txt")
+        if (!final.exists()) makeRoomForGenericReport()
+        writeAtomically(text, final)
+        final
+    }
+
+    /**
+     * Checkpoints one incident under its diagnostic-epoch identity. A later checkpoint replaces
+     * only that same incident. A full generic-inclusive store may explicitly displace one generic
+     * report; a full incident-only store reports CAPACITY_EXHAUSTED without rotation.
+     */
+    fun saveIncident(text: String, diagnosticEpoch: UUID): IncidentPublicationResult = synchronized(rootLock) {
+        val final = File(root, "${diagnosticEpoch}.incident.txt")
+        try {
+            var replacedGeneric = false
+            if (!final.exists() && reports().size >= MAX_REPORTS) {
+                val generic = genericReports().lastOrNull()
+                    ?: return@synchronized IncidentPublicationResult.CAPACITY_EXHAUSTED
+                check(generic.delete()) { "Generic diagnostic report replacement failed" }
+                replacedGeneric = true
+            }
+            writeAtomically(text, final)
+            if (replacedGeneric) IncidentPublicationResult.ACKNOWLEDGED_ATOMIC_REPLACED_GENERIC
+            else IncidentPublicationResult.ACKNOWLEDGED_ATOMIC
+        } catch (_: Throwable) {
+            IncidentPublicationResult.WRITE_FAILED
+        }
+    }
+
+    fun reports(): List<File> = synchronized(rootLock) {
+        root.listFiles()?.filter {
+            it.isFile && (it.name.matches(GENERIC_NAME) || it.name.matches(INCIDENT_NAME))
+        }?.sortedWith(compareByDescending<File> { it.lastModified() }.thenByDescending { it.name }) ?: emptyList()
+    }
+
+    fun incidentReports(): List<File> = synchronized(rootLock) { reports().filter(::isIncident) }
+
+    fun read(file: File): String = synchronized(rootLock) {
         require(file.canonicalFile.parentFile == root.canonicalFile && reports().contains(file))
         require(file.length() in 1..(SavedDiagnosticFormat.MAX_REPORT_BYTES + 100L))
         val encoded = file.readText(Charsets.UTF_8)
         val at = encoded.lastIndexOf(TRAILER)
         require(at >= 0 && encoded.endsWith('\n')) { "Incomplete diagnostic" }
         val body = encoded.substring(0, at)
-        require(encoded.substring(at + TRAILER.length).trim() == sha(body.toByteArray(Charsets.UTF_8))) { "Diagnostic integrity mismatch" }
-        return body
+        require(encoded.substring(at + TRAILER.length).trim() == sha(body.toByteArray(Charsets.UTF_8))) {
+            "Diagnostic integrity mismatch"
+        }
+        body
     }
-    private fun sha(bytes: ByteArray) = MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
+
+    private fun genericReports(): List<File> = reports().filterNot(::isIncident)
+
+    private fun isIncident(file: File): Boolean = file.name.matches(INCIDENT_NAME)
+
+    private fun makeRoomForGenericReport() {
+        if (reports().size < MAX_REPORTS) return
+        val generic = genericReports().lastOrNull()
+            ?: throw IllegalStateException("Diagnostic report capacity contains only frozen incidents")
+        check(generic.delete()) { "Generic diagnostic rotation failed" }
+    }
+
+    private fun writeAtomically(text: String, final: File) {
+        val bytes = text.toByteArray(Charsets.UTF_8)
+        require(bytes.size <= SavedDiagnosticFormat.MAX_REPORT_BYTES)
+        check(root.isDirectory || root.mkdirs()) { "Diagnostic directory unavailable" }
+        val temporary = File(root, ".${final.name}.${UUID.randomUUID()}.tmp")
+        try {
+            FileOutputStream(temporary).use {
+                it.write(bytes)
+                it.write("$TRAILER${sha(bytes)}\n".toByteArray(Charsets.UTF_8))
+                it.flush()
+                it.fd.sync()
+            }
+            check(temporary.renameTo(final)) { "Diagnostic publication failed" }
+            syncDirectory(root)
+            exactReopenVerifier(final, text)
+        } finally {
+            if (temporary.exists()) temporary.delete()
+        }
+    }
 }

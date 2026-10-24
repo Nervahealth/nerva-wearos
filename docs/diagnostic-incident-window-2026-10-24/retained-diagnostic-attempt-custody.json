@@ -1,0 +1,412 @@
+{
+  "watchHistory": [
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-5-before-publication-state-correction/SHA256SUMS",
+      "bytes": 1408,
+      "sha256": "854f7f32e22ce98d071e01e919688ef821baaa3a2d6cc89cb1f1d8d04dca5646"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-5-before-publication-state-correction/compile-and-run-offline.sh",
+      "bytes": 7490,
+      "sha256": "a5823ce7825c602d17fc2e9ec48d205c9389b943e4ebe62742605593892b1674"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-5-before-publication-state-correction/exact-command.json",
+      "bytes": 19307,
+      "sha256": "90de09fd54f5d1c28cf43cbf49ee94bac88a6a7f9f2efe39052c7f6a9ed08e89"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-5-before-publication-state-correction/execution.log",
+      "bytes": 1548,
+      "sha256": "fa55300c0e1874ba2242474a541734c0f3b4cd080dc74707e11b16ccb5e3d385"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-5-before-publication-state-correction/payload-free-operation.log",
+      "bytes": 4924,
+      "sha256": "28643659cbf6c3805bc11f5a2ea7668b98ec92864843a51f9d63a213c83fef0d"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-5-before-publication-state-correction/production-compiler.log",
+      "bytes": 4824,
+      "sha256": "c879f490894d6c12425ffb424d5bf765251a182b4155edf4f1883f43bf03ddbd"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-5-before-publication-state-correction/result.json",
+      "bytes": 15332,
+      "sha256": "e438ec2e03e455a3bab3eba66b0f042becf66d60898b7a969568b71b8a1520ba"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-5-before-publication-state-correction/test-compiler.log",
+      "bytes": 1365,
+      "sha256": "326de83668fa6da961d33219f4c834f06531c7635b4da154f3188b21fb822d77"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-6-before-viewer-publication-finalization/SHA256SUMS",
+      "bytes": 1429,
+      "sha256": "5a716f3271e065a6309e825f3ed4b1d4813fb875b3173be14b84f65034c3d1a4"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-6-before-viewer-publication-finalization/compile-and-run-offline.sh",
+      "bytes": 7727,
+      "sha256": "a3a5128c09122d814881bd73ba774dad1bc29acbe43c0d4cfc45b97acc758cc4"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-6-before-viewer-publication-finalization/exact-command.json",
+      "bytes": 19307,
+      "sha256": "90de09fd54f5d1c28cf43cbf49ee94bac88a6a7f9f2efe39052c7f6a9ed08e89"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-6-before-viewer-publication-finalization/execution.log",
+      "bytes": 1548,
+      "sha256": "c274333b0fe4d0add3b95b51e8be7630f6bb7f5e924305956aa98ebde9f39b00"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-6-before-viewer-publication-finalization/payload-free-operation.log",
+      "bytes": 4924,
+      "sha256": "327aa76d3f564742f0dfef1a91811999836b0547c27aba978603ec25e113fefe"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-6-before-viewer-publication-finalization/production-compiler.log",
+      "bytes": 4616,
+      "sha256": "a7954599fb83c2b308d60fab6b03876295deda5b3f8dc8007d67e1d86f78f84b"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-6-before-viewer-publication-finalization/result.json",
+      "bytes": 15332,
+      "sha256": "6f38d4e2b163dda4d01117bc03862f2e0df903aa600f5ab06ae3e9feb90c35e6"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-6-before-viewer-publication-finalization/test-compiler.log",
+      "bytes": 1365,
+      "sha256": "326de83668fa6da961d33219f4c834f06531c7635b4da154f3188b21fb822d77"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-7-before-worker-submission-hardening/SHA256SUMS",
+      "bytes": 603,
+      "sha256": "b9798b18b428536e7c8cd244792d334fb9b455515925ccf6df4520898d167fcc"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-7-before-worker-submission-hardening/compile-and-run-offline.sh",
+      "bytes": 7727,
+      "sha256": "a3a5128c09122d814881bd73ba774dad1bc29acbe43c0d4cfc45b97acc758cc4"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-7-before-worker-submission-hardening/exact-command.json",
+      "bytes": 19307,
+      "sha256": "90de09fd54f5d1c28cf43cbf49ee94bac88a6a7f9f2efe39052c7f6a9ed08e89"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-7-before-worker-submission-hardening/execution.log",
+      "bytes": 1556,
+      "sha256": "2afec584af9023fd4632ecf1a64a3468a1ba7af6c1fe22444f7fd1ce5122d8bd"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-7-before-worker-submission-hardening/payload-free-operation.log",
+      "bytes": 4924,
+      "sha256": "1cca8cbec16523cbaab4c6a6410e7aa50ba12f9bef7c5939da5bf60d76e15b04"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-7-before-worker-submission-hardening/production-compiler.log",
+      "bytes": 3881,
+      "sha256": "96a6bf270bf06788a875631459478c625b2598157eb4ea64decdac6353c61425"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-7-before-worker-submission-hardening/result.json",
+      "bytes": 15991,
+      "sha256": "4e34406f9a587528986352c6d003ede17785f734f111904100b26928a6c7020c"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-7-before-worker-submission-hardening/test-compiler.log",
+      "bytes": 1071,
+      "sha256": "47b342d4b718b46d400819c0e5e768cb0b2c3535612c4736cc3ee87888af27b8"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-8-before-disconnect-success-reopen-test/SHA256SUMS",
+      "bytes": 603,
+      "sha256": "08e7ac0c70669643581ceac9193ebf4b08908afd2af7adfbd7f9f5d332f93839"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-8-before-disconnect-success-reopen-test/compile-and-run-offline.sh",
+      "bytes": 7727,
+      "sha256": "a3a5128c09122d814881bd73ba774dad1bc29acbe43c0d4cfc45b97acc758cc4"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-8-before-disconnect-success-reopen-test/exact-command.json",
+      "bytes": 19307,
+      "sha256": "90de09fd54f5d1c28cf43cbf49ee94bac88a6a7f9f2efe39052c7f6a9ed08e89"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-8-before-disconnect-success-reopen-test/execution.log",
+      "bytes": 1556,
+      "sha256": "f290b9d1ff86f9d122c1c509897ff48d2c153191c3c510b17f29b3f9d14a5e84"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-8-before-disconnect-success-reopen-test/payload-free-operation.log",
+      "bytes": 4924,
+      "sha256": "d47a4709eafc9e2ba5a5cac993e53724d8413a51edf63ad58316db4a60947c20"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-8-before-disconnect-success-reopen-test/production-compiler.log",
+      "bytes": 4075,
+      "sha256": "35841c6d767cd2b3d0724359e474070752c5b5248f818ed1b96433bda2814aaf"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-8-before-disconnect-success-reopen-test/result.json",
+      "bytes": 15991,
+      "sha256": "e5d4084d1c160b2a3c6daa531c532419b9c84863f57e61ed43ac556f5f42a042"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/passed-attempt-8-before-disconnect-success-reopen-test/test-compiler.log",
+      "bytes": 1071,
+      "sha256": "47b342d4b718b46d400819c0e5e768cb0b2c3535612c4736cc3ee87888af27b8"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/pre-requirement-correction-snapshot-2026-10-24T1001CEST/FINAL_VALIDATION_REPORT_2026_10_24.md",
+      "bytes": 3398,
+      "sha256": "3dd800481fb740c074f10de25db9aa272d976750453606adca8612c9958389cb"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/pre-requirement-correction-snapshot-2026-10-24T1001CEST/PARENT_INTEGRATION_MANIFEST_2026_10_24.json",
+      "bytes": 3689,
+      "sha256": "a4ddab886602d217f894b873086d8dd3caf062f5ebb630638734dcbfbd7ef47f"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/pre-requirement-correction-snapshot-2026-10-24T1001CEST/SHA256SUMS",
+      "bytes": 817,
+      "sha256": "5e45c7ac2b00db60ffbe3ca0bf57cb96e5d9d5ff68d17a2ba6adefc827d46106"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/pre-requirement-correction-snapshot-2026-10-24T1001CEST/compile-and-run-offline.sh",
+      "bytes": 7727,
+      "sha256": "a3a5128c09122d814881bd73ba774dad1bc29acbe43c0d4cfc45b97acc758cc4"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/pre-requirement-correction-snapshot-2026-10-24T1001CEST/exact-command.json",
+      "bytes": 19307,
+      "sha256": "90de09fd54f5d1c28cf43cbf49ee94bac88a6a7f9f2efe39052c7f6a9ed08e89"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/pre-requirement-correction-snapshot-2026-10-24T1001CEST/execution.log",
+      "bytes": 1553,
+      "sha256": "29998d26bfd16eab6feaa54658083d897693ff7ac3f3882cbdf7609d7b6087dc"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/pre-requirement-correction-snapshot-2026-10-24T1001CEST/payload-free-operation.log",
+      "bytes": 4924,
+      "sha256": "d5ee9c85db3d3214dff0255bb1250d797af5b9cb8fa441d196bbb6ef3179ff97"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/pre-requirement-correction-snapshot-2026-10-24T1001CEST/production-compiler.log",
+      "bytes": 3881,
+      "sha256": "96a6bf270bf06788a875631459478c625b2598157eb4ea64decdac6353c61425"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/pre-requirement-correction-snapshot-2026-10-24T1001CEST/result.json",
+      "bytes": 15723,
+      "sha256": "53d73bd755eb97807c4d7fc3679f9e768c8a97c12740dcebf007078f1cd4dc6d"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/pre-requirement-correction-snapshot-2026-10-24T1001CEST/test-compiler.log",
+      "bytes": 1071,
+      "sha256": "59172841f5f893981264bf6f119b2e56564e3717fa34984ad3e88c283f82a1a7"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-1-before-new-test-source/SHA256SUMS",
+      "bytes": 767,
+      "sha256": "d591c3cbcd34942f0b1a7d397d1db5d88cdefb20604c9cb5ca028db13be64056"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-1-before-new-test-source/compile-and-run-offline.sh",
+      "bytes": 7246,
+      "sha256": "2229e2963fa3807a76c4f92241149f7ed1dc5e5db63138da5b06d4cabde79c35"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-1-before-new-test-source/execution.log",
+      "bytes": 72,
+      "sha256": "7dfd487c66af4f598e774f89046f36a71f88822317d6aa2cd0e33b9fc3e1bb80"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-1-before-new-test-source/production-compiler.log",
+      "bytes": 4824,
+      "sha256": "e51d84035cb9f88b4058d53de6790f9dd7ea1b3d690a2ecb7cc9a5300a27c39b"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-1-before-new-test-source/test-compiler.log",
+      "bytes": 143,
+      "sha256": "2767a5d9f22d28858d5b7ab7dafe151592155cb4f368e356915df29316c1de74"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-2-before-overlay-classpath-correction/SHA256SUMS",
+      "bytes": 1047,
+      "sha256": "15781268b4ab3fc571133ab63f9fb917bd29fe612f9cd3a6111177afc0b324cd"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-2-before-overlay-classpath-correction/compile-and-run-offline.sh",
+      "bytes": 7304,
+      "sha256": "b80d639060669aef30e2ae2c2f44f3263c5f70b45c76c2e31783025e754befb5"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-2-before-overlay-classpath-correction/execution.log",
+      "bytes": 72,
+      "sha256": "7dfd487c66af4f598e774f89046f36a71f88822317d6aa2cd0e33b9fc3e1bb80"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-2-before-overlay-classpath-correction/production-compiler.log",
+      "bytes": 4824,
+      "sha256": "c879f490894d6c12425ffb424d5bf765251a182b4155edf4f1883f43bf03ddbd"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-2-before-overlay-classpath-correction/source-test-runner-sha256.before-correction",
+      "bytes": 1360,
+      "sha256": "38437c42fbd0b03b453fbd47ff252ce4f3261c67ace1a300bc5b4881087d9588"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-2-before-overlay-classpath-correction/test-compiler.log",
+      "bytes": 15286,
+      "sha256": "afee2f0ade03f4a15b940dee2bc10d9963ce8be386d05323953ae002307c0e31"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-3-before-test-compiler-correction/SHA256SUMS",
+      "bytes": 1219,
+      "sha256": "587832bdba18058cad042af26ba4e247e07b8317c627ca938f3020ff09e6cf5d"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-3-before-test-compiler-correction/compile-and-run-offline.sh",
+      "bytes": 7452,
+      "sha256": "a340a400816b48a3037d2d6f04e66abe27b59979604d87f6017d61dadd4e3615"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-3-before-test-compiler-correction/execution.log",
+      "bytes": 72,
+      "sha256": "7dfd487c66af4f598e774f89046f36a71f88822317d6aa2cd0e33b9fc3e1bb80"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-3-before-test-compiler-correction/production-compiler.log",
+      "bytes": 4824,
+      "sha256": "c879f490894d6c12425ffb424d5bf765251a182b4155edf4f1883f43bf03ddbd"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-3-before-test-compiler-correction/result.json",
+      "bytes": 9983,
+      "sha256": "188f3bf7f97da732f3434b7c47c1ef3f12dae38076184b631707207c9b83bd97"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-3-before-test-compiler-correction/source-test-runner-sha256.before-correction",
+      "bytes": 1360,
+      "sha256": "ce90ed1f038882bc30494a3ac20ec186ecce5fc049b8707c4c63ae74f7735366"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-3-before-test-compiler-correction/test-compiler.log",
+      "bytes": 51283,
+      "sha256": "7822c4c56933aa199274adabeba84085ac562e342250b0e15385198aee4ac1e3"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-4-before-junit-command-correction/SHA256SUMS",
+      "bytes": 1219,
+      "sha256": "f4ed387e9b9793ee43a5e225d11991511f1a92abe1f6adc0bb042903e4b9a90e"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-4-before-junit-command-correction/compile-and-run-offline.sh",
+      "bytes": 7480,
+      "sha256": "7283c9efa15c0afa95b391063d3425c20dfbec19d12dcee376bf6f37989701b7"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-4-before-junit-command-correction/execution.log",
+      "bytes": 4961,
+      "sha256": "4513f61c02b458fe98769a02549a0a3ef1ee4013a7aeed4ac1be1052adca00b7"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-4-before-junit-command-correction/production-compiler.log",
+      "bytes": 4824,
+      "sha256": "c879f490894d6c12425ffb424d5bf765251a182b4155edf4f1883f43bf03ddbd"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-4-before-junit-command-correction/result.json",
+      "bytes": 9986,
+      "sha256": "0416cdd18d22590aadddf8bb827cfda2e9d5841a2a9508c8889eec69985a6210"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-4-before-junit-command-correction/source-test-runner-sha256.before-correction",
+      "bytes": 1360,
+      "sha256": "6cbd53237eda1dfb8d3ac2008ef64686ff3d5ff586dbc22f16d0d72424f04c2d"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/preserved-attempt-4-before-junit-command-correction/test-compiler.log",
+      "bytes": 1365,
+      "sha256": "326de83668fa6da961d33219f4c834f06531c7635b4da154f3188b21fb822d77"
+    }
+  ],
+  "phoneHistory": [
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receipt-incident-bluetooth-source-bound-attempt-5.log",
+      "bytes": 945,
+      "sha256": "910f39eb9486dec2ef1e73d298a57c6313d1f6fc93689f697f765707f21b0fd2"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receipt-incident-bluetooth-source-bound-attempt-6.log",
+      "bytes": 1042,
+      "sha256": "f11c3faef0cd62672c28a7b45fbc2c7771de8f938ef4219c1b43428cb3593cec"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receipt-incident-diagnostics-test-attempt-2.log",
+      "bytes": 59757,
+      "sha256": "dc686996e80751bda9d890b07a972974a3daea24e6164de0478c686311c682de"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receipt-incident-diagnostics-test-attempt-3.log",
+      "bytes": 30790,
+      "sha256": "b66046d5207ac1a222c08774809885a4bc2329348e797ae1305e35d9911f87cc"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receipt-incident-diagnostics-test-attempt-4.log",
+      "bytes": 4764,
+      "sha256": "2492bd7d8681cb2f0d4938acb5d404e00fc693e1d1c45ea2ccffc95db7baa825"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receipt-incident-diagnostics-test-attempt-5.log",
+      "bytes": 142923,
+      "sha256": "421a26d242a12a4b670dddffc0b7879628a87507e12e4fce5396e5b3b599b5fe"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receipt-incident-diagnostics-test-attempt-6.log",
+      "bytes": 58105,
+      "sha256": "40c266a3a9c92308d1c692c6d9b8f645730036e20fc648c1831d4d4cc58921b1"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receipt-incident-diagnostics-test-attempt-7.log",
+      "bytes": 5094,
+      "sha256": "5e932a0f0c8ad206d21ba3698361a608ca10f93b6097325757f41b3c3820d5bf"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receipt-incident-diagnostics-test-attempt-8.log",
+      "bytes": 5858,
+      "sha256": "e22445d478cea5ec4565a2c2ab5dc526906188b09529a5cb6a5cf9782dc97c53"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receipt-incident-diagnostics-test-attempt-9.log",
+      "bytes": 5858,
+      "sha256": "f1b81511cb423790120d62a6801bbb560801fcf268330d52e11fe8759ec359f2"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receipt-incident-diagnostics-test-final-2.log",
+      "bytes": 5857,
+      "sha256": "c3c6a6335b1dae006ed950ffe2718d6df55207ec13b3d5c7a618fae42ade3bb5"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receipt-incident-diagnostics-test-final.log",
+      "bytes": 5858,
+      "sha256": "a99876d91a3de2c6ea8fb5dfaa67c337ccb8d363ad7d06a2e89b8de57526c471"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receipt-incident-diagnostics-test.log",
+      "bytes": 58911,
+      "sha256": "42343d89bf77019e71824f401a110ca91003924283957a83cc84dbce20b61fc2"
+    },
+    {
+      "path": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receipt-incident-publication-contract-test.log",
+      "bytes": 4924,
+      "sha256": "37051bf7d82fbb0300644c34af49f05ab041b359f43d827510a7734b4d7b2901"
+    }
+  ],
+  "earlierAttemptsRemainUnchanged": true
+}

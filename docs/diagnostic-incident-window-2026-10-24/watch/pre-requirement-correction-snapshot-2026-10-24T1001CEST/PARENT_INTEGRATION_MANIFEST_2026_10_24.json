@@ -1,0 +1,72 @@
+{
+  "kind": "HUGR Watch diagnostic incident window parent integration manifest",
+  "authority": "HUGR_DIAGNOSTIC_INCIDENT_WINDOW_AND_EXISTING_RUN_READBACK_AUTHORITY_2026_10_24.md",
+  "taskLocalRoot": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch",
+  "controlledWatchRootForIntegration": "/home/ubuntu/HUGR_PHONE_EXPORT_SCRATCH_CORRECTION_2026_10_20/watch",
+  "controlledWatchHeadObservedReadOnly": "8ee73a7f2f6ea1955d00998b540303abb0f19ff9",
+  "finalTest": {
+    "command": "./compile-and-run-offline.sh",
+    "productionCompilerExitCode": 0,
+    "testCompilerExitCode": 0,
+    "junit": "OK (15 tests)",
+    "elapsedMs": 16271.195,
+    "gradleInvoked": false,
+    "networkUsed": false,
+    "newApks": 0,
+    "deviceOrBluetoothAction": false
+  },
+  "changedIntegrationTargets": [
+    {
+      "targetRelativePath": "app/src/main/java/com/hugr/wearos/IncidentDiagnosticWindow.kt",
+      "taskLocalPath": "production-source/IncidentDiagnosticWindow.kt",
+      "sha256": "d105ef4c653da5374125e6fe3b7514e18b1e4d6910dddf70382bbbe0db723996",
+      "role": "new payload-free incident-window model and compact loss-safe renderer",
+      "integrationDisposition": "CHANGED_IN_THIS_CONTINUATION"
+    },
+    {
+      "targetRelativePath": "app/src/test/java/com/hugr/wearos/DiagnosticIncidentWindowTest.kt",
+      "taskLocalPath": "tests/DiagnosticIncidentWindowTest.kt",
+      "sha256": "46a1b8b1ef8b480301c7442a9cbde86ed2c7d43d34c0a9c77977a38f5218878e",
+      "role": "focused model/lifecycle/budget and offline-reader contract",
+      "integrationDisposition": "CHANGED_IN_THIS_CONTINUATION"
+    },
+    {
+      "targetRelativePath": "app/src/test/java/com/hugr/wearos/ReceiptAckTimeoutActualCallbackContinuationTest.kt",
+      "taskLocalPath": "tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt",
+      "sha256": "b3ee0fa982419d147be24556bc0438ca002b6451b6e2026ff3c344e7b9c068ba",
+      "role": "actual callback/ATT ordering integration contract, updated only for compact diagnostic vocabulary",
+      "integrationDisposition": "CHANGED_IN_THIS_CONTINUATION"
+    }
+  ],
+  "recompiledExistingDependenciesNotChangedThisContinuation": [
+    {
+      "targetRelativePath": "app/src/main/java/com/hugr/wearos/WatchDiagnosticRuntime.kt",
+      "taskLocalPath": "production-source/WatchDiagnosticRuntime.kt",
+      "sha256": "db6656a9774938286a1bc4b9c1e9054cfc94e47b48c887ffcc52d65ac0a03d20",
+      "role": "existing task-local lifecycle hooks and post-response worker checkpoint seam recompiled as dependency",
+      "integrationDisposition": "INPUT_ALREADY_PRESENT_NOT_EDITED_IN_THIS_CONTINUATION"
+    },
+    {
+      "targetRelativePath": "app/src/main/java/com/hugr/wearos/BleGattService.kt",
+      "taskLocalPath": "production-source/BleGattService.kt",
+      "sha256": "81f4333db339dae233875c4b9ea64c7c04741fcd8101f520c69f1503df77bc3a",
+      "role": "existing task-local GATT hooks and after-sendResponse runtime seam recompiled as dependency",
+      "integrationDisposition": "INPUT_ALREADY_PRESENT_NOT_EDITED_IN_THIS_CONTINUATION"
+    },
+    {
+      "targetRelativePath": "app/src/main/java/com/hugr/wearos/SavedDiagnosticReport.kt",
+      "taskLocalPath": "production-source/SavedDiagnosticReport.kt",
+      "sha256": "6933327ab2f61b4d371480d87b915579adbe4250501e85c3b9589d47a473b57e",
+      "role": "existing eight-report atomic incident store and 24 KiB constant recompiled as dependency",
+      "integrationDisposition": "INPUT_ALREADY_PRESENT_NOT_EDITED_IN_THIS_CONTINUATION"
+    }
+  ],
+  "excluded": [
+    "controlled worktree edits",
+    "Git/docs changes",
+    "Gradle",
+    "APK/sign/install",
+    "device/Bluetooth/native capture",
+    "payloads/private data"
+  ]
+}

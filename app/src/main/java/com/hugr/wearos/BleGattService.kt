@@ -1024,6 +1024,7 @@ class BleGattService : Service() {
                     notificationQueue.reset()
                     notificationCompletionBlocked = true
                     connectedDevice = device
+                    WatchDiagnosticRuntime.onIncidentConnectionOpened()
                     pendingSourceResumeRequest = null
                     queuedReplayManifestEndIndex = null
                     negotiatedMtu = 23
@@ -1069,6 +1070,7 @@ class BleGattService : Service() {
                     )
                     notificationCompletionBlocked = true
                     connectedDevice = null
+                    WatchDiagnosticRuntime.onIncidentConnectionClosed(this@BleGattService)
                     pendingSourceResumeRequest = null
                     queuedReplayManifestEndIndex = null
                     negotiatedMtu = 23
@@ -1153,7 +1155,14 @@ class BleGattService : Service() {
             characteristic: BluetoothGattCharacteristic?
         ) {
             if (characteristic?.uuid == RUN_RECEIPT_CHARACTERISTIC_UUID) {
-                val operation = beginAttResponseOperation("RUN_RECEIPT", "READ")
+                val operation = beginAttResponseOperation(
+                    operationKind = "RUN_RECEIPT",
+                    incidentKind = IncidentOperationKind.R1_READ,
+                    access = "READ",
+                    nativeRequestId = requestId,
+                    characteristic = characteristic,
+                    attOffset = offset,
+                )
                 val validDevice = device != null && connectedDevice?.address == device.address
                 val frame = if (validDevice && offset == 0) runCatching { freshPager.frame(negotiatedMtu) }.getOrNull() else null
                 sendAttResponse(operation, device, requestId, if (frame != null) BluetoothGatt.GATT_SUCCESS else BluetoothGatt.GATT_FAILURE, offset, frame ?: byteArrayOf())
@@ -1219,10 +1228,25 @@ class BleGattService : Service() {
             value: ByteArray?
         ) {
             val sourceControlOperation = if (characteristic?.uuid == SOURCE_CONTROL_CHARACTERISTIC_UUID) {
-                beginAttResponseOperation("SOURCE_CONTROL", "WRITE")
+                beginAttResponseOperation(
+                    operationKind = "SOURCE_CONTROL",
+                    incidentKind = sourceControlIncidentKind(value),
+                    access = "WRITE",
+                    nativeRequestId = requestId,
+                    characteristic = characteristic,
+                    attOffset = offset,
+                )
             } else null
             if (characteristic?.uuid == RUN_RECEIPT_CHARACTERISTIC_UUID) {
-                val operation = beginAttResponseOperation("RUN_RECEIPT", "WRITE", receiptPageIndex(value))
+                val operation = beginAttResponseOperation(
+                    operationKind = "RUN_RECEIPT",
+                    incidentKind = receiptIncidentKind(value),
+                    access = "WRITE",
+                    pageIndex = receiptPageIndex(value),
+                    nativeRequestId = requestId,
+                    characteristic = characteristic,
+                    attOffset = offset,
+                )
                 var confirm = false
                 val accepted = runCatching {
                     require(freshMode && device != null && connectedDevice?.address == device.address && !preparedWrite && offset == 0 && responseNeeded)
@@ -1239,9 +1263,25 @@ class BleGattService : Service() {
                 }
                 return
             }
-            if (freshReceiptOnly) { if (responseNeeded) gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset, byteArrayOf()); return }
+            if (freshReceiptOnly) {
+                if (responseNeeded) {
+                    if (sourceControlOperation != null) {
+                        sendAttResponse(sourceControlOperation, device, requestId, BluetoothGatt.GATT_FAILURE, offset, byteArrayOf())
+                    } else gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset, byteArrayOf())
+                } else if (sourceControlOperation != null) {
+                    settleIncidentWithoutResponse(sourceControlOperation, BluetoothGatt.GATT_FAILURE, 0)
+                }
+                return
+            }
             if (freshMode && (preparedWrite || offset != 0 || !responseNeeded)) {
-                if (responseNeeded) gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset, byteArrayOf()); return
+                if (responseNeeded) {
+                    if (sourceControlOperation != null) {
+                        sendAttResponse(sourceControlOperation, device, requestId, BluetoothGatt.GATT_FAILURE, offset, byteArrayOf())
+                    } else gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset, byteArrayOf())
+                } else if (sourceControlOperation != null) {
+                    settleIncidentWithoutResponse(sourceControlOperation, BluetoothGatt.GATT_FAILURE, 0)
+                }
+                return
             }
             Log.d(TAG, "Write request for ${characteristic?.uuid}, ${value?.size} bytes")
             var writeResponseStatus = BluetoothGatt.GATT_SUCCESS
@@ -1330,6 +1370,10 @@ class BleGattService : Service() {
                 } else {
                     gattServer?.sendResponse(device, requestId, writeResponseStatus, offset, value)
                 }
+            } else if (sourceControlOperation != null) {
+                // Preserve the existing no-response behavior, while retaining the local callback
+                // lifecycle in memory. This is neither a null server nor an ATT response outcome.
+                settleIncidentWithoutResponse(sourceControlOperation, writeResponseStatus, value?.size ?: 0)
             }
         }
 
@@ -1708,20 +1752,43 @@ class BleGattService : Service() {
 
     private fun maximumAttPayloadBytes(): Int = (negotiatedMtu - ATT_PROTOCOL_OVERHEAD_BYTES).coerceAtLeast(20)
 
+    private data class AttResponseOperation(
+        val responseDiagnostic: AttResponseOperationDiagnostic,
+        val incidentToken: IncidentOperationToken?,
+    )
+
     private fun beginAttResponseOperation(
         operationKind: String,
+        incidentKind: IncidentOperationKind,
         access: String,
         pageIndex: Long? = null,
-    ): AttResponseOperationDiagnostic = AttResponseOperationDiagnostic(
-        operationKind = operationKind,
-        access = access,
-        pageIndex = pageIndex,
-        callbackOrdinal = attResponseCallbackOrdinal.incrementAndGet(),
-        callbackEntryElapsedMs = System.nanoTime() / 1_000_000L,
-        preResponseElapsedMs = 0L,
-        responseElapsedMs = 0L,
-        responseOutcome = AttResponseOutcome.TRUE,
-    )
+        nativeRequestId: Int,
+        characteristic: BluetoothGattCharacteristic?,
+        attOffset: Int,
+    ): AttResponseOperation {
+        val callbackEntryNanos = System.nanoTime()
+        val token = WatchDiagnosticRuntime.enterIncidentOperation(
+            kind = incidentKind,
+            access = if (access == "READ") IncidentAccess.READ else IncidentAccess.WRITE,
+            nativeRequestId = nativeRequestId,
+            characteristicInstanceId = characteristic?.instanceId,
+            r1PageIndex = pageIndex,
+            attOffset = attOffset.coerceAtLeast(0),
+        )
+        return AttResponseOperation(
+            responseDiagnostic = AttResponseOperationDiagnostic(
+                operationKind = operationKind,
+                access = access,
+                pageIndex = pageIndex,
+                callbackOrdinal = attResponseCallbackOrdinal.incrementAndGet(),
+                callbackEntryElapsedMs = callbackEntryNanos / 1_000_000L,
+                preResponseElapsedMs = 0L,
+                responseElapsedMs = 0L,
+                responseOutcome = AttResponseOutcome.TRUE,
+            ),
+            incidentToken = token,
+        )
+    }
 
     /**
      * The ATT status and payload are still produced by the original call site. False/null and
@@ -1729,29 +1796,35 @@ class BleGattService : Service() {
      * fabricates a response, changes source/ACK state, or performs I/O ahead of ATT response.
      */
     private fun sendAttResponse(
-        operation: AttResponseOperationDiagnostic,
+        operation: AttResponseOperation,
         device: BluetoothDevice?,
         requestId: Int,
         status: Int,
         offset: Int,
         value: ByteArray?,
     ) {
-        val preResponse = System.nanoTime() / 1_000_000L
+        WatchDiagnosticRuntime.preResponseIncidentOperation(operation.incidentToken, status, value?.size ?: 0)
         val sent: Boolean? = gattServer?.sendResponse(device, requestId, status, offset, value)
-        val responseElapsed = System.nanoTime() / 1_000_000L
+        val responseNanos = System.nanoTime()
         val outcome = when (sent) {
             true -> AttResponseOutcome.TRUE
             false -> AttResponseOutcome.FALSE
             null -> AttResponseOutcome.NULL
         }
-        if (outcome != AttResponseOutcome.TRUE || responseElapsed - operation.callbackEntryElapsedMs >= 10_000L) {
-            val observed = operation.copy(
-                preResponseElapsedMs = preResponse,
-                responseElapsedMs = responseElapsed,
-                responseOutcome = outcome,
-            )
-            transportHandler.post { WatchDiagnosticRuntime.captureAttResponseOutcome(this, observed) }
-        }
+        // The original ATT response has returned. The runtime only records in memory here and
+        // queues any later checkpoint worker after the response; it performs no callback-path I/O.
+        WatchDiagnosticRuntime.settleIncidentOperationAfterResponse(
+            context = this,
+            token = operation.incidentToken,
+            outcome = when (outcome) {
+                AttResponseOutcome.TRUE -> IncidentResponseOutcome.TRUE
+                AttResponseOutcome.FALSE -> IncidentResponseOutcome.FALSE
+                AttResponseOutcome.NULL -> IncidentResponseOutcome.NULL
+            },
+            status = status,
+            responseLength = value?.size ?: 0,
+            responseNanos = responseNanos,
+        )
     }
 
     private fun receiptPageIndex(value: ByteArray?): Long? = value
@@ -1759,8 +1832,34 @@ class BleGattService : Service() {
         ?.takeIf { it.startsWith("R1:") }
         ?.substringAfter("R1:")
         ?.toLongOrNull()
+        ?.takeIf { it >= 0L }
+
+    private fun receiptIncidentKind(value: ByteArray?): IncidentOperationKind =
+        if (value?.toString(Charsets.US_ASCII)?.startsWith("R1:") == true) IncidentOperationKind.R1_WRITE
+        else IncidentOperationKind.C1_WRITE
+
+    private fun sourceControlIncidentKind(value: ByteArray?): IncidentOperationKind = when (
+        value?.getOrNull(2)?.toInt()?.and(0xFF)
+    ) {
+        SourceReplayProtocol.RESUME_REQUEST -> IncidentOperationKind.SOURCE_RESUME
+        SourceReplayProtocol.SEGMENT_ACKNOWLEDGEMENT -> IncidentOperationKind.SOURCE_ACK
+        else -> IncidentOperationKind.SOURCE_CONTROL_OTHER
+    }
+
+    private fun settleIncidentWithoutResponse(operation: AttResponseOperation, status: Int, responseLength: Int) {
+        WatchDiagnosticRuntime.preResponseIncidentOperation(operation.incidentToken, status, responseLength)
+        WatchDiagnosticRuntime.settleIncidentOperationAfterResponse(
+            context = this,
+            token = operation.incidentToken,
+            outcome = IncidentResponseOutcome.NOT_REQUESTED,
+            status = status,
+            responseLength = responseLength,
+            responseNanos = System.nanoTime(),
+        )
+    }
 
     private fun abortTransportLineage(reason: String) {
+        WatchDiagnosticRuntime.onIncidentCancellationRequested(this)
         if (freshMode) { stopFresh("TRANSPORT_FAILED"); return }
         if (finalizedDeliveryRecoveryOnly) finalizedRecoveryLifetime.stop()
         val stalledDevice = connectedDevice

@@ -1,0 +1,18 @@
+tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:91:35: warning: 'setEnabled(Boolean): Unit' is deprecated. Deprecated in Java
+        Shadows.shadowOf(adapter).setEnabled(true)
+                                  ^
+tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:362:24: warning: parameter 'context' is never used
+    fun openGattServer(context: Context, callback: BluetoothGattServerCallback): BluetoothGattServer {
+                       ^
+tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:417:9: warning: parameter 'device' is never used
+        device: BluetoothDevice?,
+        ^
+tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:418:9: warning: parameter 'characteristic' is never used
+        characteristic: BluetoothGattCharacteristic?,
+        ^
+tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:419:9: warning: parameter 'confirm' is never used
+        confirm: Boolean,
+        ^
+tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt:420:9: warning: parameter 'value' is never used
+        value: ByteArray?,
+        ^

@@ -1,0 +1,202 @@
+{
+  "status": "EXACT_TESTED_SOURCE_INTEGRATED_NOT_ARTIFACT_ADMITTED",
+  "files": [
+    {
+      "owner": "watch",
+      "target": "app/src/main/java/com/hugr/wearos/IncidentDiagnosticWindow.kt",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/IncidentDiagnosticWindow.kt",
+      "beforeSha256": null,
+      "sha256": "d0701bb5dfdbbfdc2853b13d4f0722cdf209babd8121ace263d17b7a580b443d",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "watch",
+      "target": "app/src/main/java/com/hugr/wearos/WatchDiagnosticRuntime.kt",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/WatchDiagnosticRuntime.kt",
+      "beforeSha256": "6a7bcc9f0cfa47e8b3cc003fdbddf82070a49657361797b8263b896f40131a41",
+      "sha256": "a10a1002311e0ba496fc3d12f82fcb8a19c714f2d12c9f67eaaecc1c10dcc5bc",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "watch",
+      "target": "app/src/main/java/com/hugr/wearos/SavedDiagnosticReport.kt",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/SavedDiagnosticReport.kt",
+      "beforeSha256": "b74a713fe4131daf730604791140e763953ee733166d42915ad0e5078b812ec6",
+      "sha256": "16ea4f56524812251bd50e00deebfb3fdab349beae21e4591c254bbb6e4dca47",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "watch",
+      "target": "app/src/main/java/com/hugr/wearos/BleGattService.kt",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/production-source/BleGattService.kt",
+      "beforeSha256": "befaa8c59a3a7e2c989e281b081ce08a5e7056bd3ab822b0aba15c28f83f7fc9",
+      "sha256": "81f4333db339dae233875c4b9ea64c7c04741fcd8101f520c69f1503df77bc3a",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "watch",
+      "target": "app/src/test/java/com/hugr/wearos/DiagnosticIncidentWindowTest.kt",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/DiagnosticIncidentWindowTest.kt",
+      "beforeSha256": null,
+      "sha256": "e4da7351b11828d0ae67374c6decbf7e1dbd8e032cf8c16d7a277e03d285d737",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "watch",
+      "target": "app/src/test/java/com/hugr/wearos/ReceiptAckTimeoutActualCallbackContinuationTest.kt",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/watch/tests/ReceiptAckTimeoutActualCallbackContinuationTest.kt",
+      "beforeSha256": null,
+      "sha256": "a6db36f67f3dcb055ca3b89a801d1dd01c5d5148b520ff48a68eaf4074e98b49",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "lib/bluetooth.ts",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/lib/bluetooth.ts",
+      "beforeSha256": "8f021cbb73f04133fd414b35d9fa9466aede9036266a31ca1e7c50cea478b428",
+      "sha256": "f8a3fc5ede17ebf131f0e9bbedb73587790a4b204c9031539744266f0096458b",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "lib/receiptIncidentDiagnostic.ts",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/lib/receiptIncidentDiagnostic.ts",
+      "beforeSha256": null,
+      "sha256": "ded452233484a4a32e673f31207d74d1e63e37ff7707695297dedce2ee33d31f",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "lib/receiptIncidentDiagnosticModel.ts",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/lib/receiptIncidentDiagnosticModel.ts",
+      "beforeSha256": null,
+      "sha256": "970503b4031806b5e8a991ec931d4f590473f6db1e853741776209fad8cbf421",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "modules/hugr-source-journal/index.ts",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/modules/hugr-source-journal/index.ts",
+      "beforeSha256": "a94f4e55fa9d0464f9cb649f2ca7c137de107c24f4c3c4d517d7118565d45e39",
+      "sha256": "88d36e4f2eaeaffa72f1df21beae97524cc1e2e6d50d0c20b303ac19950f1ff2",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "modules/hugr-source-journal/android/src/main/AndroidManifest.xml",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/modules/hugr-source-journal/android/src/main/AndroidManifest.xml",
+      "beforeSha256": "a59d43c944ec56d4d1f295ab07b6ba2c85637965819b5df329fc2f7f17575679",
+      "sha256": "169703a4e5de015c3355136cc9f5c0042dbdd91de5c4bfbb87d4179448b80bac",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt",
+      "beforeSha256": "95c9dc34681bdd18dee250f38545786d728001c791ffdebab1f811b9579d8c09",
+      "sha256": "384d6390f923af797ebded1cf45157115057a6b90e2c0e5a2c5751362e5346de",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptIncidentDiagnosticStore.kt",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptIncidentDiagnosticStore.kt",
+      "beforeSha256": null,
+      "sha256": "bcd416b4d66754c53b80dbad8e3e77e5f5c8a47d4276129bdbc1b7a2fa91840f",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptDiagnosticPrivateExport.kt",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptDiagnosticPrivateExport.kt",
+      "beforeSha256": null,
+      "sha256": "6f32b1db61b08f5c4ac58e3800ec74c99f5caa6cb8c584b3f3fc9c4e00039a2b",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedReceiptDiagnosticsActivity.kt",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedReceiptDiagnosticsActivity.kt",
+      "beforeSha256": null,
+      "sha256": "28301bdc618f1d38bc343b67658bfd017ddf391cb3e34253f5bafc192404d5c6",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedSourceEvidenceActivity.kt",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedSourceEvidenceActivity.kt",
+      "beforeSha256": "612be822d3df34ad5bff25e7fd761387f978499289e6640a6c7d5a9904b83ff0",
+      "sha256": "4cbc75c3f4b70aec83fe428dd07e6f215236b50e91eef0e05eee37ad6a67869f",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/ReceiptIncidentDiagnosticStoreTest.kt",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/modules/hugr-source-journal/android/src/test/java/health/hugr/sourcejournal/ReceiptIncidentDiagnosticStoreTest.kt",
+      "beforeSha256": null,
+      "sha256": "f994dcc0c87bbc5669276396a78ad2b6f8969daebe48783d05bfe55753fd4f37",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "tests/receiptIncidentDiagnosticModel.test.ts",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receiptIncidentDiagnosticModel.test.ts",
+      "beforeSha256": null,
+      "sha256": "8d6d5683e2f31906ebdfe0f645b9285326385d2306d612d94484e44bbf89b5e7",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "tests/receiptIncidentNativeStore.source.test.ts",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/receiptIncidentNativeStore.source.test.ts",
+      "beforeSha256": null,
+      "sha256": "8280b0276923ca7fd18609c4c2fbd7144086130b291b34553c6d69bebfc1c03e",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "tests/run_receipt_incident_bluetooth_source_bound.cjs",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/run_receipt_incident_bluetooth_source_bound.cjs",
+      "beforeSha256": null,
+      "sha256": "7382d048435d4021b8f7720bf399bf2efba30fbf88ad6b2f4ca868fb5635dfcb",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "tests/run_receipt_incident_diagnostics_tests.sh",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/run_receipt_incident_diagnostics_tests.sh",
+      "beforeSha256": null,
+      "sha256": "f0ed7662235cae5a37d22332c8b642967c4d2636f785954b46063250adc2cc4f",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "tests/run_receipt_incident_native_offline.sh",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/run_receipt_incident_native_offline.sh",
+      "beforeSha256": null,
+      "sha256": "f0811f1049423737dc63b5cbb83e15704c4c3af30a247951846b9b0e693a221b",
+      "exactTestedByteMatch": true
+    },
+    {
+      "owner": "phone",
+      "target": "tests/run_receipt_incident_publication_contract.cjs",
+      "taskLocalSource": "/home/ubuntu/HUGR_DIAGNOSTIC_INCIDENT_WINDOW_2026_10_24/phone/tests/run_receipt_incident_publication_contract.cjs",
+      "beforeSha256": null,
+      "sha256": "d600a3e071602f1ebfe804a24e1d72debf90ea05a7775be8160f7736c9479fc7",
+      "exactTestedByteMatch": true
+    }
+  ],
+  "watchJUnitTests": 18,
+  "phoneTapChecks": 10,
+  "phonePublisherSeamCases": 3,
+  "phoneSourceBoundAdapterCases": 11,
+  "phoneNativeJUnitTests": 4,
+  "phoneNonExpoIntegrationCompile": "PASS",
+  "phoneWholeExpoModuleBridgeCompile": "BLOCKED_MISSING_CACHED_EXPO_MODULES_CORE",
+  "nativeCorrelation": "UNRESOLVED",
+  "physicalCause": "UNPROVEN",
+  "newBuilds": 0,
+  "deviceActions": 0,
+  "previousArtifactsAndEvidenceUnchanged": true,
+  "operatorReadback": "PENDING"
+}
