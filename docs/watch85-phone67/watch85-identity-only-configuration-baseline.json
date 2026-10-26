@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "scope": "WATCH85_IDENTITY_ONLY_CONFIG_DELTA",
+  "createdAt": "2026-10-26T15:05:00Z",
+  "baselineWatch84Head": "1b99e236c93be65c65b6fb0355adacdf676e14c4",
+  "currentWatch85Head": "fd0e35b5c1c7fec8e0db990aa1fef74b9ec0979e",
+  "identityDelta": {
+    "package": "com.hugr.wearos",
+    "from": {
+      "versionCode": 84,
+      "versionName": "0.84.0-positional-v2-duration-ladder-candidate"
+    },
+    "to": {
+      "versionCode": 85,
+      "versionName": "0.85.0-receipt-diagnostic-correlation-candidate"
+    },
+    "onlyChangedApplicationConfigurationFields": [
+      "defaultConfig.versionCode",
+      "defaultConfig.versionName"
+    ]
+  },
+  "members": {
+    "settings.gradle": {
+      "sha256": "3f77fa9d56528d2c447d3988ee00ab31eb3e1726ae05d262bce7ce348aada358"
+    },
+    "build.gradle": {
+      "sha256": "e4ba16900ddfeb8e76539a8802d35a8a63feb5f55a38f11e1dbf29296d61e9b9"
+    },
+    "gradle.properties": {
+      "sha256": "3da0f4e45119b5b2d17772e491cd792eed9cdcd821e3e349e18acb1f1dac07cd"
+    },
+    "app/build.gradle": {
+      "sha256ExcludingVersionIdentity": "0aaee715312538c9a7426d27185333e6a9310af746ad8adb90e7bdec31256589"
+    },
+    "app/proguard-rules.pro": {
+      "sha256": "a961778d9e8e2044cf234c539d8eb37d130014446bf4b5e6c1c2be956d787be9"
+    },
+    "gradle/wrapper/gradle-wrapper.properties": {
+      "sha256": "7910ff84a440deda932aa4900045b051cffee2ace139697f6cc3f25f3b4c6bb0"
+    }
+  },
+  "limits": [
+    "This proves only the reviewed version-identity delta against the specified Watch84 baseline.",
+    "It does not prove compilation, runtime classpath resolution, signing, APK contents, artifact admission, device behavior, diagnostics, timeout causation or physical qualification.",
+    "No source/configuration byte is changed by writing this task-local baseline."
+  ]
+}

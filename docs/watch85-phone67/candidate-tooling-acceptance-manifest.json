@@ -1,0 +1,89 @@
+{
+  "status": "PASS_STATIC_TOOLING_ACCEPTANCE_ONLY",
+  "scope": "WATCH85_PHONE67_CANDIDATE_TOOLING_AND_BASELINE_NO_BUILD",
+  "files": [
+    {
+      "path": "watch85-tooling-prep/README.md",
+      "bytes": 8450,
+      "sha256": "057c7832308df3ed4ec52a6c26889b70b3d50d805402593c4b9f61d25de84395"
+    },
+    {
+      "path": "watch85-tooling-prep/watch85_fresh_stage_build_driver.py",
+      "bytes": 47308,
+      "sha256": "bb2e24e715a6368cc60f9448dc68f51f4e372a693fd09e06ff98680aae5399f7"
+    },
+    {
+      "path": "watch85-tooling-prep/admit_watch85_candidate.py",
+      "bytes": 30120,
+      "sha256": "6a1827a548c671ed9954925771ca47520c242547fcc90ce4a59a6458fc52c3a7"
+    },
+    {
+      "path": "watch85-tooling-prep/candidate_admission_common.py",
+      "bytes": 18646,
+      "sha256": "043d4ed65f66963a59c920fc21dc2c89c2fe833691d78807db5f54cc765b5fef"
+    },
+    {
+      "path": "watch85-tooling-prep/tests/test_watch85_tooling_static.py",
+      "bytes": 13370,
+      "sha256": "d0bf3631ba7d77c4db10c81daf50f473b6febc4993c58adc0bbe79ad239405c3"
+    },
+    {
+      "path": "watch85-tooling-prep/static-tests.log",
+      "bytes": 2709,
+      "sha256": "c6f3d83169c48a4eef3f689ffbf90931c657956ed4d99f59ee7922437a8cb7fa"
+    },
+    {
+      "path": "watch85-tooling-prep/static-test-runner-import-stop.log",
+      "bytes": 919,
+      "sha256": "f36dc86b6d8eefb394be859cdb41ad1f38839e9160864e99750d90bd93bf99f2"
+    },
+    {
+      "path": "phone67-tooling-prep/README.md",
+      "bytes": 10789,
+      "sha256": "57138217e89b79260096fef6fcc7bd3121b7a3e86a7431c4a9c689f36418a6ad"
+    },
+    {
+      "path": "phone67-tooling-prep/run_phone67_existing_project_admission.py",
+      "bytes": 35558,
+      "sha256": "97a1caa98785f859c00b3b29ecd7f604462804539609ef6af94a6b8fbe34a4f1"
+    },
+    {
+      "path": "phone67-tooling-prep/stage_phone67.py",
+      "bytes": 18476,
+      "sha256": "0fc88ab40eac8456a3b3bc300af7810bc02344f989cd5b21cf16312c24e69e79"
+    },
+    {
+      "path": "phone67-tooling-prep/admit_phone67_candidate.py",
+      "bytes": 84525,
+      "sha256": "1742c64e63c2c36c527226714e7853ad4dcc2069340f8c8dc4ed8da52d72868c"
+    },
+    {
+      "path": "phone67-tooling-prep/candidate_admission_common.py",
+      "bytes": 18646,
+      "sha256": "043d4ed65f66963a59c920fc21dc2c89c2fe833691d78807db5f54cc765b5fef"
+    },
+    {
+      "path": "phone67-tooling-prep/test_phone67_tooling_static.py",
+      "bytes": 10468,
+      "sha256": "de5f659a43b4d254ae53f76b4389b536da8dcda44250e84836011babfa6a9afb"
+    },
+    {
+      "path": "phone67-tooling-prep/static-tests.log",
+      "bytes": 1751,
+      "sha256": "ee02022c890807cf32d3fa42dff5e7a2c171038b3efed0b2af62f56b4715898b"
+    },
+    {
+      "path": "watch85-identity-only-configuration-baseline.json",
+      "bytes": 1818,
+      "sha256": "954c0fecafd74aa238b2a2c66818469e8556a063ecefcd149469809d6becc270"
+    }
+  ],
+  "tests": {
+    "watch": "14/14 PASS after isolated import-path-only retry",
+    "phone": "10/10 PASS"
+  },
+  "retainedSetupStop": "watch static direct invocation from a non-tooling cwd: ModuleNotFoundError candidate_admission_common; no source/tooling/Gradle/build action",
+  "newBuilds": 0,
+  "deviceActions": 0,
+  "artifactAdmissions": 0
+}
