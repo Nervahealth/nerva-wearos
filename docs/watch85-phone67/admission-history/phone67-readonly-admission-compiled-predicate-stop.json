@@ -1,0 +1,39 @@
+{
+  "timeUtc": "2026-10-26T15:56:24.958281+00:00",
+  "status": "STOP",
+  "scope": "SAME_DOWNLOADED_PHONE67_APK_READ_ONLY_ADMISSION_ONLY",
+  "apk": "/home/ubuntu/HUGR_WATCH85_PHONE67_CANDIDATE_2026_10_26/phone67-tooling-prep/phone67-artifacts/HUGR_Phone67p_2.0.67_receipt-diagnostic-correlation-candidate.apk",
+  "bytes": 152128842,
+  "sha256AfterToolRouteResume": "385d565668bf5808a3e6e933c406fc2a4ef55bec23230f97c569e8feef072569",
+  "exactStop": "PHONE67_RECEIPT_INCIDENT_PREDICATE_MISSING_OR_MISMATCH:bridgeRegistersExactPublicationNameAndGeneratedOwner,storeBoundedPayloadRowsAndExplicitUnknownCorrelation,isolatedSourceEvidenceChoiceStartsExactReceiptActivityOnly,receiptActivityDetachedReaderAndPreparedBoundedPrivateCopy,receiptActivityExplicitPrivateSaveAndShareOnly,privateExportFixed512KiBAnd8192StreamingOnly,shareRegistryOneTokenShortLivedAndReadOnlyProvider",
+  "failedCompiledPredicates": [
+    "bridgeRegistersExactPublicationNameAndGeneratedOwner",
+    "storeBoundedPayloadRowsAndExplicitUnknownCorrelation",
+    "isolatedSourceEvidenceChoiceStartsExactReceiptActivityOnly",
+    "receiptActivityDetachedReaderAndPreparedBoundedPrivateCopy",
+    "receiptActivityExplicitPrivateSaveAndShareOnly",
+    "privateExportFixed512KiBAnd8192StreamingOnly",
+    "shareRegistryOneTokenShortLivedAndReadOnlyProvider"
+  ],
+  "initialToolRouteStopRetained": "INSPECTION_TOOL_MISSING:aapt",
+  "submissionCount": 1,
+  "noRebuildOrResubmissionAuthorized": true,
+  "sourceWorktrees": {
+    "watch": {
+      "head": "651e90aef3aa9aede942ac73eec58f822a42f4d6",
+      "tree": "9077404f3e269e9ba3c6c1a394486e9a0a63819e",
+      "clean": true
+    },
+    "phone": {
+      "head": "930a5aa586dd3612f7140357e489eb830e5b564c",
+      "tree": "2ca2d083c1d52bb68023bcb7e01094c75739c1cc",
+      "clean": true
+    },
+    "controls": {
+      "head": "1df9068607a92971de430491bd44202711e26eca",
+      "tree": "d5cb806ac93e70ba88ede574cfe894a483c0addf",
+      "clean": true
+    }
+  },
+  "compiledOutputAbsentBecauseValidatorStoppedBeforeReceiptWrite": true
+}

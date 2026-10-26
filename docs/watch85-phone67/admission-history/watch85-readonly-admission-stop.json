@@ -1,0 +1,31 @@
+{
+  "timeUtc": "2026-10-26T15:15:16.871924+00:00",
+  "status": "STOP",
+  "scope": "SAME_SIGNED_APK_READ_ONLY_ADMISSION_ONLY",
+  "apk": "/home/ubuntu/HUGR_WATCH85_PHONE67_CANDIDATE_2026_10_26/watch85-tooling-prep/future-runs/watch85-artifacts-post-cachepath-correction/HUGR_Watch85w_0.85.0_receipt-diagnostic-correlation-candidate.apk",
+  "bytes": 13070085,
+  "sha256BeforeAndAfter": "a281d7f0c4ea135ff16fd522d670abe92e41ba128f0a83b48c215830f3e51aa2",
+  "exactStop": "WATCH85_COMPILED_DIAGNOSTIC_PREDICATE_MISSING_OR_MISMATCH:incidentWindowBoundedPendingProtectedAndOverflowMarked",
+  "firstDriverStop": "READ_ONLY_WATCH85_ARTIFACT_ADMISSION_STOP",
+  "artifactUnchanged": true,
+  "buildAttemptConsumed": true,
+  "noRebuildAuthorized": true,
+  "sourceWorktrees": {
+    "watch": {
+      "head": "651e90aef3aa9aede942ac73eec58f822a42f4d6",
+      "tree": "9077404f3e269e9ba3c6c1a394486e9a0a63819e",
+      "clean": true
+    },
+    "phone": {
+      "head": "930a5aa586dd3612f7140357e489eb830e5b564c",
+      "tree": "2ca2d083c1d52bb68023bcb7e01094c75739c1cc",
+      "clean": true
+    },
+    "controls": {
+      "head": "1df9068607a92971de430491bd44202711e26eca",
+      "tree": "d5cb806ac93e70ba88ede574cfe894a483c0addf",
+      "clean": true
+    }
+  },
+  "outDirectoryAbsentBecauseValidatorFailedBeforeReceiptWrite": true
+}

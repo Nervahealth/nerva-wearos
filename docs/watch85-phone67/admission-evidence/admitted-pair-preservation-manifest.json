@@ -1,0 +1,141 @@
+{
+  "docs": [
+    {
+      "bytes": 2969,
+      "sha256": "674875b20a6b81bc5ebf9ad355ab6cc02b5dd199bffaa311b9e0eea8d7f6dee2",
+      "target": "docs/HUGR_PHONE67_SINGLE_BUILD_SAME_APK_ADMISSION_CONTINUITY_2026_10_26.md"
+    },
+    {
+      "bytes": 5583,
+      "sha256": "edad7c322d981bde50a190d54dcc030dc4d74990371a0f8d5b5a4c35b06314ff",
+      "target": "docs/HUGR_WATCH85_PHONE67_COMPATIBLE_DIAGNOSTIC_PAIR_ADMITTED_2026_10_26.md"
+    },
+    {
+      "bytes": 6037,
+      "sha256": "96b5ef075bba64fd3d4c4a3d4ac930735d18bc94b8d52892bf8440a7db3e6601",
+      "target": "docs/Watch85_Phone67_Review_Only_Installation_and_30_Minute_Diagnostic_Gate_2026_10_26.md"
+    },
+    {
+      "bytes": 2037,
+      "sha256": "1da28d70bfba0425ee245259ce3846039904584ec3be009e74f53e1ce13e4999",
+      "target": "docs/watch85-phone67/admission-history/phone67-readonly-admission-compiled-predicate-stop.json"
+    },
+    {
+      "bytes": 1264,
+      "sha256": "0d644e981934de781d2f10ea415d8d49a6150655cff5d1195cc03871a33fb3ec",
+      "target": "docs/watch85-phone67/admission-history/phone67-readonly-admission-tool-route-stop.json"
+    },
+    {
+      "bytes": 1315,
+      "sha256": "ca03f71ca4c77a407ea56095cf5b067faa4908e41d7650a92dbaa179a6316411",
+      "target": "docs/watch85-phone67/admission-history/watch85-readonly-admission-stop.json"
+    }
+  ],
+  "excluded": [
+    "APK",
+    "raw DEX",
+    "EAS/private build records and URL",
+    "device/private reports",
+    "physiology",
+    "credentials"
+  ],
+  "scope": "SANITIZED_RECEIPTS_AND_VALIDATOR_TEST_EVIDENCE_ONLY",
+  "status": "PASS_SAFE_PRESERVATION_INPUT_MANIFEST",
+  "tools": [
+    {
+      "bytes": 6055,
+      "sha256": "4df2faee081a7a368dfabe1d02c9b91f83d7f00ee7913bfcb81fe0ebc28caf37",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/phone67/README.md"
+    },
+    {
+      "bytes": 88018,
+      "sha256": "a6bd7a303712d509c289a4b10a469b599156f9a9c5fc427ea0ae361b65b04674",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/phone67/admit_phone67_candidate_corrected_diagnostic_only.py"
+    },
+    {
+      "bytes": 1216,
+      "sha256": "8f3c52e8e042061584d9e9d367f7735ee05b1f62dfa373b0103f615751a18d77",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/phone67/apk-custody-assertion.txt"
+    },
+    {
+      "bytes": 18646,
+      "sha256": "043d4ed65f66963a59c920fc21dc2c89c2fe833691d78807db5f54cc765b5fef",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/phone67/candidate_admission_common.py"
+    },
+    {
+      "bytes": 2321,
+      "sha256": "a7bd897628f6f90f73a19880f148e3930c05dde3d653fc173aa6da19b12712f1",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/phone67/conjunct-matrix.txt"
+    },
+    {
+      "bytes": 227658,
+      "sha256": "8ecbf6eb30126653b1c436e4952bc253ebf8538a3bda8eb8150477222da34065",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/phone67/direct-signed-dex.txt"
+    },
+    {
+      "bytes": 338489,
+      "sha256": "6522228f6a29cffd53e0bda1d78d4ce665a553a5bc88ba3d8b7787ec91a94032",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/phone67/extra-direct-closures.txt"
+    },
+    {
+      "bytes": 10989,
+      "sha256": "2d66d6406b572a12c559e891256dec0e56b9106aa12c94d15a44be8bb138dda1",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/phone67/original-to-corrected-validator.diff"
+    },
+    {
+      "bytes": 6096,
+      "sha256": "3c3cd96dfd8b7f9efbec770d92aee6ec5b8e9eb2e17d301cef996d8578f51266",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/phone67/per-predicate-matrix.md"
+    },
+    {
+      "bytes": 573,
+      "sha256": "256d8c96b92f4b3c1694b736143d018ff0da2e686f07c7956c199cae1bd69a31",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/phone67/targeted-tests.log"
+    },
+    {
+      "bytes": 18433,
+      "sha256": "797a662b7c550780f93824806512fac770396a4dc3f40e64dde32599bbd0b099",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/phone67/test_corrected_receipt_predicates_diagnostic_only.py"
+    },
+    {
+      "bytes": 1350,
+      "sha256": "2dd5c36b87400bec7571b395c1df7b33e16982547f6bab7bf01fd3e75229a810",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/phone67/validator-hashes.txt"
+    },
+    {
+      "bytes": 10465,
+      "sha256": "126e3f4dc1781a52c9673ded46848453c0007e4ccdea52c9209e60fd7950f369",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/watch85/README.md"
+    },
+    {
+      "bytes": 31590,
+      "sha256": "452da992f58a7817bf979c9f0fc30605c8f117f571979464337758c8e7967eee",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/watch85/admit_watch85_candidate.corrected_diagnostic_only.py"
+    },
+    {
+      "bytes": 10299,
+      "sha256": "a158dddaa2ca37f4a3bf2d69039611b0444798cbb89972ee6cedd3cc17639fd4",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/watch85/direct-signed-dex.txt"
+    },
+    {
+      "bytes": 301,
+      "sha256": "72ed2d606d336306c3942c934cf26e3e8d27a4b1961a9a9a781fcd0f7ccc2a48",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/watch85/targeted-predicate-tests.log"
+    },
+    {
+      "bytes": 6811,
+      "sha256": "71084748a71cfa500d63b189ccb6cd9ec1cb7febe8a585320dbf34ad8b13c99b",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/watch85/test_corrected_diagnostic_predicate.py"
+    },
+    {
+      "bytes": 1687,
+      "sha256": "620c0d5fb8aa7240e2e5de7169ed3e9f6805c16b8531022713941b455b40d6b5",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/watch85/validator-and-apk-custody-after-tests.sha256.txt"
+    },
+    {
+      "bytes": 2909,
+      "sha256": "c777cd57025d7c312450ec08923766d44d76f0401612e1e33e7ad2f42cf4226f",
+      "target": "scripts/watch85_phone67_candidate/admission-representation/watch85/validator-correction.diff"
+    }
+  ]
+}
