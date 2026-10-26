@@ -1,6 +1,6 @@
 {
-  "status": "PASS_STATIC_TOOLING_ACCEPTANCE_ONLY",
-  "scope": "WATCH85_PHONE67_CANDIDATE_TOOLING_AND_BASELINE_NO_BUILD",
+  "status": "PASS_STATIC_TOOLING_ACCEPTANCE_AFTER_REPRESENTATION_CORRECTION",
+  "scope": "WATCH85_CACHE_PROOF_PARSER_CORRECTION_ONLY_NO_GRADLE_OR_BUILD",
   "files": [
     {
       "path": "watch85-tooling-prep/README.md",
@@ -9,8 +9,8 @@
     },
     {
       "path": "watch85-tooling-prep/watch85_fresh_stage_build_driver.py",
-      "bytes": 47308,
-      "sha256": "bb2e24e715a6368cc60f9448dc68f51f4e372a693fd09e06ff98680aae5399f7"
+      "bytes": 47531,
+      "sha256": "fd6395030846bf08e35e559ae65a7771b24a63c27024dd78f0cf8c4126da8341"
     },
     {
       "path": "watch85-tooling-prep/admit_watch85_candidate.py",
@@ -24,11 +24,16 @@
     },
     {
       "path": "watch85-tooling-prep/tests/test_watch85_tooling_static.py",
-      "bytes": 13370,
-      "sha256": "d0bf3631ba7d77c4db10c81daf50f473b6febc4993c58adc0bbe79ad239405c3"
+      "bytes": 13864,
+      "sha256": "ab634522b93e8cbb4d756877901be006d836f1052fd965936bcbbfab56cd74fa"
     },
     {
       "path": "watch85-tooling-prep/static-tests.log",
+      "bytes": 2917,
+      "sha256": "eb31745b2e83928f6ada7e33e8c4c49ffe253d283f34e3a7c6b2a3b6dd1402f2"
+    },
+    {
+      "path": "watch85-tooling-prep/static-tests-before-cache-representation-correction.log",
       "bytes": 2709,
       "sha256": "c6f3d83169c48a4eef3f689ffbf90931c657956ed4d99f59ee7922437a8cb7fa"
     },
@@ -36,6 +41,11 @@
       "path": "watch85-tooling-prep/static-test-runner-import-stop.log",
       "bytes": 919,
       "sha256": "f36dc86b6d8eefb394be859cdb41ad1f38839e9160864e99750d90bd93bf99f2"
+    },
+    {
+      "path": "watch85-tooling-prep/cache-proof-representation-test.log",
+      "bytes": 50,
+      "sha256": "3b211b998d71ca2529e0b2347b5bf3d0c7559db63622d6cb0be37682768d20fe"
     },
     {
       "path": "phone67-tooling-prep/README.md",
@@ -70,7 +80,7 @@
     {
       "path": "phone67-tooling-prep/static-tests.log",
       "bytes": 1751,
-      "sha256": "ee02022c890807cf32d3fa42dff5e7a2c171038b3efed0b2af62f56b4715898b"
+      "sha256": "a66b33b6d09a110b0c53b270788ce35f18ab85e7e7f824cc49dd11a5b5f647ec"
     },
     {
       "path": "watch85-identity-only-configuration-baseline.json",
@@ -79,10 +89,14 @@
     }
   ],
   "tests": {
-    "watch": "14/14 PASS after isolated import-path-only retry",
-    "phone": "10/10 PASS"
+    "watch": "15/15 PASS",
+    "watchCacheProof": "PASS exact four `cachePath` record readback",
+    "phone": "10/10 PASS unchanged"
   },
-  "retainedSetupStop": "watch static direct invocation from a non-tooling cwd: ModuleNotFoundError candidate_admission_common; no source/tooling/Gradle/build action",
+  "retainedStops": [
+    "direct Watch test non-tooling-cwd import-path STOP",
+    "pre-marker Watch build-lane STOP: cache proof expected obsolete `cache` rather than existing `cachePath`; no classpath marker/Gradle/build/artifact"
+  ],
   "newBuilds": 0,
   "deviceActions": 0,
   "artifactAdmissions": 0

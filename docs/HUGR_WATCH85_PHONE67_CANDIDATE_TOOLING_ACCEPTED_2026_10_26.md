@@ -39,3 +39,13 @@ No Watch85 or Phone67 build, signing, EAS submission, APK download, installation
 The existing physical five-minute PASS and synthetic 5-minute/30-minute/2-hour/8-hour proof retain their prior scopes and limits. No capacity ladder was rerun. Samsung endpoint drain, native trace feasibility, IBI/RMSSD selection and chronology, baseline/learning/Loop A, IDC and N1 remain separate.
 
 Watch69 remains `NOT QUALIFIED`; Watch68 v1 remains `UNCLASSIFIED / NOT VERIFIED`; Watch58 remains `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
+
+## Addendum — retained cache-proof representation correction
+
+Before Gradle, marker creation or artifact work, the first Watch85 lane invocation stopped at `EXACT_RUNTIME_CACHE_PROOF_DEPENDENCY_SCOPE_INVALID`. The runtime stage still contains only its pre-Gradle intent and runtime manifest; no `classpath-preflight-attempt.json`, build marker, output/artifact directory, Gradle invocation or signer operation exists.
+
+The cause was proven tooling representation only. The retained exact-four dependency receipt stores each verified artifact under `dependencies[*].cachePath`; the successor driver incorrectly expected a nonexistent `dependencies[*].cache` object. The four retained coordinates, cache paths, bytes and SHA-256 values exactly matched the separately retained actual Watch `debugRuntimeClasspath` success proof. The parser was changed only from `row.get("cache")` to `row.get("cachePath")`; it still requires exactly the four pinned coordinates, the pinned receipt SHA-256, regular cache artifacts, their declared bytes and their declared SHA-256 values.
+
+A focused negative static regression now rejects the obsolete representation key. The Watch static suite is **15/15 PASS** and an actual read-only invocation of the corrected cache-proof parser reports `RETAINED_EXACT_FOUR_CACHEPATH_REPRESENTATION_PASS`. The unchanged Phone suite remains **10/10 PASS**. The earlier import-path setup STOP and this pre-marker cache-proof STOP remain preserved as history.
+
+This correction does not relax any runtime graph, dependency, source, configuration, signing, admission, deadline or physical evidence condition. The single genuine actual classpath preflight and one Watch85 build remain unconsumed.
