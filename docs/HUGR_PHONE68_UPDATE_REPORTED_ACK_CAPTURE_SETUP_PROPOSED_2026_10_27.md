@@ -1,0 +1,21 @@
+# Phone68 update reported — next ACK diagnostic step proposed
+
+## Reported installation
+
+Neil reports on 27 October 2026: “The update succeeded and version 2.0.68 is confirmed.” This is operator-reported successful update/version observation, not an independent device inspection or runtime admission. The fuller admitted version remains `2.0.68-receipt-diagnostic-saver-candidate`. No repeat installation or version-check interaction is required solely because the reply abbreviates the version. Whether either HUGR surface has been opened after this update is not newly confirmed; ask Neil without requiring device interaction. Prior installation-only authority did not permit launch, Connect or recording.
+
+## Next decision — preparation, not another blind recording
+
+The corrected saver is installed by report. It can preserve bounded local receipt/ACK outcome rows and diagnostic publication/reopen evidence if the application reaches those paths. It cannot recover incidents rejected by the earlier saver, retain an underlying native error code that was never logged, establish Android ATT dispatch or prove cross-device matching. The stopped Watch85/Phone67 gate is still NOT PASSED.
+
+The named unresolved question is whether the failed source-control write rejected before native dispatch, or Android reported a GATT/link failure after dispatch. The wrapper `SOURCE_ACK_WRITE_REJECTED` alone does not mean the Watch rejected an ACK.
+
+Propose one bounded **wired Fold → Honor Bugjaeger setup-only proof**, subject to explicit authority. Confirm a data-capable USB/OTG connection, target authorization, and a narrowly scoped local trace that can be retrieved from a known destination after ending the debug connection. No HUGR launch, Watch interaction, Watch–Honor Bluetooth/pairing change, Connect/reconnect, recording, private app-root access, log clearing or HCI capture belongs to this setup. Use a synthetic marker only to prove capture/retrieval; a marker does not establish the visibility of GATT write callbacks or error codes. Review the exact available release/native logging before proposing reproduction. If essential statuses are not emitted or capture is inaccessible, report that concrete visibility/setup blocker; do not start a blind physical gate or silently add instrumentation.
+
+Before any later recording/recovery decision, separately authorize one bounded passive Watch85 current-receipt observation, preserving existing diagnostics first as applicable. Observe identity/phase/revision/duration/manifest/ACK/pending/error state privately; no Start, recovery control, hidden closeout or saved-run rewrite. Main startup metadata and possible failed-read in-memory quiesce side effects must remain disclosed. A saved STARTED/FINALIZED or unresolved receipt is not permission for another Start.
+
+Only after required preparation and explicit physical authority: one informative bounded 30-minute attempt, stop at first failure/terminal result or its unchanged finite horizon, no reconnect/retry. Retrieve complete isolated Watch and corrected Phone diagnostics after disconnect, and the proven local native trace. Native HCI is conditional on a named remaining delivery ambiguity and separate privacy-reviewed authority, not a blanket prerequisite. Two-hour/eight-hour physical gates remain conditional on preceding acceptance; successful five-minute custody and earned synthetic capacity tests remain unchanged. No new build or correction authorized by this installation report/question.
+
+## Preservation
+
+Documentation-only source-owner receipt → Master → Alignment last → bounded commits → controlled both-repository write preflight/non-force mirrors → independent exact remote heads/trees/changed-byte readback. No APKs, private media/records, provider material, source IDs or secrets staged. Preserve all earlier failure/diagnostic/custody evidence, unchanged Watch85/Phone68 artifacts and source/configuration. T2.2, accepted adapter/RMSSD companion, October reconciliation, S4, scientific selection/window ownership, endpoint/drain, learning, Loop A, IDC and N1 remain separate. Watch69 `NOT QUALIFIED`; Watch68 v1 `UNCLASSIFIED / NOT VERIFIED`; Watch58 `TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED`.
