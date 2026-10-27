@@ -1,0 +1,24 @@
+# Watch85 / Phone69 — one fresh 30-minute gate authorized
+
+**27 October 2026, 22:44 +01:00.** Neil explicitly authorized the fresh30-minute Watch85/Phone69 attempt and setup guidance. This is one new recording attempt with the existing admitted/installed pair, not a retry of the historical run, a source correction or an ACK cure. Preparation and the defined terminal/success-only branches are included in this one gate; routine progression through its approved steps needs no second recording permission.
+
+## Starting boundary
+
+Historical Saved Diagnostics and current receipt observation are already complete. The previous selected Watch receipt is visually COMPLETED; the exact matching Phone report is FAILED with unavailable qualified custody and an earlier attached Watch receipt. Preserve that run as end-to-end NOT QUALIFIED, with all bytes/receipts/failures unchanged. Do not repeat historical diagnostic filming or reader checks, rewrite a receipt or use a hidden closeout.
+
+## Guide in short stages
+
+1. **Setup only, before Start:** confirm Watch/Honor are charged, wear Watch normally and keep Honor nearby. Bugjaeger/Fold/USB are not needed. Inspect the Honor's existing ordinary Bluetooth association without toggling, resetting, forgetting, repairing or manually forcing a connection. If unclear or disconnected, stop and ask Neil directly before any correction. Confirm readiness; do not open Phone Main or press Start yet.
+2. **Watch admission:** open Main HUGR once through the established blue icon when setup is clear. The surface must permit a fresh selected ladder run and be readable; pending/unresolved STARTED/FINALIZED/unknown is a STOP, not permission for another Start. Select30minutes **before** pressing Start Selected Ladder Duration once. Record the actual start time and require the admitted/advertising state. No second Start or corrected duration press after admission.
+3. **One Phone connection:** at the established Watch ready/advertising point, open normal Phone69 HUGR once and press Connect Galaxy Watch once using the existing full-mode workflow. No second Connect, reconnect, Main relaunch, Bluetooth recovery or service/receipt closeout.
+4. **Bounded observation:** stop at the first terminal result/failure/unexpected prompt, crash, black screen, service destruction or connection error; otherwise45minutes from Watch start, comprising the fixed30-minute sensing interval and existing15-minute grace. No deadline extension or automatic physical retry. No routine Watch filming; terminal readable observations suffice unless bounded failure-report preservation requires a complete visual record.
+5. **Failure:** hold controls, preserve isolated Watch Saved Diagnostics first, then Phone Saved Source Evidence → Saved Receipt Diagnostics. Use the existing explicit built-in **Save complete diagnostics** to a fresh private destination and local/offline readback under this gate's diagnostic-retrieval authority. Share/upload is not automatic; request a separately specified private transfer if actual report transfer is needed. Keep initiating stage/category/tagged numeric statuses separate from cleanup/disconnect/publication context. Bugjaeger/HCI/native tracing is not a prerequisite and is not included.
+6. **Success only:** first require exact canonical custody, Watch-origin exact accepted ACK/completion and durable Phone completion for the new source/run. Then force-stop normal Phone HUGR once, leave Watch/Bluetooth untouched, and open Saved Source Evidence → **Read Saved Source Evidence** once for restart/offline custody verification. Stop at first report/error or60seconds without a report; no retry. This is not Saved Receipt Diagnostics. Do not invoke this success branch after failure or ambiguity.
+
+Return each actual result before any action outside these bounds. Do not assume synchronized clocks, equal counters or local BLE return values establish a matched cross-device transaction. Diagnostics increase visibility; physical success remains unproven.
+
+Two-hour/eight-hour recordings require subsequent physical gate decisions/authority, and only follow passed preceding rungs. No source/build/dependency/signing change, general diagnostic investigation, capacity-ladder rerun, new exporter/private canonical transfer, physiology/RMSSD/learning, Samsung drain/native-sequence implementation, IDC, N1 or Cloud Computer work is included. A demonstrated need for correction is an explicit authority fork.
+
+## Preservation
+
+Automatically preserve this sanitized source-owned authority → Master → Alignment last → controlled non-force both-repository mirror and independent exact remote head/tree/blob readback. Actual recording/run/device IDs, counters, report media, physiological content, APKs and credentials remain off GitHub. All historical failures and qualification literals remain unchanged.
