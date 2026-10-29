@@ -1,0 +1,102 @@
+{
+  "schema": "HUGR_NEW_TASK_NATIVE_HANDOVER_CORE_V1",
+  "originTask": "lTgoiePVH8ITWZENgvqMn3",
+  "originProject": "Nerva",
+  "targetRoot": "/home/ubuntu/hugr-phone-native-observation-2026-10-28",
+  "sourceArchiveSha256": "28a287d6b20185fb24481f1ef34b329aa7e7f7861e6cf03da3863c6e9fbbbe9a",
+  "sourceArchiveManifestSha256": "361c56e56a85b6fab0bbdd80d35130b674870b54595a8565f0781bb43494dd5e",
+  "sourceTestComplete": false,
+  "cloudImportVerified": false,
+  "entries": [
+    {
+      "path": "01_READ_FIRST.md",
+      "bytes": 7949,
+      "sha256": "c4f4eae4e132d0c5a2c7b46699f6f4862761bc967f96a34a7ed409514ffc85a9"
+    },
+    {
+      "path": "02_PASTE_INTO_NEW_TASK.md",
+      "bytes": 5521,
+      "sha256": "d77c6ec6ead2d36ddeb94bcebf8129b8f588cbc89690328263a107758ceb7dc4"
+    },
+    {
+      "path": "03_RETURN_TO_PARENT_CONTRACT.md",
+      "bytes": 4149,
+      "sha256": "3ccf5744c344f2ecd4dd5dc4d279b62af75866ad24ff6a14740ab76caf3c684c"
+    },
+    {
+      "path": "04_RECONSTRUCTION_WORKLIST.md",
+      "bytes": 9086,
+      "sha256": "10f9fda6796aebead4b955f05b798c2eb9ac718d3c900e8642ec4ced781f7c55"
+    },
+    {
+      "path": "HUGR_PHONE_NATIVE_NEW_TASK_HANDOVER_AUTHORIZED_2026_10_29.md",
+      "bytes": 3816,
+      "sha256": "e0117626a278b821225a10767b14a627138763d085718c414a2f6c94e12d04d9"
+    },
+    {
+      "path": "BASELINE_SUPPLEMENT_MANIFEST.json",
+      "bytes": 6763,
+      "sha256": "cd2080daad1f95ae29653e04f2e88ae55b2c4a5db402babe2259644ef42da625"
+    },
+    {
+      "path": "source-inputs/HUGR_Native_Source_Test_Cloud_Migration_Verified_2026_10_28.zip",
+      "bytes": 1703109,
+      "sha256": "28a287d6b20185fb24481f1ef34b329aa7e7f7861e6cf03da3863c6e9fbbbe9a"
+    },
+    {
+      "path": "tools/TRANSFER_SAFETY_TESTS.log",
+      "bytes": 909,
+      "sha256": "4871ed4247343c6fa58ac1a3eb720c23cf4045422afa1e501ee4114b02208644"
+    },
+    {
+      "path": "tools/test_transfer_safety.py",
+      "bytes": 3500,
+      "sha256": "bd659bfb3eb67b133d60d83a3da4ea7a5af7ac781dde89b4c953e5158a1d7f31"
+    },
+    {
+      "path": "tools/verify_extract_source_test_lane.py",
+      "bytes": 7792,
+      "sha256": "a33743c164138c762665c7906c5c21e4898d0a2a84ec527ff0051a0c8bb02f2f"
+    },
+    {
+      "path": "context/HUGR_PHONE69_RECEIPT_WRITE_READONLY_COMPLETED_RESULT_2026_10_28.md",
+      "bytes": 11396,
+      "sha256": "290ee66ed4c49ded1169a4f5e5277b3f94f88edbdf4418dd3859b124bf6afeeb"
+    },
+    {
+      "path": "context/NATIVE_TO_DURABLE_JOIN_PLAN.md",
+      "bytes": 4038,
+      "sha256": "7b25a3c109102387ce5cdbf207f03e915f8d86c21b06ed076f0a9d9fdce2b9be"
+    },
+    {
+      "path": "context/OBSERVATION_AND_INTEGRATION_CONTRACT.md",
+      "bytes": 6005,
+      "sha256": "06a2f8bdff3eb5c672e0cbf345f916420008d18f10add5187528df267c152433"
+    },
+    {
+      "path": "context/SOURCE_PROVENANCE_AND_INTEGRATION_DECISION.md",
+      "bytes": 22508,
+      "sha256": "96bf3d122ef63db02b28e44e61414ddb10270a16126a6c4ef8fe65eed27f06cd"
+    },
+    {
+      "path": "supplements/phone-source/patches/react-native-ble-plx+3.5.1.patch",
+      "bytes": 536,
+      "sha256": "c853c6985f5eeb3cfb264cde589904d8b441c91ec917f8081e90176f87383908"
+    },
+    {
+      "path": "authority-before-handover/EXACT_PRIOR_REMOTE_READBACK.json",
+      "bytes": 5958,
+      "sha256": "989dca33af1939b25e55baed0f9a3707993537d07966428202a2858b244408e1"
+    },
+    {
+      "path": "authority-before-handover/HUGR_MASTER_TASK_LIST.md",
+      "bytes": 922450,
+      "sha256": "bd710ff35d2a54093b3d53f7932ddbf8d8c07a86f08b489db7bd6cb6cee96ad0"
+    },
+    {
+      "path": "authority-before-handover/HUGR_SHARED_ALIGNMENT_CONTROL_SURFACE.md",
+      "bytes": 648447,
+      "sha256": "988d3e66a0f0cfcf79dac32d365f313933dd46841dc25b455930d4b8d5660dd7"
+    }
+  ]
+}
