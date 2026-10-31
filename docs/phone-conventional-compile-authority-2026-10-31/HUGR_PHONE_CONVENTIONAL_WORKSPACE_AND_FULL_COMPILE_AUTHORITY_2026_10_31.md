@@ -1,0 +1,13 @@
+# Fresh conventional Phone application compile — authority
+
+Neil’s exact2026-10-31T17:11:10+01:00 instruction authorizes one fresh disposable conventional Phone build route in the same existing Cloud task `sSHnJ5LXb5UJNiJp8mwJqA`, owned by Minor/source task `lTgoiePVH8ITWZENgvqMn3`. The16:55 route decision remains historical; no result is inferred from this new authority.
+
+Use a separate writable exact-input working copy and ordinary selected-project generated outputs. Preserve originals/failed evidence/pinned source and dependency identities, strict offline verification, fresh AAPT2/resource proof and actual single-local-Rx provider check. Exclude compiled outputs, incremental state and old overlays from the new copy. Retain required source-owned processor/substitution wiring. Verify baseline inputs and report expected generated changes separately from script input/configuration changes; unexpected changes are not accepted silently.
+
+Routine reversible in-scope setup corrections are permitted without separate permission rounds. No application-source fixes, dependency upgrades, old-route amendments, standalone regeneration or new custom verification framework. Resource → provider → sole unused full application compile, with exclusive marker immediately beforehand; original consumed429B22da98375904dacee01de5f15ba277004bff14ca26adf5335d543a3c83f5af37 marker preserved. No automatic retry after actual full-app failure.
+
+Target2–3hours, four-hour ceiling including staging/readback. Repeated missing-plugin implementation or substantial instrumentation triggers specialist-ready handoff evidence rather than another cycle. Keep phase30/30/60min ceilings and conservative authority-based deadline21:11:10 Oslo. Return one consolidated actual execution/PASS/cause/input-change outcome, not multiple transient plugin passes.
+
+No APK/AAB/DEX/EAS/signing/admission/install/device/Watch85/BT/ADB/recording/export/physiology/IDC/source-version/dependency-policy/deadline/transport/ACK/custody/drain/scientific change; Cloud credential-free and no repository/publication work. Acquisition continues with Clarification independently. Source-owner documentary authority preservation is separate from Cloud compilation and publishes no private records, caches, tools, artifacts, recordings or credentials.
+
+Full application execution/PASS and candidate readiness remain unearned until the actual authorized sequence and independent readback. Historical normal-plugin evidence and current STOP retain their original identities. No physical timeout cure or device qualification follows from compilation.
