@@ -1,0 +1,33 @@
+# Exact annotation and offline provider PASS; full application not executed
+
+**Full application compilation: NOT EXECUTED. Full application PASS: not established. The sole replacement attempt remains unused, with no marker created.** Cloud is stopped at the unchanged prelaunch time-fit gate. The exact missing compiler input has been resolved and actual offline provider verification passed; no new compiler or input defect was observed in this continuation. Future full-compile input completeness and success remain unclaimed.
+
+## What actually passed
+
+The authoritative Google Maven `androidx.annotation:annotation:1.1.0` JAR is28,478bytes, SHA-256 `d38d63edb30f1467818d50aaf05f8a692dea8b31392a049bfa991b159ad5b692`. Its recomputed SHA-1 matched the published sidecar `e3a6fb2f40e3a3842e6b7472628ba4ce416ea4c8`. Google's optional SHA-256 endpoint returned404: the recorded SHA-256 is computed from actual bytes, not publisher-supplied. Normal pinned Gradle preparation passed for exactly this one nontransitive module through the existing filtered Google Maven identity and placed the JAR in the private conventional cache. No substitute, dependency upgrade, manual binary-cache metadata patch, purge or reinstall occurred.
+
+Only one235-byte JAR checksum leaf was added to the disposable policy. Its827,334-byte postimage SHA-256 is `3073af1ae64f3fb0a2d7d99393514da5df1e3ba8c41c5dd66c5ee46ef0b16675`. Parent data-only comparison removed that one exact leaf and recovered every byte of the original827,099-byte f982 policy, SHA-256 `f982356c25b42387ae01a076a8ec2c1260f236bb023ac1c4f19ee5e9ac4352fb`. All other entries/settings and the existing annotation POM remain unchanged. A historical construction status `NOT_APPLIED` and first zero-execution policy-preimage review-row mismatch are preserved; terminal preparation/provider receipts establish the later actual application. The review metadata was projected only to the admitted postimage, without another Gradle provider attempt.
+
+The one actual strict-offline provider invocation passed: exit0, no timeout, unchanged1,800-second ceiling, recorded Gradle execution1,054.356522928seconds. It selected exactly one local RxAndroidBle1.17.2 `:hugr-rxandroidble-observation`, one current local `:hugr-source-journal`, zero published RxAndroidBle artifacts and135 applicable Java classpath entries. The source-owned processor verifier and local library classes-JAR producer executed successfully without cache-restored outcomes. Its current1,391,433-byte provider JAR SHA-256 is `cc9d36e6eb5db45b3e9277aefb5d2283ce2c70ca75c781d34692a345c72511c0`; required RxBleClient and CharacteristicWriteOperation entries were read back. This is actual library/provider evidence, not full application Kotlin/Java compilation.
+
+The prior conventional normal-path Expo plugin application and resource PASS were reused, not rerun: AAPT2 executable8.12.0-13700139 SHA-256 `3aefe9e14970ba7fcbd0209809adc85e560b6ce07cc90804ea8e1c0e6e1f84dd`, five fresh resource outputs and66,679-byte Expo plugin CodeSource SHA-256 `ba01155fd9e8e24967fb77980a28450794598525897b95737fd436494355e2fd`. Historical custom-route plugin-output loss was not reopened.
+
+## What remains
+
+At `2026-10-31T19:39:31.571936Z`, before any full compiler command or marker, the actual guard stopped with:
+
+> compile phase cannot fit its ceiling plus handback reserve before 2026-10-31T20:11:10+00:00
+
+The original finishing deadline is21:11:10Oslo /20:11:10UTC. Its3,600-second full-compile ceiling plus600-second handback reserve require starting by20:01:10Oslo. The intended `:app:compileDebugKotlin` plus `:app:compileDebugJavaWithJavac` command did not start. No deadline extension, shorter timeout, acceptance relaxation or retry occurred. This is a prelaunch timing STOP, not an actual full-application build failure.
+
+The previous wall-clock amendment question remains unanswered. No new execution authority is inferred from this callback or preservation. An explicitly approved deadline must allow the unchanged compile ceiling and handback reserve from the actual start. If approved in time, retain the same conventional workspace and reuse these passed prerequisite identities, then create the sole exclusive replacement marker immediately before one full application invocation. No automatic retry after an actual full-application failure. No new artifact admission or instrumentation programme is currently indicated; any future substantive discrepancy must still stop.
+
+## Custody and candidate state
+
+Parent reopened all outer6members/5payloads and inner44members/43payloads against exact SHA-256, size, CRC, safe unique paths and UTF-8/NUL rules, without executing returned code. The private outer ZIP is737,213bytes, SHA-256 `28a119d07fca06ec07d19f5286bc55eb2470597567b720714bd116b8688f2c3d`; inner729,618bytes, SHA-256 `c768fc356dc09261bca1a1b032e7dd7b086b73c7c303e4825066aee48f7c0555`. Detached final data review passed. Parent additionally matched actual policy bytes, source-owned350source files,242native postimages and protected inputs using the accepted closure `3f5c65d4ec0e039118956e95fe68224eb595c8894a817a8fffe168c3e2d2a52e`; Cloud's narrow728association/734row readback is retained.
+
+Provider before/after working-copy comparisons agree: no added/removed non-output inputs and only the earned39absolute-path autolinking update plus the expressly admitted policy leaf. Other source, package/lock, dependency/version and tool/processor/AAPT2 identities remain unchanged. The conventional working copy is writable, not immutable. Original repositories, failed evidence, original f982 policy and original consumed429-byte marker SHA-256 `22da98375904dacee01de5f15ba277004bff14ca26adf5335d543a3c83f5af37` remain preserved. The replacement marker is absent/unused.
+
+The Phone-only candidate decision can now reuse earned resource and provider proofs, but is **not ready** until actual full compilation and required final class/manifest/closeout readbacks pass. No APK/AAB/DEX/EAS, signing, admission, installation, device/Watch85, recording/export, transport/custody, physiology/IDC or scientific action occurred. Watch85 remains unchanged; Watch69/68/58 references remain historical custody. No physical timeout cure, rolling delivery or failure-retention qualification is claimed. Acquisition coordination with Clarification remains independent and does not expand this build task.
+
+This source-owned result precedes Master and Alignment-last preservation. Remote preservation is separate from compilation status. Private archives, artifact/cache/tool bodies and records remain off GitHub. This record authorizes no new Cloud action.
