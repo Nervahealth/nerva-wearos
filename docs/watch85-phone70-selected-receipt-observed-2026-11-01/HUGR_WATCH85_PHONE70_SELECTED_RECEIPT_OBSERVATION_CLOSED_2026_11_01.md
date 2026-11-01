@@ -1,0 +1,17 @@
+# Watch85 selected-receipt observation — closed, no new recording admitted
+
+On 1 November 2026, after exact installation-documentary preservation PASS, the separately authorized one-time Watch85 ordinary Main observation exposed a selected receipt with phase **FAILED** and failure **DELIVERY_DEADLINE**. The display expressly states that potential UI eligibility does not admit a fresh run. A READY heading is not recording authority or receipt completion.
+
+Neil confirmed the ordinary application-tray → HUGR Main route, then confirmed the one-opening boundary, no HUGR action-button presses, and Phone70 remaining unopened. Earlier system open-screen navigation did not open/close an app by his report. No Start, Connect, recovery, Bluetooth change, new recording, app data clearing or Watch update was authorized or reported in this step.
+
+This is a private visual selected-receipt observation plus operator route/action confirmation, **not an exact canonical receipt export or independently verified latest-run match**. Launch timing and strict first-clear-result/60-second stopping compliance were not independently verified. Additional video/traversal is retained rather than promoted to a strict-procedure PASS. Raw media, real source/run identifiers, revision/counter values and detailed private findings remain off GitHub.
+
+The observed Watch delivery deadline remains distinct from the previously retained Phone69 local R1 write deadline and cleanup ordering. Neither proves the ATT/radio cause, exact cross-device incident identity, Watch acceptance, complete Phone custody, rolling physiological delivery or physiological qualification. Do not rewrite a failed run or infer completion from partial ACK projections.
+
+The 31 October full conventional application compile and Phone70 artifact admission remain earned. Phone70 installation is operator-confirmed and remains unopened; Watch85 stays unchanged. All-three-branch installation preservation was independently verified before this observation; the original temporary publication-readback STOP and its sanitized fallback remain historical evidence.
+
+The smallest proposed next physical decision is one **separately authorized consequential Phone70 Main + Connect diagnostic check**, not a fresh recording and not a passive no-write observation. R1/C1/resume/append/ACK and cancellation/quiescence effects must be disclosed against the unresolved selected receipt. No Phone Connect is authorized by this result. A future 30-minute gate must predeclare measurable rolling-delivery, clock limits, exact terminal custody and failure-retention criteria; a final bulk download alone is insufficient.
+
+Clarification's private data-readiness handoff remains independent: source availability and fixture compatibility do not establish real analytical eligibility. No scientific profile, permission, learning or sensor expansion is adopted here. Cloud remains stopped. Historical Watch69 NOT QUALIFIED; Watch68 v1 UNCLASSIFIED / NOT VERIFIED; Watch58 TERMINAL QUALIFIED BY APP / EXACT ARTIFACT NOT YET INDEPENDENTLY VERIFIED remain archive labels, not current Watch85 instructions.
+
+Documentary rule: source-owning Watch result first, Phone mirror next, Master next and Alignment last; controlled existing branches only, actual both-repository blob-write preflight, non-force updates and exact remote head/tree/blob readback. No private report/media/APK/credential publication or application-source change.
