@@ -1,0 +1,22 @@
+HUGR SAVED RECEIPT DIAGNOSTICS
+mode=ISOLATED_NATIVE_RECEIPT_DIAGNOSTIC_READER
+react_main_ble_canonical_recovery=NO
+saved_incident_count=1
+complete_reports=YES
+native_correlation=CORRELATION_UNRESOLVED
+native_correlation_reason=BLE_PLX_TRANSACTION_ID_IS_NOT_ATT_REQUEST_ID_NO_EQUAL_COUNTER_OFFSET_OR_CLOCK_JOIN
+absence_of_report_is_not_request_non_arrival=YES
+publication_loss_state=NONE_OBSERVED
+--- INCIDENT 0 ---
+commit_state=ACKNOWLEDGED_ATOMIC_PUBLICATION_CHECKSUM_REOPEN_VERIFIED
+envelope_integrity=VERIFIED
+body_sha256=0e6816390b848afea147b292368436e78633fe42227539b6549c545778ae68b9
+{"nativeCorrelationReason":"BLE_PLX_TRANSACTION_ID_IS_NOT_ATT_REQUEST_ID_NO_EQUAL_COUNTER_OFFSET_OR_CLOCK_JOIN","connectionEpoch":"synthetic-callback-epoch","incidentPseudonym":"synthetic-callback-old","lateSettlementReserve":8,"format":"HUGR_PHONE_RECEIPT_INCIDENT_V3","frozen":true,"nativeCorrelation":"CORRELATION_UNRESOLVED","revision":1,"operationLimit":64,"crashBeforeCheckpoint":"UNKNOWN_NOT_OBSERVABLE_NO_REPORT_IS_NOT_NON_ARRIVAL","diagnosticContext":{"lastSuccessfulStage":{"state":"UNKNOWN"},"contextOverflow":{"truncated":false,"precedingEvicted":0,"subsequentDropped":0},"preceding":[],"subsequent":[],"processLoss":"UNKNOWN_NOT_OBSERVABLE","firstCause":{"lifecycle":{"state":"UNKNOWN"},"atMonotonicMs":{"state":"UNKNOWN"},"operationOrdinal":{"state":"VALUE","value":2},"stage":"RECEIPT_OPERATION","lastSuccessfulStage":{"state":"UNKNOWN"},"origin":"APPLICATION_GUARD","classifier":{"state":"UNKNOWN"},"error":{"attErrorCode":{"state":"UNKNOWN"},"libraryCategory":{"state":"UNKNOWN"},"errorCode":{"state":"UNKNOWN"},"androidErrorCode":{"state":"UNKNOWN"}},"outcome":"DEADLINE","ordinal":1}},"overflow":{"lostNewOperations":0,"lateSettlementWithoutRetainedRow":0,"traceWindowOverflow":false,"evictedCompletedRows":0},"operations":[{"localOrdinal":1,"deadlineObserved":true,"settledAtMonotonicMs":10,"nativeAttDispatch":"UNKNOWN","pending":false,"localTransactionId":"hugr-receipt-1-1","pageOffset":0,"operationKind":"R1_WRITE","jsSubmittedAtMonotonicMs":1,"disconnectObserved":false},{"localOrdinal":2,"deadlineObserved":true,"settledAtMonotonicMs":10,"nativeAttDispatch":"UNKNOWN","pending":false,"localTransactionId":"hugr-receipt-2-1","pageOffset":0,"operationKind":"R1_WRITE","jsSubmittedAtMonotonicMs":2,"disconnectObserved":false}],"firstFailureAtMonotonicMs":10,"publication":{"currentBodyCommit":"NOT_CLAIMED_BY_BODY_METADATA","acknowledgement":null,"knownLoss":null,"format":"HUGR_PHONE_RECEIPT_INCIDENT_PUBLICATION_V1"},"firstFailure":"DEADLINE"}
+
+--- END INCIDENT 0 ---
+native_write_observation_status=NOT_CAPTURED
+native_write_sidecar_can_not_prove_att_radio_watch_or_custody=YES
+native_write_absence_or_loss_is_not_no_callback_or_non_arrival=YES
+native_write_interrupted_temporary_publication_present=NO
+native_write_verified_sidecar_accessible=NO
+END REPORT

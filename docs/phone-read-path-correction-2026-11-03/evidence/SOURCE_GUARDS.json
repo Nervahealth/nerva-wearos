@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "caseCount": 10,
+  "checks": [
+    "tracked_change_allowlist_exact",
+    "all_modified_preimages_exact_head_bytes",
+    "downstream_wrapper_exact_baseline_after_read_hooks_removed",
+    "callback_class_exact_baseline_except_first_read_hook",
+    "single_response_subscription_timeout_order_byte_unchanged",
+    "write_observer_ring_timing_serializer_and_legacy_incident_store_byte_unchanged",
+    "read_retrieval_existing_selectable_text_no_cache_save_dependency",
+    "read_hook_no_io_logging_rx_subscription_or_sleep",
+    "head_not_committed_or_changed",
+    "git_diff_check"
+  ],
+  "changed": [
+    "lib/receiptIncidentDiagnostic.ts",
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/connection/RxBleGattCallback.java",
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/operations/CharacteristicReadOperation.java",
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/util/QueueReleasingEmitterWrapper.java",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedReceiptDiagnosticsActivity.kt",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/nativeobservation/NativeObservationModuleLifecycle.java",
+    "modules/hugr-source-journal/index.ts"
+  ],
+  "added": [
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/util/HugrReceiptReadObserver.java",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptReadProbeStore.kt"
+  ],
+  "allOtherTrackedFilesByteUnchanged": true
+}

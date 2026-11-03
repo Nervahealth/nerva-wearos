@@ -1,0 +1,34 @@
+{
+  "fullProductionClasses": [
+    "com/polidea/rxandroidble2/internal/operations/CharacteristicReadOperation.java",
+    "com/polidea/rxandroidble2/internal/SingleResponseOperation.java",
+    "com/polidea/rxandroidble2/internal/util/QueueReleasingEmitterWrapper.java",
+    "com/polidea/rxandroidble2/internal/util/HugrReceiptReadObserver.java",
+    "com/polidea/rxandroidble2/internal/operations/TimeoutConfiguration.java"
+  ],
+  "exactMethodSlices": [
+    "RxBleGattCallback.onCharacteristicRead",
+    "Expo checkpointCurrentReceiptReadProbeV1 body",
+    "Activity.readCurrentReadProbe"
+  ],
+  "doubles": [
+    "Android GATT/characteristic/callback",
+    "Rx Observable/Single filter first/map chain, timeout is identity; no scheduler/disposal modeling",
+    "ByteAssociationUtil predicate/map",
+    "QueueOperation base",
+    "logger/dispatcher/error relay",
+    "write observer no-op",
+    "Context/worker/UI around exact reader method"
+  ],
+  "actualRxRuntime": false,
+  "actualAndroid": false,
+  "physicalComparator": "SYNTHETIC_SUCCESS_NOT_PHYSICAL_REPLAY",
+  "bindings": {
+    "com/polidea/rxandroidble2/internal/operations/CharacteristicReadOperation.java": "26ddc591596d3d1b600002ada6c3b80bd38effbe24b934e0c2df5ca499dd969f",
+    "com/polidea/rxandroidble2/internal/SingleResponseOperation.java": "c4c482a9fa7605600aeb842b455887025bc962f4f4a6031faa30cea231688480",
+    "com/polidea/rxandroidble2/internal/util/QueueReleasingEmitterWrapper.java": "da2437ac99e7d5cc3a78ce3af2b8c099a3995a78755a5860af844134d5da0b98",
+    "com/polidea/rxandroidble2/internal/util/HugrReceiptReadObserver.java": "18ecaea6eb586e81fb08ac5a7a49f477cd5ea31e1e82c807628bf1d6d55e5209",
+    "com/polidea/rxandroidble2/internal/operations/TimeoutConfiguration.java": "c79d636e9c6c2f16f54c34fd004d54ca290735e091a37fbbf4c2a55d305de20d"
+  },
+  "callbackMethodSha256": "0044b2b44707b20140c1fa158d8d639401cf75fe9bb9c6cc7b995260b7495405"
+}

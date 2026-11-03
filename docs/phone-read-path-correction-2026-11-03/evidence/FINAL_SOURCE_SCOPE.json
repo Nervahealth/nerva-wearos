@@ -1,0 +1,91 @@
+{
+  "status": "PASS_NARROWED_READ_SOURCE_TEST_SCOPE",
+  "baseHead": "964a6e50ecbf5aa0e22760aba5b3d07fa19fa17a",
+  "sourcePaths": [
+    "lib/receiptIncidentDiagnostic.ts",
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/connection/RxBleGattCallback.java",
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/operations/CharacteristicReadOperation.java",
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/util/QueueReleasingEmitterWrapper.java",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedReceiptDiagnosticsActivity.kt",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/nativeobservation/NativeObservationModuleLifecycle.java",
+    "modules/hugr-source-journal/index.ts",
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/util/HugrReceiptReadObserver.java",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptReadProbeStore.kt"
+  ],
+  "sourcePreimages": {
+    "lib/receiptIncidentDiagnostic.ts": "2fccab4ce2cceca827323874b6e032ca9f9b3125f1b22b1a2faeaa8bd599f0a0",
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/connection/RxBleGattCallback.java": "aee041462ea574ddbc10c1655c61f66afd18713236d812e9647961e305eef705",
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/operations/CharacteristicReadOperation.java": "9477c13680b8b2054272d74720b2ea44dcd383c8cd079c8da7b79ca7e068c4cf",
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/util/QueueReleasingEmitterWrapper.java": "9dbc511f0f4ec86e73e4cf77bcf7bbde71751a2f310bd4eb770195905dee59dc",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedReceiptDiagnosticsActivity.kt": "97f38145821b4044fc8d005d21f1a8e3d98a1e165dc73aaf5bff2b18c24a0bd6",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt": "ff8a111aeb4be5193fa3d9945c6b4ccba1284cc9d0872f242b42c7a8937155bd",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/nativeobservation/NativeObservationModuleLifecycle.java": "e6657fe99a58210e0fde54838f1855dfe6f912e85ff5ab46cf08e0d6c1c3d106",
+    "modules/hugr-source-journal/index.ts": "8176541a25bb2ed49e6b120e3c09a2ce2075742dbc417abc464ef08bfafa15c6"
+  },
+  "postimages": {
+    "lib/receiptIncidentDiagnostic.ts": {
+      "sha256": "85ac4f005ad8e9857daecc750d80f238943626afee912b4c72fea6fd006d0dfd",
+      "bytes": 10360,
+      "mode": "100644"
+    },
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/connection/RxBleGattCallback.java": {
+      "sha256": "997d9e000a90a076990189a335b5a1e4488bf2958fa10d491791a09e719cba32",
+      "bytes": 19039,
+      "mode": "100644"
+    },
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/operations/CharacteristicReadOperation.java": {
+      "sha256": "26ddc591596d3d1b600002ada6c3b80bd38effbe24b934e0c2df5ca499dd969f",
+      "bytes": 2499,
+      "mode": "100644"
+    },
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/util/QueueReleasingEmitterWrapper.java": {
+      "sha256": "da2437ac99e7d5cc3a78ce3af2b8c099a3995a78755a5860af844134d5da0b98",
+      "bytes": 3317,
+      "mode": "100644"
+    },
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedReceiptDiagnosticsActivity.kt": {
+      "sha256": "0357530214e8e78e0515ccf5151de7c8f5b79e8123b528366810bf0724f8541b",
+      "bytes": 15322,
+      "mode": "100644"
+    },
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt": {
+      "sha256": "4c5ce7880e4f397e97d819b3ac2611196b8732bc7331634d17567cb5bf79f4ed",
+      "bytes": 45623,
+      "mode": "100644"
+    },
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/nativeobservation/NativeObservationModuleLifecycle.java": {
+      "sha256": "adbeca627c8d8f3a082ad4e9edd39a5a1b4db625f95bfafdaa787b5451247a2e",
+      "bytes": 4743,
+      "mode": "100644"
+    },
+    "modules/hugr-source-journal/index.ts": {
+      "sha256": "eed7a4ce5597c2bb714b65aa6c3fe5261a80f61a38c6f217c993fc8399bb27dc",
+      "bytes": 6547,
+      "mode": "100644"
+    },
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/util/HugrReceiptReadObserver.java": {
+      "sha256": "18ecaea6eb586e81fb08ac5a7a49f477cd5ea31e1e82c807628bf1d6d55e5209",
+      "bytes": 8641,
+      "mode": "100644"
+    },
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptReadProbeStore.kt": {
+      "sha256": "879a421609601f15ba7038e1559b7f7605a575504f05c02710ebc3ef15452d29",
+      "bytes": 11994,
+      "mode": "100644"
+    }
+  },
+  "allOtherBaselineTrackedFilesUnchanged": true,
+  "focusedCases": 19,
+  "typescriptCases": 9,
+  "sourceGuards": 10,
+  "integrationExit": 0,
+  "actualRxRuntime": false,
+  "fullAppCompile": false,
+  "apkBuild": false,
+  "deviceActions": 0,
+  "writeBufferAndTimingChange": false,
+  "generalSaveRepair": false,
+  "recommendation": "BUILD_ONE_DIAGNOSTIC_CANDIDATE_REQUIRES_NEW_AUTHORITY",
+  "checkedUtc": "2026-11-03T12:18:57.368192+00:00"
+}

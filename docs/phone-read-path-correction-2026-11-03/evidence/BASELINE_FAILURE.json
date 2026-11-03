@@ -1,0 +1,17 @@
+{
+  "expectedFailure": true,
+  "exitCode": 1,
+  "actualProductionMethods": [
+    "startOperation",
+    "onCharacteristicRead"
+  ],
+  "seams": "exact method bodies; API, callback dispatcher, relay and logger doubles; no Rx runtime",
+  "sourceBindings": {
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/operations/CharacteristicReadOperation.java": "9477c13680b8b2054272d74720b2ea44dcd383c8cd079c8da7b79ca7e068c4cf",
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/connection/RxBleGattCallback.java": "aee041462ea574ddbc10c1655c61f66afd18713236d812e9647961e305eef705"
+  },
+  "absenceChecks": {
+    "readDispatchHookAbsent": true,
+    "rawReadHookAbsent": true
+  }
+}
