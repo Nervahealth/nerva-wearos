@@ -1,0 +1,40 @@
+  fun origin(epoch:String="synthetic-epoch-a")=JSONObject().put("format","HUGR_PHONE_READ_JS_ORIGIN_V1").put("attribution","JS_ORIGIN").put("state","VALUE").put("reference",JSONObject().put("incidentPseudonym","synthetic-origin").put("connectionEpoch",epoch).put("localOrdinal",1).put("operationKind","RECEIPT_READ").put("pageOffset",3840))
+  test("origin-closed-types-bounds-no-coercion-or-private-values") {root->
+   val f=Fixture();val store=ReceiptReadProbeStore(File(root,"origin"),io)
+   val malformed=mutableListOf<String>("", "null", "[]", "x".repeat(1025))
+   for(k in listOf("incidentPseudonym","connectionEpoch","localOrdinal","operationKind","pageOffset")) for(v in listOf<Any>(JSONObject.NULL,true,JSONObject(),org.json.JSONArray(),"1")) {
+    val o=origin();o.getJSONObject("reference").put(k,v);malformed.add(o.toString())
+   }
+   for(v in listOf(-1,0,0.5,9_007_199_254_740_992.0)) {val o=origin();o.getJSONObject("reference").put("localOrdinal",v);malformed.add(o.toString())}
+   for(v in listOf(-1,0.5,1_000_000)) {val o=origin();o.getJSONObject("reference").put("pageOffset",v);malformed.add(o.toString())}
+   for(k in listOf("format","attribution","state")) {val o=origin();o.put(k,5);malformed.add(o.toString())}
+   malformed.add(origin().put("privatePayload","SYNTHETIC_FORBIDDEN_SECRET").toString())
+   malformed.add(origin().also{it.getJSONObject("reference").put("localTransactionId","SYNTHETIC_FORBIDDEN_SECRET")}.toString())
+   for(json in malformed) {
+    val report=store.publish(f.lane.snapshot(),"JS_SETTLED_TIMELY",0.0,198.75,json)
+    val o=body(report).getJSONObject("originatingJs");check(o.getString("state")=="INVALID" && o.length()==3)
+    check(!report.contains("SYNTHETIC_FORBIDDEN_SECRET"));check(report==ReceiptReadProbeStore(File(root,"origin"),io).read())
+   }
+   check(body(store.publish(f.lane.snapshot(),"JS_SETTLED_TIMELY",0.0,198.75)).getJSONObject("originatingJs").getString("state")=="ABSENT")
+   for(state in listOf("ABSENT","INVALID","MISMATCH")) {
+    val o=JSONObject().put("format","HUGR_PHONE_READ_JS_ORIGIN_V1").put("attribution","JS_ORIGIN").put("state",state)
+    val report=store.publish(f.lane.snapshot(),"JS_SETTLED_TIMELY",0.0,198.75,o.toString());check(report.contains("JS_ORIGIN=$state"));check(!body(report).getJSONObject("originatingJs").has("reference"))
+   }
+   File(artifacts,"origin-invalid-explicit.SYNTHETIC.reader.txt").writeText(store.read())
+  }
+  test("same-page-and-ordinal-distinct-epoch-not-identical-origin") {root->
+   val f=Fixture();val store=ReceiptReadProbeStore(File(root,"epochs"),io)
+   val a=store.publish(f.lane.snapshot(),"JS_SETTLED_TIMELY",0.0,198.75,origin().toString())
+   val b=store.publish(f.lane.snapshot(),"JS_SETTLED_TIMELY",0.0,198.75,origin("synthetic-epoch-b").toString())
+   val ar=body(a).getJSONObject("originatingJs").getJSONObject("reference");val br=body(b).getJSONObject("originatingJs").getJSONObject("reference")
+   check(ar.getLong("localOrdinal")==br.getLong("localOrdinal")&&ar.getLong("pageOffset")==br.getLong("pageOffset"));check(ar.getString("connectionEpoch")!=br.getString("connectionEpoch"))
+   check(body(b).getJSONArray("operations").toString()==body(a).getJSONArray("operations").toString());check(b==store.read())
+   File(artifacts,"epoch-a.SYNTHETIC.reader.txt").writeText(a);File(artifacts,"epoch-b.SYNTHETIC.reader.txt").writeText(b)
+  }
+  test("legacy-v1-real-saved-body-recognizable-no-false-origin") {root->
+   val legacy=File("/home/ubuntu/HUGR_PHONE73_FRESHNESS_ACCEPTANCE_2026_11_03/case1-delayed-A-then-B/A-delayed.hugr-probe").readBytes()
+   val dir=File(root,"hugr_receipt_read_probes_v1");check(dir.mkdirs());val file=File(dir,RECEIPT_READ_PROBE_FILENAME);file.writeBytes(legacy)
+   val context=object:android.content.ContextWrapper(null){override fun getNoBackupFilesDir()=root;override fun getApplicationContext():Context=this};val reader=ReadReaderSourceSlice(context);reader.invoke()
+   check(reader.output.text.contains("HUGR PHONE READ CURRENT PROBE V1")&&reader.output.text.contains("JS_ORIGIN=ABSENT_LEGACY_V1"));check(!body(reader.output.text).has("originatingJs"));check(file.readBytes().contentEquals(legacy))
+   File(artifacts,"legacy-v1.SYNTHETIC.reader.txt").writeText(reader.output.text)
+  }

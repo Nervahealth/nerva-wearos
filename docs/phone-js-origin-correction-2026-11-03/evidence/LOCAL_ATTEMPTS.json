@@ -1,0 +1,14 @@
+{
+  "toolRoutingFailures": [
+    "15:28:10",
+    "15:28:15",
+    "15:28:20",
+    "15:28:33"
+  ],
+  "focusedFailure": {
+    "path": "/home/ubuntu/HUGR_PHONE_JS_ORIGIN_CORRECTION_2026_11_03/test-results/patched-20261103T143057Z-301838",
+    "log": "/home/ubuntu/HUGR_PHONE_JS_ORIGIN_CORRECTION_2026_11_03/test-results/patched-20261103T143057Z-301838/probe.log",
+    "cause": "TEST_EXPECTATION_ERROR_STRING_1_IS_ALLOWED_OPAQUE_TOKEN_FOR_PSEUDONYM_AND_EPOCH",
+    "productionChangedForFailure": false
+  }
+}

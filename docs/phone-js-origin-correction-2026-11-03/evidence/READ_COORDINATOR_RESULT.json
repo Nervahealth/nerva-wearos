@@ -1,0 +1,20 @@
+{
+  "status": "PASS_TS_READ_COORDINATOR_AND_WRAPPER_NATIVE_DOUBLE",
+  "caseCount": 12,
+  "cases": [
+    "read-success-fresh-specific-wrapper-not-write-no-synchronous-native",
+    "duplicate-late-cannot-relabel-read-outcome",
+    "read-deadline-fresh-label-preserved-through-cancel-late-rejection",
+    "read-rejection-checkpoints",
+    "write-queue-and-kind-whitelist-stay-separate",
+    "unrelated-missing-row-no-read-checkpoint",
+    "one-inflight-one-latest-pending-explicit-coalescing",
+    "native-refusal-detached-no-retry-no-transport-failure",
+    "same-key-page-ordinal-distinct-epochs-remain-distinct",
+    "captured-origin-immutable-during-pending-model-and-snapshot-mutation",
+    "invalid-and-mismatched-primary-origin-explicit-no-fallback-row",
+    "narrow-production-ts-typecheck-with-external-native-declarations"
+  ],
+  "ExpoRuntime": false,
+  "physical": false
+}

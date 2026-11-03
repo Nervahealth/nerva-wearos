@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "checks": [
+    "exact_five_production_paths_only",
+    "all_other_preflight_files_byte_identical",
+    "original_Phone73_candidate_and_harness_outputs_unchanged",
+    "HEAD_unchanged_no_commit",
+    "diff_check",
+    "bridge_wrapper_only_READ_blocks_changed",
+    "selectable_reader_only_READ_error_label_changed",
+    "native_observer_callbacks_transport_timeouts_WRITE_primary_model_and_stores_unchanged"
+  ],
+  "caseCount": 8,
+  "changedProductionPaths": [
+    "lib/receiptIncidentDiagnostic.ts",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedReceiptDiagnosticsActivity.kt",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptReadProbeStore.kt",
+    "modules/hugr-source-journal/index.ts"
+  ],
+  "preflightFileCount": 4756,
+  "unchangedFileCount": 4751
+}

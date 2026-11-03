@@ -1,0 +1,69 @@
+{
+  "status": "PASS_TWO_OFFLINE_REAL_STORE_ACCEPTANCE_CASES_JS_ORIGIN_ONLY",
+  "cases": [
+    {
+      "name": "case1-delayed-A-then-B",
+      "bridgeArguments": [
+        {
+          "outcome": "JS_SETTLED_TIMELY",
+          "coalesced": 0,
+          "at": 198.75,
+          "originJson": "{\"format\":\"HUGR_PHONE_READ_JS_ORIGIN_V1\",\"attribution\":\"JS_ORIGIN\",\"state\":\"VALUE\",\"reference\":{\"incidentPseudonym\":\"synthetic-freshness-1\",\"connectionEpoch\":\"synthetic-js-epoch-1\",\"localOrdinal\":1,\"operationKind\":\"RECEIPT_READ\",\"pageOffset\":3840}}"
+        },
+        {
+          "outcome": "JS_DEADLINE",
+          "coalesced": 0,
+          "at": 10224.75,
+          "originJson": "{\"format\":\"HUGR_PHONE_READ_JS_ORIGIN_V1\",\"attribution\":\"JS_ORIGIN\",\"state\":\"VALUE\",\"reference\":{\"incidentPseudonym\":\"synthetic-freshness-1\",\"connectionEpoch\":\"synthetic-js-epoch-1\",\"localOrdinal\":2,\"operationKind\":\"RECEIPT_READ\",\"pageOffset\":4224}}"
+        }
+      ],
+      "aBodySha256": "f2db60d1e74ecfe41d17c6e4194ba3fdaa5bd2448a03a721a9ec47c3107b9626",
+      "aFileSha256": "08c7517edb104db4a7ecfb2acdbb30014e26d74f2ce4f330d3ffed1e01df5900",
+      "finalFileSha256": "706fafc4b922a1697b1be778ac03a8c651bcd88cfa37b8a716617eb68dd4509c",
+      "finalOutcome": "JS_DEADLINE",
+      "finalJsTime": 10224.75,
+      "finalRevision": 2,
+      "scopedJsOriginPage": 4224,
+      "selfIdentifyingJsRequester": true,
+      "timeEqualityNotUsed": true,
+      "refusalRetainsA": false,
+      "primaryPublicationCount": 2
+    },
+    {
+      "name": "case2-B-refused-A-retained",
+      "bridgeArguments": [
+        {
+          "outcome": "JS_SETTLED_TIMELY",
+          "coalesced": 0,
+          "at": 198.75,
+          "originJson": "{\"format\":\"HUGR_PHONE_READ_JS_ORIGIN_V1\",\"attribution\":\"JS_ORIGIN\",\"state\":\"VALUE\",\"reference\":{\"incidentPseudonym\":\"synthetic-freshness-2\",\"connectionEpoch\":\"synthetic-js-epoch-2\",\"localOrdinal\":1,\"operationKind\":\"RECEIPT_READ\",\"pageOffset\":3840}}"
+        },
+        {
+          "outcome": "JS_DEADLINE",
+          "coalesced": 0,
+          "at": 10224.75,
+          "originJson": "{\"format\":\"HUGR_PHONE_READ_JS_ORIGIN_V1\",\"attribution\":\"JS_ORIGIN\",\"state\":\"VALUE\",\"reference\":{\"incidentPseudonym\":\"synthetic-freshness-2\",\"connectionEpoch\":\"synthetic-js-epoch-2\",\"localOrdinal\":2,\"operationKind\":\"RECEIPT_READ\",\"pageOffset\":4224}}"
+        }
+      ],
+      "aBodySha256": "1988485a438b65c3f90bdf7c8e1c5f683abb3c860df54fcb48053c2e0efd0a68",
+      "aFileSha256": "0d582622582bcd2919b3aaca92048a3f6acbc701ad17069c0efe24b6a9605c06",
+      "finalFileSha256": "0d582622582bcd2919b3aaca92048a3f6acbc701ad17069c0efe24b6a9605c06",
+      "finalOutcome": "JS_SETTLED_TIMELY",
+      "finalJsTime": 198.75,
+      "finalRevision": 1,
+      "scopedJsOriginPage": 3840,
+      "selfIdentifyingJsRequester": true,
+      "timeEqualityNotUsed": true,
+      "refusalRetainsA": true,
+      "interruption": {
+        "error": "java.lang.IllegalStateException: SYNTHETIC_STOP_AFTER_REAL_PART_WRITE_FSYNC_BEFORE_RENAME",
+        "renderedStop": true,
+        "priorAByteExact": true
+      },
+      "primaryPublicationCount": 2
+    }
+  ],
+  "physical": false,
+  "ExpoRuntime": false,
+  "jsNativeMapped": false
+}

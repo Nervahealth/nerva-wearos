@@ -1,0 +1,24 @@
+PASS ordinary-success-real-read-path
+PASS stalled-api-true-without-completion
+PASS created-dispatch-not-observed
+PASS android-api-false-original-cancel-error
+PASS api-exception-not-swallowed
+PASS raw-callback-before-logger-or-dispatcher
+PASS raw-callback-present-no-downstream-observer
+PASS nonzero-callback-downstream-error
+PASS uuid-filter-keeps-unmatched-callback-unassigned
+PASS late-after-completed-operation-unassigned
+PASS historical-object-reuse-never-picks-active
+PASS cancel-then-late-callback-unassigned
+PASS bounded-overflow-explicit-loss-stalled-unknown
+PASS busy-loss-retains-positive-api-but-stall-unknown
+PASS clock-inactive-and-interruption-unknown
+PASS store-interruption-checksum-closed-schema-and-budgets
+PASS missing-file-not-negative-and-invalid-js-refused
+PASS exact-isolated-reader-method-selectable-body-no-save-cache
+PASS synthetic-old-incident-independent-and-unchanged
+Exception in thread "main" java.lang.IllegalStateException: Check failed.
+	at health.hugr.sourcejournal.ReadPathFocusedProbe$main$20.invoke(ReadPathFocusedProbe.kt:101)
+	at health.hugr.sourcejournal.ReadPathFocusedProbe$main$20.invoke(ReadPathFocusedProbe.kt:88)
+	at health.hugr.sourcejournal.ReadPathFocusedProbe.test(ReadPathFocusedProbe.kt:65)
+	at health.hugr.sourcejournal.ReadPathFocusedProbe.main(ReadPathFocusedProbe.kt:88)

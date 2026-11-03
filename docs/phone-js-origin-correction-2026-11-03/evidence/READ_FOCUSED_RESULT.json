@@ -1,0 +1,31 @@
+{
+  "cases": [
+    "ordinary-success-real-read-path",
+    "stalled-api-true-without-completion",
+    "created-dispatch-not-observed",
+    "android-api-false-original-cancel-error",
+    "api-exception-not-swallowed",
+    "raw-callback-before-logger-or-dispatcher",
+    "raw-callback-present-no-downstream-observer",
+    "nonzero-callback-downstream-error",
+    "uuid-filter-keeps-unmatched-callback-unassigned",
+    "late-after-completed-operation-unassigned",
+    "historical-object-reuse-never-picks-active",
+    "cancel-then-late-callback-unassigned",
+    "bounded-overflow-explicit-loss-stalled-unknown",
+    "busy-loss-retains-positive-api-but-stall-unknown",
+    "clock-inactive-and-interruption-unknown",
+    "store-interruption-checksum-closed-schema-and-budgets",
+    "missing-file-not-negative-and-invalid-js-refused",
+    "exact-isolated-reader-method-selectable-body-no-save-cache",
+    "synthetic-old-incident-independent-and-unchanged",
+    "origin-closed-types-bounds-no-coercion-or-private-values",
+    "same-page-and-ordinal-distinct-epoch-not-identical-origin",
+    "legacy-v1-real-saved-body-recognizable-no-false-origin"
+  ],
+  "actualRxRuntime": false,
+  "physicalComparatorReplay": false,
+  "caseCount": 22,
+  "status": "PASS_FOCUSED_READ_SOURCE_CLASSES_WITH_EXPLICIT_DOUBLES_REAL_STORE_REOPEN",
+  "AndroidDevice": false
+}

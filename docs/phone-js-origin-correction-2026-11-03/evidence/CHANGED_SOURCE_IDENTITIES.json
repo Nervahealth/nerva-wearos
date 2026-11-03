@@ -1,0 +1,30 @@
+{
+  "head": "d4af9210bc346607e346d766e5ad4eca6e589c6d",
+  "paths": [
+    {
+      "path": "lib/receiptIncidentDiagnostic.ts",
+      "baselineSha256": "85ac4f005ad8e9857daecc750d80f238943626afee912b4c72fea6fd006d0dfd",
+      "postflightSha256": "4882a0853e375731a46520c2b0695de513b23b6c2ac007c844e1c8441a81bdf0"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedReceiptDiagnosticsActivity.kt",
+      "baselineSha256": "0357530214e8e78e0515ccf5151de7c8f5b79e8123b528366810bf0724f8541b",
+      "postflightSha256": "79f4e56beb8a56c0cf2bf25cd2cc2cc5e39eca58ac24d60f6c3cc1665fbead54"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt",
+      "baselineSha256": "4c5ce7880e4f397e97d819b3ac2611196b8732bc7331634d17567cb5bf79f4ed",
+      "postflightSha256": "db323f91995ea51cc03d0b9cb5bde8175103a7e8df38596eaa5f7fc20e09b47b"
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptReadProbeStore.kt",
+      "baselineSha256": "879a421609601f15ba7038e1559b7f7605a575504f05c02710ebc3ef15452d29",
+      "postflightSha256": "ba536e4ef66f838e09b165332a8dc2979d769a06b5d3d068335c31fef0e0582b"
+    },
+    {
+      "path": "modules/hugr-source-journal/index.ts",
+      "baselineSha256": "eed7a4ce5597c2bb714b65aa6c3fe5261a80f61a38c6f217c993fc8399bb27dc",
+      "postflightSha256": "a9df6b6c5667dfeefd0318df4f672f0b40a19108e64ac81f4d86a568ee099b73"
+    }
+  ]
+}
