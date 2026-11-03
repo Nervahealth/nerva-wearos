@@ -1,0 +1,3 @@
+ORIGINAL_ACTUAL_METHOD_SLICE_TO_SAVED_OUTPUT missing_entry=YES unassociated=1 save_exact=YES native_dispatch_double=1 value_double=1
+Exception in thread "main" java.lang.IllegalStateException: EXPECTED_FAILURE: callback entered exact source method but old observer/recorder/save path has no per-entry record
+	at health.hugr.sourcejournal.CallbackEntryFocusedProbe.main(CallbackEntryFocusedProbe.kt:63)

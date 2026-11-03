@@ -1,0 +1,2119 @@
+TAP version 13
+# node:internal/modules/esm/resolve:275
+#     throw new ERR_MODULE_NOT_FOUND(
+#           ^
+# Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/ubuntu/HUGR_NATIVE_OBSERVATION_RESET_RECOVERY_2026_10_28/repos/phone/lib/receiptIncidentDiagnosticContext' imported from /home/ubuntu/HUGR_NATIVE_OBSERVATION_RESET_RECOVERY_2026_10_28/repos/phone/lib/receiptIncidentDiagnosticModel.ts
+#     at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+#     at moduleResolve (node:internal/modules/esm/resolve:865:10)
+#     at defaultResolve (node:internal/modules/esm/resolve:989:11)
+#     at \#cachedDefaultResolve (node:internal/modules/esm/loader:747:20)
+#     at ModuleLoader.resolve (node:internal/modules/esm/loader:724:38)
+#     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:320:38)
+#     at ModuleJob._link (node:internal/modules/esm/module_job:182:49) {
+#   code: 'ERR_MODULE_NOT_FOUND',
+#   url: 'file:///home/ubuntu/HUGR_NATIVE_OBSERVATION_RESET_RECOVERY_2026_10_28/repos/phone/lib/receiptIncidentDiagnosticContext'
+# }
+# Node.js v22.23.4
+# Subtest: /home/ubuntu/HUGR_NATIVE_OBSERVATION_RESET_RECOVERY_2026_10_28/repos/phone/tests/receiptIncidentDiagnosticModel.test.ts
+not ok 1 - /home/ubuntu/HUGR_NATIVE_OBSERVATION_RESET_RECOVERY_2026_10_28/repos/phone/tests/receiptIncidentDiagnosticModel.test.ts
+  ---
+  duration_ms: 188.454419
+  type: 'test'
+  location: '/home/ubuntu/HUGR_NATIVE_OBSERVATION_RESET_RECOVERY_2026_10_28/repos/phone/tests/receiptIncidentDiagnosticModel.test.ts:1:1'
+  failureType: 'testCodeFailure'
+  exitCode: 1
+  signal: ~
+  error: 'test failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# (node:271619) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///home/ubuntu/HUGR_NATIVE_OBSERVATION_RESET_RECOVERY_2026_10_28/repos/phone/tests/receiptIncidentNativeStore.source.test.ts is not specified and it doesn't parse as CommonJS.
+# Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+# To eliminate this warning, add "type": "module" to /home/ubuntu/HUGR_NATIVE_OBSERVATION_RESET_RECOVERY_2026_10_28/repos/phone/package.json.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: native incident store preserves bounded acknowledged temp-sync-rename-directory-sync-reopen flow
+not ok 2 - native incident store preserves bounded acknowledged temp-sync-rename-directory-sync-reopen flow
+  ---
+  duration_ms: 6.576507
+  type: 'test'
+  location: '/home/ubuntu/HUGR_NATIVE_OBSERVATION_RESET_RECOVERY_2026_10_28/repos/phone/tests/receiptIncidentNativeStore.source.test.ts:54:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /RECEIPT_INCIDENT_MAX_RENDERED_BYTES = 512 \* 1024/. Input:
+    
+    'package health.hugr.sourcejournal\n' +
+      '\n' +
+      'import android.content.Context\n' +
+      'import android.system.Os\n' +
+      'import android.system.OsConstants\n' +
+      'import org.json.JSONArray\n' +
+      'import org.json.JSONObject\n' +
+      'import java.io.File\n' +
+      'import java.io.FileOutputStream\n' +
+      'import java.nio.charset.StandardCharsets\n' +
+      'import java.nio.file.Files\n' +
+      'import java.nio.file.LinkOption\n' +
+      'import java.security.MessageDigest\n' +
+      'import java.util.Base64\n' +
+      '\n' +
+      'internal const val RECEIPT_INCIDENT_DIAGNOSTIC_ROOT = "hugr_receipt_incident_diagnostics"\n' +
+      'private const val RECEIPT_INCIDENT_FILE_SUFFIX = ".hugr-incident"\n' +
+      'private const val RECEIPT_INCIDENT_MAX_REPORTS = 8\n' +
+      '/** Eight complete reports plus rendering delimiters must fit the one bounded share artifact. */\n' +
+      'internal const val RECEIPT_INCIDENT_MAX_BODY_BYTES = 48 * 1024\n' +
+      'internal const val RECEIPT_INCIDENT_MAX_RENDERED_BYTES = 1024 * 1024\n' +
+      'private const val RECEIPT_INCIDENT_MAX_ENVELOPE_BYTES = 66 * 1024\n' +
+      'private const val MAX_SAFE_JSON_INTEGER = 9_007_199_254_740_991L\n' +
+      'private const val V3_INCIDENT_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_V3"\n' +
+      'private const val INCIDENT_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_V2"\n' +
+      'private const val LEGACY_INCIDENT_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_V1"\n' +
+      'private const val INCIDENT_FILE_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_FILE_V1"\n' +
+      'private const val NATIVE_CORRELATION = "CORRELATION_UNRESOLVED"\n' +
+      'private const val NATIVE_CORRELATION_REASON = "BLE_PLX_TRANSACTION_ID_IS_NOT_ATT_REQUEST_ID_NO_EQUAL_COUNTER_OFFSET_OR_CLOCK_JOIN"\n' +
+      'private const val CRASH_UNCERTAINTY = "UNKNOWN_NOT_OBSERVABLE_NO_REPORT_IS_NOT_NON_ARRIVAL"\n' +
+      'private const val PUBLICATION_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_PUBLICATION_V1"\n' +
+      'private const val PUBLICATION_CURRENT_BODY_COMMIT = "NOT_CLAIMED_BY_BODY_METADATA"\n' +
+      'private const val PUBLICATION_COMMIT_STATE = "ACKNOWLEDGED_ATOMIC_PUBLICATION_CHECKSUM_REOPEN_VERIFIED"\n' +
+      '\n' +
+      '/**\n' +
+      ' * Payload-free, bounded Phone-local incident reports. This store is deliberately\n' +
+      ' * independent of PhoneSourceJournal and PhoneCustodyRunReportStore: it neither\n' +
+      ' * opens canonical evidence nor knows a Watch run/session, receipt body, ACK\n' +
+      ' * hash, BLE address, or native ATT request ID.\n' +
+      ' *\n' +
+      ' * The JavaScript bridge invokes publication only after a local callback outcome\n' +
+      ' * has been observed and never awaits it on a BLE deadline/response path. There\n' +
+      ' * is no retry, timer, transport mutation, or wire behavior in this class.\n' +
+      ' */\n' +
+      'internal data class ReceiptIncidentPublication(\n' +
+      '  val incidentPseudonym: String,\n' +
+      '  val revision: Long,\n' +
+      '  val commitState: String,\n' +
+      '  val acknowledgedAtomicPublication: Boolean,\n' +
+      '  val reportBytes: Long,\n' +
+      ')\n' +
+      '\n' +
+      'internal interface ReceiptIncidentFileIo {\n' +
+      '  fun writeAndSync(file: File, bytes: ByteArray)\n' +
+      '  fun atomicReplace(from: File, to: File)\n' +
+      '  fun syncDirectory(directory: File)\n' +
+      '  fun readFully(file: File): ByteArray\n' +
+      '}\n' +
+      '\n' +
+      'internal object AndroidReceiptIncidentFileIo : ReceiptIncidentFileIo {\n' +
+      '  override fun writeAndSync(file: File, bytes: ByteArray) {\n' +
+      '    FileOutputStream(file).use { output ->\n' +
+      '      output.write(bytes)\n' +
+      '      output.flush()\n' +
+      '      output.fd.sync()\n' +
+      '    }\n' +
+      '  }\n' +
+      '\n' +
+      '  override fun atomicReplace(from: File, to: File) {\n' +
+      '    Os.rename(from.absolutePath, to.absolutePath)\n' +
+      '  }\n' +
+      '\n' +
+      '  override fun syncDirectory(directory: File) {\n' +
+      '    val descriptor = Os.open(directory.absolutePath, OsConstants.O_RDONLY, 0)\n' +
+      '    try {\n' +
+      '      check(OsConstants.S_ISDIR(Os.fstat(descriptor).st_mode)) { "Incident diagnostic directory descriptor is not a directory" }\n' +
+      '      Os.fsync(descriptor)\n' +
+      '    } finally {\n' +
+      '      Os.close(descriptor)\n' +
+      '    }\n' +
+      '  }\n' +
+      '\n' +
+      '  override fun readFully(file: File): ByteArray = file.readBytes()\n' +
+      '}\n' +
+      '\n' +
+      'internal class ReceiptIncidentDiagnosticStore(\n' +
+      '  private val root: File,\n' +
+      '  private val io: ReceiptIncidentFileIo = AndroidReceiptIncidentFileIo,\n' +
+      ') {\n' +
+      '  constructor(context: Context) : this(File(context.noBackupFilesDir, RECEIPT_INCIDENT_DIAGNOSTIC_ROOT))\n' +
+      '\n' +
+      '  /**\n' +
+      '   * temp write+fsync -> atomic replace -> directory fsync -> exact reopen/checksum\n' +
+      '   * acknowledgement. A publication failure throws; callers do not retry. Thus a\n' +
+      '   * missing report remains explicit pre-publication/crash uncertainty, never an\n' +
+      '   * assertion of request non-arrival.\n' +
+      '   */\n' +
+      '  @Synchronized fun publish(snapshotJson: String): ReceiptIncidentPublication {\n' +
+      '    val parsed = validateSnapshot(snapshotJson)\n' +
+      '    if (parsed.format == V3_INCIDENT_FORMAT) ReceiptIncidentSafeLog.cause(parsed.incidentPseudonym, JSONObject(snapshotJson).getJSONObject("diagnosticContext").getJSONObject("firstCause"))\n' +
+      '    ensureSafeRoot(create = true)\n' +
+      '    check(interruptedTemporaryFiles().isEmpty()) { "RECEIPT_INCIDENT_INTERRUPTED_PUBLICATION_PRESENT" }\n' +
+      '    val final = File(root, "incident-${parsed.incidentPseudonym}$RECEIPT_INCIDENT_FILE_SUFFIX")\n' +
+      '    rejectUnsafeFile(final)\n' +
+      '    if (!final.exists() && incidentFiles().size >= RECEIPT_INCIDENT_MAX_REPORTS) {\n' +
+      '      throw IllegalStateException("RECEIPT_INCIDENT_STORE_CAPACITY_EXHAUSTED")\n' +
+      '    }\n' +
+      '    if (final.exists()) {\n' +
+      '      val existing = reopen(final)\n' +
+      '      check(existing.identity.incidentPseudonym == parsed.incidentPseudonym) { "RECEIPT_INCIDENT_FILE_IDENTITY_MISMATCH" }\n' +
+      '      check(existing.identity.connectionEpoch == parsed.connectionEpoch &&\n' +
+      '        existing.identity.firstFailure == parsed.firstFailure &&\n' +
+      '        existing.identity.firstFailureAtMonotonicMs == parsed.firstFailureAtMonotonicMs &&\n' +
+      '        existing.identity.format == parsed.format && existing.identity.frozenContext == parsed.frozenContext\n' +
+      '      ) { "RECEIPT_INCIDENT_EPOCH_OR_FROZEN_CONTEXT_MISMATCH" }\n' +
+      '      if (existing.identity.revision > parsed.revision) throw IllegalStateException("RECEIPT_INCIDENT_REVISION_REGRESSION")\n' +
+      '      if (existing.identity.revision == parsed.revision) {\n' +
+      '        if (existing.body != snapshotJson) throw IllegalStateException("RECEIPT_INCIDENT_SAME_REVISION_DIFFERENT_BODY")\n' +
+      '        return ReceiptIncidentPublication(parsed.incidentPseudonym, parsed.revision, COMMIT_ACKNOWLEDGED, true, final.length())\n' +
+      '      }\n' +
+      '    }\n' +
+      '    val temporary = File(root, ".incident-${parsed.incidentPseudonym}.${parsed.revision}.part")\n' +
+      '    rejectUnsafeFile(temporary)\n' +
+      '    if (temporary.exists()) throw IllegalStateException("RECEIPT_INCIDENT_TEMPORARY_COLLISION")\n' +
+      '    try {\n' +
+      '      io.writeAndSync(temporary, envelope(parsed, snapshotJson))\n' +
+      '      io.atomicReplace(temporary, final)\n' +
+      '      io.syncDirectory(root)\n' +
+      '      val reopened = reopen(final)\n' +
+      '      check(reopened.identity == parsed && reopened.body == snapshotJson) { "RECEIPT_INCIDENT_REOPEN_MISMATCH" }\n' +
+      '      return ReceiptIncidentPublication(parsed.incidentPseudonym, parsed.revision, COMMIT_ACKNOWLEDGED, true, final.length())\n' +
+      '    } catch (failure: Throwable) {\n' +
+      '      if (temporary.exists() && !temporary.delete()) {\n' +
+      '        // Do not hide the primary acknowledged-publication failure behind cleanup.\n' +
+      '      }\n' +
+      '      throw failure\n' +
+      '    }\n' +
+      '  }\n' +
+      '\n' +
+      '  /**\n' +
+      '   * Full bounded report set only. No latest fallback, no source/custody reader,\n' +
+      '   * and no repair. A residual temp object is visible as a publication-loss state;\n' +
+      '   * earlier valid reports remain readable rather than being silently hidden.\n' +
+      '   */\n' +
+      '  @Synchronized fun readAll(): String {\n' +
+      '    ensureSafeRoot(create = false)\n' +
+      '    if (!root.exists()) return renderNoSavedReports()\n' +
+      '    val files = incidentFiles()\n' +
+      '    check(files.size <= RECEIPT_INCIDENT_MAX_REPORTS) { "RECEIPT_INCIDENT_STORE_CAPACITY_EXHAUSTED" }\n' +
+      '    val interrupted = interruptedTemporaryFiles()\n' +
+      '    if (files.isEmpty() && interrupted.isEmpty()) return renderNoSavedReports()\n' +
+      '    val reports = files.map(::reopen)\n' +
+      '    val rendered = buildString {\n' +
+      '      appendLine("HUGR SAVED RECEIPT DIAGNOSTICS")\n' +
+      '      appendLine("mode=ISOLATED_NATIVE_RECEIPT_DIAGNOSTIC_READER")\n' +
+      '      appendLine("react_main_ble_canonical_recovery=NO")\n' +
+      '      appendLine("saved_incident_count=${reports.size}")\n' +
+      '      appendLine("complete_reports=YES")\n' +
+      '      appendLine("native_correlation=$NATIVE_CORRELATION")\n' +
+      '      appendLine("native_correlation_reason=$NATIVE_CORRELATION_REASON")\n' +
+      '      appendLine("absence_of_report_is_not_request_non_arrival=YES")\n' +
+      '      if (interrupted.isNotEmpty()) {\n' +
+      '        appendLine("publication_loss_state=INTERRUPTED_TEMPORARY_PUBLICATION_PRESENT")\n' +
+      '        appendLine("interrupted_temporary_report_count=${interrupted.size}")\n' +
+      '        appendLine("earlier_valid_reports_accessible=YES")\n' +
+      '      } else {\n' +
+      '        appendLine("publication_loss_state=NONE_OBSERVED")\n' +
+      '      }\n' +
+      '      reports.forEachIndexed { index, report ->\n' +
+      '        appendLine("--- INCIDENT $index ---")\n' +
+      '        appendLine("commit_state=${report.commitState}")\n' +
+      '        appendLine("envelope_integrity=VERIFIED")\n' +
+      '        appendLine("body_sha256=${report.bodySha256}")\n' +
+      '        appendLine(report.body)\n' +
+      '        appendLine("--- END INCIDENT $index ---")\n' +
+      '        // Optional failure never hides or mutates a verified main. No live components are created.\n' +
+      '        val native = try {\n' +
+      '          ReceiptNativeWriteObservationStore(root, io, ReceiptNativeWriteVerifiedMainProvider(::verifiedNativeWriteMain))\n' +
+      '            .read(nativeWriteMainOrNull(report))\n' +
+      '        } catch (_: Throwable) { ReceiptNativeWriteRead("CORRUPT_OR_IDENTITY_MISMATCH") }\n' +
+      '        append(native.renderForIsolatedReceiptReport())\n' +
+      '      }\n' +
+      '      appendLine("END REPORT")\n' +
+      '    }\n' +
+      '    check(rendered.toByteArray(StandardCharsets.UTF_8).size <= RECEIPT_INCIDENT_MAX_RENDERED_BYTES) {\n' +
+      '      "RECEIPT_INCIDENT_RENDERED_REPORT_BOUND_INVALID"\n' +
+      '    }\n' +
+      '    return rendered\n' +
+      '  }\n' +
+      '\n' +
+      '  /** Locator only: reopen actual acknowledged V3 envelope/body every time; callers supply no authority. */\n' +
+      '  @Synchronized fun verifiedNativeWriteMain(incidentPseudonym: String): ReceiptNativeWriteVerifiedMain {\n' +
+      '    check(incidentPseudonym.matches(Regex("[A-Za-z0-9][A-Za-z0-9._-]{0,79}"))) { "RECEIPT_NATIVE_WRITE_INCIDENT_INVALID" }\n' +
+      '    ensureSafeRoot(create = false)\n' +
+      '    val report = reopen(File(root, "incident-$incidentPseudonym$RECEIPT_INCIDENT_FILE_SUFFIX"))\n' +
+      '    check(report.identity.incidentPseudonym == incidentPseudonym) { "RECEIPT_NATIVE_WRITE_MAIN_IDENTITY_MISMATCH" }\n' +
+      '    return nativeWriteMainOrNull(report) ?: throw IllegalStateException("RECEIPT_NATIVE_WRITE_REQUIRES_VERIFIED_V3")\n' +
+      '  }\n' +
+      '\n' +
+      '  private fun n'... 35696 more characters
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    package health.hugr.sourcejournal
+    
+    import android.content.Context
+    import android.system.Os
+    import android.system.OsConstants
+    import org.json.JSONArray
+    import org.json.JSONObject
+    import java.io.File
+    import java.io.FileOutputStream
+    import java.nio.charset.StandardCharsets
+    import java.nio.file.Files
+    import java.nio.file.LinkOption
+    import java.security.MessageDigest
+    import java.util.Base64
+    
+    internal const val RECEIPT_INCIDENT_DIAGNOSTIC_ROOT = "hugr_receipt_incident_diagnostics"
+    private const val RECEIPT_INCIDENT_FILE_SUFFIX = ".hugr-incident"
+    private const val RECEIPT_INCIDENT_MAX_REPORTS = 8
+    /** Eight complete reports plus rendering delimiters must fit the one bounded share artifact. */
+    internal const val RECEIPT_INCIDENT_MAX_BODY_BYTES = 48 * 1024
+    internal const val RECEIPT_INCIDENT_MAX_RENDERED_BYTES = 1024 * 1024
+    private const val RECEIPT_INCIDENT_MAX_ENVELOPE_BYTES = 66 * 1024
+    private const val MAX_SAFE_JSON_INTEGER = 9_007_199_254_740_991L
+    private const val V3_INCIDENT_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_V3"
+    private const val INCIDENT_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_V2"
+    private const val LEGACY_INCIDENT_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_V1"
+    private const val INCIDENT_FILE_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_FILE_V1"
+    private const val NATIVE_CORRELATION = "CORRELATION_UNRESOLVED"
+    private const val NATIVE_CORRELATION_REASON = "BLE_PLX_TRANSACTION_ID_IS_NOT_ATT_REQUEST_ID_NO_EQUAL_COUNTER_OFFSET_OR_CLOCK_JOIN"
+    private const val CRASH_UNCERTAINTY = "UNKNOWN_NOT_OBSERVABLE_NO_REPORT_IS_NOT_NON_ARRIVAL"
+    private const val PUBLICATION_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_PUBLICATION_V1"
+    private const val PUBLICATION_CURRENT_BODY_COMMIT = "NOT_CLAIMED_BY_BODY_METADATA"
+    private const val PUBLICATION_COMMIT_STATE = "ACKNOWLEDGED_ATOMIC_PUBLICATION_CHECKSUM_REOPEN_VERIFIED"
+    
+    /**
+     * Payload-free, bounded Phone-local incident reports. This store is deliberately
+     * independent of PhoneSourceJournal and PhoneCustodyRunReportStore: it neither
+     * opens canonical evidence nor knows a Watch run/session, receipt body, ACK
+     * hash, BLE address, or native ATT request ID.
+     *
+     * The JavaScript bridge invokes publication only after a local callback outcome
+     * has been observed and never awaits it on a BLE deadline/response path. There
+     * is no retry, timer, transport mutation, or wire behavior in this class.
+     */
+    internal data class ReceiptIncidentPublication(
+      val incidentPseudonym: String,
+      val revision: Long,
+      val commitState: String,
+      val acknowledgedAtomicPublication: Boolean,
+      val reportBytes: Long,
+    )
+    
+    internal interface ReceiptIncidentFileIo {
+      fun writeAndSync(file: File, bytes: ByteArray)
+      fun atomicReplace(from: File, to: File)
+      fun syncDirectory(directory: File)
+      fun readFully(file: File): ByteArray
+    }
+    
+    internal object AndroidReceiptIncidentFileIo : ReceiptIncidentFileIo {
+      override fun writeAndSync(file: File, bytes: ByteArray) {
+        FileOutputStream(file).use { output ->
+          output.write(bytes)
+          output.flush()
+          output.fd.sync()
+        }
+      }
+    
+      override fun atomicReplace(from: File, to: File) {
+        Os.rename(from.absolutePath, to.absolutePath)
+      }
+    
+      override fun syncDirectory(directory: File) {
+        val descriptor = Os.open(directory.absolutePath, OsConstants.O_RDONLY, 0)
+        try {
+          check(OsConstants.S_ISDIR(Os.fstat(descriptor).st_mode)) { "Incident diagnostic directory descriptor is not a directory" }
+          Os.fsync(descriptor)
+        } finally {
+          Os.close(descriptor)
+        }
+      }
+    
+      override fun readFully(file: File): ByteArray = file.readBytes()
+    }
+    
+    internal class ReceiptIncidentDiagnosticStore(
+      private val root: File,
+      private val io: ReceiptIncidentFileIo = AndroidReceiptIncidentFileIo,
+    ) {
+      constructor(context: Context) : this(File(context.noBackupFilesDir, RECEIPT_INCIDENT_DIAGNOSTIC_ROOT))
+    
+      /**
+       * temp write+fsync -> atomic replace -> directory fsync -> exact reopen/checksum
+       * acknowledgement. A publication failure throws; callers do not retry. Thus a
+       * missing report remains explicit pre-publication/crash uncertainty, never an
+       * assertion of request non-arrival.
+       */
+      @Synchronized fun publish(snapshotJson: String): ReceiptIncidentPublication {
+        val parsed = validateSnapshot(snapshotJson)
+        if (parsed.format == V3_INCIDENT_FORMAT) ReceiptIncidentSafeLog.cause(parsed.incidentPseudonym, JSONObject(snapshotJson).getJSONObject("diagnosticContext").getJSONObject("firstCause"))
+        ensureSafeRoot(create = true)
+        check(interruptedTemporaryFiles().isEmpty()) { "RECEIPT_INCIDENT_INTERRUPTED_PUBLICATION_PRESENT" }
+        val final = File(root, "incident-${parsed.incidentPseudonym}$RECEIPT_INCIDENT_FILE_SUFFIX")
+        rejectUnsafeFile(final)
+        if (!final.exists() && incidentFiles().size >= RECEIPT_INCIDENT_MAX_REPORTS) {
+          throw IllegalStateException("RECEIPT_INCIDENT_STORE_CAPACITY_EXHAUSTED")
+        }
+        if (final.exists()) {
+          val existing = reopen(final)
+          check(existing.identity.incidentPseudonym == parsed.incidentPseudonym) { "RECEIPT_INCIDENT_FILE_IDENTITY_MISMATCH" }
+          check(existing.identity.connectionEpoch == parsed.connectionEpoch &&
+            existing.identity.firstFailure == parsed.firstFailure &&
+            existing.identity.firstFailureAtMonotonicMs == parsed.firstFailureAtMonotonicMs &&
+            existing.identity.format == parsed.format && existing.identity.frozenContext == parsed.frozenContext
+          ) { "RECEIPT_INCIDENT_EPOCH_OR_FROZEN_CONTEXT_MISMATCH" }
+          if (existing.identity.revision > parsed.revision) throw IllegalStateException("RECEIPT_INCIDENT_REVISION_REGRESSION")
+          if (existing.identity.revision == parsed.revision) {
+            if (existing.body != snapshotJson) throw IllegalStateException("RECEIPT_INCIDENT_SAME_REVISION_DIFFERENT_BODY")
+            return ReceiptIncidentPublication(parsed.incidentPseudonym, parsed.revision, COMMIT_ACKNOWLEDGED, true, final.length())
+          }
+        }
+        val temporary = File(root, ".incident-${parsed.incidentPseudonym}.${parsed.revision}.part")
+        rejectUnsafeFile(temporary)
+        if (temporary.exists()) throw IllegalStateException("RECEIPT_INCIDENT_TEMPORARY_COLLISION")
+        try {
+          io.writeAndSync(temporary, envelope(parsed, snapshotJson))
+          io.atomicReplace(temporary, final)
+          io.syncDirectory(root)
+          val reopened = reopen(final)
+          check(reopened.identity == parsed && reopened.body == snapshotJson) { "RECEIPT_INCIDENT_REOPEN_MISMATCH" }
+          return ReceiptIncidentPublication(parsed.incidentPseudonym, parsed.revision, COMMIT_ACKNOWLEDGED, true, final.length())
+        } catch (failure: Throwable) {
+          if (temporary.exists() && !temporary.delete()) {
+            // Do not hide the primary acknowledged-publication failure behind cleanup.
+          }
+          throw failure
+        }
+      }
+    
+      /**
+       * Full bounded report set only. No latest fallback, no source/custody reader,
+       * and no repair. A residual temp object is visible as a publication-loss state;
+       * earlier valid reports remain readable rather than being silently hidden.
+       */
+      @Synchronized fun readAll(): String {
+        ensureSafeRoot(create = false)
+        if (!root.exists()) return renderNoSavedReports()
+        val files = incidentFiles()
+        check(files.size <= RECEIPT_INCIDENT_MAX_REPORTS) { "RECEIPT_INCIDENT_STORE_CAPACITY_EXHAUSTED" }
+        val interrupted = interruptedTemporaryFiles()
+        if (files.isEmpty() && interrupted.isEmpty()) return renderNoSavedReports()
+        val reports = files.map(::reopen)
+        val rendered = buildString {
+          appendLine("HUGR SAVED RECEIPT DIAGNOSTICS")
+          appendLine("mode=ISOLATED_NATIVE_RECEIPT_DIAGNOSTIC_READER")
+          appendLine("react_main_ble_canonical_recovery=NO")
+          appendLine("saved_incident_count=${reports.size}")
+          appendLine("complete_reports=YES")
+          appendLine("native_correlation=$NATIVE_CORRELATION")
+          appendLine("native_correlation_reason=$NATIVE_CORRELATION_REASON")
+          appendLine("absence_of_report_is_not_request_non_arrival=YES")
+          if (interrupted.isNotEmpty()) {
+            appendLine("publication_loss_state=INTERRUPTED_TEMPORARY_PUBLICATION_PRESENT")
+            appendLine("interrupted_temporary_report_count=${interrupted.size}")
+            appendLine("earlier_valid_reports_accessible=YES")
+          } else {
+            appendLine("publication_loss_state=NONE_OBSERVED")
+          }
+          reports.forEachIndexed { index, report ->
+            appendLine("--- INCIDENT $index ---")
+            appendLine("commit_state=${report.commitState}")
+            appendLine("envelope_integrity=VERIFIED")
+            appendLine("body_sha256=${report.bodySha256}")
+            appendLine(report.body)
+            appendLine("--- END INCIDENT $index ---")
+            // Optional failure never hides or mutates a verified main. No live components are created.
+            val native = try {
+              ReceiptNativeWriteObservationStore(root, io, ReceiptNativeWriteVerifiedMainProvider(::verifiedNativeWriteMain))
+                .read(nativeWriteMainOrNull(report))
+            } catch (_: Throwable) { ReceiptNativeWriteRead("CORRUPT_OR_IDENTITY_MISMATCH") }
+            append(native.renderForIsolatedReceiptReport())
+          }
+          appendLine("END REPORT")
+        }
+        check(rendered.toByteArray(StandardCharsets.UTF_8).size <= RECEIPT_INCIDENT_MAX_RENDERED_BYTES) {
+          "RECEIPT_INCIDENT_RENDERED_REPORT_BOUND_INVALID"
+        }
+        return rendered
+      }
+    
+      /** Locator only: reopen actual acknowledged V3 envelope/body every time; callers supply no authority. */
+      @Synchronized fun verifiedNativeWriteMain(incidentPseudonym: String): ReceiptNativeWriteVerifiedMain {
+        check(incidentPseudonym.matches(Regex("[A-Za-z0-9][A-Za-z0-9._-]{0,79}"))) { "RECEIPT_NATIVE_WRITE_INCIDENT_INVALID" }
+        ensureSafeRoot(create = false)
+        val report = reopen(File(root, "incident-$incidentPseudonym$RECEIPT_INCIDENT_FILE_SUFFIX"))
+        check(report.identity.incidentPseudonym == incidentPseudonym) { "RECEIPT_NATIVE_WRITE_MAIN_IDENTITY_MISMATCH" }
+        return nativeWriteMainOrNull(report) ?: throw IllegalStateException("RECEIPT_NATIVE_WRITE_REQUIRES_VERIFIED_V3")
+      }
+    
+      private fun nativeWriteMainOrNull(report: ReopenedIncident): ReceiptNativeWriteVerifiedMain? {
+        if (report.identity.format != V3_INCIDENT_FORMAT) return null
+        val body = JSONObject(report.body)
+        val operations = body.getJSONArray("operations")
+        val exact = linkedSetOf<String>()
+        for (index in 0 until operations.length()) {
+          val transaction = operations.getJSONObject(index).get("localTransactionId")
+          if (transaction is String) exact += transaction
+        }
+        val firstCause = body.getJSONObject("diagnosticContext").getJSONObject("firstCause")
+        val reference = firstCause.getJSONObject("operationOrdinal")
+        val failedTransactionId = if (reference.getString("state") == "VALUE") {
+          val ordinal = reference.getLong("value")
+          val operation = (0 until operations.length()).map(operations::getJSONObject)
+            .single { it.getLong("localOrdinal") == ordinal }
+          operation.get("localTransactionId") as? String
+        } else {
+          null
+        }
+        // No recency/counter/clock heuristic. Validation above establishes the exact retained join.
+        return ReceiptNativeWriteVerifiedMain(
+          ReceiptNativeWriteAnchor(report.identity.incidentPseudonym, report.identity.connectionEpoch,
+            report.identity.firstFailure, report.identity.firstFailureAtMonotonicMs,
+            sha256(canonical(firstCause).toByteArray(StandardCharsets.UTF_8))), exact.toSet(), failedTransactionId)
+      }
+    
+      private fun isOptionalNativeSidecarName(name: String): Boolean =
+        name.matches(Regex("native-write-[A-Za-z0-9][A-Za-z0-9._-]{0,79}\\.hugr-native-write")) ||
+          name.matches(Regex("\\.native-write-[A-Za-z0-9][A-Za-z0-9._-]{0,79}\\.[1-9][0-9]{0,1}\\.part"))
+    
+      private fun renderNoSavedReports(): String = """HUGR SAVED RECEIPT DIAGNOSTICS
+    mode=ISOLATED_NATIVE_RECEIPT_DIAGNOSTIC_READER
+    react_main_ble_canonical_recovery=NO
+    saved_incident_count=0
+    outcome=NO_SAVED_INCIDENTS
+    absence_of_report_is_not_request_non_arrival=YES
+    crash_or_prepublication_loss=UNKNOWN
+    END REPORT
+    """
+    
+      private fun ensureSafeRoot(create: Boolean) {
+        if (create && !root.exists() && !root.mkdirs()) throw IllegalStateException("RECEIPT_INCIDENT_ROOT_UNAVAILABLE")
+        if (!root.exists()) return
+        if (!root.isDirectory || Files.isSymbolicLink(root.toPath())) throw IllegalStateException("RECEIPT_INCIDENT_ROOT_UNSAFE")
+      }
+    
+      private fun incidentFiles(): List<File> {
+        if (!root.exists()) return emptyList()
+        ensureSafeRoot(create = false)
+        val entries = root.listFiles()?.toList() ?: throw IllegalStateException("RECEIPT_INCIDENT_DIRECTORY_UNREADABLE")
+        val files = entries.filter { file ->
+          if (isOptionalNativeSidecarName(file.name)) return@filter false
+          rejectUnsafeFile(file)
+          when {
+            file.name.matches(INCIDENT_FILE_NAME) -> true
+            file.name.matches(INTERRUPTED_TEMPORARY_NAME) -> false
+            else -> throw IllegalStateException("RECEIPT_INCIDENT_DIRECTORY_ENTRY_INVALID")
+          }
+        }.sortedBy { it.name }
+        return files
+      }
+    
+      private fun interruptedTemporaryFiles(): List<File> {
+        if (!root.exists()) return emptyList()
+        ensureSafeRoot(create = false)
+        return root.listFiles()?.toList()?.filter { file ->
+          if (isOptionalNativeSidecarName(file.name)) return@filter false
+          rejectUnsafeFile(file)
+          file.name.matches(INTERRUPTED_TEMPORARY_NAME)
+        }?.sortedBy { it.name } ?: throw IllegalStateException("RECEIPT_INCIDENT_DIRECTORY_UNREADABLE")
+      }
+    
+      private fun rejectUnsafeFile(file: File) {
+        if (Files.exists(file.toPath(), LinkOption.NOFOLLOW_LINKS) && (Files.isSymbolicLink(file.toPath()) || !file.isFile)) {
+          throw IllegalStateException("RECEIPT_INCIDENT_OBJECT_UNSAFE")
+        }
+      }
+    
+      private data class SnapshotIdentity(
+        val incidentPseudonym: String,
+        val connectionEpoch: String,
+        val revision: Long,
+        val firstFailure: String,
+        val firstFailureAtMonotonicMs: Long,
+        val format: String,
+        val frozenContext: String,
+      )
+      private data class ReopenedIncident(
+        val identity: SnapshotIdentity,
+        val commitState: String,
+        val bodySha256: String,
+        val body: String,
+      )
+    
+      /** Actual JSON parsing, exact keys/types, and semantic bounds—not substring matching. */
+      private fun validateSnapshot(body: String): SnapshotIdentity {
+        val bytes = body.toByteArray(StandardCharsets.UTF_8)
+        if (bytes.size !in 1..RECEIPT_INCIDENT_MAX_BODY_BYTES) throw IllegalArgumentException("RECEIPT_INCIDENT_BODY_SIZE_INVALID")
+        val snapshot = strictObject(body, "RECEIPT_INCIDENT_BODY_NOT_JSON_OBJECT")
+        val format = requiredString(snapshot, "format")
+        when (format) {
+          V3_INCIDENT_FORMAT -> requireExactKeys(snapshot, SNAPSHOT_KEYS + "diagnosticContext", "RECEIPT_INCIDENT_SCHEMA_INVALID")
+          INCIDENT_FORMAT -> requireExactKeys(snapshot, SNAPSHOT_KEYS, "RECEIPT_INCIDENT_SCHEMA_INVALID")
+          LEGACY_INCIDENT_FORMAT -> requireExactKeys(snapshot, LEGACY_SNAPSHOT_KEYS, "RECEIPT_INCIDENT_SCHEMA_INVALID")
+          else -> throw IllegalStateException("RECEIPT_INCIDENT_SCHEMA_INVALID")
+        }
+        val pseudonym = requiredLocalToken(snapshot, "incidentPseudonym", "RECEIPT_INCIDENT_PSEUDONYM_INVALID")
+        val epoch = requiredLocalToken(snapshot, "connectionEpoch", "RECEIPT_INCIDENT_EPOCH_INVALID")
+        check(requiredLong(snapshot, "operationLimit") == 64L && requiredLong(snapshot, "lateSettlementReserve") == 8L) {
+          "RECEIPT_INCIDENT_OPERATION_BOUND_INVALID"
+        }
+        val revision = requiredBoundedLong(snapshot, "revision", 1L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_REVISION_INVALID")
+        check(requiredBoolean(snapshot, "frozen")) { "RECEIPT_INCIDENT_NOT_FROZEN" }
+        val firstFailure = requiredString(snapshot, "firstFailure")
+        check(firstFailure in FIRST_FAILURES) { "RECEIPT_INCIDENT_FAILURE_INVALID" }
+        val firstFailureAt = requiredBoundedLong(snapshot, "firstFailureAtMonotonicMs", 0L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_FAILURE_TIME_INVALID")
+        check(requiredString(snapshot, "nativeCorrelation") == NATIVE_CORRELATION &&
+          requiredString(snapshot, "nativeCorrelationReason") == NATIVE_CORRELATION_REASON &&
+          requiredString(snapshot, "crashBeforeCheckpoint") == CRASH_UNCERTAINTY
+        ) { "RECEIPT_INCIDENT_CORRELATION_CONTRACT_INVALID" }
+        if (format == INCIDENT_FORMAT || format == V3_INCIDENT_FORMAT) validatePublication(requiredObject(snapshot, "publication"), pseudonym, revision)
+        validateOverflow(requiredObject(snapshot, "overflow"))
+        val operations = requiredArray(snapshot, "operations")
+        check(operations.length() <= 64) { "RECEIPT_INCIDENT_OPERATION_BOUND_INVALID" }
+        var priorLocalOrdinal = 0L
+        for (index in 0 until operations.length()) {
+          val localOrdinal = validateOperation(operations.getJSONObject(index), pseudonym, epoch, format == V3_INCIDENT_FORMAT)
+          check(localOrdinal > priorLocalOrdinal) { "RECEIPT_INCIDENT_OPERATION_ORDINAL_SEQUENCE_INVALID" }
+          priorLocalOrdinal = localOrdinal
+        }
+        val frozenContext = if (format == V3_INCIDENT_FORMAT) validateDiagnosticContext(requiredObject(snapshot, "diagnosticContext"), operations) else ""
+        return SnapshotIdentity(pseudonym, epoch, revision, firstFailure, firstFailureAt, format, frozenContext)
+      }
+    
+      /**
+       * Publication metadata never turns the present body into proof of its own
+       * durability. Every acknowledgement or known-loss attempt must name a prior
+       * body revision, while the native envelope/reopen establishes the current
+       * body’s actual commit acknowledgement.
+       */
+      private fun validatePublication(publication: JSONObject, pseudonym: String, revision: Long) {
+        requireExactKeys(publication, PUBLICATION_KEYS, "RECEIPT_INCIDENT_PUBLICATION_SCHEMA_INVALID")
+        check(requiredString(publication, "format") == PUBLICATION_FORMAT &&
+          requiredString(publication, "currentBodyCommit") == PUBLICATION_CURRENT_BODY_COMMIT
+        ) { "RECEIPT_INCIDENT_PUBLICATION_SCHEMA_INVALID" }
+        val acknowledgement = value(publication, "acknowledgement")
+        if (acknowledgement != JSONObject.NULL) {
+          check(acknowledgement is JSONObject) { "RECEIPT_INCIDENT_PUBLICATION_ACK_SCHEMA_INVALID" }
+          requireExactKeys(acknowledgement, PUBLICATION_ACK_KEYS, "RECEIPT_INCIDENT_PUBLICATION_ACK_SCHEMA_INVALID")
+          check(requiredLocalToken(acknowledgement, "incidentPseudonym", "RECEIPT_INCIDENT_PUBLICATION_ACK_IDENTITY_INVALID") == pseudonym &&
+            requiredBoundedLong(acknowledgement, "revision", 1L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_PUBLICATION_ACK_REVISION_INVALID") < revision &&
+            requiredString(acknowledgement, "commitState") == PUBLICATION_COMMIT_STATE &&
+            requiredBoolean(acknowledgement, "acknowledgedAtomicPublication")
+          ) { "RECEIPT_INCIDENT_PUBLICATION_ACK_INVALID" }
+        }
+        val knownLoss = value(publication, "knownLoss")
+        if (knownLoss != JSONObject.NULL) {
+          check(knownLoss is JSONObject) { "RECEIPT_INCIDENT_PUBLICATION_LOSS_SCHEMA_INVALID" }
+          requireExactKeys(knownLoss, PUBLICATION_LOSS_KEYS, "RECEIPT_INCIDENT_PUBLICATION_LOSS_SCHEMA_INVALID")
+          check(requiredBoundedLong(knownLoss, "attemptedRevision", 1L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_PUBLICATION_LOSS_REVISION_INVALID") < revision &&
+            requiredString(knownLoss, "reason") in PUBLICATION_LOSS_REASONS
+          ) { "RECEIPT_INCIDENT_PUBLICATION_LOSS_INVALID" }
+        }
+      }
+    
+      private fun validateOverflow(overflow: JSONObject) {
+        requireExactKeys(overflow, OVERFLOW_KEYS, "RECEIPT_INCIDENT_OVERFLOW_SCHEMA_INVALID")
+        val evicted = requiredBoundedLong(overflow, "evictedCompletedRows", 0L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_OVERFLOW_INVALID")
+        val lost = requiredBoundedLong(overflow, "lostNewOperations", 0L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_OVERFLOW_INVALID")
+        val lateLost = requiredBoundedLong(overflow, "lateSettlementWithoutRetainedRow", 0L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_OVERFLOW_INVALID")
+        check(requiredBoolean(overflow, "traceWindowOverflow") == (evicted > 0L || lost > 0L || lateLost > 0L)) {
+          "RECEIPT_INCIDENT_OVERFLOW_INVALID"
+        }
+      }
+    
+      private fun validateOperation(operation: JSONObject, pseudonym: String, epoch: String, compactV3: Boolean): Long {
+        val required = if (compactV3) COMPACT_V3_OPERATION_REQUIRED_KEYS else OPERATION_REQUIRED_KEYS
+        val optional = if (compactV3) COMPACT_V3_OPERATION_OPTIONAL_KEYS else OPERATION_OPTIONAL_KEYS
+        requireAllowedKeys(operation, required + optional, "RECEIPT_INCIDENT_OPERATION_SCHEMA_INVALID")
+        check(required.all(operation::has)) { "RECEIPT_INCIDENT_OPERATION_SCHEMA_INVALID" }
+        if (!compactV3) {
+          check(requiredLocalToken(operation, "connectionEpoch", "RECEIPT_INCIDENT_OPERATION_EPOCH_INVALID") == epoch &&
+            requiredLocalToken(operation, "incidentPseudonym", "RECEIPT_INCIDENT_OPERATION_PSEUDONYM_INVALID") == pseudonym
+          ) { "RECEIPT_INCIDENT_OPERATION_IDENTITY_INVALID" }
+        }
+        // Compact V3 rows are scoped exclusively by the already validated root
+        // pseudonym/epoch; redundant row identities are forbidden by exact keys.
+        val localOrdinal = requiredBoundedLong(operation, "localOrdinal", 1L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_OPERATION_ORDINAL_INVALID")
+        val kind = requiredString(operation, "operationKind")
+        check(kind in OPERATION_KINDS) { "RECEIPT_INCIDENT_OPERATION_KIND_INVALID" }
+        val transaction = value(operation, "localTransactionId")
+        check(transaction == JSONObject.NULL || transaction is String && transaction.matches(LOCAL_TRANSACTION_ID)) {
+          "RECEIPT_INCIDENT_LOCAL_TRANSACTION_ID_INVALID"
+        }
+        if (operation.has("pageOffset")) {
+          // The offset is the preceding bounded R1 page-request metadata; the
+          // paired RECEIPT_READ carries the same request offset, never a response
+          // field or native/ATT identifier. No other operation kind may carry it.
+          check(kind == "R1_WRITE" || kind == "RECEIPT_READ") { "RECEIPT_INCIDENT_PAGE_OFFSET_KIND_INVALID" }
+          requiredBoundedLong(operation, "pageOffset", 0L, 999_999L, "RECEIPT_INCIDENT_PAGE_OFFSET_INVALID")
+        }
+        requiredBoundedLong(operation, "jsSubmittedAtMonotonicMs", 0L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_OPERATION_TIME_INVALID")
+        val pending = requiredBoolean(operation, "pending")
+        val deadline = requiredBoolean(operation, "deadlineObserved")
+        val disconnect = requiredBoolean(operation, "disconnectObserved")
+        val settled = optionalBoundedLong(operation, "settledAtMonotonicMs", 0L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_OPERATION_TIME_INVALID")
+        val timely = optionalEnum(operation, "timelySettlement", TIMELY_SETTLEMENTS, "RECEIPT_INCIDENT_TIMELY_SETTLEMENT_INVALID")
+        val cancellation = optionalEnum(operation, "cancellation", CANCELLATIONS, "RECEIPT_INCIDENT_CANCELLATION_INVALID")
+        val late = optionalEnum(operation, "lateSettlement", LATE_SETTLEMENTS, "RECEIPT_INCIDENT_LATE_SETTLEMENT_INVALID")
+        check(requiredString(operation, "nativeAttDispatch") == "UNKNOWN") { "RECEIPT_INCIDENT_NATIVE_DISPATCH_INVALID" }
+        if (pending) check(settled == null && timely == null && !deadline && !disconnect && late == null) { "RECEIPT_INCIDENT_PENDING_STATE_INVALID" }
+        if (timely != null) check(!pending && !deadline && settled != null) { "RECEIPT_INCIDENT_TIMELY_STATE_INVALID" }
+        if (deadline) check(!pending && settled != null && timely == null) { "RECEIPT_INCIDENT_DEADLINE_STATE_INVALID" }
+        if (late != null) check(deadline && !pending) { "RECEIPT_INCIDENT_LATE_STATE_INVALID" }
+        if (cancellation != null) check(deadline) { "RECEIPT_INCIDENT_CANCELLATION_STATE_INVALID" }
+        return localOrdinal
+      }
+    
+      private fun validateDiagnosticContext(context: JSONObject, operations: JSONArray): String {
+        requireExactKeys(context, setOf("firstCause","preceding","subsequent","lastSuccessfulStage","contextOverflow","processLoss"), "RECEIPT_INCIDENT_CONTEXT_SCHEMA_INVALID")
+        check(requiredString(context,"processLoss") == "UNKNOWN_NOT_OBSERVABLE") { "RECEIPT_INCIDENT_PROCESS_LOSS_INVALID" }
+        val refs = (0 until operations.length()).map { requiredLong(operations.getJSONObject(it), "localOrdinal") }.toSet()
+        val first = requiredObject(context,"firstCause")
+        val firstOrdinal = validateObservation(first, refs, true)
+        check(requiredString(first,"outcome") != "SUCCEEDED") { "RECEIPT_INCIDENT_FIRST_CAUSE_SUCCESS_INVALID" }
+        validateTag(requiredObject(first,"lastSuccessfulStage"), "stage")
+        validateTag(requiredObject(context,"lastSuccessfulStage"), "stage")
+        check(canonical(requiredObject(first,"lastSuccessfulStage")) == canonical(requiredObject(context,"lastSuccessfulStage"))) { "RECEIPT_INCIDENT_PRIOR_SUCCESS_MUTATED" }
+        val preceding = requiredArray(context,"preceding")
+        val subsequent = requiredArray(context,"subsequent")
+        check(preceding.length() <= 16 && subsequent.length() <= 16) { "RECEIPT_INCIDENT_CONTEXT_BOUND_INVALID" }
+        var prior = 0L
+        for (i in 0 until preceding.length()) {
+          val n = validateObservation(preceding.getJSONObject(i), refs, false)
+          check(n > prior && n < firstOrdinal) { "RECEIPT_INCIDENT_CONTEXT_ORDINAL_INVALID" }
+          prior = n
+        }
+        prior = firstOrdinal
+        for (i in 0 until subsequent.length()) {
+          val n = validateObservation(subsequent.getJSONObject(i), refs, false)
+          check(n > prior) { "RECEIPT_INCIDENT_CONTEXT_ORDINAL_INVALID" }
+          prior = n
+        }
+        val overflow = requiredObject(context,"contextOverflow")
+        requireExactKeys(overflow,setOf("precedingEvicted","subsequentDropped","truncated"),"RECEIPT_INCIDENT_CONTEXT_OVERFLOW_INVALID")
+        val evicted = requiredBoundedLong(overflow,"precedingEvicted",0L,MAX_SAFE_JSON_INTEGER,"RECEIPT_INCIDENT_CONTEXT_OVERFLOW_INVALID")
+        val dropped = requiredBoundedLong(overflow,"subsequentDropped",0L,MAX_SAFE_JSON_INTEGER,"RECEIPT_INCIDENT_CONTEXT_OVERFLOW_INVALID")
+        check(requiredBoolean(overflow,"truncated") == (evicted > 0 || dropped > 0)) { "RECEIPT_INCIDENT_CONTEXT_OVERFLOW_INVALID" }
+    
+        return canonical(first) + ":" + canonical(preceding) + ":" + evicted
+      }
+    
+      private fun validateObservation(observation: JSONObject, refs: Set<Long>, first: Boolean): Long {
+        val keys = setOf("ordinal","atMonotonicMs","operationOrdinal","stage","outcome","origin","error","classifier","lifecycle")
+        requireExactKeys(observation, if (first) keys + "lastSuccessfulStage" else keys, "RECEIPT_INCIDENT_OBSERVATION_SCHEMA_INVALID")
+        val ordinal = requiredBoundedLong(observation,"ordinal",1L,MAX_SAFE_JSON_INTEGER,"RECEIPT_INCIDENT_CONTEXT_ORDINAL_INVALID")
+        validateTag(requiredObject(observation,"atMonotonicMs"), "time")
+        val ref = requiredObject(observation,"operationOrdinal")
+        validateTag(ref,"reference")
+        if (requiredString(ref,"state") == "VALUE") check(requiredLong(ref,"value") in refs) { "RECEIPT_INCIDENT_CONTEXT_REFERENCE_INVALID" }
+        check(requiredString(observation,"stage") in DIAGNOSTIC_STAGES && requiredString(observation,"outcome") in DIAGNOSTIC_OUTCOMES && requiredString(observation,"origin") in DIAGNOSTIC_ORIGINS) { "RECEIPT_INCIDENT_OBSERVATION_ENUM_INVALID" }
+        validateTag(requiredObject(observation,"classifier"), "classifier")
+        validateTag(requiredObject(observation,"lifecycle"), "lifecycle")
+        val error = requiredObject(observation,"error")
+        requireExactKeys(error,setOf("libraryCategory","errorCode","attErrorCode","androidErrorCode"),"RECEIPT_INCIDENT_ERROR_SCHEMA_INVALID")
+        for (key in listOf("errorCode","attErrorCode","androidErrorCode")) validateTag(requiredObject(error,key),"number")
+        val category = requiredObject(error,"libraryCategory")
+        validateTag(category,"category")
+        val code = requiredObject(error,"errorCode")
+        val state = requiredString(code,"state")
+        if (state == "VALUE") {
+          val expected = BLE_CATEGORIES[requiredLong(code,"value")]
+          if (expected == null) check(requiredString(category,"state") == "UNKNOWN") { "RECEIPT_INCIDENT_CATEGORY_CODE_MISMATCH" }
+          else check(requiredString(category,"state") == "VALUE" && requiredString(category,"value") == expected) { "RECEIPT_INCIDENT_CATEGORY_CODE_MISMATCH" }
+        } else check(requiredString(category,"state") == state) { "RECEIPT_INCIDENT_CATEGORY_CODE_MISMATCH" }
+        return ordinal
+      }
+    
+      private fun validateTag(tag: JSONObject, kind: String) {
+        val state = requiredString(tag,"state")
+        check(state in setOf("VALUE","ABSENT","INVALID","UNKNOWN")) { "RECEIPT_INCIDENT_TAG_STATE_INVALID" }
+        requireExactKeys(tag, if (state == "VALUE") setOf("state","value") else setOf("state"), "RECEIPT_INCIDENT_TAG_SCHEMA_INVALID")
+        if (kind == "reference") check(state == "VALUE" || state == "UNKNOWN") { "RECEIPT_INCIDENT_CONTEXT_REFERENCE_INVALID" }
+        if (state != "VALUE") return
+        when(kind) {
+          "number" -> requiredBoundedLong(tag,"value",-MAX_SAFE_JSON_INTEGER,MAX_SAFE_JSON_INTEGER,"RECEIPT_INCIDENT_NUMBER_INVALID")
+          "time" -> requiredBoundedLong(tag,"value",0L,MAX_SAFE_JSON_INTEGER,"RECEIPT_INCIDENT_TIME_INVALID")
+          "reference" -> requiredBoundedLong(tag,"value",1L,MAX_SAFE_JSON_INTEGER,"RECEIPT_INCIDENT_CONTEXT_REFERENCE_INVALID")
+          "category" -> check(requiredString(tag,"value") in BLE_CATEGORIES.values) { "RECEIPT_INCIDENT_CATEGORY_INVALID" }
+          "stage" -> check(requiredString(tag,"value") in DIAGNOSTIC_SUCCESS_STAGES) { "RECEIPT_INCIDENT_PRIOR_STAGE_INVALID" }
+          "classifier" -> check(requiredString(tag,"value") in DIAGNOSTIC_CLASSIFIERS) { "RECEIPT_INCIDENT_CLASSIFIER_INVALID" }
+          "lifecycle" -> check(requiredString(tag,"value") in setOf("ACTIVE","BACKGROUND","INACTIVE")) { "RECEIPT_INCIDENT_LIFECYCLE_INVALID" }
+        }
+      }
+    
+      /** Deterministic full semantic comparison, independent of JSON key order; no extra keys admitted. */
+      private fun canonical(value: Any): String = when(value) {
+        is JSONObject -> objectKeys(value).sorted().joinToString(prefix="{",postfix="}") { JSONObject.quote(it)+":"+canonical(value.get(it)) }
+        is JSONArray -> (0 until value.length()).joinToString(prefix="[",postfix="]") { canonical(value.get(it)) }
+        is String -> JSONObject.quote(value)
+        else -> value.toString()
+      }
+    
+      private fun envelope(identity: SnapshotIdentity, body: String): ByteArray {
+        val encoded = Base64.getEncoder().encodeToString(body.toByteArray(StandardCharsets.UTF_8))
+        val digest = sha256(body.toByteArray(StandardCharsets.UTF_8))
+        return ("{\"format\":\"$INCIDENT_FILE_FORMAT\",\"incident_pseudonym\":\"${identity.incidentPseudonym}\",\"revision\":${identity.revision},\"body_sha256\":\"$digest\",\"body_base64\":\"$encoded\",\"commit_state\":\"$COMMIT_ACKNOWLEDGED\"}\n")
+          .toByteArray(StandardCharsets.UTF_8)
+      }
+    
+      private fun reopen(file: File): ReopenedIncident {
+        rejectUnsafeFile(file)
+        val bytes = io.readFully(file)
+        if (bytes.size !in 1..RECEIPT_INCIDENT_MAX_ENVELOPE_BYTES) throw IllegalStateException("RECEIPT_INCIDENT_FILE_SIZE_INVALID")
+        val envelope = strictObject(String(bytes, StandardCharsets.UTF_8).trim(), "RECEIPT_INCIDENT_ENVELOPE_INVALID")
+        requireExactKeys(envelope, ENVELOPE_KEYS, "RECEIPT_INCIDENT_ENVELOPE_SCHEMA_INVALID")
+        val format = requiredString(envelope, "format")
+        val pseudonym = requiredLocalToken(envelope, "incident_pseudonym", "RECEIPT_INCIDENT_ENVELOPE_SCHEMA_INVALID")
+        val revision = requiredBoundedLong(envelope, "revision", 1L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_ENVELOPE_SCHEMA_INVALID")
+        val digest = requiredString(envelope, "body_sha256")
+        check(digest.matches(Regex("[0-9a-f]{64}"))) { "RECEIPT_INCIDENT_ENVELOPE_SCHEMA_INVALID" }
+        val encoded = requiredString(envelope, "body_base64")
+        val state = requiredString(envelope, "commit_state")
+        if (format != INCIDENT_FILE_FORMAT || state != COMMIT_ACKNOWLEDGED) throw IllegalStateException("RECEIPT_INCIDENT_ENVELOPE_SCHEMA_INVALID")
+        val bodyBytes = try { Base64.getDecoder().decode(encoded) }
+        catch (_: IllegalArgumentException) { throw IllegalStateException("RECEIPT_INCIDENT_BODY_ENCODING_INVALID") }
+        check(Base64.getEncoder().encodeToString(bodyBytes) == encoded) { "RECEIPT_INCIDENT_BODY_ENCODING_INVALID" }
+        val body = try { String(bodyBytes, StandardCharsets.UTF_8) }
+        catch (_: Exception) { throw IllegalStateException("RECEIPT_INCIDENT_BODY_ENCODING_INVALID") }
+        val validated = validateSnapshot(body)
+        if (validated.incidentPseudonym != pseudonym || validated.revision != revision || sha256(bodyBytes) != digest) {
+          throw IllegalStateException("RECEIPT_INCIDENT_ENVELOPE_INTEGRITY_INVALID")
+        }
+        return ReopenedIncident(validated, state, digest, body)
+      }
+    
+      private fun strictObject(raw: String, code: String): JSONObject = try {
+        StrictJsonDuplicateKeyScanner(raw).verify()
+        JSONObject(raw)
+      } catch (_: Exception) {
+        throw IllegalArgumentException(code)
+      }
+    
+      private fun requireExactKeys(value: JSONObject, expected: Set<String>, code: String) {
+        val actual = objectKeys(value)
+        check(actual == expected) { code }
+      }
+    
+      private fun requireAllowedKeys(value: JSONObject, allowed: Set<String>, code: String) {
+        check(objectKeys(value).all { it in allowed }) { code }
+      }
+    
+      private fun objectKeys(value: JSONObject): Set<String> = buildSet {
+        val iterator = value.keys()
+        while (iterator.hasNext()) add(iterator.next())
+      }
+    
+      private fun value(value: JSONObject, key: String): Any {
+        check(value.has(key)) { "RECEIPT_INCIDENT_SCHEMA_INVALID" }
+        return value.get(key)
+      }
+    
+      private fun requiredString(value: JSONObject, key: String): String = value(value, key).let {
+        check(it is String) { "RECEIPT_INCIDENT_SCHEMA_INVALID" }
+        it
+      }
+    
+      private fun requiredBoolean(value: JSONObject, key: String): Boolean = value(value, key).let {
+        check(it is Boolean) { "RECEIPT_INCIDENT_SCHEMA_INVALID" }
+        it
+      }
+    
+      private fun requiredObject(value: JSONObject, key: String): JSONObject = value(value, key).let {
+        check(it is JSONObject) { "RECEIPT_INCIDENT_SCHEMA_INVALID" }
+        it
+      }
+    
+      private fun requiredArray(value: JSONObject, key: String): JSONArray = value(value, key).let {
+        check(it is JSONArray) { "RECEIPT_INCIDENT_SCHEMA_INVALID" }
+        it
+      }
+    
+      private fun requiredLong(value: JSONObject, key: String): Long = value(value, key).let {
+        check(it is Int || it is Long) { "RECEIPT_INCIDENT_SCHEMA_INVALID" }
+        (it as Number).toLong()
+      }
+    
+      private fun requiredBoundedLong(value: JSONObject, key: String, minimum: Long, maximum: Long, code: String): Long {
+        val parsed = requiredLong(value, key)
+        check(parsed in minimum..maximum) { code }
+        return parsed
+      }
+    
+      private fun optionalBoundedLong(value: JSONObject, key: String, minimum: Long, maximum: Long, code: String): Long? {
+        if (!value.has(key)) return null
+        return requiredBoundedLong(value, key, minimum, maximum, code)
+      }
+    
+      private fun optionalEnum(value: JSONObject, key: String, values: Set<String>, code: String): String? {
+        if (!value.has(key)) return null
+        val parsed = requiredString(value, key)
+        check(parsed in values) { code }
+        return parsed
+      }
+    
+      private fun requiredLocalToken(value: JSONObject, key: String, code: String): String {
+        val token = requiredString(value, key)
+        check(token.matches(LOCAL_TOKEN)) { code }
+        return token
+      }
+    
+      private fun sha256(bytes: ByteArray): String =
+        MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
+    
+      private companion object {
+        const val COMMIT_ACKNOWLEDGED = "ACKNOWLEDGED_ATOMIC_PUBLICATION_CHECKSUM_REOPEN_VERIFIED"
+        val LOCAL_TOKEN = Regex("[A-Za-z0-9][A-Za-z0-9._-]{0,79}")
+        val LOCAL_TRANSACTION_ID = Regex("hugr-receipt-[1-9][0-9]{0,15}-[1-9][0-9]{0,15}")
+        val INCIDENT_FILE_NAME = Regex("incident-[A-Za-z0-9._-]{1,80}" + Regex.escape(RECEIPT_INCIDENT_FILE_SUFFIX))
+        val INTERRUPTED_TEMPORARY_NAME = Regex("\\.incident-[A-Za-z0-9._-]{1,80}\\.[1-9][0-9]*\\.part")
+        val SNAPSHOT_KEYS = setOf(
+          "format", "incidentPseudonym", "connectionEpoch", "operationLimit", "lateSettlementReserve", "revision", "frozen",
+          "firstFailure", "firstFailureAtMonotonicMs", "nativeCorrelation", "nativeCorrelationReason", "crashBeforeCheckpoint", "publication", "overflow", "operations",
+        )
+        val LEGACY_SNAPSHOT_KEYS = SNAPSHOT_KEYS - "publication"
+        val PUBLICATION_KEYS = setOf("format", "currentBodyCommit", "acknowledgement", "knownLoss")
+        val PUBLICATION_ACK_KEYS = setOf("incidentPseudonym", "revision", "commitState", "acknowledgedAtomicPublication")
+        val PUBLICATION_LOSS_KEYS = setOf("attemptedRevision", "reason")
+        val OVERFLOW_KEYS = setOf("evictedCompletedRows", "lostNewOperations", "lateSettlementWithoutRetainedRow", "traceWindowOverflow")
+        val OPERATION_REQUIRED_KEYS = setOf(
+          "connectionEpoch", "incidentPseudonym", "localOrdinal", "operationKind", "localTransactionId", "jsSubmittedAtMonotonicMs",
+          "pending", "deadlineObserved", "disconnectObserved", "nativeAttDispatch",
+        )
+        val OPERATION_OPTIONAL_KEYS = setOf("pageOffset", "settledAtMonotonicMs", "timelySettlement", "cancellation", "lateSettlement")
+        val COMPACT_V3_OPERATION_REQUIRED_KEYS = OPERATION_REQUIRED_KEYS - setOf("connectionEpoch", "incidentPseudonym")
+        val COMPACT_V3_OPERATION_OPTIONAL_KEYS = OPERATION_OPTIONAL_KEYS
+        val ENVELOPE_KEYS = setOf("format", "incident_pseudonym", "revision", "body_sha256", "body_base64", "commit_state")
+        val DIAGNOSTIC_STAGES = setOf("CONNECTION_READINESS","SUBSCRIPTION_CALL","SUBSCRIPTION_REGISTRATION_RETURN","SUBSCRIPTION_CALLBACK","RESUME_WRITE","DELIVERY_CALLBACK","FRAME_DECODE","FRAME_CRC","NATIVE_APPEND","MANIFEST_VERIFICATION","ACK_INTENT_PERSISTENCE","ACK_PRE_WRITE_GUARD","ACK_WRITE","ACK_SUCCESS_EVIDENCE_PERSISTENCE","ACK_FAILURE_EVIDENCE_PERSISTENCE","RECEIPT_OPERATION","SETUP_TIMEOUT","SOURCE_FAILURE_BOUNDARY","DIAGNOSTIC_PUBLICATION","GUARD_CANCELLATION","STATE_CLEAR","CONNECTION_CANCEL","DISCONNECT_CALLBACK","STALE_CALLBACK","LIFECYCLE","LIFECYCLE_JOURNAL","UNKNOWN")
+        val DIAGNOSTIC_OUTCOMES = setOf("REQUESTED","RETURNED","SUCCEEDED","REJECTED","THROWN","DEADLINE","CANCEL_REQUESTED","CANCEL_RETURNED","CANCEL_THROWN","UNAVAILABLE","CALLBACK_OBSERVED","LATE_FULFILLMENT_IGNORED","LATE_REJECTION_IGNORED","STALE_IGNORED","CLASSIFIED","PUBLICATION_ACKNOWLEDGED","PUBLICATION_LOST","UNKNOWN")
+        val DIAGNOSTIC_ORIGINS = setOf("BLE_LIBRARY","APPLICATION_GUARD","APPLICATION_CLASSIFIER","STORAGE","TIMEOUT","CANCELLATION","DISCONNECT_CALLBACK","LIFECYCLE","PUBLICATION","UNKNOWN")
+        val DIAGNOSTIC_CLASSIFIERS = setOf("SOURCE_SELECTED_SESSION_MISMATCH","SOURCE_NATIVE_APPEND_SESSION_MISMATCH","SOURCE_MANIFEST_EQUALITY_REJECTED","SOURCE_MANIFEST_IDENTITY_REJECTED","SOURCE_FRAME_CRC_REJECTED","SOURCE_FRAME_DECODE_REJECTED","SOURCE_ACK_WRITE_REJECTED","SOURCE_ACK_WRITE_TIMEOUT","SOURCE_INGESTION_FAILED")
+        val DIAGNOSTIC_SUCCESS_STAGES = setOf("CONNECTION_READINESS","SUBSCRIPTION_REGISTRATION_RETURN","RESUME_WRITE","DELIVERY_CALLBACK","FRAME_DECODE","FRAME_CRC","NATIVE_APPEND","MANIFEST_VERIFICATION","ACK_INTENT_PERSISTENCE","ACK_PRE_WRITE_GUARD","ACK_WRITE","ACK_SUCCESS_EVIDENCE_PERSISTENCE","ACK_FAILURE_EVIDENCE_PERSISTENCE","RECEIPT_OPERATION")
+        val BLE_CATEGORIES = mapOf(0L to "UnknownError",1L to "BluetoothManagerDestroyed",2L to "OperationCancelled",3L to "OperationTimedOut",4L to "OperationStartFailed",5L to "InvalidIdentifiers",100L to "BluetoothUnsupported",101L to "BluetoothUnauthorized",102L to "BluetoothPoweredOff",103L to "BluetoothInUnknownState",104L to "BluetoothResetting",105L to "BluetoothStateChangeFailed",200L to "DeviceConnectionFailed",201L to "DeviceDisconnected",202L to "DeviceRSSIReadFailed",203L to "DeviceAlreadyConnected",204L to "DeviceNotFound",205L to "DeviceNotConnected",206L to "DeviceMTUChangeFailed",300L to "ServicesDiscoveryFailed",301L to "IncludedServicesDiscoveryFailed",302L to "ServiceNotFound",303L to "ServicesNotDiscovered",400L to "CharacteristicsDiscoveryFailed",401L to "CharacteristicWriteFailed",402L to "CharacteristicReadFailed",403L to "CharacteristicNotifyChangeFailed",404L to "CharacteristicNotFound",405L to "CharacteristicsNotDiscovered",406L to "CharacteristicInvalidDataFormat",500L to "DescriptorsDiscoveryFailed",501L to "DescriptorWriteFailed",502L to "DescriptorReadFailed",503L to "DescriptorNotFound",504L to "DescriptorsNotDiscovered",505L to "DescriptorInvalidDataFormat",506L to "DescriptorWriteNotAllowed",600L to "ScanStartFailed",601L to "LocationServicesDisabled")
+        val FIRST_FAILURES = setOf("DEADLINE", "SETTLED_REJECTED", "DISCONNECT", "SOURCE_FAILURE")
+        val OPERATION_KINDS = setOf("R1_WRITE", "RECEIPT_READ", "C1_WRITE", "SOURCE_RESUME", "SOURCE_ACK", "OTHER_RECEIPT_WRITE")
+        val TIMELY_SETTLEMENTS = setOf("FULFILLED", "REJECTED")
+        val CANCELLATIONS = setOf("REQUESTED", "RETURNED", "THROWN", "UNAVAILABLE")
+        val LATE_SETTLEMENTS = setOf("FULFILLED_IGNORED", "REJECTED_IGNORED")
+        val PUBLICATION_LOSS_REASONS = setOf(
+          "NATIVE_ACKNOWLEDGED_FALSE",
+          "NATIVE_COMMIT_STATE_MISMATCH",
+          "NATIVE_INCIDENT_PSEUDONYM_MISMATCH",
+          "NATIVE_REVISION_MISMATCH",
+          "NATIVE_PUBLICATION_RESULT_INVALID",
+          "NATIVE_PUBLICATION_REJECTED",
+        )
+      }
+    }
+    
+    /**
+     * JSONObject accepts later duplicate keys by overwriting earlier values. This small
+     * lexical preflight rejects duplicates (including escaped-equivalent keys) before
+     * actual org.json object parsing supplies the typed schema values above.
+     */
+    private class StrictJsonDuplicateKeyScanner(private val raw: String) {
+      private var index = 0
+    
+      fun verify() {
+        skipWhitespace()
+        scanValue()
+        skipWhitespace()
+        check(index == raw.length) { "trailing JSON input" }
+      }
+    
+      private fun scanValue() {
+        skipWhitespace()
+        check(index < raw.length) { "JSON value missing" }
+        when (raw[index]) {
+          '{' -> scanObject()
+          '[' -> scanArray()
+          '"' -> scanString()
+          't' -> literal("true")
+          'f' -> literal("false")
+          'n' -> literal("null")
+          else -> scanPrimitive()
+        }
+      }
+    
+      private fun scanObject() {
+        expect('{')
+        skipWhitespace()
+        if (consume('}')) return
+        val keys = mutableSetOf<String>()
+        while (true) {
+          skipWhitespace()
+          val key = scanString()
+          check(keys.add(key)) { "duplicate JSON object key" }
+          skipWhitespace()
+          expect(':')
+          scanValue()
+          skipWhitespace()
+          if (consume('}')) return
+          expect(',')
+        }
+      }
+    
+      private fun scanArray() {
+        expect('[')
+        skipWhitespace()
+        if (consume(']')) return
+        while (true) {
+          scanValue()
+          skipWhitespace()
+          if (consume(']')) return
+          expect(',')
+        }
+      }
+    
+      private fun scanString(): String {
+        expect('"')
+        val result = StringBuilder()
+        while (true) {
+          check(index < raw.length) { "unterminated JSON string" }
+          val current = raw[index++]
+          when (current) {
+            '"' -> return result.toString()
+            '\\' -> {
+              check(index < raw.length) { "unterminated JSON escape" }
+              when (val escaped = raw[index++]) {
+                '"', '\\', '/' -> result.append(escaped)
+                'b' -> result.append('\b')
+                'f' -> result.append('\u000c')
+                'n' -> result.append('\n')
+                'r' -> result.append('\r')
+                't' -> result.append('\t')
+                'u' -> {
+                  check(index + 4 <= raw.length) { "short JSON unicode escape" }
+                  val hex = raw.substring(index, index + 4)
+                  check(hex.all { it.isDigit() || it.lowercaseChar() in 'a'..'f' }) { "invalid JSON unicode escape" }
+                  result.append(hex.toInt(16).toChar())
+                  index += 4
+                }
+                else -> error("invalid JSON escape")
+              }
+            }
+            else -> {
+              check(current.code >= 0x20) { "invalid JSON control character" }
+              result.append(current)
+            }
+          }
+        }
+      }
+    
+      private fun scanPrimitive() {
+        val start = index
+        while (index < raw.length && raw[index] !in charArrayOf(',', ']', '}', ' ', '\t', '\n', '\r')) index += 1
+        check(index > start) { "JSON primitive missing" }
+      }
+    
+      private fun literal(expected: String) {
+        check(raw.regionMatches(index, expected, 0, expected.length)) { "invalid JSON literal" }
+        index += expected.length
+      }
+    
+      private fun skipWhitespace() {
+        while (index < raw.length && raw[index] in charArrayOf(' ', '\t', '\n', '\r')) index += 1
+      }
+    
+      private fun expect(expected: Char) {
+        skipWhitespace()
+        check(index < raw.length && raw[index] == expected) { "expected JSON token $expected" }
+        index += 1
+      }
+    
+      private fun consume(expected: Char): Boolean {
+        skipWhitespace()
+        if (index >= raw.length || raw[index] != expected) return false
+        index += 1
+        return true
+      }
+    }
+    
+    /** Native AsyncFunction/store worker only. Best-effort Log IO is never proof of dispatch or durability. */
+    internal object ReceiptIncidentSafeLog {
+      const val TAG = "HUGRReceiptDiag"
+      const val MAX_LINE_BYTES = 2048
+      const val MAX_CAUSE_LINES = 8
+      const val MAX_READER_LINES = 16
+      private val emitted = mutableSetOf<String>()
+      private var readerLines = 0
+      @Synchronized fun cause(pseudonym: String, cause: JSONObject) {
+        if (emitted.size >= MAX_CAUSE_LINES || pseudonym in emitted) return
+        val line = "event=NATIVE_VALIDATED_CAUSE_NOT_COMMIT_PROOF cause=" + cause.toString()
+        if (line.toByteArray(StandardCharsets.UTF_8).size > MAX_LINE_BYTES) return
+        emitted.add(pseudonym)
+        runCatching { android.util.Log.i(TAG, line) }
+      }
+      @Synchronized fun reader(event: String) {
+        if (event !in setOf("READER_OPEN","READER_RESULT_COMPLETE","READER_RESULT_NO_SAVED_INCIDENTS","READER_RESULT_STOP") || readerLines >= MAX_READER_LINES) return
+        readerLines += 1
+        runCatching { android.util.Log.i(TAG, "event=" + event + " read_only=YES no_ble_main_react=YES") }
+      }
+    }
+    
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///home/ubuntu/HUGR_NATIVE_OBSERVATION_RESET_RECOVERY_2026_10_28/repos/phone/tests/receiptIncidentNativeStore.source.test.ts:58:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+# Subtest: native incident persistence uses strict org.json typed whitelists and rejects duplicate/body-substitution routes
+not ok 3 - native incident persistence uses strict org.json typed whitelists and rejects duplicate/body-substitution routes
+  ---
+  duration_ms: 2.817347
+  type: 'test'
+  location: '/home/ubuntu/HUGR_NATIVE_OBSERVATION_RESET_RECOVERY_2026_10_28/repos/phone/tests/receiptIncidentNativeStore.source.test.ts:71:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /requireAllowedKeys\(operation, OPERATION_REQUIRED_KEYS \+ OPERATION_OPTIONAL_KEYS/. Input:
+    
+    'package health.hugr.sourcejournal\n' +
+      '\n' +
+      'import android.content.Context\n' +
+      'import android.system.Os\n' +
+      'import android.system.OsConstants\n' +
+      'import org.json.JSONArray\n' +
+      'import org.json.JSONObject\n' +
+      'import java.io.File\n' +
+      'import java.io.FileOutputStream\n' +
+      'import java.nio.charset.StandardCharsets\n' +
+      'import java.nio.file.Files\n' +
+      'import java.nio.file.LinkOption\n' +
+      'import java.security.MessageDigest\n' +
+      'import java.util.Base64\n' +
+      '\n' +
+      'internal const val RECEIPT_INCIDENT_DIAGNOSTIC_ROOT = "hugr_receipt_incident_diagnostics"\n' +
+      'private const val RECEIPT_INCIDENT_FILE_SUFFIX = ".hugr-incident"\n' +
+      'private const val RECEIPT_INCIDENT_MAX_REPORTS = 8\n' +
+      '/** Eight complete reports plus rendering delimiters must fit the one bounded share artifact. */\n' +
+      'internal const val RECEIPT_INCIDENT_MAX_BODY_BYTES = 48 * 1024\n' +
+      'internal const val RECEIPT_INCIDENT_MAX_RENDERED_BYTES = 1024 * 1024\n' +
+      'private const val RECEIPT_INCIDENT_MAX_ENVELOPE_BYTES = 66 * 1024\n' +
+      'private const val MAX_SAFE_JSON_INTEGER = 9_007_199_254_740_991L\n' +
+      'private const val V3_INCIDENT_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_V3"\n' +
+      'private const val INCIDENT_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_V2"\n' +
+      'private const val LEGACY_INCIDENT_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_V1"\n' +
+      'private const val INCIDENT_FILE_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_FILE_V1"\n' +
+      'private const val NATIVE_CORRELATION = "CORRELATION_UNRESOLVED"\n' +
+      'private const val NATIVE_CORRELATION_REASON = "BLE_PLX_TRANSACTION_ID_IS_NOT_ATT_REQUEST_ID_NO_EQUAL_COUNTER_OFFSET_OR_CLOCK_JOIN"\n' +
+      'private const val CRASH_UNCERTAINTY = "UNKNOWN_NOT_OBSERVABLE_NO_REPORT_IS_NOT_NON_ARRIVAL"\n' +
+      'private const val PUBLICATION_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_PUBLICATION_V1"\n' +
+      'private const val PUBLICATION_CURRENT_BODY_COMMIT = "NOT_CLAIMED_BY_BODY_METADATA"\n' +
+      'private const val PUBLICATION_COMMIT_STATE = "ACKNOWLEDGED_ATOMIC_PUBLICATION_CHECKSUM_REOPEN_VERIFIED"\n' +
+      '\n' +
+      '/**\n' +
+      ' * Payload-free, bounded Phone-local incident reports. This store is deliberately\n' +
+      ' * independent of PhoneSourceJournal and PhoneCustodyRunReportStore: it neither\n' +
+      ' * opens canonical evidence nor knows a Watch run/session, receipt body, ACK\n' +
+      ' * hash, BLE address, or native ATT request ID.\n' +
+      ' *\n' +
+      ' * The JavaScript bridge invokes publication only after a local callback outcome\n' +
+      ' * has been observed and never awaits it on a BLE deadline/response path. There\n' +
+      ' * is no retry, timer, transport mutation, or wire behavior in this class.\n' +
+      ' */\n' +
+      'internal data class ReceiptIncidentPublication(\n' +
+      '  val incidentPseudonym: String,\n' +
+      '  val revision: Long,\n' +
+      '  val commitState: String,\n' +
+      '  val acknowledgedAtomicPublication: Boolean,\n' +
+      '  val reportBytes: Long,\n' +
+      ')\n' +
+      '\n' +
+      'internal interface ReceiptIncidentFileIo {\n' +
+      '  fun writeAndSync(file: File, bytes: ByteArray)\n' +
+      '  fun atomicReplace(from: File, to: File)\n' +
+      '  fun syncDirectory(directory: File)\n' +
+      '  fun readFully(file: File): ByteArray\n' +
+      '}\n' +
+      '\n' +
+      'internal object AndroidReceiptIncidentFileIo : ReceiptIncidentFileIo {\n' +
+      '  override fun writeAndSync(file: File, bytes: ByteArray) {\n' +
+      '    FileOutputStream(file).use { output ->\n' +
+      '      output.write(bytes)\n' +
+      '      output.flush()\n' +
+      '      output.fd.sync()\n' +
+      '    }\n' +
+      '  }\n' +
+      '\n' +
+      '  override fun atomicReplace(from: File, to: File) {\n' +
+      '    Os.rename(from.absolutePath, to.absolutePath)\n' +
+      '  }\n' +
+      '\n' +
+      '  override fun syncDirectory(directory: File) {\n' +
+      '    val descriptor = Os.open(directory.absolutePath, OsConstants.O_RDONLY, 0)\n' +
+      '    try {\n' +
+      '      check(OsConstants.S_ISDIR(Os.fstat(descriptor).st_mode)) { "Incident diagnostic directory descriptor is not a directory" }\n' +
+      '      Os.fsync(descriptor)\n' +
+      '    } finally {\n' +
+      '      Os.close(descriptor)\n' +
+      '    }\n' +
+      '  }\n' +
+      '\n' +
+      '  override fun readFully(file: File): ByteArray = file.readBytes()\n' +
+      '}\n' +
+      '\n' +
+      'internal class ReceiptIncidentDiagnosticStore(\n' +
+      '  private val root: File,\n' +
+      '  private val io: ReceiptIncidentFileIo = AndroidReceiptIncidentFileIo,\n' +
+      ') {\n' +
+      '  constructor(context: Context) : this(File(context.noBackupFilesDir, RECEIPT_INCIDENT_DIAGNOSTIC_ROOT))\n' +
+      '\n' +
+      '  /**\n' +
+      '   * temp write+fsync -> atomic replace -> directory fsync -> exact reopen/checksum\n' +
+      '   * acknowledgement. A publication failure throws; callers do not retry. Thus a\n' +
+      '   * missing report remains explicit pre-publication/crash uncertainty, never an\n' +
+      '   * assertion of request non-arrival.\n' +
+      '   */\n' +
+      '  @Synchronized fun publish(snapshotJson: String): ReceiptIncidentPublication {\n' +
+      '    val parsed = validateSnapshot(snapshotJson)\n' +
+      '    if (parsed.format == V3_INCIDENT_FORMAT) ReceiptIncidentSafeLog.cause(parsed.incidentPseudonym, JSONObject(snapshotJson).getJSONObject("diagnosticContext").getJSONObject("firstCause"))\n' +
+      '    ensureSafeRoot(create = true)\n' +
+      '    check(interruptedTemporaryFiles().isEmpty()) { "RECEIPT_INCIDENT_INTERRUPTED_PUBLICATION_PRESENT" }\n' +
+      '    val final = File(root, "incident-${parsed.incidentPseudonym}$RECEIPT_INCIDENT_FILE_SUFFIX")\n' +
+      '    rejectUnsafeFile(final)\n' +
+      '    if (!final.exists() && incidentFiles().size >= RECEIPT_INCIDENT_MAX_REPORTS) {\n' +
+      '      throw IllegalStateException("RECEIPT_INCIDENT_STORE_CAPACITY_EXHAUSTED")\n' +
+      '    }\n' +
+      '    if (final.exists()) {\n' +
+      '      val existing = reopen(final)\n' +
+      '      check(existing.identity.incidentPseudonym == parsed.incidentPseudonym) { "RECEIPT_INCIDENT_FILE_IDENTITY_MISMATCH" }\n' +
+      '      check(existing.identity.connectionEpoch == parsed.connectionEpoch &&\n' +
+      '        existing.identity.firstFailure == parsed.firstFailure &&\n' +
+      '        existing.identity.firstFailureAtMonotonicMs == parsed.firstFailureAtMonotonicMs &&\n' +
+      '        existing.identity.format == parsed.format && existing.identity.frozenContext == parsed.frozenContext\n' +
+      '      ) { "RECEIPT_INCIDENT_EPOCH_OR_FROZEN_CONTEXT_MISMATCH" }\n' +
+      '      if (existing.identity.revision > parsed.revision) throw IllegalStateException("RECEIPT_INCIDENT_REVISION_REGRESSION")\n' +
+      '      if (existing.identity.revision == parsed.revision) {\n' +
+      '        if (existing.body != snapshotJson) throw IllegalStateException("RECEIPT_INCIDENT_SAME_REVISION_DIFFERENT_BODY")\n' +
+      '        return ReceiptIncidentPublication(parsed.incidentPseudonym, parsed.revision, COMMIT_ACKNOWLEDGED, true, final.length())\n' +
+      '      }\n' +
+      '    }\n' +
+      '    val temporary = File(root, ".incident-${parsed.incidentPseudonym}.${parsed.revision}.part")\n' +
+      '    rejectUnsafeFile(temporary)\n' +
+      '    if (temporary.exists()) throw IllegalStateException("RECEIPT_INCIDENT_TEMPORARY_COLLISION")\n' +
+      '    try {\n' +
+      '      io.writeAndSync(temporary, envelope(parsed, snapshotJson))\n' +
+      '      io.atomicReplace(temporary, final)\n' +
+      '      io.syncDirectory(root)\n' +
+      '      val reopened = reopen(final)\n' +
+      '      check(reopened.identity == parsed && reopened.body == snapshotJson) { "RECEIPT_INCIDENT_REOPEN_MISMATCH" }\n' +
+      '      return ReceiptIncidentPublication(parsed.incidentPseudonym, parsed.revision, COMMIT_ACKNOWLEDGED, true, final.length())\n' +
+      '    } catch (failure: Throwable) {\n' +
+      '      if (temporary.exists() && !temporary.delete()) {\n' +
+      '        // Do not hide the primary acknowledged-publication failure behind cleanup.\n' +
+      '      }\n' +
+      '      throw failure\n' +
+      '    }\n' +
+      '  }\n' +
+      '\n' +
+      '  /**\n' +
+      '   * Full bounded report set only. No latest fallback, no source/custody reader,\n' +
+      '   * and no repair. A residual temp object is visible as a publication-loss state;\n' +
+      '   * earlier valid reports remain readable rather than being silently hidden.\n' +
+      '   */\n' +
+      '  @Synchronized fun readAll(): String {\n' +
+      '    ensureSafeRoot(create = false)\n' +
+      '    if (!root.exists()) return renderNoSavedReports()\n' +
+      '    val files = incidentFiles()\n' +
+      '    check(files.size <= RECEIPT_INCIDENT_MAX_REPORTS) { "RECEIPT_INCIDENT_STORE_CAPACITY_EXHAUSTED" }\n' +
+      '    val interrupted = interruptedTemporaryFiles()\n' +
+      '    if (files.isEmpty() && interrupted.isEmpty()) return renderNoSavedReports()\n' +
+      '    val reports = files.map(::reopen)\n' +
+      '    val rendered = buildString {\n' +
+      '      appendLine("HUGR SAVED RECEIPT DIAGNOSTICS")\n' +
+      '      appendLine("mode=ISOLATED_NATIVE_RECEIPT_DIAGNOSTIC_READER")\n' +
+      '      appendLine("react_main_ble_canonical_recovery=NO")\n' +
+      '      appendLine("saved_incident_count=${reports.size}")\n' +
+      '      appendLine("complete_reports=YES")\n' +
+      '      appendLine("native_correlation=$NATIVE_CORRELATION")\n' +
+      '      appendLine("native_correlation_reason=$NATIVE_CORRELATION_REASON")\n' +
+      '      appendLine("absence_of_report_is_not_request_non_arrival=YES")\n' +
+      '      if (interrupted.isNotEmpty()) {\n' +
+      '        appendLine("publication_loss_state=INTERRUPTED_TEMPORARY_PUBLICATION_PRESENT")\n' +
+      '        appendLine("interrupted_temporary_report_count=${interrupted.size}")\n' +
+      '        appendLine("earlier_valid_reports_accessible=YES")\n' +
+      '      } else {\n' +
+      '        appendLine("publication_loss_state=NONE_OBSERVED")\n' +
+      '      }\n' +
+      '      reports.forEachIndexed { index, report ->\n' +
+      '        appendLine("--- INCIDENT $index ---")\n' +
+      '        appendLine("commit_state=${report.commitState}")\n' +
+      '        appendLine("envelope_integrity=VERIFIED")\n' +
+      '        appendLine("body_sha256=${report.bodySha256}")\n' +
+      '        appendLine(report.body)\n' +
+      '        appendLine("--- END INCIDENT $index ---")\n' +
+      '        // Optional failure never hides or mutates a verified main. No live components are created.\n' +
+      '        val native = try {\n' +
+      '          ReceiptNativeWriteObservationStore(root, io, ReceiptNativeWriteVerifiedMainProvider(::verifiedNativeWriteMain))\n' +
+      '            .read(nativeWriteMainOrNull(report))\n' +
+      '        } catch (_: Throwable) { ReceiptNativeWriteRead("CORRUPT_OR_IDENTITY_MISMATCH") }\n' +
+      '        append(native.renderForIsolatedReceiptReport())\n' +
+      '      }\n' +
+      '      appendLine("END REPORT")\n' +
+      '    }\n' +
+      '    check(rendered.toByteArray(StandardCharsets.UTF_8).size <= RECEIPT_INCIDENT_MAX_RENDERED_BYTES) {\n' +
+      '      "RECEIPT_INCIDENT_RENDERED_REPORT_BOUND_INVALID"\n' +
+      '    }\n' +
+      '    return rendered\n' +
+      '  }\n' +
+      '\n' +
+      '  /** Locator only: reopen actual acknowledged V3 envelope/body every time; callers supply no authority. */\n' +
+      '  @Synchronized fun verifiedNativeWriteMain(incidentPseudonym: String): ReceiptNativeWriteVerifiedMain {\n' +
+      '    check(incidentPseudonym.matches(Regex("[A-Za-z0-9][A-Za-z0-9._-]{0,79}"))) { "RECEIPT_NATIVE_WRITE_INCIDENT_INVALID" }\n' +
+      '    ensureSafeRoot(create = false)\n' +
+      '    val report = reopen(File(root, "incident-$incidentPseudonym$RECEIPT_INCIDENT_FILE_SUFFIX"))\n' +
+      '    check(report.identity.incidentPseudonym == incidentPseudonym) { "RECEIPT_NATIVE_WRITE_MAIN_IDENTITY_MISMATCH" }\n' +
+      '    return nativeWriteMainOrNull(report) ?: throw IllegalStateException("RECEIPT_NATIVE_WRITE_REQUIRES_VERIFIED_V3")\n' +
+      '  }\n' +
+      '\n' +
+      '  private fun n'... 35696 more characters
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    package health.hugr.sourcejournal
+    
+    import android.content.Context
+    import android.system.Os
+    import android.system.OsConstants
+    import org.json.JSONArray
+    import org.json.JSONObject
+    import java.io.File
+    import java.io.FileOutputStream
+    import java.nio.charset.StandardCharsets
+    import java.nio.file.Files
+    import java.nio.file.LinkOption
+    import java.security.MessageDigest
+    import java.util.Base64
+    
+    internal const val RECEIPT_INCIDENT_DIAGNOSTIC_ROOT = "hugr_receipt_incident_diagnostics"
+    private const val RECEIPT_INCIDENT_FILE_SUFFIX = ".hugr-incident"
+    private const val RECEIPT_INCIDENT_MAX_REPORTS = 8
+    /** Eight complete reports plus rendering delimiters must fit the one bounded share artifact. */
+    internal const val RECEIPT_INCIDENT_MAX_BODY_BYTES = 48 * 1024
+    internal const val RECEIPT_INCIDENT_MAX_RENDERED_BYTES = 1024 * 1024
+    private const val RECEIPT_INCIDENT_MAX_ENVELOPE_BYTES = 66 * 1024
+    private const val MAX_SAFE_JSON_INTEGER = 9_007_199_254_740_991L
+    private const val V3_INCIDENT_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_V3"
+    private const val INCIDENT_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_V2"
+    private const val LEGACY_INCIDENT_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_V1"
+    private const val INCIDENT_FILE_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_FILE_V1"
+    private const val NATIVE_CORRELATION = "CORRELATION_UNRESOLVED"
+    private const val NATIVE_CORRELATION_REASON = "BLE_PLX_TRANSACTION_ID_IS_NOT_ATT_REQUEST_ID_NO_EQUAL_COUNTER_OFFSET_OR_CLOCK_JOIN"
+    private const val CRASH_UNCERTAINTY = "UNKNOWN_NOT_OBSERVABLE_NO_REPORT_IS_NOT_NON_ARRIVAL"
+    private const val PUBLICATION_FORMAT = "HUGR_PHONE_RECEIPT_INCIDENT_PUBLICATION_V1"
+    private const val PUBLICATION_CURRENT_BODY_COMMIT = "NOT_CLAIMED_BY_BODY_METADATA"
+    private const val PUBLICATION_COMMIT_STATE = "ACKNOWLEDGED_ATOMIC_PUBLICATION_CHECKSUM_REOPEN_VERIFIED"
+    
+    /**
+     * Payload-free, bounded Phone-local incident reports. This store is deliberately
+     * independent of PhoneSourceJournal and PhoneCustodyRunReportStore: it neither
+     * opens canonical evidence nor knows a Watch run/session, receipt body, ACK
+     * hash, BLE address, or native ATT request ID.
+     *
+     * The JavaScript bridge invokes publication only after a local callback outcome
+     * has been observed and never awaits it on a BLE deadline/response path. There
+     * is no retry, timer, transport mutation, or wire behavior in this class.
+     */
+    internal data class ReceiptIncidentPublication(
+      val incidentPseudonym: String,
+      val revision: Long,
+      val commitState: String,
+      val acknowledgedAtomicPublication: Boolean,
+      val reportBytes: Long,
+    )
+    
+    internal interface ReceiptIncidentFileIo {
+      fun writeAndSync(file: File, bytes: ByteArray)
+      fun atomicReplace(from: File, to: File)
+      fun syncDirectory(directory: File)
+      fun readFully(file: File): ByteArray
+    }
+    
+    internal object AndroidReceiptIncidentFileIo : ReceiptIncidentFileIo {
+      override fun writeAndSync(file: File, bytes: ByteArray) {
+        FileOutputStream(file).use { output ->
+          output.write(bytes)
+          output.flush()
+          output.fd.sync()
+        }
+      }
+    
+      override fun atomicReplace(from: File, to: File) {
+        Os.rename(from.absolutePath, to.absolutePath)
+      }
+    
+      override fun syncDirectory(directory: File) {
+        val descriptor = Os.open(directory.absolutePath, OsConstants.O_RDONLY, 0)
+        try {
+          check(OsConstants.S_ISDIR(Os.fstat(descriptor).st_mode)) { "Incident diagnostic directory descriptor is not a directory" }
+          Os.fsync(descriptor)
+        } finally {
+          Os.close(descriptor)
+        }
+      }
+    
+      override fun readFully(file: File): ByteArray = file.readBytes()
+    }
+    
+    internal class ReceiptIncidentDiagnosticStore(
+      private val root: File,
+      private val io: ReceiptIncidentFileIo = AndroidReceiptIncidentFileIo,
+    ) {
+      constructor(context: Context) : this(File(context.noBackupFilesDir, RECEIPT_INCIDENT_DIAGNOSTIC_ROOT))
+    
+      /**
+       * temp write+fsync -> atomic replace -> directory fsync -> exact reopen/checksum
+       * acknowledgement. A publication failure throws; callers do not retry. Thus a
+       * missing report remains explicit pre-publication/crash uncertainty, never an
+       * assertion of request non-arrival.
+       */
+      @Synchronized fun publish(snapshotJson: String): ReceiptIncidentPublication {
+        val parsed = validateSnapshot(snapshotJson)
+        if (parsed.format == V3_INCIDENT_FORMAT) ReceiptIncidentSafeLog.cause(parsed.incidentPseudonym, JSONObject(snapshotJson).getJSONObject("diagnosticContext").getJSONObject("firstCause"))
+        ensureSafeRoot(create = true)
+        check(interruptedTemporaryFiles().isEmpty()) { "RECEIPT_INCIDENT_INTERRUPTED_PUBLICATION_PRESENT" }
+        val final = File(root, "incident-${parsed.incidentPseudonym}$RECEIPT_INCIDENT_FILE_SUFFIX")
+        rejectUnsafeFile(final)
+        if (!final.exists() && incidentFiles().size >= RECEIPT_INCIDENT_MAX_REPORTS) {
+          throw IllegalStateException("RECEIPT_INCIDENT_STORE_CAPACITY_EXHAUSTED")
+        }
+        if (final.exists()) {
+          val existing = reopen(final)
+          check(existing.identity.incidentPseudonym == parsed.incidentPseudonym) { "RECEIPT_INCIDENT_FILE_IDENTITY_MISMATCH" }
+          check(existing.identity.connectionEpoch == parsed.connectionEpoch &&
+            existing.identity.firstFailure == parsed.firstFailure &&
+            existing.identity.firstFailureAtMonotonicMs == parsed.firstFailureAtMonotonicMs &&
+            existing.identity.format == parsed.format && existing.identity.frozenContext == parsed.frozenContext
+          ) { "RECEIPT_INCIDENT_EPOCH_OR_FROZEN_CONTEXT_MISMATCH" }
+          if (existing.identity.revision > parsed.revision) throw IllegalStateException("RECEIPT_INCIDENT_REVISION_REGRESSION")
+          if (existing.identity.revision == parsed.revision) {
+            if (existing.body != snapshotJson) throw IllegalStateException("RECEIPT_INCIDENT_SAME_REVISION_DIFFERENT_BODY")
+            return ReceiptIncidentPublication(parsed.incidentPseudonym, parsed.revision, COMMIT_ACKNOWLEDGED, true, final.length())
+          }
+        }
+        val temporary = File(root, ".incident-${parsed.incidentPseudonym}.${parsed.revision}.part")
+        rejectUnsafeFile(temporary)
+        if (temporary.exists()) throw IllegalStateException("RECEIPT_INCIDENT_TEMPORARY_COLLISION")
+        try {
+          io.writeAndSync(temporary, envelope(parsed, snapshotJson))
+          io.atomicReplace(temporary, final)
+          io.syncDirectory(root)
+          val reopened = reopen(final)
+          check(reopened.identity == parsed && reopened.body == snapshotJson) { "RECEIPT_INCIDENT_REOPEN_MISMATCH" }
+          return ReceiptIncidentPublication(parsed.incidentPseudonym, parsed.revision, COMMIT_ACKNOWLEDGED, true, final.length())
+        } catch (failure: Throwable) {
+          if (temporary.exists() && !temporary.delete()) {
+            // Do not hide the primary acknowledged-publication failure behind cleanup.
+          }
+          throw failure
+        }
+      }
+    
+      /**
+       * Full bounded report set only. No latest fallback, no source/custody reader,
+       * and no repair. A residual temp object is visible as a publication-loss state;
+       * earlier valid reports remain readable rather than being silently hidden.
+       */
+      @Synchronized fun readAll(): String {
+        ensureSafeRoot(create = false)
+        if (!root.exists()) return renderNoSavedReports()
+        val files = incidentFiles()
+        check(files.size <= RECEIPT_INCIDENT_MAX_REPORTS) { "RECEIPT_INCIDENT_STORE_CAPACITY_EXHAUSTED" }
+        val interrupted = interruptedTemporaryFiles()
+        if (files.isEmpty() && interrupted.isEmpty()) return renderNoSavedReports()
+        val reports = files.map(::reopen)
+        val rendered = buildString {
+          appendLine("HUGR SAVED RECEIPT DIAGNOSTICS")
+          appendLine("mode=ISOLATED_NATIVE_RECEIPT_DIAGNOSTIC_READER")
+          appendLine("react_main_ble_canonical_recovery=NO")
+          appendLine("saved_incident_count=${reports.size}")
+          appendLine("complete_reports=YES")
+          appendLine("native_correlation=$NATIVE_CORRELATION")
+          appendLine("native_correlation_reason=$NATIVE_CORRELATION_REASON")
+          appendLine("absence_of_report_is_not_request_non_arrival=YES")
+          if (interrupted.isNotEmpty()) {
+            appendLine("publication_loss_state=INTERRUPTED_TEMPORARY_PUBLICATION_PRESENT")
+            appendLine("interrupted_temporary_report_count=${interrupted.size}")
+            appendLine("earlier_valid_reports_accessible=YES")
+          } else {
+            appendLine("publication_loss_state=NONE_OBSERVED")
+          }
+          reports.forEachIndexed { index, report ->
+            appendLine("--- INCIDENT $index ---")
+            appendLine("commit_state=${report.commitState}")
+            appendLine("envelope_integrity=VERIFIED")
+            appendLine("body_sha256=${report.bodySha256}")
+            appendLine(report.body)
+            appendLine("--- END INCIDENT $index ---")
+            // Optional failure never hides or mutates a verified main. No live components are created.
+            val native = try {
+              ReceiptNativeWriteObservationStore(root, io, ReceiptNativeWriteVerifiedMainProvider(::verifiedNativeWriteMain))
+                .read(nativeWriteMainOrNull(report))
+            } catch (_: Throwable) { ReceiptNativeWriteRead("CORRUPT_OR_IDENTITY_MISMATCH") }
+            append(native.renderForIsolatedReceiptReport())
+          }
+          appendLine("END REPORT")
+        }
+        check(rendered.toByteArray(StandardCharsets.UTF_8).size <= RECEIPT_INCIDENT_MAX_RENDERED_BYTES) {
+          "RECEIPT_INCIDENT_RENDERED_REPORT_BOUND_INVALID"
+        }
+        return rendered
+      }
+    
+      /** Locator only: reopen actual acknowledged V3 envelope/body every time; callers supply no authority. */
+      @Synchronized fun verifiedNativeWriteMain(incidentPseudonym: String): ReceiptNativeWriteVerifiedMain {
+        check(incidentPseudonym.matches(Regex("[A-Za-z0-9][A-Za-z0-9._-]{0,79}"))) { "RECEIPT_NATIVE_WRITE_INCIDENT_INVALID" }
+        ensureSafeRoot(create = false)
+        val report = reopen(File(root, "incident-$incidentPseudonym$RECEIPT_INCIDENT_FILE_SUFFIX"))
+        check(report.identity.incidentPseudonym == incidentPseudonym) { "RECEIPT_NATIVE_WRITE_MAIN_IDENTITY_MISMATCH" }
+        return nativeWriteMainOrNull(report) ?: throw IllegalStateException("RECEIPT_NATIVE_WRITE_REQUIRES_VERIFIED_V3")
+      }
+    
+      private fun nativeWriteMainOrNull(report: ReopenedIncident): ReceiptNativeWriteVerifiedMain? {
+        if (report.identity.format != V3_INCIDENT_FORMAT) return null
+        val body = JSONObject(report.body)
+        val operations = body.getJSONArray("operations")
+        val exact = linkedSetOf<String>()
+        for (index in 0 until operations.length()) {
+          val transaction = operations.getJSONObject(index).get("localTransactionId")
+          if (transaction is String) exact += transaction
+        }
+        val firstCause = body.getJSONObject("diagnosticContext").getJSONObject("firstCause")
+        val reference = firstCause.getJSONObject("operationOrdinal")
+        val failedTransactionId = if (reference.getString("state") == "VALUE") {
+          val ordinal = reference.getLong("value")
+          val operation = (0 until operations.length()).map(operations::getJSONObject)
+            .single { it.getLong("localOrdinal") == ordinal }
+          operation.get("localTransactionId") as? String
+        } else {
+          null
+        }
+        // No recency/counter/clock heuristic. Validation above establishes the exact retained join.
+        return ReceiptNativeWriteVerifiedMain(
+          ReceiptNativeWriteAnchor(report.identity.incidentPseudonym, report.identity.connectionEpoch,
+            report.identity.firstFailure, report.identity.firstFailureAtMonotonicMs,
+            sha256(canonical(firstCause).toByteArray(StandardCharsets.UTF_8))), exact.toSet(), failedTransactionId)
+      }
+    
+      private fun isOptionalNativeSidecarName(name: String): Boolean =
+        name.matches(Regex("native-write-[A-Za-z0-9][A-Za-z0-9._-]{0,79}\\.hugr-native-write")) ||
+          name.matches(Regex("\\.native-write-[A-Za-z0-9][A-Za-z0-9._-]{0,79}\\.[1-9][0-9]{0,1}\\.part"))
+    
+      private fun renderNoSavedReports(): String = """HUGR SAVED RECEIPT DIAGNOSTICS
+    mode=ISOLATED_NATIVE_RECEIPT_DIAGNOSTIC_READER
+    react_main_ble_canonical_recovery=NO
+    saved_incident_count=0
+    outcome=NO_SAVED_INCIDENTS
+    absence_of_report_is_not_request_non_arrival=YES
+    crash_or_prepublication_loss=UNKNOWN
+    END REPORT
+    """
+    
+      private fun ensureSafeRoot(create: Boolean) {
+        if (create && !root.exists() && !root.mkdirs()) throw IllegalStateException("RECEIPT_INCIDENT_ROOT_UNAVAILABLE")
+        if (!root.exists()) return
+        if (!root.isDirectory || Files.isSymbolicLink(root.toPath())) throw IllegalStateException("RECEIPT_INCIDENT_ROOT_UNSAFE")
+      }
+    
+      private fun incidentFiles(): List<File> {
+        if (!root.exists()) return emptyList()
+        ensureSafeRoot(create = false)
+        val entries = root.listFiles()?.toList() ?: throw IllegalStateException("RECEIPT_INCIDENT_DIRECTORY_UNREADABLE")
+        val files = entries.filter { file ->
+          if (isOptionalNativeSidecarName(file.name)) return@filter false
+          rejectUnsafeFile(file)
+          when {
+            file.name.matches(INCIDENT_FILE_NAME) -> true
+            file.name.matches(INTERRUPTED_TEMPORARY_NAME) -> false
+            else -> throw IllegalStateException("RECEIPT_INCIDENT_DIRECTORY_ENTRY_INVALID")
+          }
+        }.sortedBy { it.name }
+        return files
+      }
+    
+      private fun interruptedTemporaryFiles(): List<File> {
+        if (!root.exists()) return emptyList()
+        ensureSafeRoot(create = false)
+        return root.listFiles()?.toList()?.filter { file ->
+          if (isOptionalNativeSidecarName(file.name)) return@filter false
+          rejectUnsafeFile(file)
+          file.name.matches(INTERRUPTED_TEMPORARY_NAME)
+        }?.sortedBy { it.name } ?: throw IllegalStateException("RECEIPT_INCIDENT_DIRECTORY_UNREADABLE")
+      }
+    
+      private fun rejectUnsafeFile(file: File) {
+        if (Files.exists(file.toPath(), LinkOption.NOFOLLOW_LINKS) && (Files.isSymbolicLink(file.toPath()) || !file.isFile)) {
+          throw IllegalStateException("RECEIPT_INCIDENT_OBJECT_UNSAFE")
+        }
+      }
+    
+      private data class SnapshotIdentity(
+        val incidentPseudonym: String,
+        val connectionEpoch: String,
+        val revision: Long,
+        val firstFailure: String,
+        val firstFailureAtMonotonicMs: Long,
+        val format: String,
+        val frozenContext: String,
+      )
+      private data class ReopenedIncident(
+        val identity: SnapshotIdentity,
+        val commitState: String,
+        val bodySha256: String,
+        val body: String,
+      )
+    
+      /** Actual JSON parsing, exact keys/types, and semantic bounds—not substring matching. */
+      private fun validateSnapshot(body: String): SnapshotIdentity {
+        val bytes = body.toByteArray(StandardCharsets.UTF_8)
+        if (bytes.size !in 1..RECEIPT_INCIDENT_MAX_BODY_BYTES) throw IllegalArgumentException("RECEIPT_INCIDENT_BODY_SIZE_INVALID")
+        val snapshot = strictObject(body, "RECEIPT_INCIDENT_BODY_NOT_JSON_OBJECT")
+        val format = requiredString(snapshot, "format")
+        when (format) {
+          V3_INCIDENT_FORMAT -> requireExactKeys(snapshot, SNAPSHOT_KEYS + "diagnosticContext", "RECEIPT_INCIDENT_SCHEMA_INVALID")
+          INCIDENT_FORMAT -> requireExactKeys(snapshot, SNAPSHOT_KEYS, "RECEIPT_INCIDENT_SCHEMA_INVALID")
+          LEGACY_INCIDENT_FORMAT -> requireExactKeys(snapshot, LEGACY_SNAPSHOT_KEYS, "RECEIPT_INCIDENT_SCHEMA_INVALID")
+          else -> throw IllegalStateException("RECEIPT_INCIDENT_SCHEMA_INVALID")
+        }
+        val pseudonym = requiredLocalToken(snapshot, "incidentPseudonym", "RECEIPT_INCIDENT_PSEUDONYM_INVALID")
+        val epoch = requiredLocalToken(snapshot, "connectionEpoch", "RECEIPT_INCIDENT_EPOCH_INVALID")
+        check(requiredLong(snapshot, "operationLimit") == 64L && requiredLong(snapshot, "lateSettlementReserve") == 8L) {
+          "RECEIPT_INCIDENT_OPERATION_BOUND_INVALID"
+        }
+        val revision = requiredBoundedLong(snapshot, "revision", 1L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_REVISION_INVALID")
+        check(requiredBoolean(snapshot, "frozen")) { "RECEIPT_INCIDENT_NOT_FROZEN" }
+        val firstFailure = requiredString(snapshot, "firstFailure")
+        check(firstFailure in FIRST_FAILURES) { "RECEIPT_INCIDENT_FAILURE_INVALID" }
+        val firstFailureAt = requiredBoundedLong(snapshot, "firstFailureAtMonotonicMs", 0L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_FAILURE_TIME_INVALID")
+        check(requiredString(snapshot, "nativeCorrelation") == NATIVE_CORRELATION &&
+          requiredString(snapshot, "nativeCorrelationReason") == NATIVE_CORRELATION_REASON &&
+          requiredString(snapshot, "crashBeforeCheckpoint") == CRASH_UNCERTAINTY
+        ) { "RECEIPT_INCIDENT_CORRELATION_CONTRACT_INVALID" }
+        if (format == INCIDENT_FORMAT || format == V3_INCIDENT_FORMAT) validatePublication(requiredObject(snapshot, "publication"), pseudonym, revision)
+        validateOverflow(requiredObject(snapshot, "overflow"))
+        val operations = requiredArray(snapshot, "operations")
+        check(operations.length() <= 64) { "RECEIPT_INCIDENT_OPERATION_BOUND_INVALID" }
+        var priorLocalOrdinal = 0L
+        for (index in 0 until operations.length()) {
+          val localOrdinal = validateOperation(operations.getJSONObject(index), pseudonym, epoch, format == V3_INCIDENT_FORMAT)
+          check(localOrdinal > priorLocalOrdinal) { "RECEIPT_INCIDENT_OPERATION_ORDINAL_SEQUENCE_INVALID" }
+          priorLocalOrdinal = localOrdinal
+        }
+        val frozenContext = if (format == V3_INCIDENT_FORMAT) validateDiagnosticContext(requiredObject(snapshot, "diagnosticContext"), operations) else ""
+        return SnapshotIdentity(pseudonym, epoch, revision, firstFailure, firstFailureAt, format, frozenContext)
+      }
+    
+      /**
+       * Publication metadata never turns the present body into proof of its own
+       * durability. Every acknowledgement or known-loss attempt must name a prior
+       * body revision, while the native envelope/reopen establishes the current
+       * body’s actual commit acknowledgement.
+       */
+      private fun validatePublication(publication: JSONObject, pseudonym: String, revision: Long) {
+        requireExactKeys(publication, PUBLICATION_KEYS, "RECEIPT_INCIDENT_PUBLICATION_SCHEMA_INVALID")
+        check(requiredString(publication, "format") == PUBLICATION_FORMAT &&
+          requiredString(publication, "currentBodyCommit") == PUBLICATION_CURRENT_BODY_COMMIT
+        ) { "RECEIPT_INCIDENT_PUBLICATION_SCHEMA_INVALID" }
+        val acknowledgement = value(publication, "acknowledgement")
+        if (acknowledgement != JSONObject.NULL) {
+          check(acknowledgement is JSONObject) { "RECEIPT_INCIDENT_PUBLICATION_ACK_SCHEMA_INVALID" }
+          requireExactKeys(acknowledgement, PUBLICATION_ACK_KEYS, "RECEIPT_INCIDENT_PUBLICATION_ACK_SCHEMA_INVALID")
+          check(requiredLocalToken(acknowledgement, "incidentPseudonym", "RECEIPT_INCIDENT_PUBLICATION_ACK_IDENTITY_INVALID") == pseudonym &&
+            requiredBoundedLong(acknowledgement, "revision", 1L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_PUBLICATION_ACK_REVISION_INVALID") < revision &&
+            requiredString(acknowledgement, "commitState") == PUBLICATION_COMMIT_STATE &&
+            requiredBoolean(acknowledgement, "acknowledgedAtomicPublication")
+          ) { "RECEIPT_INCIDENT_PUBLICATION_ACK_INVALID" }
+        }
+        val knownLoss = value(publication, "knownLoss")
+        if (knownLoss != JSONObject.NULL) {
+          check(knownLoss is JSONObject) { "RECEIPT_INCIDENT_PUBLICATION_LOSS_SCHEMA_INVALID" }
+          requireExactKeys(knownLoss, PUBLICATION_LOSS_KEYS, "RECEIPT_INCIDENT_PUBLICATION_LOSS_SCHEMA_INVALID")
+          check(requiredBoundedLong(knownLoss, "attemptedRevision", 1L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_PUBLICATION_LOSS_REVISION_INVALID") < revision &&
+            requiredString(knownLoss, "reason") in PUBLICATION_LOSS_REASONS
+          ) { "RECEIPT_INCIDENT_PUBLICATION_LOSS_INVALID" }
+        }
+      }
+    
+      private fun validateOverflow(overflow: JSONObject) {
+        requireExactKeys(overflow, OVERFLOW_KEYS, "RECEIPT_INCIDENT_OVERFLOW_SCHEMA_INVALID")
+        val evicted = requiredBoundedLong(overflow, "evictedCompletedRows", 0L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_OVERFLOW_INVALID")
+        val lost = requiredBoundedLong(overflow, "lostNewOperations", 0L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_OVERFLOW_INVALID")
+        val lateLost = requiredBoundedLong(overflow, "lateSettlementWithoutRetainedRow", 0L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_OVERFLOW_INVALID")
+        check(requiredBoolean(overflow, "traceWindowOverflow") == (evicted > 0L || lost > 0L || lateLost > 0L)) {
+          "RECEIPT_INCIDENT_OVERFLOW_INVALID"
+        }
+      }
+    
+      private fun validateOperation(operation: JSONObject, pseudonym: String, epoch: String, compactV3: Boolean): Long {
+        val required = if (compactV3) COMPACT_V3_OPERATION_REQUIRED_KEYS else OPERATION_REQUIRED_KEYS
+        val optional = if (compactV3) COMPACT_V3_OPERATION_OPTIONAL_KEYS else OPERATION_OPTIONAL_KEYS
+        requireAllowedKeys(operation, required + optional, "RECEIPT_INCIDENT_OPERATION_SCHEMA_INVALID")
+        check(required.all(operation::has)) { "RECEIPT_INCIDENT_OPERATION_SCHEMA_INVALID" }
+        if (!compactV3) {
+          check(requiredLocalToken(operation, "connectionEpoch", "RECEIPT_INCIDENT_OPERATION_EPOCH_INVALID") == epoch &&
+            requiredLocalToken(operation, "incidentPseudonym", "RECEIPT_INCIDENT_OPERATION_PSEUDONYM_INVALID") == pseudonym
+          ) { "RECEIPT_INCIDENT_OPERATION_IDENTITY_INVALID" }
+        }
+        // Compact V3 rows are scoped exclusively by the already validated root
+        // pseudonym/epoch; redundant row identities are forbidden by exact keys.
+        val localOrdinal = requiredBoundedLong(operation, "localOrdinal", 1L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_OPERATION_ORDINAL_INVALID")
+        val kind = requiredString(operation, "operationKind")
+        check(kind in OPERATION_KINDS) { "RECEIPT_INCIDENT_OPERATION_KIND_INVALID" }
+        val transaction = value(operation, "localTransactionId")
+        check(transaction == JSONObject.NULL || transaction is String && transaction.matches(LOCAL_TRANSACTION_ID)) {
+          "RECEIPT_INCIDENT_LOCAL_TRANSACTION_ID_INVALID"
+        }
+        if (operation.has("pageOffset")) {
+          // The offset is the preceding bounded R1 page-request metadata; the
+          // paired RECEIPT_READ carries the same request offset, never a response
+          // field or native/ATT identifier. No other operation kind may carry it.
+          check(kind == "R1_WRITE" || kind == "RECEIPT_READ") { "RECEIPT_INCIDENT_PAGE_OFFSET_KIND_INVALID" }
+          requiredBoundedLong(operation, "pageOffset", 0L, 999_999L, "RECEIPT_INCIDENT_PAGE_OFFSET_INVALID")
+        }
+        requiredBoundedLong(operation, "jsSubmittedAtMonotonicMs", 0L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_OPERATION_TIME_INVALID")
+        val pending = requiredBoolean(operation, "pending")
+        val deadline = requiredBoolean(operation, "deadlineObserved")
+        val disconnect = requiredBoolean(operation, "disconnectObserved")
+        val settled = optionalBoundedLong(operation, "settledAtMonotonicMs", 0L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_OPERATION_TIME_INVALID")
+        val timely = optionalEnum(operation, "timelySettlement", TIMELY_SETTLEMENTS, "RECEIPT_INCIDENT_TIMELY_SETTLEMENT_INVALID")
+        val cancellation = optionalEnum(operation, "cancellation", CANCELLATIONS, "RECEIPT_INCIDENT_CANCELLATION_INVALID")
+        val late = optionalEnum(operation, "lateSettlement", LATE_SETTLEMENTS, "RECEIPT_INCIDENT_LATE_SETTLEMENT_INVALID")
+        check(requiredString(operation, "nativeAttDispatch") == "UNKNOWN") { "RECEIPT_INCIDENT_NATIVE_DISPATCH_INVALID" }
+        if (pending) check(settled == null && timely == null && !deadline && !disconnect && late == null) { "RECEIPT_INCIDENT_PENDING_STATE_INVALID" }
+        if (timely != null) check(!pending && !deadline && settled != null) { "RECEIPT_INCIDENT_TIMELY_STATE_INVALID" }
+        if (deadline) check(!pending && settled != null && timely == null) { "RECEIPT_INCIDENT_DEADLINE_STATE_INVALID" }
+        if (late != null) check(deadline && !pending) { "RECEIPT_INCIDENT_LATE_STATE_INVALID" }
+        if (cancellation != null) check(deadline) { "RECEIPT_INCIDENT_CANCELLATION_STATE_INVALID" }
+        return localOrdinal
+      }
+    
+      private fun validateDiagnosticContext(context: JSONObject, operations: JSONArray): String {
+        requireExactKeys(context, setOf("firstCause","preceding","subsequent","lastSuccessfulStage","contextOverflow","processLoss"), "RECEIPT_INCIDENT_CONTEXT_SCHEMA_INVALID")
+        check(requiredString(context,"processLoss") == "UNKNOWN_NOT_OBSERVABLE") { "RECEIPT_INCIDENT_PROCESS_LOSS_INVALID" }
+        val refs = (0 until operations.length()).map { requiredLong(operations.getJSONObject(it), "localOrdinal") }.toSet()
+        val first = requiredObject(context,"firstCause")
+        val firstOrdinal = validateObservation(first, refs, true)
+        check(requiredString(first,"outcome") != "SUCCEEDED") { "RECEIPT_INCIDENT_FIRST_CAUSE_SUCCESS_INVALID" }
+        validateTag(requiredObject(first,"lastSuccessfulStage"), "stage")
+        validateTag(requiredObject(context,"lastSuccessfulStage"), "stage")
+        check(canonical(requiredObject(first,"lastSuccessfulStage")) == canonical(requiredObject(context,"lastSuccessfulStage"))) { "RECEIPT_INCIDENT_PRIOR_SUCCESS_MUTATED" }
+        val preceding = requiredArray(context,"preceding")
+        val subsequent = requiredArray(context,"subsequent")
+        check(preceding.length() <= 16 && subsequent.length() <= 16) { "RECEIPT_INCIDENT_CONTEXT_BOUND_INVALID" }
+        var prior = 0L
+        for (i in 0 until preceding.length()) {
+          val n = validateObservation(preceding.getJSONObject(i), refs, false)
+          check(n > prior && n < firstOrdinal) { "RECEIPT_INCIDENT_CONTEXT_ORDINAL_INVALID" }
+          prior = n
+        }
+        prior = firstOrdinal
+        for (i in 0 until subsequent.length()) {
+          val n = validateObservation(subsequent.getJSONObject(i), refs, false)
+          check(n > prior) { "RECEIPT_INCIDENT_CONTEXT_ORDINAL_INVALID" }
+          prior = n
+        }
+        val overflow = requiredObject(context,"contextOverflow")
+        requireExactKeys(overflow,setOf("precedingEvicted","subsequentDropped","truncated"),"RECEIPT_INCIDENT_CONTEXT_OVERFLOW_INVALID")
+        val evicted = requiredBoundedLong(overflow,"precedingEvicted",0L,MAX_SAFE_JSON_INTEGER,"RECEIPT_INCIDENT_CONTEXT_OVERFLOW_INVALID")
+        val dropped = requiredBoundedLong(overflow,"subsequentDropped",0L,MAX_SAFE_JSON_INTEGER,"RECEIPT_INCIDENT_CONTEXT_OVERFLOW_INVALID")
+        check(requiredBoolean(overflow,"truncated") == (evicted > 0 || dropped > 0)) { "RECEIPT_INCIDENT_CONTEXT_OVERFLOW_INVALID" }
+    
+        return canonical(first) + ":" + canonical(preceding) + ":" + evicted
+      }
+    
+      private fun validateObservation(observation: JSONObject, refs: Set<Long>, first: Boolean): Long {
+        val keys = setOf("ordinal","atMonotonicMs","operationOrdinal","stage","outcome","origin","error","classifier","lifecycle")
+        requireExactKeys(observation, if (first) keys + "lastSuccessfulStage" else keys, "RECEIPT_INCIDENT_OBSERVATION_SCHEMA_INVALID")
+        val ordinal = requiredBoundedLong(observation,"ordinal",1L,MAX_SAFE_JSON_INTEGER,"RECEIPT_INCIDENT_CONTEXT_ORDINAL_INVALID")
+        validateTag(requiredObject(observation,"atMonotonicMs"), "time")
+        val ref = requiredObject(observation,"operationOrdinal")
+        validateTag(ref,"reference")
+        if (requiredString(ref,"state") == "VALUE") check(requiredLong(ref,"value") in refs) { "RECEIPT_INCIDENT_CONTEXT_REFERENCE_INVALID" }
+        check(requiredString(observation,"stage") in DIAGNOSTIC_STAGES && requiredString(observation,"outcome") in DIAGNOSTIC_OUTCOMES && requiredString(observation,"origin") in DIAGNOSTIC_ORIGINS) { "RECEIPT_INCIDENT_OBSERVATION_ENUM_INVALID" }
+        validateTag(requiredObject(observation,"classifier"), "classifier")
+        validateTag(requiredObject(observation,"lifecycle"), "lifecycle")
+        val error = requiredObject(observation,"error")
+        requireExactKeys(error,setOf("libraryCategory","errorCode","attErrorCode","androidErrorCode"),"RECEIPT_INCIDENT_ERROR_SCHEMA_INVALID")
+        for (key in listOf("errorCode","attErrorCode","androidErrorCode")) validateTag(requiredObject(error,key),"number")
+        val category = requiredObject(error,"libraryCategory")
+        validateTag(category,"category")
+        val code = requiredObject(error,"errorCode")
+        val state = requiredString(code,"state")
+        if (state == "VALUE") {
+          val expected = BLE_CATEGORIES[requiredLong(code,"value")]
+          if (expected == null) check(requiredString(category,"state") == "UNKNOWN") { "RECEIPT_INCIDENT_CATEGORY_CODE_MISMATCH" }
+          else check(requiredString(category,"state") == "VALUE" && requiredString(category,"value") == expected) { "RECEIPT_INCIDENT_CATEGORY_CODE_MISMATCH" }
+        } else check(requiredString(category,"state") == state) { "RECEIPT_INCIDENT_CATEGORY_CODE_MISMATCH" }
+        return ordinal
+      }
+    
+      private fun validateTag(tag: JSONObject, kind: String) {
+        val state = requiredString(tag,"state")
+        check(state in setOf("VALUE","ABSENT","INVALID","UNKNOWN")) { "RECEIPT_INCIDENT_TAG_STATE_INVALID" }
+        requireExactKeys(tag, if (state == "VALUE") setOf("state","value") else setOf("state"), "RECEIPT_INCIDENT_TAG_SCHEMA_INVALID")
+        if (kind == "reference") check(state == "VALUE" || state == "UNKNOWN") { "RECEIPT_INCIDENT_CONTEXT_REFERENCE_INVALID" }
+        if (state != "VALUE") return
+        when(kind) {
+          "number" -> requiredBoundedLong(tag,"value",-MAX_SAFE_JSON_INTEGER,MAX_SAFE_JSON_INTEGER,"RECEIPT_INCIDENT_NUMBER_INVALID")
+          "time" -> requiredBoundedLong(tag,"value",0L,MAX_SAFE_JSON_INTEGER,"RECEIPT_INCIDENT_TIME_INVALID")
+          "reference" -> requiredBoundedLong(tag,"value",1L,MAX_SAFE_JSON_INTEGER,"RECEIPT_INCIDENT_CONTEXT_REFERENCE_INVALID")
+          "category" -> check(requiredString(tag,"value") in BLE_CATEGORIES.values) { "RECEIPT_INCIDENT_CATEGORY_INVALID" }
+          "stage" -> check(requiredString(tag,"value") in DIAGNOSTIC_SUCCESS_STAGES) { "RECEIPT_INCIDENT_PRIOR_STAGE_INVALID" }
+          "classifier" -> check(requiredString(tag,"value") in DIAGNOSTIC_CLASSIFIERS) { "RECEIPT_INCIDENT_CLASSIFIER_INVALID" }
+          "lifecycle" -> check(requiredString(tag,"value") in setOf("ACTIVE","BACKGROUND","INACTIVE")) { "RECEIPT_INCIDENT_LIFECYCLE_INVALID" }
+        }
+      }
+    
+      /** Deterministic full semantic comparison, independent of JSON key order; no extra keys admitted. */
+      private fun canonical(value: Any): String = when(value) {
+        is JSONObject -> objectKeys(value).sorted().joinToString(prefix="{",postfix="}") { JSONObject.quote(it)+":"+canonical(value.get(it)) }
+        is JSONArray -> (0 until value.length()).joinToString(prefix="[",postfix="]") { canonical(value.get(it)) }
+        is String -> JSONObject.quote(value)
+        else -> value.toString()
+      }
+    
+      private fun envelope(identity: SnapshotIdentity, body: String): ByteArray {
+        val encoded = Base64.getEncoder().encodeToString(body.toByteArray(StandardCharsets.UTF_8))
+        val digest = sha256(body.toByteArray(StandardCharsets.UTF_8))
+        return ("{\"format\":\"$INCIDENT_FILE_FORMAT\",\"incident_pseudonym\":\"${identity.incidentPseudonym}\",\"revision\":${identity.revision},\"body_sha256\":\"$digest\",\"body_base64\":\"$encoded\",\"commit_state\":\"$COMMIT_ACKNOWLEDGED\"}\n")
+          .toByteArray(StandardCharsets.UTF_8)
+      }
+    
+      private fun reopen(file: File): ReopenedIncident {
+        rejectUnsafeFile(file)
+        val bytes = io.readFully(file)
+        if (bytes.size !in 1..RECEIPT_INCIDENT_MAX_ENVELOPE_BYTES) throw IllegalStateException("RECEIPT_INCIDENT_FILE_SIZE_INVALID")
+        val envelope = strictObject(String(bytes, StandardCharsets.UTF_8).trim(), "RECEIPT_INCIDENT_ENVELOPE_INVALID")
+        requireExactKeys(envelope, ENVELOPE_KEYS, "RECEIPT_INCIDENT_ENVELOPE_SCHEMA_INVALID")
+        val format = requiredString(envelope, "format")
+        val pseudonym = requiredLocalToken(envelope, "incident_pseudonym", "RECEIPT_INCIDENT_ENVELOPE_SCHEMA_INVALID")
+        val revision = requiredBoundedLong(envelope, "revision", 1L, MAX_SAFE_JSON_INTEGER, "RECEIPT_INCIDENT_ENVELOPE_SCHEMA_INVALID")
+        val digest = requiredString(envelope, "body_sha256")
+        check(digest.matches(Regex("[0-9a-f]{64}"))) { "RECEIPT_INCIDENT_ENVELOPE_SCHEMA_INVALID" }
+        val encoded = requiredString(envelope, "body_base64")
+        val state = requiredString(envelope, "commit_state")
+        if (format != INCIDENT_FILE_FORMAT || state != COMMIT_ACKNOWLEDGED) throw IllegalStateException("RECEIPT_INCIDENT_ENVELOPE_SCHEMA_INVALID")
+        val bodyBytes = try { Base64.getDecoder().decode(encoded) }
+        catch (_: IllegalArgumentException) { throw IllegalStateException("RECEIPT_INCIDENT_BODY_ENCODING_INVALID") }
+        check(Base64.getEncoder().encodeToString(bodyBytes) == encoded) { "RECEIPT_INCIDENT_BODY_ENCODING_INVALID" }
+        val body = try { String(bodyBytes, StandardCharsets.UTF_8) }
+        catch (_: Exception) { throw IllegalStateException("RECEIPT_INCIDENT_BODY_ENCODING_INVALID") }
+        val validated = validateSnapshot(body)
+        if (validated.incidentPseudonym != pseudonym || validated.revision != revision || sha256(bodyBytes) != digest) {
+          throw IllegalStateException("RECEIPT_INCIDENT_ENVELOPE_INTEGRITY_INVALID")
+        }
+        return ReopenedIncident(validated, state, digest, body)
+      }
+    
+      private fun strictObject(raw: String, code: String): JSONObject = try {
+        StrictJsonDuplicateKeyScanner(raw).verify()
+        JSONObject(raw)
+      } catch (_: Exception) {
+        throw IllegalArgumentException(code)
+      }
+    
+      private fun requireExactKeys(value: JSONObject, expected: Set<String>, code: String) {
+        val actual = objectKeys(value)
+        check(actual == expected) { code }
+      }
+    
+      private fun requireAllowedKeys(value: JSONObject, allowed: Set<String>, code: String) {
+        check(objectKeys(value).all { it in allowed }) { code }
+      }
+    
+      private fun objectKeys(value: JSONObject): Set<String> = buildSet {
+        val iterator = value.keys()
+        while (iterator.hasNext()) add(iterator.next())
+      }
+    
+      private fun value(value: JSONObject, key: String): Any {
+        check(value.has(key)) { "RECEIPT_INCIDENT_SCHEMA_INVALID" }
+        return value.get(key)
+      }
+    
+      private fun requiredString(value: JSONObject, key: String): String = value(value, key).let {
+        check(it is String) { "RECEIPT_INCIDENT_SCHEMA_INVALID" }
+        it
+      }
+    
+      private fun requiredBoolean(value: JSONObject, key: String): Boolean = value(value, key).let {
+        check(it is Boolean) { "RECEIPT_INCIDENT_SCHEMA_INVALID" }
+        it
+      }
+    
+      private fun requiredObject(value: JSONObject, key: String): JSONObject = value(value, key).let {
+        check(it is JSONObject) { "RECEIPT_INCIDENT_SCHEMA_INVALID" }
+        it
+      }
+    
+      private fun requiredArray(value: JSONObject, key: String): JSONArray = value(value, key).let {
+        check(it is JSONArray) { "RECEIPT_INCIDENT_SCHEMA_INVALID" }
+        it
+      }
+    
+      private fun requiredLong(value: JSONObject, key: String): Long = value(value, key).let {
+        check(it is Int || it is Long) { "RECEIPT_INCIDENT_SCHEMA_INVALID" }
+        (it as Number).toLong()
+      }
+    
+      private fun requiredBoundedLong(value: JSONObject, key: String, minimum: Long, maximum: Long, code: String): Long {
+        val parsed = requiredLong(value, key)
+        check(parsed in minimum..maximum) { code }
+        return parsed
+      }
+    
+      private fun optionalBoundedLong(value: JSONObject, key: String, minimum: Long, maximum: Long, code: String): Long? {
+        if (!value.has(key)) return null
+        return requiredBoundedLong(value, key, minimum, maximum, code)
+      }
+    
+      private fun optionalEnum(value: JSONObject, key: String, values: Set<String>, code: String): String? {
+        if (!value.has(key)) return null
+        val parsed = requiredString(value, key)
+        check(parsed in values) { code }
+        return parsed
+      }
+    
+      private fun requiredLocalToken(value: JSONObject, key: String, code: String): String {
+        val token = requiredString(value, key)
+        check(token.matches(LOCAL_TOKEN)) { code }
+        return token
+      }
+    
+      private fun sha256(bytes: ByteArray): String =
+        MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
+    
+      private companion object {
+        const val COMMIT_ACKNOWLEDGED = "ACKNOWLEDGED_ATOMIC_PUBLICATION_CHECKSUM_REOPEN_VERIFIED"
+        val LOCAL_TOKEN = Regex("[A-Za-z0-9][A-Za-z0-9._-]{0,79}")
+        val LOCAL_TRANSACTION_ID = Regex("hugr-receipt-[1-9][0-9]{0,15}-[1-9][0-9]{0,15}")
+        val INCIDENT_FILE_NAME = Regex("incident-[A-Za-z0-9._-]{1,80}" + Regex.escape(RECEIPT_INCIDENT_FILE_SUFFIX))
+        val INTERRUPTED_TEMPORARY_NAME = Regex("\\.incident-[A-Za-z0-9._-]{1,80}\\.[1-9][0-9]*\\.part")
+        val SNAPSHOT_KEYS = setOf(
+          "format", "incidentPseudonym", "connectionEpoch", "operationLimit", "lateSettlementReserve", "revision", "frozen",
+          "firstFailure", "firstFailureAtMonotonicMs", "nativeCorrelation", "nativeCorrelationReason", "crashBeforeCheckpoint", "publication", "overflow", "operations",
+        )
+        val LEGACY_SNAPSHOT_KEYS = SNAPSHOT_KEYS - "publication"
+        val PUBLICATION_KEYS = setOf("format", "currentBodyCommit", "acknowledgement", "knownLoss")
+        val PUBLICATION_ACK_KEYS = setOf("incidentPseudonym", "revision", "commitState", "acknowledgedAtomicPublication")
+        val PUBLICATION_LOSS_KEYS = setOf("attemptedRevision", "reason")
+        val OVERFLOW_KEYS = setOf("evictedCompletedRows", "lostNewOperations", "lateSettlementWithoutRetainedRow", "traceWindowOverflow")
+        val OPERATION_REQUIRED_KEYS = setOf(
+          "connectionEpoch", "incidentPseudonym", "localOrdinal", "operationKind", "localTransactionId", "jsSubmittedAtMonotonicMs",
+          "pending", "deadlineObserved", "disconnectObserved", "nativeAttDispatch",
+        )
+        val OPERATION_OPTIONAL_KEYS = setOf("pageOffset", "settledAtMonotonicMs", "timelySettlement", "cancellation", "lateSettlement")
+        val COMPACT_V3_OPERATION_REQUIRED_KEYS = OPERATION_REQUIRED_KEYS - setOf("connectionEpoch", "incidentPseudonym")
+        val COMPACT_V3_OPERATION_OPTIONAL_KEYS = OPERATION_OPTIONAL_KEYS
+        val ENVELOPE_KEYS = setOf("format", "incident_pseudonym", "revision", "body_sha256", "body_base64", "commit_state")
+        val DIAGNOSTIC_STAGES = setOf("CONNECTION_READINESS","SUBSCRIPTION_CALL","SUBSCRIPTION_REGISTRATION_RETURN","SUBSCRIPTION_CALLBACK","RESUME_WRITE","DELIVERY_CALLBACK","FRAME_DECODE","FRAME_CRC","NATIVE_APPEND","MANIFEST_VERIFICATION","ACK_INTENT_PERSISTENCE","ACK_PRE_WRITE_GUARD","ACK_WRITE","ACK_SUCCESS_EVIDENCE_PERSISTENCE","ACK_FAILURE_EVIDENCE_PERSISTENCE","RECEIPT_OPERATION","SETUP_TIMEOUT","SOURCE_FAILURE_BOUNDARY","DIAGNOSTIC_PUBLICATION","GUARD_CANCELLATION","STATE_CLEAR","CONNECTION_CANCEL","DISCONNECT_CALLBACK","STALE_CALLBACK","LIFECYCLE","LIFECYCLE_JOURNAL","UNKNOWN")
+        val DIAGNOSTIC_OUTCOMES = setOf("REQUESTED","RETURNED","SUCCEEDED","REJECTED","THROWN","DEADLINE","CANCEL_REQUESTED","CANCEL_RETURNED","CANCEL_THROWN","UNAVAILABLE","CALLBACK_OBSERVED","LATE_FULFILLMENT_IGNORED","LATE_REJECTION_IGNORED","STALE_IGNORED","CLASSIFIED","PUBLICATION_ACKNOWLEDGED","PUBLICATION_LOST","UNKNOWN")
+        val DIAGNOSTIC_ORIGINS = setOf("BLE_LIBRARY","APPLICATION_GUARD","APPLICATION_CLASSIFIER","STORAGE","TIMEOUT","CANCELLATION","DISCONNECT_CALLBACK","LIFECYCLE","PUBLICATION","UNKNOWN")
+        val DIAGNOSTIC_CLASSIFIERS = setOf("SOURCE_SELECTED_SESSION_MISMATCH","SOURCE_NATIVE_APPEND_SESSION_MISMATCH","SOURCE_MANIFEST_EQUALITY_REJECTED","SOURCE_MANIFEST_IDENTITY_REJECTED","SOURCE_FRAME_CRC_REJECTED","SOURCE_FRAME_DECODE_REJECTED","SOURCE_ACK_WRITE_REJECTED","SOURCE_ACK_WRITE_TIMEOUT","SOURCE_INGESTION_FAILED")
+        val DIAGNOSTIC_SUCCESS_STAGES = setOf("CONNECTION_READINESS","SUBSCRIPTION_REGISTRATION_RETURN","RESUME_WRITE","DELIVERY_CALLBACK","FRAME_DECODE","FRAME_CRC","NATIVE_APPEND","MANIFEST_VERIFICATION","ACK_INTENT_PERSISTENCE","ACK_PRE_WRITE_GUARD","ACK_WRITE","ACK_SUCCESS_EVIDENCE_PERSISTENCE","ACK_FAILURE_EVIDENCE_PERSISTENCE","RECEIPT_OPERATION")
+        val BLE_CATEGORIES = mapOf(0L to "UnknownError",1L to "BluetoothManagerDestroyed",2L to "OperationCancelled",3L to "OperationTimedOut",4L to "OperationStartFailed",5L to "InvalidIdentifiers",100L to "BluetoothUnsupported",101L to "BluetoothUnauthorized",102L to "BluetoothPoweredOff",103L to "BluetoothInUnknownState",104L to "BluetoothResetting",105L to "BluetoothStateChangeFailed",200L to "DeviceConnectionFailed",201L to "DeviceDisconnected",202L to "DeviceRSSIReadFailed",203L to "DeviceAlreadyConnected",204L to "DeviceNotFound",205L to "DeviceNotConnected",206L to "DeviceMTUChangeFailed",300L to "ServicesDiscoveryFailed",301L to "IncludedServicesDiscoveryFailed",302L to "ServiceNotFound",303L to "ServicesNotDiscovered",400L to "CharacteristicsDiscoveryFailed",401L to "CharacteristicWriteFailed",402L to "CharacteristicReadFailed",403L to "CharacteristicNotifyChangeFailed",404L to "CharacteristicNotFound",405L to "CharacteristicsNotDiscovered",406L to "CharacteristicInvalidDataFormat",500L to "DescriptorsDiscoveryFailed",501L to "DescriptorWriteFailed",502L to "DescriptorReadFailed",503L to "DescriptorNotFound",504L to "DescriptorsNotDiscovered",505L to "DescriptorInvalidDataFormat",506L to "DescriptorWriteNotAllowed",600L to "ScanStartFailed",601L to "LocationServicesDisabled")
+        val FIRST_FAILURES = setOf("DEADLINE", "SETTLED_REJECTED", "DISCONNECT", "SOURCE_FAILURE")
+        val OPERATION_KINDS = setOf("R1_WRITE", "RECEIPT_READ", "C1_WRITE", "SOURCE_RESUME", "SOURCE_ACK", "OTHER_RECEIPT_WRITE")
+        val TIMELY_SETTLEMENTS = setOf("FULFILLED", "REJECTED")
+        val CANCELLATIONS = setOf("REQUESTED", "RETURNED", "THROWN", "UNAVAILABLE")
+        val LATE_SETTLEMENTS = setOf("FULFILLED_IGNORED", "REJECTED_IGNORED")
+        val PUBLICATION_LOSS_REASONS = setOf(
+          "NATIVE_ACKNOWLEDGED_FALSE",
+          "NATIVE_COMMIT_STATE_MISMATCH",
+          "NATIVE_INCIDENT_PSEUDONYM_MISMATCH",
+          "NATIVE_REVISION_MISMATCH",
+          "NATIVE_PUBLICATION_RESULT_INVALID",
+          "NATIVE_PUBLICATION_REJECTED",
+        )
+      }
+    }
+    
+    /**
+     * JSONObject accepts later duplicate keys by overwriting earlier values. This small
+     * lexical preflight rejects duplicates (including escaped-equivalent keys) before
+     * actual org.json object parsing supplies the typed schema values above.
+     */
+    private class StrictJsonDuplicateKeyScanner(private val raw: String) {
+      private var index = 0
+    
+      fun verify() {
+        skipWhitespace()
+        scanValue()
+        skipWhitespace()
+        check(index == raw.length) { "trailing JSON input" }
+      }
+    
+      private fun scanValue() {
+        skipWhitespace()
+        check(index < raw.length) { "JSON value missing" }
+        when (raw[index]) {
+          '{' -> scanObject()
+          '[' -> scanArray()
+          '"' -> scanString()
+          't' -> literal("true")
+          'f' -> literal("false")
+          'n' -> literal("null")
+          else -> scanPrimitive()
+        }
+      }
+    
+      private fun scanObject() {
+        expect('{')
+        skipWhitespace()
+        if (consume('}')) return
+        val keys = mutableSetOf<String>()
+        while (true) {
+          skipWhitespace()
+          val key = scanString()
+          check(keys.add(key)) { "duplicate JSON object key" }
+          skipWhitespace()
+          expect(':')
+          scanValue()
+          skipWhitespace()
+          if (consume('}')) return
+          expect(',')
+        }
+      }
+    
+      private fun scanArray() {
+        expect('[')
+        skipWhitespace()
+        if (consume(']')) return
+        while (true) {
+          scanValue()
+          skipWhitespace()
+          if (consume(']')) return
+          expect(',')
+        }
+      }
+    
+      private fun scanString(): String {
+        expect('"')
+        val result = StringBuilder()
+        while (true) {
+          check(index < raw.length) { "unterminated JSON string" }
+          val current = raw[index++]
+          when (current) {
+            '"' -> return result.toString()
+            '\\' -> {
+              check(index < raw.length) { "unterminated JSON escape" }
+              when (val escaped = raw[index++]) {
+                '"', '\\', '/' -> result.append(escaped)
+                'b' -> result.append('\b')
+                'f' -> result.append('\u000c')
+                'n' -> result.append('\n')
+                'r' -> result.append('\r')
+                't' -> result.append('\t')
+                'u' -> {
+                  check(index + 4 <= raw.length) { "short JSON unicode escape" }
+                  val hex = raw.substring(index, index + 4)
+                  check(hex.all { it.isDigit() || it.lowercaseChar() in 'a'..'f' }) { "invalid JSON unicode escape" }
+                  result.append(hex.toInt(16).toChar())
+                  index += 4
+                }
+                else -> error("invalid JSON escape")
+              }
+            }
+            else -> {
+              check(current.code >= 0x20) { "invalid JSON control character" }
+              result.append(current)
+            }
+          }
+        }
+      }
+    
+      private fun scanPrimitive() {
+        val start = index
+        while (index < raw.length && raw[index] !in charArrayOf(',', ']', '}', ' ', '\t', '\n', '\r')) index += 1
+        check(index > start) { "JSON primitive missing" }
+      }
+    
+      private fun literal(expected: String) {
+        check(raw.regionMatches(index, expected, 0, expected.length)) { "invalid JSON literal" }
+        index += expected.length
+      }
+    
+      private fun skipWhitespace() {
+        while (index < raw.length && raw[index] in charArrayOf(' ', '\t', '\n', '\r')) index += 1
+      }
+    
+      private fun expect(expected: Char) {
+        skipWhitespace()
+        check(index < raw.length && raw[index] == expected) { "expected JSON token $expected" }
+        index += 1
+      }
+    
+      private fun consume(expected: Char): Boolean {
+        skipWhitespace()
+        if (index >= raw.length || raw[index] != expected) return false
+        index += 1
+        return true
+      }
+    }
+    
+    /** Native AsyncFunction/store worker only. Best-effort Log IO is never proof of dispatch or durability. */
+    internal object ReceiptIncidentSafeLog {
+      const val TAG = "HUGRReceiptDiag"
+      const val MAX_LINE_BYTES = 2048
+      const val MAX_CAUSE_LINES = 8
+      const val MAX_READER_LINES = 16
+      private val emitted = mutableSetOf<String>()
+      private var readerLines = 0
+      @Synchronized fun cause(pseudonym: String, cause: JSONObject) {
+        if (emitted.size >= MAX_CAUSE_LINES || pseudonym in emitted) return
+        val line = "event=NATIVE_VALIDATED_CAUSE_NOT_COMMIT_PROOF cause=" + cause.toString()
+        if (line.toByteArray(StandardCharsets.UTF_8).size > MAX_LINE_BYTES) return
+        emitted.add(pseudonym)
+        runCatching { android.util.Log.i(TAG, line) }
+      }
+      @Synchronized fun reader(event: String) {
+        if (event !in setOf("READER_OPEN","READER_RESULT_COMPLETE","READER_RESULT_NO_SAVED_INCIDENTS","READER_RESULT_STOP") || readerLines >= MAX_READER_LINES) return
+        readerLines += 1
+        runCatching { android.util.Log.i(TAG, "event=" + event + " read_only=YES no_ble_main_react=YES") }
+      }
+    }
+    
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///home/ubuntu/HUGR_NATIVE_OBSERVATION_RESET_RECOVERY_2026_10_28/repos/phone/tests/receiptIncidentNativeStore.source.test.ts:80:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: typed native publication bridge returns the exact acknowledgement proof tuple
+ok 4 - typed native publication bridge returns the exact acknowledgement proof tuple
+  ---
+  duration_ms: 0.663926
+  type: 'test'
+  ...
+# Subtest: Saved Receipt Diagnostics is an isolated native reader with explicit complete Save and Share only
+ok 5 - Saved Receipt Diagnostics is an isolated native reader with explicit complete Save and Share only
+  ---
+  duration_ms: 1.936196
+  type: 'test'
+  ...
+# Subtest: the existing source-evidence reader retains its custody behavior and exposes one explicit isolated diagnostics choice
+ok 6 - the existing source-evidence reader retains its custody behavior and exposes one explicit isolated diagnostics choice
+  ---
+  duration_ms: 1.308431
+  type: 'test'
+  ...
+# Subtest: receipt diagnostics shares the actual guarded process and bypasses Application React/Expo lifecycle initialization only there
+ok 7 - receipt diagnostics shares the actual guarded process and bypasses Application React/Expo lifecycle initialization only there
+  ---
+  duration_ms: 3.650974
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 4
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 224.405071

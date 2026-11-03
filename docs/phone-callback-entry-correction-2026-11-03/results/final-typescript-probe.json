@@ -1,0 +1,15 @@
+{
+  "status": "PASS_TS_PRODUCTION_COORDINATOR_AND_WRAPPER_WITH_NATIVE_DOUBLE",
+  "cases": [
+    "fresh_success_actual_coordinator_and_wrapper_without_incident_publication",
+    "duplicates_and_late_fulfillment_cannot_relabel_probe",
+    "unrelated_read_never_checkpointed",
+    "one_in_flight_one_pending_and_explicit_coalesced_outcomes",
+    "deadline_label_survives_late_outcome",
+    "probe_refusal_is_detached_no_retry_no_transport_failure"
+  ],
+  "caseCount": 6,
+  "ExpoBridgeRuntime": false,
+  "Android": false,
+  "RxJava": false
+}

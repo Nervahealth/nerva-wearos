@@ -1,0 +1,26 @@
+{
+  "source": "/home/ubuntu/HUGR_NATIVE_OBSERVATION_RESET_RECOVERY_2026_10_28/repos/phone/modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/connection/RxBleGattCallback.java",
+  "whole_source_sha256": "aee041462ea574ddbc10c1655c61f66afd18713236d812e9647961e305eef705",
+  "method_sha256": "c63c12a5f70020295c78b344f909a8584dfe4394f12a144eb487c95843a7d0f4",
+  "exact_method_text": true,
+  "whole_rx_class_compiled": false,
+  "doubles": [
+    "BluetoothGatt",
+    "BluetoothGattCharacteristic",
+    "LoggerUtil",
+    "native dispatcher",
+    "hasObservers/relay",
+    "error propagation",
+    "operation marker types"
+  ],
+  "actual_production": [
+    "callback method body",
+    "HugrReceiptWriteObserver",
+    "HugrReceiptWriteTrace",
+    "frame serializer",
+    "publisher",
+    "stores",
+    "private copy/stream helpers"
+  ],
+  "not_claimed": "RxJava/actual platform callback/physical ATT"
+}

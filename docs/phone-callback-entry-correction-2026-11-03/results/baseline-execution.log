@@ -1,0 +1,6 @@
+start=2026-11-03T01:17:56+00:00
+mode=baseline
+boundary=EXACT_PRODUCTION_CALLBACK_METHOD_SOURCE_SLICE_WITH_EXPLICIT_COLLABORATOR_DOUBLES
+not_proven=actual_RxAndroidBle_class_RxJava_completion_Android_platform_callback_or_device
+probe_exit=1
+end=2026-11-03T01:18:19+00:00

@@ -1,0 +1,111 @@
+{
+  "status": "PASS_EXACT_FOCUSED_NINE_PATH_SOURCE_SCOPE",
+  "sourcePaths": [
+    "lib/receiptIncidentDiagnostic.ts",
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/connection/RxBleGattCallback.java",
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/util/HugrReceiptWriteObserver.java",
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/util/HugrReceiptWriteTrace.java",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedReceiptDiagnosticsActivity.kt",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt",
+    "modules/hugr-source-journal/index.ts",
+    "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/util/HugrCallbackEntryLane.java",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptCallbackProbeStore.kt"
+  ],
+  "files": [
+    {
+      "path": "lib/receiptIncidentDiagnostic.ts",
+      "kind": "MODIFIED",
+      "bytes": 8884,
+      "postSha256": "2fccab4ce2cceca827323874b6e032ca9f9b3125f1b22b1a2faeaa8bd599f0a0",
+      "preSha256": "0304631ca8055f6f289b78722be4f9679e19b4f7b4c3f4009803c4fea5255552",
+      "acceptedPhone71PreimageMatches": true
+    },
+    {
+      "path": "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/connection/RxBleGattCallback.java",
+      "kind": "MODIFIED",
+      "bytes": 18918,
+      "postSha256": "aee041462ea574ddbc10c1655c61f66afd18713236d812e9647961e305eef705",
+      "preSha256": "3ff7483d60b432fc418bbc448c3795570dfdc514ee1f42e31f97d0bebea0b9f7",
+      "acceptedPhone71PreimageMatches": true
+    },
+    {
+      "path": "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/util/HugrReceiptWriteObserver.java",
+      "kind": "MODIFIED",
+      "bytes": 21032,
+      "postSha256": "9e142474d6ce1ca7998974b4376e98eec87754a2b1c5011e22aa1924c56e9c79",
+      "preSha256": "e402c92c5e25af94b38ca77fba6f5e6875069c5905e5d475989cc8aa404c7050",
+      "acceptedPhone71PreimageMatches": true
+    },
+    {
+      "path": "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/util/HugrReceiptWriteTrace.java",
+      "kind": "MODIFIED",
+      "bytes": 72618,
+      "postSha256": "cc4fa025869c15ac751d5716e7d3b5695daa5e71426e460e6286fe7646ab8847",
+      "preSha256": "3d4b304a37b341abbf8237c5e8f147bdb1e6dfa942c56f945c87776ddc4b1834",
+      "acceptedPhone71PreimageMatches": true
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSavedReceiptDiagnosticsActivity.kt",
+      "kind": "MODIFIED",
+      "bytes": 14075,
+      "postSha256": "97f38145821b4044fc8d005d21f1a8e3d98a1e165dc73aaf5bff2b18c24a0bd6",
+      "preSha256": "5d5bd0168a265f9d13977356b549157d61a67447910cc68c7cd8479e41a6d4d1",
+      "acceptedPhone71PreimageMatches": true
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/HUGRSourceJournalModule.kt",
+      "kind": "MODIFIED",
+      "bytes": 45164,
+      "postSha256": "ff8a111aeb4be5193fa3d9945c6b4ccba1284cc9d0872f242b42c7a8937155bd",
+      "preSha256": "0e2317dc295d9f0dc2d590f5e248124bf7598efab7bf027545aaf942efaa0936",
+      "acceptedPhone71PreimageMatches": true
+    },
+    {
+      "path": "modules/hugr-source-journal/index.ts",
+      "kind": "MODIFIED",
+      "bytes": 6103,
+      "postSha256": "8176541a25bb2ed49e6b120e3c09a2ce2075742dbc417abc464ef08bfafa15c6",
+      "preSha256": "88d36e4f2eaeaffa72f1df21beae97524cc1e2e6d50d0c20b303ac19950f1ff2",
+      "acceptedPhone71PreimageMatches": true
+    },
+    {
+      "path": "modules/hugr-rxandroidble-observation/android/src/main/java/com/polidea/rxandroidble2/internal/util/HugrCallbackEntryLane.java",
+      "kind": "NEW",
+      "bytes": 8116,
+      "postSha256": "6e8ca1dda1a02b87583868f86b3d2d6132a58137a3a4646b10f618d11090bf6c",
+      "preSha256": null,
+      "acceptedPhone71PreimageMatches": true
+    },
+    {
+      "path": "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptCallbackProbeStore.kt",
+      "kind": "NEW",
+      "bytes": 12045,
+      "postSha256": "da19b2bfe517205fa4c3a0b0ae620263dc36c8b8e5934ede9044a1f444db5077",
+      "preSha256": null,
+      "acceptedPhone71PreimageMatches": true
+    }
+  ],
+  "protectedUnchanged": {
+    "package.json": "4eaf756a00e184860c9054d441f464202d0a47f3e909168d2eca7256eb5e79df",
+    "pnpm-lock.yaml": "27c87bfc48f5b066607d2466b74607be68333cb1cd8767919f416f985dc8cbb0",
+    "app.json": "68abfaa60ffc8698e061f36f3283ecb8273f354d83b4617bb3fae01fe63dc36d",
+    "eas.json": "0dbd0452a2656b5aa6aa549826949350a7804269551d8764ba2854f587878706",
+    "lib/receiptIncidentDiagnosticModel.ts": "84d62e8049000c00ac6762fd116c5037778e3e1976fe8e0261a58628acb0135a",
+    "lib/receiptIncidentDiagnosticContext.ts": "4c795aeb421ae084bd0750c276e0afaafc4df4462cb6e56da40043587a5cc19f",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptIncidentDiagnosticStore.kt": "b2409b4c9d89cf317dea84fd299bd46cc81ac68259ff1dd2a32b0c526e037903",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptNativeWriteFramePublisher.kt": "ce0a2122f0e94d799ef544c6e24a31b3266bee5c10121f6a07938833f3c8d6a9",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptNativeWriteObservationStore.kt": "8a0be27ed24c7b24184d24a52ec59d742187e99bc1e93ead12ae854e4ffcc9d0",
+    "modules/hugr-source-journal/android/src/main/java/health/hugr/sourcejournal/ReceiptDiagnosticPrivateExport.kt": "18a48e4a7849e8ff52658edb5aa355b9f6834a89c176df5a49105bcabc4f9458"
+  },
+  "ordinaryCallbackMethodBytesUnchangedAfterRemovingOneFirstStatement": true,
+  "focusedCallbackCases": 20,
+  "typescriptProbeCases": 6,
+  "existingRetentionCasesReexecuted": 8,
+  "completeReaderCompiled": true,
+  "exactNewNativeBridgeBodySliceCompiled": true,
+  "fullExpoModuleCompiled": false,
+  "actualRxJavaRuntimeTested": false,
+  "deviceActions": 0,
+  "APKBuilds": 0,
+  "versionReservation": false
+}
